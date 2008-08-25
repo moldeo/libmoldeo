@@ -6,6 +6,6 @@ AC_PROG_CC
 
 AC_OUTPUT([
 Makefile
-src/Makefile
+libmoldeo/Makefile
 ])
 
