@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = libmoldeo
 
 EXTRA_DIST = AUTHORS ChangeLog NEWS README
 
