@@ -1,6 +1,6 @@
 AM_CPPFLAGS = $(all_includes)
 
-lib_LTLIBRARY = libmoldeo.la
+lib_LTLIBRARIES = libmoldeo.la
 libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moAbstract.cpp \
 	moArcBall.cpp \
