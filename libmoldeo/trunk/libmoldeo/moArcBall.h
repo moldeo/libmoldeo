@@ -24,12 +24,7 @@
 
 // 8<--Snip here if you have your own math types/funcs-->8
 
-//Only support assertions in debug builds
-#ifdef _DEBUG
-# include "assert.h"
-#else
-#define assert(x) { }
-#endif
+#include <assert.h>
 
 //Math types derived from the KempoApi tMath library
     typedef union LIBMOLDEO_API Tuple2f_t

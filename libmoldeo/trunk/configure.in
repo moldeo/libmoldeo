@@ -10,8 +10,35 @@ AC_PROG_CC_STDC
 AC_C_CONST
 AC_PROG_LIBTOOL
 
+dnl check for lua51
+PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes,has_lua51=no)
+
+dnl check for gstreamer
+GST_VERSION_MAJOR=0
+GST_VERSION_MINOR=10
+GST_VERSION_RELEASE=20
+GSTPLUG_VERSION_RELEASE=7
+GSTREAMER_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GST_VERSION_RELEASE
+GSTPLUGINS_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GSTPLUG_VERSION_RELEASE
+GST_MAJORMINOR=$GST_VERSION_MAJOR.$GST_VERSION_MINOR
+
+PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
+  HAVE_GSTREAMER=yes, HAVE_GSTREAMER=no)
+AC_SUBST(GST_CFLAGS)
+AC_SUBST(GST_LIBS)
+
+dnl check for truetype
+AC_CHECK_FT2
+
+dnl check for check test suite
+AM_PATH_CHECK(,[have_check="yes"],
+  AC_MSG_WARN([Check not found; cannot run unit tests!])
+  [have_check="no"])
+AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
+
 AC_OUTPUT([
 Makefile
 libmoldeo/Makefile
+test-suite/Makefile
 ])
 

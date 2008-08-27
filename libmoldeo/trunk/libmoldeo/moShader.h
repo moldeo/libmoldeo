@@ -42,7 +42,7 @@
 
 #define MO_MAX_TEXTURE_UNITS 4
 
-typedef enum { MO_SHADER_GLSL, MO_SHADER_CG };
+typedef enum { MO_SHADER_GLSL, MO_SHADER_CG } moShader_t;
 
 /**
  * Esta clase define una grilla 2D donde mapear y distorsionar texturas. La grilla

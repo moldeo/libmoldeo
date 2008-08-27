@@ -18,13 +18,13 @@ typedef enum mo3dModelType {
   MO_MODEL_MD2 = 3,
   MO_MODEL_MD3 = 4
 
-};
+} mo3dModelType_t;
 
 typedef struct mo3dModelParam {
 
     MOuint  nObjects;
 
-};
+} mo3dModelParam_s;
 
 
 //===========  3D  ================//
