@@ -31,7 +31,7 @@
 #include <iomanip>
 
 #ifdef HAVE_CONFIG_H
-#include <m_Config.h>
+//#include <m_Config.h>
 #endif
 #ifndef OGLFT_NO_QT
 #include <qregexp.h>

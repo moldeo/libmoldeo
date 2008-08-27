@@ -1,0 +1,7 @@
+27 ago 2008: Cristian: Hay dos codigo fuentes declarados en libmoldeo que deberían
+	eliminarse y convertirlos .hpp que son moMathMatrix.cpp y moMathQuaternion.cpp
+
+	Estos declaran clases abstractas que no deberían compilarse con la librería.
+	
+	Por lo tanto esos códigos deberían distribuirse como .h y ser parte de los paquetes
+	de desarrollo.

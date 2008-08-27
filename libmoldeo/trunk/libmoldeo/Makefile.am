@@ -2,6 +2,7 @@ AM_CPPFLAGS = $(all_includes)
 
 lib_LTLIBRARIES = libmoldeo.la
 libmoldeo_la_SOURCES = mo3dModelManager.cpp \
+	moText.cpp \
 	moAbstract.cpp \
 	moArcBall.cpp \
 	moBuckets.cpp \
@@ -40,10 +41,8 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moMathFunction.cpp \
 	moMathFunctionIndex.cpp \
 	moMathManager.cpp \
-	moMathMatrix.cpp \
 	moMathNumericalAnalysis.cpp \
 	moMathPolynomial.cpp \
-	moMathQuaternion.cpp \
 	moMathVector3.cpp \
 	moMathVector4.cpp \
 	moMathVector.cpp \
@@ -73,7 +72,6 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moShaderManager.cpp \
 	moSoundManager.cpp \
 	moTempo.cpp \
-	moText.cpp \
 	moTextFilterParam.cpp \
 	moTexture.cpp \
 	moTextureFilter.cpp \
@@ -86,7 +84,23 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moValue.cpp \
 	moVideoGraph.cpp \
 	moVideoManager.cpp \
-	moXmlConfig.cpp
+	moXmlConfig.cpp \
+	tinyxml.cpp \
+	tinyxmlerror.cpp \
+	tinyxmlparser.cpp \
+	tinystr.cpp \
+	3ds/3ds.cpp
+
+#	moMathMatrix.cpp 
+#	moMathQuaternion.cpp 
+
+libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
+	${GST_CFLAGS} \
+	${LUA51_CFLAGS} 
+
+libmoldeo_la_LIBS = ${FT2_LIBS} \
+	${GST_LIBS} \
+	${LUA51_LIBS} 
 
 METASOURCES = AUTO
 

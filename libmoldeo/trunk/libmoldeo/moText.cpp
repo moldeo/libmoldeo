@@ -68,12 +68,14 @@ moText0::moText0( const char* txt)
     txtcopy( txt);
 }
 
-moText0::moText0( char* txt)
+/* Eliminado por cristian ya que no tiene sentido *
+moText0::moText0(const char* txt)
 {
     text = NULL;
     length = 0;
     txtcopy( txt);
 }
+*/
 
 moText0::~moText0()
 {
@@ -186,7 +188,7 @@ void moText0::txtcopy( const short* txt, uint pos, uint com, uint fin)
 // txtcomp compara caracter a caracter [text] con [txt] a partir de las posiciones
 // [com1] y [com2] respectivamente.  Es CASE-SENSITIVE.
 
-txtcval moText0::txtcomp( const char* txt, uint com1, uint com2)
+txtcval moText0::txtcomp( const char* txt, uint com1, uint com2) const
 {
     uint i1, i2;
 
@@ -224,7 +226,7 @@ txtcval moText0::txtcomp( const char* txt, uint com1, uint com2)
 // [text] perteneciente a [cjto], si es NOT_BELONG la posicion del primer caracter
 // de [text] no perteneciente a [cjto]. La busqueda se realiza en la direccion [dir].
 
-uint moText0::txtfind( const char* cjto, txtpert pert, uint com, int dir)
+uint moText0::txtfind( const char* cjto, txtpert pert, uint com, int dir) const
 {
     uint i, j, found;
 
@@ -298,103 +300,103 @@ moText0& moText0::operator +=(const moText0& txt)
     return *this;
 }
 
-moText0 moText0::operator +(const moText0& txt)
+moText0 moText0::operator +(const moText0& txt) const
 {
     moText0 txtres(text);
     txtres.txtcopy(txt.text, MO_TXT_COMPLETE, 0, txt.length);
     return txtres;
 }
 
-int moText0::operator <( moText0& txt)
+int moText0::operator <(const moText0& txt) const
 {
     return( txtcomp(txt.text) == MO_TXT_LESSER);
 }
 
-int moText0::operator >( moText0& txt)
+int moText0::operator >(const moText0& txt) const
 {
     return( txtcomp(txt.text) == MO_TXT_GREATER);
 }
 
-int moText0::operator <=( moText0& txt)
+int moText0::operator <=(const moText0& txt) const
 {
     return( txtcomp(txt.text)==MO_TXT_LESSER || txtcomp(txt.text)==MO_TXT_EQUAL);
 }
 
-int moText0::operator >=( moText0& txt)
+int moText0::operator >=(const moText0& txt) const
 {
     return( txtcomp(txt.text)==MO_TXT_GREATER || txtcomp(txt.text)==MO_TXT_EQUAL);
 }
 
-int moText0::operator ==( moText0& txt)
+int moText0::operator ==(const moText0& txt) const
 {
     return( txtcomp(txt.text) == MO_TXT_EQUAL);
 }
 
-int moText0::operator !=( moText0& txt)
+int moText0::operator !=(const moText0& txt) const
 {
     return( txtcomp(txt.text) != MO_TXT_EQUAL);
 }
 
 
-moText0& moText0::operator =( char* txt)
+moText0& moText0::operator =(const char* txt)
 {
     txtcopy(txt);
     return *this;
 }
 
-moText0& moText0::operator =( short* txt)
+moText0& moText0::operator =(const short* txt)
 {
     txtcopy(txt);
     return *this;
 }
 
-moText0& moText0::operator +=( char* txt)
+moText0& moText0::operator +=(const char* txt)
 {
     txtcopy(txt,MO_TXT_COMPLETE);
     return *this;
 }
 
-LIBMOLDEO_API moText0 operator +( moText0& txt1, char* txt2)
+LIBMOLDEO_API moText0 operator +(const moText0& txt1,const char* txt2)
 {
     moText0 txtres(txt1);
     txtres.txtcopy( txt2, MO_TXT_COMPLETE);
     return txtres;
 }
 
-LIBMOLDEO_API moText0 operator +( char* txt1, moText0& txt2)
+LIBMOLDEO_API moText0 operator +(const char* txt1, const moText0& txt2)
 {
     moText0 txtres(txt1);
-    txtres.txtcopy( txt2, MO_TXT_COMPLETE, 0, txt2.Length());
+    txtres.txtcopy( txt2.text, MO_TXT_COMPLETE, 0, txt2.Length());
     return txtres;
 }
 
 
-int moText0::operator < ( char* txt)
+int moText0::operator < (const char* txt) const
 {
     return( txtcomp(txt) == MO_TXT_LESSER);
 }
 
-int moText0::operator > ( char* txt)
+int moText0::operator > (const char* txt) const
 {
     return( txtcomp(txt) == MO_TXT_GREATER);
 }
 
-int moText0::operator <=( char* txt)
+int moText0::operator <=(const char* txt) const
 {
     return( txtcomp(txt)==MO_TXT_LESSER || txtcomp(txt)==MO_TXT_EQUAL);
 }
 
-int moText0::operator >=( char* txt)
+int moText0::operator >=(const char* txt) const
 {
     return( txtcomp(txt)==MO_TXT_GREATER || txtcomp(txt)==MO_TXT_EQUAL);
 }
 
-int moText0::operator ==( char* txt)
+int moText0::operator ==(const char* txt) const
 {
     return( txtcomp(txt) == MO_TXT_EQUAL);
 }
 
-int moText0::operator !=( char* txt)
+int moText0::operator !=(const char* txt) const
 {
     return( txtcomp(txt) != MO_TXT_EQUAL);
 }
@@ -441,7 +443,7 @@ moText0& moText0::SubText( uint com, uint fin)
 }
 
 
-moText0& moText0::Insert( char* txt, uint pos)
+moText0& moText0::Insert(const char* txt, uint pos)
 {
     moText0 tmp( text+pos);
     txtcopy( txt, pos);
@@ -460,7 +462,7 @@ moText0& moText0::Delete( uint pos, uint cant)
 // primer caracter no perteneciente a [cjto] hasta el next caracter perteneciente
 // a [cjto] y saca esta parte de [text].
 
-moText0 moText0::Scan( char* cjto)
+moText0 moText0::Scan(const char* cjto)
 {
     moText0 newtxt;
     uint pos1 = txtfind( cjto, MO_TXT_NOT_BELONG);
@@ -472,7 +474,7 @@ moText0 moText0::Scan( char* cjto)
     return newtxt;
 }
 
-moText0 moText0::ScanEx( char* cjto)
+moText0 moText0::ScanEx(const char* cjto)
 {
     moText0 newtxt;
 	uint pos2;
@@ -582,7 +584,7 @@ void moText0::ToLower()
 
 
 moTextArray
-moText0::Explode( char* separator ) const
+moText0::Explode(const char* separator ) const
 {
 
     moTextArray Tarray;
@@ -704,7 +706,7 @@ moString& moString::SubText(uint first, uint last)
 	return *this;
 }
 
-moString& moString::Insert(char *str, uint pos)
+moString& moString::Insert(const char *str, uint pos)
 {
 	insert(pos, str);
 	return *this;
@@ -716,7 +718,7 @@ moString& moString::Delete(uint first, uint nchar)
 	return *this;
 }
 
-moString moString::Scan(char *set)
+moString moString::Scan(const char *set)
 {
 	moString new_str;
 	if (set != NULL)
@@ -741,7 +743,7 @@ moString moString::Scan(char *set)
 	return new_str;
 }
 
-moString moString::ScanEx(char *set)
+moString moString::ScanEx(const char *set)
 {
 	moString new_str0;
 	if (set != NULL)

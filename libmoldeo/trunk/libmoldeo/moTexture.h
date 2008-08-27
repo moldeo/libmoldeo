@@ -49,7 +49,7 @@ typedef enum moTextureType {
         MO_TYPE_VIDEOBUFFER,
         MO_TYPE_CIRCULARVIDEOBUFFER
         /*MO_TYPE_PROCEDURAL,
-        MO_TYPE_3D*/ };
+        MO_TYPE_3D*/ } moTextureType_t;
 
 class moFBO;
 class moTexture;

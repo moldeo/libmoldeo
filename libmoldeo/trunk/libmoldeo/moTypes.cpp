@@ -44,6 +44,7 @@ MOulong moGetTicks() {
 value entre 0 y 1*/
 LIBMOLDEO_API MOfloat morand() {
 	//randomize();
+	/* TODO: Genera overflow, hay que ver si RAND_MAX es soportado por double */
 	return((double)rand() /(double)(RAND_MAX+1));
 }
 
