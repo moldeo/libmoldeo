@@ -31,10 +31,7 @@ dnl check for truetype
 AC_CHECK_FT2
 
 dnl check for check test suite
-AM_PATH_CHECK(,[have_check="yes"],
-  AC_MSG_WARN([Check not found; cannot run unit tests!])
-  [have_check="no"])
-AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
+PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 
 AC_OUTPUT([
 Makefile

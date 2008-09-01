@@ -89,10 +89,9 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	tinyxmlerror.cpp \
 	tinyxmlparser.cpp \
 	tinystr.cpp \
-	3ds/3ds.cpp
-
-#	moMathMatrix.cpp 
-#	moMathQuaternion.cpp 
+	3ds/3ds.cpp \
+	moMathMatrix.cpp \
+	moMathQuaternion.cpp 
 
 libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \

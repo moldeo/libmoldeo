@@ -1,5 +1,4 @@
 INCLUDES                    = @CHECK_CFLAGS@
-if HAVE_CHECK
 TESTS                       = check_libmoldeo
 noinst_PROGRAMS             = $(TESTS)
 check_libmoldeo_SOURCES      = check_libmoldeo.cpp
@@ -10,7 +9,4 @@ check_libmoldeo_LDADD        = @CHECK_LIBS@ \
 	@GST_LIBS@ \
 	@FT2_LIBS@
 CLEANFILES                  = check_libmoldeo.log
-else
-TESTS                       =
-endif
 
