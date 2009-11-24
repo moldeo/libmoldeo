@@ -4,7 +4,12 @@ noinst_PROGRAMS             = $(TESTS)
 check_libmoldeo_SOURCES      = check_libmoldeo.cpp
 check_libmoldeo_LDADD        = @CHECK_LIBS@ \
 	-L../libmoldeo -lmoldeo \
-	-lGL -lGLU -lSDL -lfreeimage -lopenal -lGLEW -lmuparser -lCg -lCgGL -lgle\
+	-lopenal -lmuparser \
+	@SDL_LIBS@ \
+	@GLE_LIBS@ \
+	@FREEIMAGE_LIBS@ \
+	@GLEW_LIBS@ \
+	@CG_LIBS@ \
 	@LUA51_LIBS@ \
 	@GST_LIBS@ \
 	@FT2_LIBS@
