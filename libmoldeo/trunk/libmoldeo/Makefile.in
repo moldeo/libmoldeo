@@ -99,8 +99,7 @@ am_libmoldeo_la_OBJECTS = libmoldeo_la-mo3dModelManager.lo \
 	libmoldeo_la-moVideoManager.lo libmoldeo_la-moXmlConfig.lo \
 	libmoldeo_la-tinyxml.lo libmoldeo_la-tinyxmlerror.lo \
 	libmoldeo_la-tinyxmlparser.lo libmoldeo_la-tinystr.lo \
-	libmoldeo_la-3ds.lo libmoldeo_la-moMathMatrix.lo \
-	libmoldeo_la-moMathQuaternion.lo
+	libmoldeo_la-3ds.lo
 libmoldeo_la_OBJECTS = $(am_libmoldeo_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -342,10 +341,11 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	tinyxmlerror.cpp \
 	tinyxmlparser.cpp \
 	tinystr.cpp \
-	3ds/3ds.cpp \
-	moMathMatrix.cpp \
-	moMathQuaternion.cpp 
+	3ds/3ds.cpp 
 
+
+#	moMathMatrix.cpp \
+#	moMathQuaternion.cpp 
 libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
 	${LUA51_CFLAGS} 
@@ -464,10 +464,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathFunctionIndex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathManager.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathMatrix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathNumericalAnalysis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathPolynomial.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathQuaternion.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathVector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathVector3.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moMathVector4.Plo@am__quote@
@@ -1159,20 +1157,6 @@ libmoldeo_la-3ds.lo: 3ds/3ds.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='3ds/3ds.cpp' object='libmoldeo_la-3ds.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmoldeo_la-3ds.lo `test -f '3ds/3ds.cpp' || echo '$(srcdir)/'`3ds/3ds.cpp
-
-libmoldeo_la-moMathMatrix.lo: moMathMatrix.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmoldeo_la-moMathMatrix.lo -MD -MP -MF $(DEPDIR)/libmoldeo_la-moMathMatrix.Tpo -c -o libmoldeo_la-moMathMatrix.lo `test -f 'moMathMatrix.cpp' || echo '$(srcdir)/'`moMathMatrix.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/libmoldeo_la-moMathMatrix.Tpo $(DEPDIR)/libmoldeo_la-moMathMatrix.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='moMathMatrix.cpp' object='libmoldeo_la-moMathMatrix.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmoldeo_la-moMathMatrix.lo `test -f 'moMathMatrix.cpp' || echo '$(srcdir)/'`moMathMatrix.cpp
-
-libmoldeo_la-moMathQuaternion.lo: moMathQuaternion.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmoldeo_la-moMathQuaternion.lo -MD -MP -MF $(DEPDIR)/libmoldeo_la-moMathQuaternion.Tpo -c -o libmoldeo_la-moMathQuaternion.lo `test -f 'moMathQuaternion.cpp' || echo '$(srcdir)/'`moMathQuaternion.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/libmoldeo_la-moMathQuaternion.Tpo $(DEPDIR)/libmoldeo_la-moMathQuaternion.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='moMathQuaternion.cpp' object='libmoldeo_la-moMathQuaternion.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmoldeo_la-moMathQuaternion.lo `test -f 'moMathQuaternion.cpp' || echo '$(srcdir)/'`moMathQuaternion.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
