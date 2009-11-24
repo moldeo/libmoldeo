@@ -106,6 +106,7 @@ FT2_LIBS = @FT2_LIBS@
 GLEW_LIBS = @GLEW_LIBS@
 GLE_LIBS = @GLE_LIBS@
 GLUT_LIBS = @GLUT_LIBS@
+GL_LIBS = @GL_LIBS@
 GREP = @GREP@
 GST_CFLAGS = @GST_CFLAGS@
 GST_LIBS = @GST_LIBS@
@@ -201,12 +202,14 @@ INCLUDES = @CHECK_CFLAGS@
 check_libmoldeo_SOURCES = check_libmoldeo.cpp
 check_libmoldeo_LDADD = @CHECK_LIBS@ \
 	-L../libmoldeo -lmoldeo \
-	-lopenal -lmuparser \
+	@MUPARSER_LIBS@ \
 	@SDL_LIBS@ \
 	@GLE_LIBS@ \
 	@FREEIMAGE_LIBS@ \
+	@FREEALUT_LIBS@ \
 	@GLEW_LIBS@ \
 	@CG_LIBS@ \
+	@CGGL_LIBS@ \
 	@LUA51_LIBS@ \
 	@GST_LIBS@ \
 	@FT2_LIBS@

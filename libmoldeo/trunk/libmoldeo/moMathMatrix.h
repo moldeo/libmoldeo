@@ -74,7 +74,7 @@
 //           0       0       1
 // where t > 0 indicates a counterclockwise rotation in the xy-plane.
 
-#ifndef __MO_MATH_MATRIX_H__
+#ifndef __MO_MATH_MATRIX_H_
 #define __MO_MATH_MATRIX_H__
 
 #include "moMathVector.h"
