@@ -10,6 +10,10 @@ AC_PROG_CC_STDC
 AC_C_CONST
 AC_PROG_LIBTOOL
 
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_PROG_CXX_C_O
+
 dnl check for muParser
 PKG_CHECK_MODULES([MUPARSER], [muparser] ,has_muparser=yes)
 
@@ -26,6 +30,10 @@ AC_CHECK_LIB(SDL_net, SDLNet_Init, AC_SUBST([SDL_NET_LIBS], [-lSDL_net]), AC_MSG
 dnl check for sdl-image
 AC_CHECK_HEADER(SDL/SDL_image.h, , AC_MSG_ERROR([SDL_image header not found.]))
 AC_CHECK_LIB(SDL_image, IMG_Linked_Version, AC_SUBST([SDL_IMAGE_LIBS], [-lSDL_image]), AC_MSG_ERROR([SDL_image not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
+
+dnl check for opengl
+AC_CHECK_HEADER(GL/gl.h, , AC_MSG_ERROR([opengl header not found.]))
+AC_CHECK_LIB(GL, glEnd, AC_SUBST([GL_LIBS], [-lGL]), AC_MSG_ERROR([opengl not found.]), )
 
 dnl check for glew
 AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
@@ -47,9 +55,10 @@ dnl check for alut
 PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
 dnl nvidia-cG-toolkit requires pthread
-AC_CHECK_LIB(pthread, pthread_attr_init, LIBS="$LIBS -lpthread")
+#AC_CHECK_LIB(pthread, pthread_attr_init, LIBS="$LIBS -lpthread")
 
 dnl check for cg
+AC_LANG_PUSH(C++)dnl
 AC_CHECK_LIB(Cg, cgCreateContext,
 [
 	AC_CHECK_HEADERS(Cg/cg.h,
@@ -69,7 +78,7 @@ AC_CHECK_LIB(Cg, cgCreateContext,
 	* nvidia cG toolkit is missing.
 	* You can download it from: http://developer.nvidia.com/object/cg_toolkit.html ])
 ],
-[ -lpthread ]
+[ ]
 )
 
 AC_CHECK_LIB(CgGL, cgGLBindProgram,
@@ -78,7 +87,7 @@ AC_CHECK_LIB(CgGL, cgGLBindProgram,
 	[
 		AC_DEFINE(HAVE_CGGL, 1, [define if you have libcg])
 		AC_SUBST([CGGL_LIBS])
-		CGGL_LIBS="-lCgGL"
+		CGGL_LIBS="-lCgGL -lGL"
 		have_cggl=yes
 	],
 	[
@@ -93,8 +102,9 @@ AC_CHECK_LIB(CgGL, cgGLBindProgram,
 	* You can download it from: http://developer.nvidia.com/object/cg_toolkit.html ])
 
 ],
-[ -lCg  -lGL ]
+[ -lGL ]
 )
+AC_LANG_POP(C++)
 
 dnl check for gstreamer
 GST_VERSION_MAJOR=0
