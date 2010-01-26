@@ -55,7 +55,7 @@ dnl check for alut
 PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
 dnl nvidia-cG-toolkit requires pthread
-#AC_CHECK_LIB(pthread, pthread_attr_init, LIBS="$LIBS -lpthread")
+AC_CHECK_LIB(pthread, pthread_attr_init, LIBS="$LIBS -lpthread")
 
 dnl check for cg
 AC_LANG_PUSH(C++)dnl
@@ -70,7 +70,8 @@ AC_CHECK_LIB(Cg, cgCreateContext,
 	],
 	[
 		AC_MSG_ERROR([cG header file missing or not in Cg/ include subdir])
-	])
+	],
+	)
 
 ],
 [
@@ -78,7 +79,6 @@ AC_CHECK_LIB(Cg, cgCreateContext,
 	* nvidia cG toolkit is missing.
 	* You can download it from: http://developer.nvidia.com/object/cg_toolkit.html ])
 ],
-[ ]
 )
 
 AC_CHECK_LIB(CgGL, cgGLBindProgram,
