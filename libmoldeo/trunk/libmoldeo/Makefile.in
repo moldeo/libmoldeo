@@ -120,9 +120,9 @@ am_libmoldeo_la_OBJECTS = libmoldeo_la-mo3dModelManager.lo \
 	libmoldeo_la-moTimeManager.lo libmoldeo_la-moTypes.lo \
 	libmoldeo_la-moValue.lo libmoldeo_la-moVideoGraph.lo \
 	libmoldeo_la-moVideoManager.lo libmoldeo_la-moXmlConfig.lo \
-	libmoldeo_la-tinyxml.lo libmoldeo_la-tinyxmlerror.lo \
-	libmoldeo_la-tinyxmlparser.lo libmoldeo_la-tinystr.lo \
-	libmoldeo_la-3ds.lo
+	libmoldeo_la-mo3ds.lo libmoldeo_la-tinyxml.lo \
+	libmoldeo_la-tinyxmlerror.lo libmoldeo_la-tinyxmlparser.lo \
+	libmoldeo_la-tinystr.lo
 libmoldeo_la_OBJECTS = $(am_libmoldeo_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -371,11 +371,11 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moVideoGraph.cpp \
 	moVideoManager.cpp \
 	moXmlConfig.cpp \
+	mo3ds.cpp \
 	tinyxml.cpp \
 	tinyxmlerror.cpp \
 	tinyxmlparser.cpp \
-	tinystr.cpp \
-	3ds/3ds.cpp 
+	tinystr.cpp
 
 
 #	moMathMatrix.cpp \
@@ -484,7 +484,8 @@ libmoldeo_include_HEADERS = \
 	moXmlConfig.h \
 	tinystr.h \
 	tinyxml.h \
-	moPort.h
+	moPort.h \
+	mo3ds.h 
 
 METASOURCES = AUTO
 all: all-am
@@ -561,8 +562,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-3ds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-mo3dModelManager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-mo3ds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moAbstract.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moArcBall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmoldeo_la-moBuckets.Plo@am__quote@
@@ -1260,6 +1261,13 @@ libmoldeo_la-moXmlConfig.lo: moXmlConfig.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmoldeo_la-moXmlConfig.lo `test -f 'moXmlConfig.cpp' || echo '$(srcdir)/'`moXmlConfig.cpp
 
+libmoldeo_la-mo3ds.lo: mo3ds.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmoldeo_la-mo3ds.lo -MD -MP -MF $(DEPDIR)/libmoldeo_la-mo3ds.Tpo -c -o libmoldeo_la-mo3ds.lo `test -f 'mo3ds.cpp' || echo '$(srcdir)/'`mo3ds.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libmoldeo_la-mo3ds.Tpo $(DEPDIR)/libmoldeo_la-mo3ds.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='mo3ds.cpp' object='libmoldeo_la-mo3ds.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmoldeo_la-mo3ds.lo `test -f 'mo3ds.cpp' || echo '$(srcdir)/'`mo3ds.cpp
+
 libmoldeo_la-tinyxml.lo: tinyxml.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmoldeo_la-tinyxml.lo -MD -MP -MF $(DEPDIR)/libmoldeo_la-tinyxml.Tpo -c -o libmoldeo_la-tinyxml.lo `test -f 'tinyxml.cpp' || echo '$(srcdir)/'`tinyxml.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libmoldeo_la-tinyxml.Tpo $(DEPDIR)/libmoldeo_la-tinyxml.Plo
@@ -1287,13 +1295,6 @@ libmoldeo_la-tinystr.lo: tinystr.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tinystr.cpp' object='libmoldeo_la-tinystr.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmoldeo_la-tinystr.lo `test -f 'tinystr.cpp' || echo '$(srcdir)/'`tinystr.cpp
-
-libmoldeo_la-3ds.lo: 3ds/3ds.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmoldeo_la-3ds.lo -MD -MP -MF $(DEPDIR)/libmoldeo_la-3ds.Tpo -c -o libmoldeo_la-3ds.lo `test -f '3ds/3ds.cpp' || echo '$(srcdir)/'`3ds/3ds.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libmoldeo_la-3ds.Tpo $(DEPDIR)/libmoldeo_la-3ds.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='3ds/3ds.cpp' object='libmoldeo_la-3ds.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmoldeo_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmoldeo_la-3ds.lo `test -f '3ds/3ds.cpp' || echo '$(srcdir)/'`3ds/3ds.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

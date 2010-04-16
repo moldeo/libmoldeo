@@ -119,7 +119,7 @@ struct mo3dModel
     vector<mo3dObject> pObject;          // The object list for our model
 };
 
-#include "3ds/3ds.h"
+#include "mo3ds.h"
 
 /// Clase base para los modelos tridimensionales
 /**

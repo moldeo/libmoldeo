@@ -13,7 +13,7 @@
 //                                                                       //
 //***********************************************************************//
 
-#include "3ds/3ds.h"
+#include "mo3ds.h"
 
 // This file handles all of the code needed to load a .3DS file.
 // Basically, how it works is, you load a chunk, then you check

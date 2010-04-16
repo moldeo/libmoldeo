@@ -86,11 +86,11 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moVideoGraph.cpp \
 	moVideoManager.cpp \
 	moXmlConfig.cpp \
+	mo3ds.cpp \
 	tinyxml.cpp \
 	tinyxmlerror.cpp \
 	tinyxmlparser.cpp \
-	tinystr.cpp \
-	3ds/3ds.cpp 
+	tinystr.cpp
 
 #	moMathMatrix.cpp \
 #	moMathQuaternion.cpp 
@@ -200,7 +200,8 @@ libmoldeo_include_HEADERS = \
 	moXmlConfig.h \
 	tinystr.h \
 	tinyxml.h \
-	moPort.h
+	moPort.h \
+	mo3ds.h 
 
 METASOURCES = AUTO
 
