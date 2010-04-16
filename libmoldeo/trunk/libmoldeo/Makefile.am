@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS=-I m4
 AM_CPPFLAGS = $(all_includes)
 
 lib_LTLIBRARIES = libmoldeo.la
