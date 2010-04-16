@@ -355,10 +355,7 @@ enum moPolygonModes {
 //////////////////////////////////////////////////////
 
 #ifdef MO_LINUX
-//#    include "port/getc.h"
-//#    include "port/itoa.h"
-//#    include "port/ptypes.h"
-#    include "port/stricmp.h"
+#    include "moPort.h"
 #endif
 
 //////////////////////////////////////////////////////

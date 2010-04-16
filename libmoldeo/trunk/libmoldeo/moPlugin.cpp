@@ -36,7 +36,7 @@ moDefineDynamicArray( moPluginDefinitions )
 moDefineDynamicArray( moPluginsArray )
 
 #if !defined(WIN32)
-#include "port/stricmp.h"
+#include "moPort.h"
 #endif
 
 moEffectFactory::~moEffectFactory() {
