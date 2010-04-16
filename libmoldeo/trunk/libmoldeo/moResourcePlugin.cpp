@@ -32,7 +32,7 @@
 #include "moResourcePlugin.h"
 
 #if !defined(WIN32)
-#include "port/stricmp.h"
+#include "moPort.h"
 #endif
 
 #include <iostream>

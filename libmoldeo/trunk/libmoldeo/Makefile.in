@@ -15,6 +15,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -35,7 +36,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = libmoldeo
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(libmoldeo_include_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
@@ -68,7 +70,8 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(libdir)"
+am__installdirs = "$(DESTDIR)$(libdir)" \
+	"$(DESTDIR)$(libmoldeo_includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libmoldeo_la_LIBADD =
 am_libmoldeo_la_OBJECTS = libmoldeo_la-mo3dModelManager.lo \
@@ -136,6 +139,7 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libmoldeo_la_SOURCES)
 DIST_SOURCES = $(libmoldeo_la_SOURCES)
+HEADERS = $(libmoldeo_include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -383,6 +387,104 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 libmoldeo_la_LIBS = ${FT2_LIBS} \
 	${GST_LIBS} \
 	${LUA51_LIBS} 
+
+libmoldeo_includedir = $(includedir)/libmoldeo
+libmoldeo_include_HEADERS = \
+	mo3dModelManager.h \
+	moAbstract.h \
+	moArcBall.h \
+	moArray.h \
+	moBasePlugin.h \
+	moBuckets.h \
+	moConfig.h \
+	moConnectors.h \
+	moConsole.h \
+	moConsoleState.h \
+	moDataManager.h \
+	moDebugManager.h \
+	moDeviceCode.h \
+	moDsGraph.h \
+	moEffect.h \
+	moEffectManager.h \
+	moEffectState.h \
+	moEffectTemplate.h \
+	moEventList.h \
+	moFBManager.h \
+	moFBO.h \
+	moFileManager.h \
+	moFileRead.h \
+	moFileWrite.h \
+	moFilterManager.h \
+	moFontManager.h \
+	moGLManager.h \
+	moGsGraph.h \
+	moGUIManager.h \
+	moIODeviceManager.h \
+	moIODevicePlugin.h \
+	moLock.h \
+	moLuaBase.h \
+	moLunaClasses.h \
+	moLuna.h \
+	moMasterEffect.h \
+	moMasterPlugin.h \
+	moMathCurve.h \
+	moMathDMatrix.h \
+	moMathDVector.h \
+	moMathFFT.h \
+	moMathFunction.h \
+	moMathFunctionIndex.h \
+	moMath.h \
+	moMathManager.h \
+	moMathMatrix.h \
+	moMathNumericalAnalysis.h \
+	moMathPolynomial.h \
+	moMathQuaternion.h \
+	moMathVector3.h \
+	moMathVector4.h \
+	moMathVector.h \
+	moMoldeoObject.h \
+	moMotion.h \
+	moNetManager.h \
+	moOGLFT.h \
+	moP5.h \
+	moParam.h \
+	moPlugin.h \
+	moPostEffect.h \
+	moPostPlugin.h \
+	moPreConfig.h \
+	moPreEffect.h \
+	moPrePlugin.h \
+	moPresets.h \
+	moRenderManager.h \
+	moResourceManager.h \
+	moResourcePlugin.h \
+	moSceneEffect.h \
+	moScript.h \
+	moScriptManager.h \
+	moSequenceEffect.h \
+	moShaderCG.h \
+	moShaderGLSL.h \
+	moShader.h \
+	moShaderManager.h \
+	moSoundManager.h \
+	moTempo.h \
+	moTextFilterParam.h \
+	moText.h \
+	moTextureFilter.h \
+	moTextureFilterIndex.h \
+	moTexture.h \
+	moTextureIndex.h \
+	moTextureManager.h \
+	moThread.h \
+	moTimeManager.h \
+	moTypes.h \
+	moValue.h \
+	moVideoGraph.h \
+	moVideoManager.h \
+	moXmlConfig.h \
+	tinystr.h \
+	tinyxml.h \
+	moPort.h
 
 METASOURCES = AUTO
 all: all-am
@@ -1198,6 +1300,26 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-libmoldeo_includeHEADERS: $(libmoldeo_include_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(libmoldeo_includedir)" || $(MKDIR_P) "$(DESTDIR)$(libmoldeo_includedir)"
+	@list='$(libmoldeo_include_HEADERS)'; test -n "$(libmoldeo_includedir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libmoldeo_includedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libmoldeo_includedir)" || exit $$?; \
+	done
+
+uninstall-libmoldeo_includeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(libmoldeo_include_HEADERS)'; test -n "$(libmoldeo_includedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(libmoldeo_includedir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(libmoldeo_includedir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -1283,9 +1405,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libmoldeo_includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -1336,7 +1458,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-libmoldeo_includeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -1382,7 +1504,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES
+uninstall-am: uninstall-libLTLIBRARIES \
+	uninstall-libmoldeo_includeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -1393,12 +1516,14 @@ uninstall-am: uninstall-libLTLIBRARIES
 	install install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-libLTLIBRARIES
+	install-libLTLIBRARIES install-libmoldeo_includeHEADERS \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-libLTLIBRARIES \
+	uninstall-libmoldeo_includeHEADERS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
