@@ -31,7 +31,7 @@
 
 #include "moMasterPlugin.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moMasterPluginsArray )
 
 

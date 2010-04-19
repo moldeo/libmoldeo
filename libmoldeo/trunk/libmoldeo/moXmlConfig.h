@@ -29,15 +29,13 @@
 
 *******************************************************************************/
 
-
-
 #ifndef __MO_XMLCONFIG_H__
 #define __MO_XMLCONFIG_H__
 
 #include <stdlib.h>
 #include "moParam.h"
 #include "moText.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moConfig.h"
 #include "tinyxml.h"
 
@@ -189,4 +187,4 @@ class moXmlConfig : public moConfig {
 
 };
 */
-#endif
+#endif /* __MO_XMLCONFIG_H__ */

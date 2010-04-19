@@ -31,7 +31,7 @@
 
 #include "moConfig.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moParamIndexes)
 
 #include <tinyxml.h>

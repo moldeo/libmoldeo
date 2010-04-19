@@ -62,7 +62,7 @@ NOTES:
 
 #include "moTypes.h"
 #include "moText.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moMathFunction.h"
 
 
@@ -465,4 +465,5 @@ typedef  moDynamicArray<moValue> moValues;
 
 moDeclareExportedDynamicArray( moValue, moValues )
 
-#endif
+#endif /* __MO_VALUE_H__ */
+

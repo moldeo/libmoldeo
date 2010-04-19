@@ -31,7 +31,7 @@
 
 #include "moIODevicePlugin.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moIODevicePluginsArray)
 
 #include <iostream>

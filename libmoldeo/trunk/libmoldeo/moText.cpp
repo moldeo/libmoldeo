@@ -32,7 +32,7 @@
 #include "moText.h"
 
 
-#include "moArray.cpp"
+#include "moArray.h"
 
 moDefineDynamicArray( moTextArray )
 

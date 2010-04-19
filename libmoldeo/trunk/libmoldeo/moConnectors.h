@@ -37,7 +37,7 @@
 #include "moAbstract.h"
 #include "moEventList.h"
 #include "moConfig.h"
-#include "moArray.h"
+#include "moArrayH.h"
 
 /// Conector para vincular objetos con datos
 /**

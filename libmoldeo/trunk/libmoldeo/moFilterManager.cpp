@@ -31,7 +31,7 @@
 
 #include "moFilterManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moTrackerFeatureArray)
 
 

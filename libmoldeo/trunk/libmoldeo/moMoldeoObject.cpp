@@ -32,7 +32,7 @@
 #include "moMoldeoObject.h"
 #include "moTextureFilterIndex.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moMoldeoObjects)
 
 //===========================================

@@ -32,7 +32,7 @@
 #include "moResourceManager.h"
 
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moResources)
 
 moResource::moResource() {

@@ -31,7 +31,7 @@
 
 #include "moEventList.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moEventPacketArray );
 
 //MESSAGE

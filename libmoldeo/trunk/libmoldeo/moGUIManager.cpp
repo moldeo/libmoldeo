@@ -31,7 +31,7 @@
 
 #include "moGUIManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moGuiObjectArray)
 //===========================================
 //
