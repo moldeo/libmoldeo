@@ -33,7 +33,7 @@
 
 #include "moMathFunction.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moIntArray )
 moDefineDynamicArray( moBoolArray )
 moDefineDynamicArray( moFloatArray )

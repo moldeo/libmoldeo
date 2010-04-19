@@ -38,7 +38,7 @@
 #include "moTypes.h"
 #include "moAbstract.h"
 #include "moConfig.h"
-#include "moArray.h"
+#include "moArrayH.h"
 
 #define MO_MAX_TEXTURE_UNITS 4
 

@@ -34,7 +34,7 @@
 
 
 #include "moAbstract.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moMathFunctionIndex.h"
 #include "moIODeviceManager.h"
 #include "moConfig.h"

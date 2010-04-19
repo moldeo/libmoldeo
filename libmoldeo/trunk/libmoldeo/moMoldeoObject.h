@@ -38,7 +38,7 @@
 #include "moScript.h"
 #include "moEventList.h"
 #include "moConfig.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moConnectors.h"
 
 #define MO_INLET_NAME 0

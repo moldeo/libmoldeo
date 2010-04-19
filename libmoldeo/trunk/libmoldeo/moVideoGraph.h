@@ -35,7 +35,7 @@
 #include "moTypes.h"
 #include "moText.h"
 #include "moBuckets.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moAbstract.h"
 
 /*
@@ -500,11 +500,4 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
 };
 
 
-
-
-
-
-
-
-
-#endif
+#endif /* __MO_VIDEOGRAPH_H__ */

@@ -31,7 +31,7 @@
 
 #include "moFontManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moFonts)
 
 //===========================================

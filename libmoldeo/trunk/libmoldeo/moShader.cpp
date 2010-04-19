@@ -34,7 +34,7 @@
 
 #include "moShader.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moShaderArray)
 
 //===========================================

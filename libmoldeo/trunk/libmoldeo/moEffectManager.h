@@ -29,7 +29,7 @@
 
 *******************************************************************************/
 #include "moTypes.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moEffect.h"
 #include "moPostEffect.h"
 #include "moPreEffect.h"

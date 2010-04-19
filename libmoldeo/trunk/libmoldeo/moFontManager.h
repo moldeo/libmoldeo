@@ -34,7 +34,7 @@
 
 #include "moTypes.h"
 #include "moAbstract.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moResourceManager.h"
 #include "moText.h"
 #include "moParam.h"

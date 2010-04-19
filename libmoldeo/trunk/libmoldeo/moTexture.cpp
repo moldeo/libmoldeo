@@ -31,7 +31,7 @@
 
 #include "moTexture.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moTextureArray)
 
 //===========================================

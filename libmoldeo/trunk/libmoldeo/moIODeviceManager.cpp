@@ -31,7 +31,7 @@
 
 #include "moIODeviceManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moIODevicesArray)
 
 moIODevice::moIODevice() {

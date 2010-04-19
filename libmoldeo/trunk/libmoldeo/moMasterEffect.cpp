@@ -31,7 +31,7 @@
 
 #include "moMasterEffect.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moMasterEffectsArray)
 
 moMasterEffect::moMasterEffect() : moEffect() {

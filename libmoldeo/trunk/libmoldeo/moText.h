@@ -29,14 +29,14 @@
 
 *******************************************************************************/
 
-#include "moTypes.h"
-#include "moArray.h"
-
-#ifndef __MO_TEXT_H
-#define __MO_TEXT_H
+#ifndef __MO_TEXT_H__
+#define __MO_TEXT_H__
 
 #include <stdio.h>
 #include <string.h>
+
+#include "moTypes.h"
+#include "moArrayH.h"
 
 #ifndef uint
 #define uint    unsigned int
@@ -307,4 +307,5 @@ LIBMOLDEO_API moText FloatToStr(double a);
 LIBMOLDEO_API moText FloatToStr(double a, int n);
 
 
-#endif
+#endif /* __MO_TEXT_H__ */
+

@@ -34,7 +34,7 @@
 #define __MORESOURCESMANAGER_H
 
 #include "moTypes.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moMoldeoObject.h"
 #include "moParam.h"
 

@@ -31,7 +31,7 @@
 
 #include "moParam.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 
 moDefineDynamicArray(moParamDefinitions)
 moDefineDynamicArray(moParams)

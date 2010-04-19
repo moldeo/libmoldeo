@@ -35,7 +35,7 @@
 #include "moTypes.h"
 #include "moText.h"
 #include "moParam.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moPreConfig.h"
 
 #define MO_PARAM_NOT_SEL  -1

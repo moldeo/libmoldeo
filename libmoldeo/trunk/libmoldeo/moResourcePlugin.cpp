@@ -38,7 +38,7 @@
 #include <iostream>
 using namespace std;
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moResourcePluginsArray )
 
 moResourceFactory::~moResourceFactory() {

@@ -33,7 +33,7 @@
 #define __MO_MATH_FUNCTION_H__
 
 #include "moTypes.h"
-#include "moArray.h"
+#include "moArrayH.h"
 #include "moAbstract.h"
 #include "moMath.h"
 

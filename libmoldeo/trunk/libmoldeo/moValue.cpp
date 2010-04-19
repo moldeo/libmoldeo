@@ -35,7 +35,7 @@
 #include "moTexture.h"
 #include "moTextureFilter.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 
 moDefineDynamicArray( moValueIndexes )
 moDefineDynamicArray( moValueBases )

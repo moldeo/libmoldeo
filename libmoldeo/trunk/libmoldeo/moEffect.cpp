@@ -33,7 +33,7 @@
 
 #include "moEffect.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moEffectsArray)
 
 
