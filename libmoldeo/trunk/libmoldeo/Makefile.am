@@ -110,6 +110,7 @@ libmoldeo_include_HEADERS = \
 	moAbstract.h \
 	moArcBall.h \
 	moArray.h \
+	moArrayH.h \
 	moBasePlugin.h \
 	moBuckets.h \
 	moConfig.h \
