@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                              moPreConfig.h
+							  moPreConfig.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
@@ -34,23 +34,34 @@
 
 #include "moTypes.h"
 #include "moValue.h"
+class LIBMOLDEO_API moPreconfigParamIndex
+{
+	public:moText m_ParamName;
+	MOint m_ParamIndex;
+	MOint m_ValueIndex;
+};
 
+moDeclareExportedDynamicArray (moPreconfigParamIndex, moPreconfigIndexes);
 
-class LIBMOLDEO_API moPreConfig {
+class LIBMOLDEO_API moPreConfig
+{
 
 	public:
-	    moPreConfig();
-	    virtual ~moPreConfig();
-		virtual MOboolean Init();
-		virtual MOboolean Finish();
+		moPreConfig ();
+		moPreConfig (moPreconfigIndexes & preconfindexes);
+		moPreConfig (moValueIndexes & valueindexes);
+		virtual ~ moPreConfig ();
+		virtual MOboolean Init ();
+		virtual MOboolean Finish ();
 
-		moValueIndex operator [] ( const MOint paramindex); //devuelve el indice del valor para el parametro elegido
-		moPreConfig& operator = ( const moPreConfig& preconf);
+								 //devuelve el indice del valor para el parametro elegido
+		moValueIndex operator [] (const MOint paramindex);
+		moPreConfig & operator = (const moPreConfig & preconf);
 
-		moValueIndexes	m_ValueIndexes;
+		moValueIndexes m_ValueIndexes;
+		moPreconfigIndexes m_PreconfIndexes;
 
 };
 
-moDeclareExportedDynamicArray( moPreConfig, moPreConfigs )
-
+moDeclareExportedDynamicArray (moPreConfig, moPreConfigs);
 #endif

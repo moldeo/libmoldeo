@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                                moNetManager.h
+								moNetManager.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,77 +25,96 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
+
+#ifndef __MO_NETMANAGER_H__
+#define __MO_NETMANAGER_H__
+
 #include "moTypes.h"
 #include "moText.h"
 #include "moConfig.h"
 #include "moLock.h"
 #include "moResourceManager.h"
 
-/*
-#include "tnl.h"
-#include "tnlNetObject.h"
-#include "tnlNetConnection.h"
-*/
-
-#ifndef __MO_NETMANAGER_H__
-#define __MO_NETMANAGER_H__
-
-/*
-class moNetObject : public TNL::NetObject {
-
-	public:
-		moNetObject();
-		virtual ~moNetObject();
-
-};
-
-class moNetConnection : public TNL::NetConnection {
-
-	public:
-		moNetConnection();
-		virtual ~moNetConnection();
-
-};
-*/
-
-class moNetObject : public moAbstract {
-
-	public:
-		moNetObject();
-		virtual ~moNetObject();
-
-};
-
-class moNetConnection : public moAbstract {
-
-	public:
-		moNetConnection();
-		virtual ~moNetConnection();
-
-};
-
-/*
-template class LIBMOLDEO_API moDynamicArray<moNetObject*>;
-typedef moDynamicArray<moNetObject*> moNetObjects;
-*/
-moDeclareExportedDynamicArray( moNetObject*, moNetObjects )
-
-class LIBMOLDEO_API moNetManager : public moResource
+/// Boost.Asio specific classes type definitions
+/**
+ */
+typedef void *moBoostIOService;
+typedef void *moBoostAddress;
+typedef void *moBoostResolver;
+typedef void *moBoostQuery;
+typedef void *moBoostSocket;
+typedef void *moBoostAcceptor;
+typedef void *moBoostSystemErrorCode;
+typedef void *moBoostHandleFunctionsPtr;
+typedef moText moAddress;
+typedef moText moPort;
+enum moNetObjectType
 {
-	public:
-
-		moNetManager();
-		virtual ~moNetManager();
-
-		virtual MOboolean Init();
-		virtual MOboolean Finish();
-
-	protected:
-		moNetObjects	m_NetObjects;
-
+	MO_NET_CONNECTION, MO_NET_SESSION, MO_NET_SERVER
+};
+class LIBMOLDEO_API moNetObject:public moAbstract
+{
+	public:moNetObject ();
+	virtual ~ moNetObject ();
 };
 
-#endif
+/// clase para crear y mantener una coneccin basada en el protocolo tcp
+/**
+
+ */
+class LIBMOLDEO_API moNetConnection:public moAbstract
+{
+	public:moNetConnection (moBoostIOService pIOS);
+	virtual ~ moNetConnection ();
+	bool Start ();
+	bool Stop ();
+	moBoostSocket Socket ();
+	void HandleRead (long bytesbuf);
+
+	/// Handle completion of a write operation.
+	void HandleWrite ();
+	private:moBoostSocket m_Socket;
+	moBoostResolver m_Resolver;
+};
+
+moDeclareExportedDynamicArray (moNetConnection *, moNetConnections);
+class LIBMOLDEO_API moNetConnectionManager:public moAbstract
+{
+	public:moNetConnectionManager ();
+	virtual ~ moNetConnectionManager ();
+	void Start (moNetConnection * p_new_connection);
+	void Stop (moNetConnection * p_connection);
+	void StopAll ();
+	private:moNetConnections m_Connections;
+	moBoostHandleFunctionsPtr m_pHandleFunctions;
+};
+
+class LIBMOLDEO_API moNetServer:public moAbstract
+{
+	public:moNetServer (moAddress p_address, moPort p_port,
+			moText p_directory);
+		virtual ~ moNetServer ();
+		void Run ();
+		void Stop ();
+		void HandleAccept ();
+	private:void HandleStop ();
+	moBoostAcceptor m_pAcceptor;
+	moBoostIOService m_pIOService;
+	moNetConnectionManager m_ConnectionManager;
+	moNetConnection * m_pNewConnection;
+	moBoostHandleFunctionsPtr m_pHandleFunctions;
+};
+
+moDeclareExportedDynamicArray (moNetObject *, moNetObjects);
+class LIBMOLDEO_API moNetManager:public moResource
+{
+	public:moNetManager ();
+	virtual ~ moNetManager ();
+	virtual MOboolean Init ();
+	virtual MOboolean Finish ();
+	protected:moNetObjects m_NetObjects;
+};
+#endif							 /*  */

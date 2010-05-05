@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                                moThread.h
+								moThread.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
   Class:
   moThread
@@ -33,47 +33,30 @@
   Description:
   Thread Class implementation, virtual
 
-
 *******************************************************************************/
 
 #include "moTypes.h"
 
-
 #include "moLock.h"
-
 #ifndef __MO_THREAD_H
 #define __MO_THREAD_H
-
-/// implementación de threads, primera versión basda en SDL_Thread
+/// implementacin de threads, primera versin basda en SDL_Thread
 /**
  * Esta clase es obsoleta. Revisar.
  */
-
-class LIBMOLDEO_API moThread {
-
-	public:
-		moThread();
-		virtual ~moThread();
-
-		bool CreateThread();
-
-		bool KillThread();
-		bool ThreadExists();
-
-		bool SendThreadMessage( int message );
-
-	private:
-
-		SDL_Thread *m_handleThread;
-
-		moLock m_DataLock;
-
-		virtual int ThreadUserFunction() = 0;
-
-		static int InitialThreadFunction( void *data );
-
-		bool ProcessMessage();
-
+typedef void *moBoostThread;
+class LIBMOLDEO_API moThread
+{
+	public:moThread ();
+	virtual ~ moThread ();
+	bool CreateThread ();
+	bool KillThread ();
+	bool ThreadExists ();
+	bool SendThreadMessage (int message);
+	private:moBoostThread m_handleThread;
+	moLock m_DataLock;
+	virtual int ThreadUserFunction () = 0;
+	static int InitialThreadFunction (void *data);
+	bool ProcessMessage ();
 };
-
-#endif
+#endif							 /*  */

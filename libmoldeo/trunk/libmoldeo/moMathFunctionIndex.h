@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                                moMathFunctionIndex.h
+								moMathFunctionIndex.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
@@ -40,113 +40,146 @@
 
 /**
  * Clase que encapsula una lista de punteros a objetos moMathFunction. La utilidad de esta clase es que
- * permite definir un subconjunto de funciones matemáticas definidas en el MathManager y accederlas de
- *  una manera más directa.
+ * permite definir un subconjunto de funciones matemticas definidas en el MathManager y accederlas de
+ *  una manera ms directa.
  * @see moMathManager
  */
-class LIBMOLDEO_API moMathFunctionIndex : public moAbstract
+class LIBMOLDEO_API moMathFunctionIndex:public moAbstract
 {
-public:
-    /**
-     * Constructor por defecto.
-     */
-	moMathFunctionIndex() { m_functions_array.Init(0, NULL); }
-    /**
-     * Destructor por defecto.
-     */
-	virtual ~moMathFunctionIndex() { Finish(); }
+	public:
+		/**
+		 * Constructor por defecto.
+		 */
+		moMathFunctionIndex ()
+		{
+			m_functions_array.Init (0, NULL);
+		}
+		/**
+		 * Destructor por defecto.
+		 */
+		virtual ~ moMathFunctionIndex ()
+		{
+			Finish ();
+		}
+		/**
+		 * Mtodo de inicializacin.
+		 * @param p_cfg puntero al objeto de configuracin de Moldeo donde se especifica la lista de funciones matemticas.
+		 * @param p_math_man adminstrador matemtico donde las nuevas funciones son agregadas.
+		 * @param p_param_idx
+		 * @param p_subvalue_idx
+		 * @return resultado de la operacin: true si fue exitosa, false en caso contrario.
+		 */
+		virtual MOboolean Init (moConfig * p_cfg, moMathManager * p_math_man,
+			MOint p_param_idx, MOuint p_subvalue_idx = 0)
+		{
+			LoadFunctions (p_cfg, p_math_man, p_param_idx, p_subvalue_idx);
+			return true;
+		}
 
-    /**
-     * Método de inicialización.
-     * @param p_cfg puntero al objeto de configuración de Moldeo donde se especifica la lista de funciones matemáticas.
-     * @param p_math_man adminstrador matemático donde las nuevas funciones son agregadas.
-     * @param p_param_idx
-     * @param p_subvalue_idx
-     * @return resultado de la operación: true si fue exitosa, false en caso contrario.
-     */
-	virtual MOboolean Init(moConfig* p_cfg,  moMathManager* p_math_man, MOint p_param_idx, MOuint p_subvalue_idx = 0)
-	{ LoadFunctions( p_cfg, p_math_man, p_param_idx, p_subvalue_idx); return true; }
-    /**
-     * Método de inicialización.
-     * @param p_cfg puntero al objeto de configuración de Moldeo donde se especifica la lista de funciones matemáticas.
-     * @param p_math_man adminstrador matemático donde las nuevas funciones son agregadas.
-     * @param p_param_idx índice del parámetro que contiene a las funciones.
-     * @param p_subvalue_idx
-     * @return resultado de la operación: true si fue exitosa, false en caso contrario.
-     */
-	virtual MOboolean Init(moConfig* p_cfg,  moMathManager* p_math_man, moParamIndex p_param_idx, MOuint p_subvalue_idx = 0)
-	{ LoadFunctions( p_cfg, p_math_man, p_param_idx.index, p_subvalue_idx); return true; }
-    /**
-     * Método de inicialización.
-     * @param p_cfg puntero al objeto de configuración de Moldeo donde se especifica la lista de funciones matemáticas.
-     * @param p_math_man adminstrador matemático donde las nuevas funciones son agregadas.
-     * @param p_param_ref
-     * @param p_subvalue_idx
-     * @return resultado de la operación: true si fue exitosa, false en caso contrario.
-     */
-	virtual MOboolean Init(moConfig* p_cfg,  moMathManager* p_math_man, moParamReference p_param_ref, MOuint p_subvalue_idx = 0)
-	{ LoadFunctions( p_cfg, p_math_man, p_cfg->GetConfigDefinition()->ParamIndexes().Get(p_param_ref.reference).index, p_subvalue_idx); return true; }
-    /**
-     * Método de finalización.
-     * @return resultado de la operación: true si fue exitosa, false en caso contrario.
-     */
-	virtual MOboolean Finish() { m_functions_array.Finish(); return true; }
+		/**
+		 * Mtodo de inicializacin.
+		 * @param p_cfg puntero al objeto de configuracin de Moldeo donde se especifica la lista de funciones matemticas.
+		 * @param p_math_man adminstrador matemtico donde las nuevas funciones son agregadas.
+		 * @param p_param_idx ndice del parmetro que contiene a las funciones.
+		 * @param p_subvalue_idx
+		 * @return resultado de la operacin: true si fue exitosa, false en caso contrario.
+		 */
+		virtual MOboolean Init (moConfig * p_cfg, moMathManager * p_math_man,
+			moParamIndex p_param_idx, MOuint p_subvalue_idx = 0)
+		{
+			LoadFunctions (p_cfg, p_math_man, p_param_idx.index, p_subvalue_idx);
+			return true;
+		}
 
-    /**
-     * Agrega una nueva función a la lista y al administrador matemático, en el caso de no existir.
-     * @param p_name expresión que define a la nueva función.
-     * @param p_math_man puntero al administrador matemático.
-     * @return índice de la nueva función (-1 si la operación no tiene éxito).
-     */
-	MOint Add(moText p_name, moMathManager* p_math_man);
+		/**
+		 * Mtodo de inicializacin.
+		 * @param p_cfg puntero al objeto de configuracin de Moldeo donde se especifica la lista de funciones matemticas.
+		 * @param p_math_man adminstrador matemtico donde las nuevas funciones son agregadas.
+		 * @param p_param_ref
+		 * @param p_subvalue_idx
+		 * @return resultado de la operacin: true si fue exitosa, false en caso contrario.
+		 */
+		virtual MOboolean Init (moConfig * p_cfg, moMathManager * p_math_man,
+			moParamReference p_param_ref,
+			MOuint p_subvalue_idx = 0)
+		{
+			LoadFunctions (p_cfg, p_math_man,
+				p_cfg->GetConfigDefinition ()->
+				ParamIndexes ().Get (p_param_ref.reference).index,
+				p_subvalue_idx);
+			return true;
+		}
 
-    /**
-     * Agrega una a la lista el puntero a un objeto moMathFunction provisto.
-     * @param p_func puntero a la función matemática.
-     * @return índice de la nueva función (-1 si la operación no tiene éxito).
-     */
-	MOint Add( moMathFunction* p_func);
+		/**
+		 * Mtodo de finalizacin.
+		 * @return resultado de la operacin: true si fue exitosa, false en caso contrario.
+		 */
+		virtual MOboolean Finish ()
+		{
+			m_functions_array.Finish ();
+			return true;
+		}
 
-    /**
-     * Devuelve la función con índice p_idx.
-     * @param p_idx índice de la función.
-     * @return puntero a la función matemática.
-     */
-	moMathFunction* GetFunction(MOuint p_idx);
+		/**
+		 * Agrega una nueva funcin a la lista y al administrador matemtico, en el caso de no existir.
+		 * @param p_name expresin que define a la nueva funcin.
+		 * @param p_math_man puntero al administrador matemtico.
+		 * @return ndice de la nueva funcin (-1 si la operacin no tiene xito).
+		 */
+		MOint Add (moText p_name, moMathManager * p_math_man);
 
-    /**
-     * Verifica la validez del índice especificado.
-     * @param p_idx índice de la función.
-     * @return true si el índice es válido, false en caso contrario.
-     */
-	MOboolean ValidIndex(MOuint p_idx);
-    /**
-     * Devuelve el número de funciones matemáticas almacenadas en la lista.
-     * @return número de funciones.
-     */
-	MOuint Count() { return m_functions_array.Count(); }
-    /**
-     * Devuelve la función con índice p_idx.
-     * @param p_idx índice de la función.
-     * @return puntero a la función matemática.
-     */
-	moMathFunction* operator [](MOuint p_idx) { return GetFunction(p_idx); }
+		/**
+		 * Agrega una a la lista el puntero a un objeto moMathFunction provisto.
+		 * @param p_func puntero a la funcin matemtica.
+		 * @return ndice de la nueva funcin (-1 si la operacin no tiene xito).
+		 */
+		MOint Add (moMathFunction * p_func);
 
-    /**
-     * Devuelve la función con índice p_value_index. Si p_value_index tiene el valor MO_SELECTED
-     * entonces la función que corresponde al parámetro seleccionado actualemente es devuelta.
-     * @param p_idx índice de la función.
-     * @return puntero a la función matemática.
-     */
-	moMathFunction* Fun( MOint p_value_index = MO_SELECTED );
-private:
-	moMathFunctionArray m_functions_array;
+		/**
+		 * Devuelve la funcin con ndice p_idx.
+		 * @param p_idx ndice de la funcin.
+		 * @return puntero a la funcin matemtica.
+		 */
+		moMathFunction * GetFunction (MOuint p_idx);
 
-	moConfig*	m_pConfig;
+		/**
+		 * Verifica la validez del ndice especificado.
+		 * @param p_idx ndice de la funcin.
+		 * @return true si el ndice es vlido, false en caso contrario.
+		 */
+		MOboolean ValidIndex (MOuint p_idx);
+
+		/**
+		 * Devuelve el nmero de funciones matemticas almacenadas en la lista.
+		 * @return nmero de funciones.
+		 */
+		MOuint Count ()
+		{
+			return m_functions_array.Count ();
+		}
+
+		/**
+		 * Devuelve la funcin con ndice p_idx.
+		 * @param p_idx ndice de la funcin.
+		 * @return puntero a la funcin matemtica.
+		 */
+		moMathFunction *operator [] (MOuint p_idx)
+		{
+			return GetFunction (p_idx);
+		}
+
+		/**
+		 * Devuelve la funcin con ndice p_value_index. Si p_value_index tiene el valor MO_SELECTED
+		 * entonces la funcin que corresponde al parmetro seleccionado actualemente es devuelta.
+		 * @param p_idx ndice de la funcin.
+		 * @return puntero a la funcin matemtica.
+		 */
+		moMathFunction * Fun (MOint p_value_index = MO_SELECTED);
+	private:moMathFunctionArray m_functions_array;
+	moConfig * m_pConfig;
 	moParamIndex m_ParamIndex;
-	MOuint		m_SubValueIndex;
-
-	MOuint LoadFunctions( moConfig* p_cfg,  moMathManager* p_math_man, MOuint p_param_idx, MOuint p_subvalue_idx = 0);
+	MOuint m_SubValueIndex;
+	MOuint LoadFunctions (moConfig * p_cfg, moMathManager * p_math_man,
+		MOuint p_param_idx, MOuint p_subvalue_idx = 0);
 };
-
-#endif
+#endif							 /*  */

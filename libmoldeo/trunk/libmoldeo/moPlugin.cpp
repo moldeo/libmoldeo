@@ -29,15 +29,13 @@
 
 *******************************************************************************/
 
-#include "moPlugin.h"
+#include <moPlugin.h>
+#include <moArray.h>
+#include <moPort.h>
 
-#include "moArray.h"
 moDefineDynamicArray( moPluginDefinitions )
 moDefineDynamicArray( moPluginsArray )
 
-#if !defined(WIN32)
-#include "moPort.h"
-#endif
 
 moEffectFactory::~moEffectFactory() {
 }
@@ -117,7 +115,7 @@ moEffect* moPlugin::Create() {
 	return NULL;
 }
 
-void moPlugin::Destroy(moEffect *Efecto) {
+bool moPlugin::Destroy(moEffect *Efecto) {
 
 	moEffect **narray;
 	int i,j;
@@ -125,64 +123,26 @@ void moPlugin::Destroy(moEffect *Efecto) {
 	if(m_factory!=NULL) {
 
 		for(j=0;j<n;j++)
-			if(array[j]==Efecto) break;
+			if(array[j]==Efecto) {
 
-		m_factory->Destroy(Efecto);
+                m_factory->Destroy(Efecto);
 
-		if(n==1) {//muere
-			delete [] array;
-		} else if(n>1) {//array dinamico
-			narray = new moEffect* [n-1];//generamos el nuevo vacio
-			for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
-			for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
-			delete [] array;
-			array = narray;
-		}
-		n--;
-		return;
+                if(n==1) {//muere
+                    delete [] array;
+                } else if(n>1) {//array dinamico
+                    narray = new moEffect* [n-1];//generamos el nuevo vacio
+                    for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
+                    for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
+                    delete [] array;
+                    array = narray;
+                }
+                n--;
+                return true;
+			}
 	}
-	return;
+	return false;
 }
 
-//===========================================
-//
-//                             moPluginsArray
-//
-//===========================================
-/*
-void moPluginsArray::Add(moPlugin* plugin)
-{
-    if(length < max_length)
-    {
-        if(plugin!=NULL) {
-			cout << "plugin agregado\n";
-			array[length] = plugin;
-			length++;
-		} else {
-			cout << "error: plugin no fue creado!\n";
-		}
-    }
-}
-
-void moPluginsArray::Init(MOuint nplugins)
-{
-    max_length = 256;
-    length = nplugins;
-    array = new moPlugin*[max_length];
-    for(MOuint i = 0; i < max_length; i++) array[i] = NULL;
-}
-
-void moPluginsArray::Finish()
-{
-    if(array != NULL)
-    {
-        delete[] array;
-        array = NULL;
-    }
-
-    length = 0;
-}
-*/
 
 LIBMOLDEO_API moEffect* moNewEffect(moText effect_name, moPluginsArray &plugins)
 {
@@ -193,17 +153,17 @@ LIBMOLDEO_API moEffect* moNewEffect(moText effect_name, moPluginsArray &plugins)
     if(!stricmp(effect_name, "nil")) return NULL;
 
 		#if defined(_WIN32)
-    complete_name = "plugins/effects/" + effect_name;
+    complete_name = moText("plugins/effects/") + (moText)effect_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".dll";
+    complete_name += moText(".dll");
     #else
-    complete_name = "plugins/effects/lib" + effect_name;
+    complete_name = moText("plugins/effects/lib") + (moText)effect_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".so";
+    complete_name += moPluginExtension;
     #endif
 
     // Indice del plugin que se utilizara para crear a este efecto.
@@ -233,26 +193,26 @@ LIBMOLDEO_API moEffect* moNewEffect(moText effect_name, moPluginsArray &plugins)
 }
 
 
-LIBMOLDEO_API void moDeleteEffect(moEffect *effect, moPluginsArray &plugins)
+LIBMOLDEO_API bool moDeleteEffect(moEffect *effect, moPluginsArray &plugins)
 {
     // Creando el nombre complete del plugin(incluyendo ruta por defecto)
     // a partir del nombre del efecto.
     moText complete_name;
 
-    if(!stricmp(effect->GetName(), "")) return;
+    if(!stricmp(effect->GetName(), "")) return false;
 
     #if defined(_WIN32)
     complete_name = moText("plugins/effects/") + moText(effect->GetName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+=  moText("_d");
 		#endif
-    complete_name += ".dll";
+    complete_name +=  moText(".dll");
     #else
     complete_name = moText("plugins/effects/lib") + moText(effect->GetName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+=  moText("_d");
 		#endif
-    complete_name += ".so";
+    complete_name +=  moText(".so");
     #endif
 
     // Indice del plugin que se utilizara para crear a este efecto.
@@ -268,9 +228,18 @@ LIBMOLDEO_API void moDeleteEffect(moEffect *effect, moPluginsArray &plugins)
 
     if(plg_index == -1)
     {
-        return;
+        return false;
     }
 
-    plugins[plg_index]->Destroy(effect);
+    bool res = plugins[plg_index]->Destroy(effect);
+
+    ///unload plugin if all instances were delete
+    if (res && plugins[plg_index]->n == 0) {
+        plugins[plg_index]->Unload();
+        plugins.Remove(plg_index);
+
+    }
+
+    return res;
 }
 

@@ -42,6 +42,7 @@ moConsoleState::moConsoleState() {
 	fps0 = 0;
 	fps1 = 1;
 
+    stereooutput = MO_DEACTIVATED;
 	savescreen = MO_DEACTIVATED;
 	frame = 0;
 

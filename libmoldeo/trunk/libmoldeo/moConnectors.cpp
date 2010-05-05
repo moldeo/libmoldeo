@@ -48,6 +48,7 @@ moConnector::moConnector() {
 	m_ConnectorId = -1;
 	m_bUpdated = false;
 	m_pData = NULL;
+	m_pParam = NULL;
 }
 moConnector::~moConnector() {
 }
@@ -71,59 +72,91 @@ moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moDataType p_
 }
 
 MOboolean
+moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moParamType p_paramtype ) {
+	m_ConnectorLabelName = p_ConnectorLabelName;
+	m_ConnectorId = ConnectorId;
+
+    ///En este caso se crea un tipo de dato compatible con el dato que se quiere enviar
+    ///tomando de base el tipo de parámetro ya conocemos el dato que recibiremos
+    ///esto varia ligeramente del dato original del parametro del config, ya que debería estar resuelto ya
+    ///o sea, en caso de una funcion , se recibirá el resultado de esta
+    ///en el caso de una textura, el puntero a ella
+    ///en el caso de un texto será un texto
+    ///de cualquier tipo de coordenada será un real
+    ///de un color será un vector de 4 valores (float por precision)
+    switch( p_paramtype ) {
+        case MO_PARAM_ALPHA:
+        case MO_PARAM_PHASE:
+        case MO_PARAM_SYNC:
+        case MO_PARAM_TRANSLATEX:
+        case MO_PARAM_TRANSLATEY:
+        case MO_PARAM_TRANSLATEZ:
+        case MO_PARAM_SCALEX:
+        case MO_PARAM_SCALEY:
+        case MO_PARAM_SCALEZ:
+        case MO_PARAM_ROTATEX:
+        case MO_PARAM_ROTATEY:
+        case MO_PARAM_ROTATEZ:
+        case MO_PARAM_FUNCTION:
+            m_pData = new moData( MO_DATA_NUMBER_FLOAT );
+            break;
+
+        case MO_PARAM_NUMERIC:
+        case MO_PARAM_BLENDING:
+        case MO_PARAM_POLYGONMODE:
+            m_pData = new moData( MO_DATA_NUMBER_LONG );
+            break;
+
+        case MO_PARAM_COLOR:
+            m_pData = new moData( MO_DATA_VECTOR4F );
+            break;
+
+        case MO_PARAM_FONT:
+            m_pData = new moData( MO_DATA_FONTPOINTER );
+            break;
+
+        case MO_PARAM_TEXT:
+        case MO_PARAM_SCRIPT:
+            m_pData = new moData( MO_DATA_TEXT );
+            break;
+
+        case MO_PARAM_OBJECT:
+        case MO_PARAM_3DMODEL:
+            m_pData = new moData( MO_DATA_3DMODELPOINTER );
+            break;
+
+        case MO_PARAM_TEXTURE:
+        case MO_PARAM_TEXTUREFOLDER:
+        case MO_PARAM_VIDEO:
+            m_pData = new moData( MO_DATA_VIDEOSAMPLE );
+            break;
+
+        case MO_PARAM_COMPOSE:
+            m_pData = new moData( MO_DATA_MESSAGE );
+            break;
+
+        case MO_PARAM_SOUND:
+            m_pData = new moData( MO_DATA_SOUNDSAMPLE );
+            break;
+
+        case MO_PARAM_UNDEFINED:
+            m_pData = new moData( MO_DATA_POINTER );
+            break;
+
+        default:
+            m_pData = new moData( MO_DATA_NUMBER );
+            break;
+    }
+
+	m_pParam = NULL;
+	return true;
+}
+
+MOboolean
 moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moText t_datatype ) {
 	m_ConnectorLabelName = p_ConnectorLabelName;
 	m_ConnectorId = ConnectorId;
-/*	moParamType p;
 
-enum moParamType {
-	MO_PARAM_ALPHA,			//value type: NUM or FUNCTION
-	MO_PARAM_COLOR,			//value type: NUM[4] or FUNCTION[4] or
-	MO_PARAM_SYNC,			//value type: NUM or FUNCTION
-	MO_PARAM_TEXT,			//value type: TXT or LNK
-	MO_PARAM_TEXTURE,		//value type: TXT or LNK
-	MO_PARAM_VIDEO,			//value type: TXT or LNK
-	MO_PARAM_SOUND,			//value type: TXT or LNK
-	MO_PARAM_FUNCTION,		//value type: NUM or FUNCTION
-	MO_PARAM_SCRIPT,		//value type: TXT or LNK
-	MO_PARAM_INLET,			//value type: TXT or LNK
-	MO_PARAM_OUTLET			//value type: TXT or LNK
-};
-
-	moDataType d;
-
-enum moDataType {
-	MO_DATA_UNDEFINED,
-	MO_DATA_NUMBER,
-	MO_DATA_NUMBER_CHAR,
-	MO_DATA_NUMBER_INT,
-	MO_DATA_NUMBER_LONG,
-	MO_DATA_NUMBER_DOUBLE,
-	MO_DATA_NUMBER_FLOAT,
-	MO_DATA_POINTER,//may be a pointer to struct or to class
-	MO_DATA_VECTOR,//array of values
-	MO_DATA_IMAGESAMPLE,//pointer to an imagesample pointer
-	MO_DATA_SOUNDSAMPLE,//pointer to a soundsample pointer
-	MO_DATA_VIDEOSAMPLE,//pointer to a videosample pointer
-	MO_DATA_TEXT//text
-};
-
-	moValueType v;
-just to interpret Config info (text based definition)...
-enum moValueType {
-	MO_VALUE_NUM,//cualquier número
-	MO_VALUE_NUM_CHAR,//un byte
-	MO_VALUE_NUM_INT,//entero 32b
-	MO_VALUE_NUM_LONG,//entero largo 64b
-	MO_VALUE_NUM_FLOAT,//coma flotante 32b
-	MO_VALUE_NUM_DOUBLE,//coma flotante precision doble
-	MO_VALUE_MATRIX,//any type of VECTOR
-	MO_VALUE_TXT,//any type of text, single or multiline
-	MO_VALUE_LNK,//link to a file, text is interpreted as relative, absolute link to a file
-	MO_VALUE_FUNCTION,//function parameter value, with lots of attributes....
-	MO_VALUE_XML//text, xml formatted...
-};
-*/
     moData dummy;
     moDataType ttype;
 
@@ -135,8 +168,18 @@ enum moValueType {
 		m_pData = new moData( MO_DATA_POINTER );
 	} else if(t_datatype==moText("DATA")) {
 		m_pData = new moData( MO_DATA_POINTER );
-	} else if(t_datatype==moText("VECTOR")) {
-		m_pData = new moData( MO_DATA_VECTOR );
+	} else if(t_datatype==moText("VECTOR2F")) {
+		m_pData = new moData( MO_DATA_VECTOR2F );
+	} else if(t_datatype==moText("VECTOR3F")) {
+		m_pData = new moData( MO_DATA_VECTOR3F );
+	} else if(t_datatype==moText("VECTOR4F")) {
+		m_pData = new moData( MO_DATA_VECTOR4F );
+	} else if(t_datatype==moText("VECTOR2I")) {
+		m_pData = new moData( MO_DATA_VECTOR2I );
+	} else if(t_datatype==moText("VECTOR3I")) {
+		m_pData = new moData( MO_DATA_VECTOR3I );
+	} else if(t_datatype==moText("VECTOR4I")) {
+		m_pData = new moData( MO_DATA_VECTOR4I );
 	} else if(t_datatype==moText("IMAGE")) {
 		m_pData = new moData( MO_DATA_IMAGESAMPLE );
 	} else if(t_datatype==moText("SOUND")) {
@@ -166,8 +209,35 @@ MOboolean
 moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_param ) {
 	m_ConnectorLabelName = p_ConnectorLabelName;
 	m_ConnectorId = ConnectorId;
-	m_pData = NULL;
+	//m_pData = NULL;
+	///Fija un dato interno para manejar este valor....
+	Init( p_ConnectorLabelName, ConnectorId, p_param->GetParamDefinition().GetType());
+	///y asociamos a su vez el parametro del config
 	m_pParam = p_param;
+
+	///fix numeric!!! and value!!!
+	if (m_pData)
+	if ( p_param->GetParamDefinition().GetType() == MO_PARAM_NUMERIC ) {
+	    moValueBase& firstvalue( p_param->GetValue().GetSubValue() );
+	    switch(firstvalue.GetType()) {
+	        case MO_DATA_NUMBER_DOUBLE:
+                m_pData->SetDouble( firstvalue.Double() );
+                break;
+	        case MO_DATA_NUMBER_FLOAT:
+                m_pData->SetFloat( firstvalue.Float() );
+                break;
+	        case MO_DATA_NUMBER_CHAR:
+                m_pData->SetChar( firstvalue.Char() );
+                break;
+	        case MO_DATA_NUMBER_INT:
+                m_pData->SetInt( firstvalue.Int() );
+                break;
+	        case MO_DATA_NUMBER_LONG:
+                m_pData->SetLong( firstvalue.Long() );
+                break;
+        }
+
+    }
 	return true;
 }
 
@@ -224,19 +294,20 @@ moConnector::SetData( moData*	p_data ) {
 
 moData*
 moConnector::GetData() {
-	if (m_pData)
+	if (m_bUpdated && m_pData)
 		return m_pData;
 	if (m_pParam)
-		m_pParam->GetData();
-	return NULL;
+		return m_pParam->GetData();
 }
 
 void
 moConnector::NewData() {
-	if (m_pData)
+	if (m_pData) {
 		delete m_pData;
-	else
-		m_pData = new moData();
+		m_pData = NULL;
+	}
+    m_pData = new moData();
+
 }
 
 
@@ -275,6 +346,10 @@ moConnector::Updated() {
 void
 moConnector::Update( bool force ) {
 	m_bUpdated = force;
+
+	///also update the associated parameter
+	if (m_pParam)
+        m_pParam->Update();
 }
 //===========================================
 //

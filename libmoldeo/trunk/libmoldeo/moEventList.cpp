@@ -30,8 +30,8 @@
 *******************************************************************************/
 
 #include "moEventList.h"
+#include <moArray.h>
 
-#include "moArray.h"
 moDefineDynamicArray( moEventPacketArray );
 
 //MESSAGE
@@ -48,7 +48,7 @@ moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_MoldeoIdSrc, const moData& d
 	m_MoldeoIdSrc = p_MoldeoIdSrc;
 
 	m_Data = data;
-	
+
 }
 
 moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, MOint p_MoldeoIdSrc, const moData& data ) {
@@ -62,7 +62,7 @@ moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, MOint p_MoldeoI
 	m_MoldeoIdSrc = p_MoldeoIdSrc;
 
 	m_Data = data;
-	
+
 }
 
 moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, moMoldeoObjectType p_TypeDest, MOint p_MoldeoIdSrc, moMoldeoObjectType p_TypeSrc, const moData& p_data ) {
@@ -191,8 +191,8 @@ void moEventList::Add( moMessage* p_Message ) {
 			Last->next->next = NULL;
 			Last = Last->next;
 		}
-	}	
-	m_lock.Unlock();	
+	}
+	m_lock.Unlock();
 
 }
 
@@ -212,7 +212,7 @@ void moEventList::Add( moEvent* p_Event ) {
 			Last->next->next = NULL;
 			Last = Last->next;
 		}
-	}	
+	}
 	m_lock.Unlock();
 
 }
@@ -287,7 +287,7 @@ moEventList::Delete(moEvent *ev) {
 	ev = NULL;
 
 	m_lock.Unlock();
-	//por si las dudas podes chequear que este bien muerto;	
+	//por si las dudas podes chequear que este bien muerto;
 	return(ev == NULL);
 }
 
@@ -318,7 +318,7 @@ moEventList::Delete(moMessage *ev) {
 	ev = NULL;
 
 	m_lock.Unlock();
-	//por si las dudas podes chequear que este bien muerto;	
+	//por si las dudas podes chequear que este bien muerto;
 	return(ev == NULL);
 }
 
@@ -365,17 +365,17 @@ moEventPacket::~moEventPacket()
 	}
 }
 
-void moEventPacket::ClearPacket() 
-{  
+void moEventPacket::ClearPacket()
+{
 	for(int i=0;i<maxEventNum;i++) buffer_events[i] = empty_event;
 
 	num_events = 0;
 	packet_full = false;
 
-    time0 = SDL_GetTicks() / 1000.0;
+    time0 = moGetTicks() / 1000.0;
 }
 
-bool moEventPacket::AddEvent(moEvent *e) 
+bool moEventPacket::AddEvent(moEvent *e)
 {
 	moEventStruct new_event;
 
@@ -391,8 +391,8 @@ bool moEventPacket::AddEvent(moEvent *e)
 	{
 		buffer_events[num_events] = new_event;
 		num_events++;
-	} 
-	else 
+	}
+	else
 	{
 		packet_full = true;
 	}
@@ -402,6 +402,6 @@ bool moEventPacket::AddEvent(moEvent *e)
 
 bool moEventPacket::ReadyToSend()
 {
-	float time1 = SDL_GetTicks() / 1000.0;
+	float time1 = moGetTicks() / 1000.0;
 	return (sendInterval <= time1 - time0) || packet_full;
 }

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                                moScriptManager.h
+								moScriptManager.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
@@ -36,51 +36,52 @@
 #include "moAbstract.h"
 #include "moText.h"
 #include "moParam.h"
-#include "moOGLFT.h"
 #include "moLuaBase.h"
 #include "moLunaClasses.h"
 
 #include "moResourceManager.h"
 
+/// Administrador de scripts (LUA)
 /**
- * Esta clase implementa el administrador de scripts LUA. Inicializa la máquina virtual de LUA y el debugger
- * y registra las clases de Moldeo que serán accessibles desde los scripts de LUA.
+ * Esta clase implementa el administrador de scripts LUA. Inicializa la mquina virtual de LUA y el debugger
+ * y registra las clases de Moldeo que sern accessibles desde los scripts de LUA.
  */
-class LIBMOLDEO_API moScriptManager : public moResource
+class LIBMOLDEO_API moScriptManager:public moResource
 {
-public:
-    /**
-     * El constructor por defecto.
-     */
-	moScriptManager();
-    /**
-     * El destructor por defecto.
-     */
-	~moScriptManager();
+	public:
+		/**
+		 * El constructor por defecto.
+		 */
+		moScriptManager ();
 
-    /**
-     * Inicializador del administrador.
-	 * @return el resultado de la operación: true o false.
-     */
-	virtual MOboolean Init();
-    /**
-     * Finalizador del administrador.
-	 * @return el resultado de la operación: true o false.
-     */
-	virtual MOboolean Finish();
+		/**
+		 * El destructor por defecto.
+		 */
+		~moScriptManager ();
 
-    /**
-     * Devuelve una referencia a la máquina virtual.
-	 * @return referencia a la máquina virtual.
-     */
-    static moLuaVirtualMachine& GetVM(void);
-    /**
-     * Devuelve una referencia al debugger.
-	 * @return referencia al debugger.
-     */
-    static moLuaDebugger& GetDBG(void);
-private:
-   void RegisterLunaClasses();
+		/**
+		 * Inicializador del administrador.
+		 * @return el resultado de la operacin: true o false.
+		 */
+		virtual MOboolean Init ();
+
+		/**
+		 * Finalizador del administrador.
+		 * @return el resultado de la operacin: true o false.
+		 */
+		virtual MOboolean Finish ();
+
+		/**
+		 * Devuelve una referencia a la mquina virtual.
+		 * @return referencia a la mquina virtual.
+		 */
+		static moLuaVirtualMachine & GetVM (void);
+
+		/**
+		 * Devuelve una referencia al debugger.
+		 * @return referencia al debugger.
+		 */
+		static moLuaDebugger & GetDBG (void);
+	private: void RegisterLunaClasses ();
 };
-
-#endif
+#endif							 /*  */

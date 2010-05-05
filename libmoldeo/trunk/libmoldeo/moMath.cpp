@@ -37,7 +37,21 @@
 
 #include "moMath.h"
 
-#ifdef MO_USING_VC
+#ifndef MO_USING_VC
+template<> const MOlong moMath<MOlong>::EPSILON = FLT_EPSILON;
+template<> const MOlong moMath<MOlong>::ZERO_TOLERANCE = 1e-06f;
+template<> const MOlong moMath<MOlong>::MAX_REAL = FLT_MAX;
+template<> const MOlong moMath<MOlong>::PI = (MOlong)(4.0*atan(1.0));
+template<> const MOlong moMath<MOlong>::TWO_PI = 2.0f*moMath<MOlong>::PI;
+template<> const MOlong moMath<MOlong>::HALF_PI = 0.5f*moMath<MOlong>::PI;
+template<> const MOlong moMath<MOlong>::INV_PI = 1.0f/moMath<MOlong>::PI;
+template<> const MOlong moMath<MOlong>::INV_TWO_PI = 1.0f/moMath<MOlong>::TWO_PI;
+template<> const MOlong moMath<MOlong>::DEG_TO_RAD = moMath<MOlong>::PI/180.0f;
+template<> const MOlong moMath<MOlong>::RAD_TO_DEG = 180.0f/moMath<MOlong>::PI;
+template<> const MOlong moMath<MOlong>::LN_2 = moMath<MOlong>::Log(2.0f);
+template<> const MOlong moMath<MOlong>::LN_10 = moMath<MOlong>::Log(10.0f);
+template<> const MOlong moMath<MOlong>::INV_LN_2 = 1.0f/moMath<MOlong>::LN_2;
+template<> const MOlong moMath<MOlong>::INV_LN_10 = 1.0f/moMath<MOlong>::LN_10;
 
 template<> const MOfloat moMath<MOfloat>::EPSILON = FLT_EPSILON;
 template<> const MOfloat moMath<MOfloat>::ZERO_TOLERANCE = 1e-06f;
@@ -70,10 +84,18 @@ template<> const MOdouble moMath<MOdouble>::INV_LN_2 = 1.0/moMath<MOdouble>::LN_
 template<> const MOdouble moMath<MOdouble>::INV_LN_10 = 1.0/moMath<MOdouble>::LN_10;
 
 template <>
+long moMath<MOlong>::FastInvSqrt (MOlong fValue)
+{
+
+    return fValue;
+}
+
+template <>
 float moMath<MOfloat>::FastInvSqrt (MOfloat fValue)
 {
     MOfloat fHalf = 0.5f*fValue;
-    int i  = *(int*)&fValue;
+    int i;
+    i = *(int*)&fValue;
     i = 0x5f3759df - (i >> 1);
     fValue = *(MOfloat*)&i;
     fValue = fValue*(1.5f - fHalf*fValue*fValue);

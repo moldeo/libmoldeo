@@ -32,12 +32,14 @@
 #include "moVideoManager.h"
 
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray(moCircularVideoBuffers)
 moDefineDynamicArray(moVideoFrames)
 moDefineDynamicArray(moVideoBuffers)
 moDefineDynamicArray(moLiveSystemPtrs)
 moDefineDynamicArray(moVideoBufferPaths)
+
+#include "FreeImage.h"
 
 //===========================================
 //
@@ -49,7 +51,7 @@ moVideoFrame::moVideoFrame() {
 	m_FrameSize = 0;
 	hmem = NULL;
 	options = 0;
-	fif = FIF_UNKNOWN;
+	fif = (int)FIF_UNKNOWN;
 }
 
 moVideoFrame::~moVideoFrame() {
@@ -64,7 +66,10 @@ moVideoFrame::Init( ) {
 
 //FreeImage_SaveToMemory(FREE_IMAGE_FORMAT fif, FIBITMAP *dib, FIMEMORY *stream, int flags FI_DEFAULT(0));
 MOboolean
-moVideoFrame::Init( moText bufferformat, FIBITMAP* pImageResult ) {
+moVideoFrame::Init( moText bufferformat, moBitmap* pImageResult ) {
+
+    FIBITMAP* _pImageResult = (FIBITMAP*)pImageResult;
+
 	if (!hmem) {
 		hmem = FreeImage_OpenMemory();
 	}
@@ -88,9 +93,21 @@ moVideoFrame::Init( moText bufferformat, FIBITMAP* pImageResult ) {
 		} else if ( bufferformat == moText("TGA") ) {
 			fif = FIF_TARGA;
 			options = 0;
+		} else if ( bufferformat == moText("PNG") ) {
+			fif = FIF_PNG;
+			options = 0;
+		} else {
+		    MODebug2->Error( moText("moVideoFrame::Init")
+                        + moText(" bufferformat unsupported!!") );
+            return false;
+        }
+		FreeImage_SaveToMemory( (FREE_IMAGE_FORMAT)fif, _pImageResult, (FIMEMORY*)hmem, options );
+		m_FrameSize = FreeImage_TellMemory((FIMEMORY*)hmem);
+		if (m_FrameSize==0) {
+            MODebug2->Error( moText("moVideoFrame::Init")
+                        + moText(" Couldn't save image to memory, format may be unsupported") );
+            return false;
 		}
-		FreeImage_SaveToMemory( fif, pImageResult, hmem, options );
-		m_FrameSize = FreeImage_TellMemory(hmem);
 	}
 	return Init();
 }
@@ -99,13 +116,13 @@ MOboolean
 moVideoFrame::Finish() {
 
 	if (hmem) {
-		FreeImage_CloseMemory( hmem );
+		FreeImage_CloseMemory( (FIMEMORY*)hmem );
 		hmem = NULL;
 	}
 
 	m_FrameSize = 0;
 	hmem = NULL;
-	fif = FIF_UNKNOWN;
+	fif = (int)FIF_UNKNOWN;
 
 	return true;
 }
@@ -179,18 +196,19 @@ MOboolean  moVideoBuffer::Finish() {
 }
 
 MOboolean
-moVideoBuffer::LoadImage( FIBITMAP* pImage , MOuint indeximage ) {
+moVideoBuffer::LoadImage( moBitmap* pImage , MOuint indeximage ) {
 
+    FIBITMAP* _pImage = (FIBITMAP*)pImage;
 	FIBITMAP* pImageResult = NULL;
 	FIBITMAP* pImageCropped = NULL;
 	FIBITMAP* pImageScaled = NULL;
 
-	if ( m_width!=FreeImage_GetWidth(pImage) || m_height!=FreeImage_GetHeight(pImage) ) {
+	if ( m_width!=FreeImage_GetWidth(_pImage) || m_height!=FreeImage_GetHeight(_pImage) ) {
 		//CROP MODE
-		pImageCropped = FreeImage_Copy( pImage, m_XSource , m_YSource , m_XSource + m_SourceWidth , m_YSource+m_SourceHeight );
+		pImageCropped = FreeImage_Copy( _pImage, m_XSource , m_YSource , m_XSource + m_SourceWidth , m_YSource+m_SourceHeight );
 		pImageResult = pImageCropped;
 
-	} else pImageResult = pImage;
+	} else pImageResult = _pImage;
 
 	//RESCALE
 	if ( m_width != m_SourceWidth || m_height != m_SourceHeight ) {
@@ -215,7 +233,7 @@ moVideoBuffer::LoadImage( FIBITMAP* pImage , MOuint indeximage ) {
 		m_Frames.Add(pVideoFrame);
 	}
 
-	if (pImageResult!=pImage)
+	if (pImageResult!=_pImage)
 		FreeImage_Unload(pImageResult);
 
 	m_nFrames = m_Frames.Count();
@@ -239,43 +257,48 @@ void moVideoBuffer::GetFrame( MOuint p_i ) {
 
 		if (pVideoFrame) {
 
-			FIBITMAP *m_pImage;
+			FIBITMAP *pImage;
 			//FIMEMORY	*hmem;
 
 			MOuint p_format;
 
 			//MOint FrameSize =
-			FreeImage_TellMemory(pVideoFrame->hmem);
-			FreeImage_SeekMemory( pVideoFrame->hmem, 0L, SEEK_SET);
+			FreeImage_TellMemory((FIMEMORY*)pVideoFrame->hmem);
+			FreeImage_SeekMemory( (FIMEMORY*)pVideoFrame->hmem, 0L, SEEK_SET);
 
 			//hmem = FreeImage_OpenMemory( pVideoFrame->hmem,  pVideoFrame->m_FrameSize);
 			//FreeImage_TellMemory(VideoFrame->hmem);
 			// load an image from the memory stream
-			m_pImage = FreeImage_LoadFromMemory( pVideoFrame->fif, pVideoFrame->hmem, 0);
+			pImage = FreeImage_LoadFromMemory( (FREE_IMAGE_FORMAT)pVideoFrame->fif, (FIMEMORY*)pVideoFrame->hmem, 0);
 
-			switch (FreeImage_GetBPP(m_pImage))
-			{
-				case 8: // 8 bit, indexed or grayscale
-					m_param.internal_format = GL_RGB;
-					p_format = GL_LUMINANCE;
-					break;
-				case 16: // 16 bits
-					break;
-				case 24: // 24 bits
-					m_param.internal_format = GL_RGB;
-					if (FreeImage_GetBlueMask(m_pImage) == 0x000000FF) p_format = GL_BGR;
-					else p_format = GL_RGB;
-					break;
-				case 32: // 32 bits
-					m_param.internal_format = GL_RGBA;
-					if (FreeImage_GetBlueMask(m_pImage) == 0x000000FF) p_format = GL_BGRA_EXT;
-					else p_format = GL_RGBA;
-					break;
-				default:
-					break;
-			}
-			SetBuffer( m_width, m_height, FreeImage_GetBits(m_pImage), p_format);
-			FreeImage_Unload( m_pImage );
+			if (pImage) {
+                switch (FreeImage_GetBPP(pImage))
+                {
+                    case 8: // 8 bit, indexed or grayscale
+                        m_param.internal_format = GL_RGB;
+                        p_format = GL_LUMINANCE;
+                        break;
+                    case 16: // 16 bits
+                        break;
+                    case 24: // 24 bits
+                        m_param.internal_format = GL_RGB;
+                        if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
+                        else p_format = GL_RGB;
+                        break;
+                    case 32: // 32 bits
+                        m_param.internal_format = GL_RGBA;
+                        if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGRA_EXT;
+                        else p_format = GL_RGBA;
+                        break;
+                    default:
+                        break;
+                }
+                SetBuffer( m_width, m_height, FreeImage_GetBits(pImage), p_format);
+                FreeImage_Unload( pImage );
+			} else MODebug2->Error( moText("moVideoBuffer::GetFrame") +
+                                    moText("Couldn't load image from memory, texture name: ") +
+                                    moText(this->GetName())
+                                    );
 		}
 	}
 
@@ -454,21 +477,21 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 
 		if (pVideoFrame) {
 
-			FIBITMAP *m_pImage;
+			FIBITMAP *pImage;
 			//FIMEMORY	*hmem;
 
 			MOuint p_format;
 
 			//MOint FrameSize =
-			FreeImage_TellMemory(pVideoFrame->hmem);
-			FreeImage_SeekMemory( pVideoFrame->hmem, 0L, SEEK_SET);
+			FreeImage_TellMemory((FIMEMORY*)pVideoFrame->hmem);
+			FreeImage_SeekMemory( (FIMEMORY*)pVideoFrame->hmem, 0L, SEEK_SET);
 
 			//hmem = FreeImage_OpenMemory( pVideoFrame->hmem,  pVideoFrame->m_FrameSize);
 			//FreeImage_TellMemory(VideoFrame->hmem);
 			// load an image from the memory stream
-			m_pImage = FreeImage_LoadFromMemory( pVideoFrame->fif, pVideoFrame->hmem, 0);
+			pImage = FreeImage_LoadFromMemory( (FREE_IMAGE_FORMAT)pVideoFrame->fif, (FIMEMORY*)pVideoFrame->hmem, 0);
 
-			switch (FreeImage_GetBPP(m_pImage))
+			switch (FreeImage_GetBPP(pImage))
 			{
 				case 8: // 8 bit, indexed or grayscale
 					m_param.internal_format = GL_RGB;
@@ -478,19 +501,19 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 					break;
 				case 24: // 24 bits
 					m_param.internal_format = GL_RGB;
-					if (FreeImage_GetBlueMask(m_pImage) == 0x000000FF) p_format = GL_BGR;
+					if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
 					else p_format = GL_RGB;
 					break;
 				case 32: // 32 bits
 					m_param.internal_format = GL_RGBA;
-					if (FreeImage_GetBlueMask(m_pImage) == 0x000000FF) p_format = GL_BGRA_EXT;
+					if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGRA_EXT;
 					else p_format = GL_RGBA;
 					break;
 				default:
 					break;
 			}
-			SetBuffer( m_width, m_height, FreeImage_GetBits(m_pImage), p_format);
-			FreeImage_Unload( m_pImage );
+			SetBuffer( m_width, m_height, FreeImage_GetBits(pImage), p_format);
+			FreeImage_Unload( pImage );
 		}
 	}
 
@@ -651,15 +674,17 @@ MOboolean moVideoManager::Init()
     // Loading config file.
 	if (!m_pResourceManager) return false;
 
-	confignamecompleto = m_pResourceManager->GetDataMan()->GetDataPath();
-	confignamecompleto +=  (moText)GetConfigName();
-    confignamecompleto +=  moText(".cfg");
+	if (!(GetConfigName()==moText(""))) {
 
-	if (m_Config.LoadConfig(confignamecompleto)!=MO_CONFIG_OK ) {
-		moText text = "Couldn't load videomanager config";
-		MODebug2->Error(text + (moText)confignamecompleto );
-		return false;
-	}
+        confignamecompleto = m_pResourceManager->GetDataMan()->GetDataPath();
+        confignamecompleto +=  (moText)GetConfigName();
+        confignamecompleto +=  moText(".cfg");
+
+        if (m_Config.LoadConfig(confignamecompleto)!=MO_CONFIG_OK ) {
+            moText text = "Couldn't load videomanager config";
+            MODebug2->Error(text + (moText)confignamecompleto );
+            return false;
+        }
 
   moText msg = "In moVideoManager::Init ***********************************************\n";
   msg+= moText("Initializing Live...\n");
@@ -697,22 +722,36 @@ MO_LIVE_WIDTH		2
 MO_LIVE_HEIGHT		3
 MO_LIVE_BITCOUNT	4
 	*/
+	MODebug2->Message(moText("Setting preferred devices"));
 	for( MOuint i = 0; i < nvalues; i++) {
 
 		m_Config.SetCurrentValueIndex(preferreddevices, i);
 
+		MOint srcw(0),srch(0),srcbpp(0),flH(0),flV(0);
+		MOint ncount = m_Config.GetParam().GetValue().GetSubValueCount();
+
+
+		( MO_LIVE_WIDTH < ncount ) ? srcw = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_WIDTH).Int() : srcw = 0;
+		( MO_LIVE_HEIGHT < ncount ) ? srch = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_HEIGHT).Int() : srch = 0;
+		( MO_LIVE_BITCOUNT < ncount ) ? srcbpp = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_BITCOUNT).Int() : srcbpp = 0;
+		( MO_LIVE_FLIPH < ncount ) ? flH = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_FLIPH).Int() : flH = 0;
+		( MO_LIVE_FLIPV < ncount ) ? flV = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_FLIPV).Int() : flV = 0;
+
 		moVideoFormat VF;
-		moCaptureDevice CD( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_DEVICENAME).Text(), moText(""), moText("") );
+		moCaptureDevice CD( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_DEVICENAME).Text(), moText(""), moText(""), 0, srcw, srch, srcbpp, flH, flV );
 
 		CD.SetCodeName( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_LABELNAME).Text() );
 
-		VF.m_Width = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_WIDTH).Int();
-		VF.m_Height = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_HEIGHT).Int();
+		VF.m_Width = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEWIDTH).Int();
+		VF.m_Height = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEHEIGHT).Int();
 		VF.m_BitCount = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_BITCOUNT).Int();
+
+		VF.m_ColorMode = (moColorMode)m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_COLORMODE).Int();
 
 		CD.SetVideoFormat( VF );
 
 		pPreferredDevices->Add( CD );
+		MODebug2->Message(moText("Added preferred device setting: Device Name: ")+CD.GetName());
 		//for( int k = 1; k < m_Config.GetParam().GetSubCount(); k++);
 	}
 
@@ -722,11 +761,15 @@ MO_LIVE_BITCOUNT	4
 
 	//try to connect to all
 	m_pLiveSystems = new moLiveSystems();
+	m_pLiveSystems->Init(0, NULL);
 
+    MODebug2->Message(moText("Finally load live systems grabber for each device...."));
 	if ( m_pLiveSystems->LoadLiveSystems( pPreferredDevices ) ) {
 		//los inicializa...
 		for( MOuint i = 0; i < m_pLiveSystems->Count(); i++) {
+
 			moLiveSystemPtr pLS = m_pLiveSystems->Get(i);
+
 			if (pLS && pLS->GetCaptureDevice().IsPresent()) {
 				if (pLS->Init()) {
 				    MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
@@ -738,7 +781,7 @@ MO_LIVE_BITCOUNT	4
 		}
 
 
-	}
+	} else MODebug2->Error(moText("Error. No livesystems loaded??...."));
 
 
 	MOuint circularbuffer = m_Config.GetParamIndex("circularbuffer");
@@ -829,6 +872,13 @@ MO_LIVE_BITCOUNT	4
 
 	delete pPreferredDevices;
 
+	} else {
+
+        //create values from default
+
+    }
+
+
 	m_bLoading = true;
 	m_bInitialized = true;
 
@@ -905,7 +955,7 @@ MOdevcode moVideoManager::GetCode(moText strcod)
 //al menos que Ligia...o algun device especial(nada mas el hecho de que se haya
 //enchufado la camara por ejemplo
 //podriamos poner una funcion aqui de reconocimiento de DV....
-void moVideoManager::Update(moEventList *Events)
+void moVideoManager::Update(moEventList * p_EventList)
 {
 	moBucket *pbucket = NULL;
 	moEvent *actual,*tmp;
@@ -920,7 +970,7 @@ void moVideoManager::Update(moEventList *Events)
 		m_pLiveSystems->UpdateLiveSystems();
 	}
 
-	actual = Events->First;
+	actual = p_EventList->First;
 	//recorremos todos los events y parseamos el resultado
 	//borrando aquellos que ya usamos
 	while(actual!=NULL) {
@@ -936,7 +986,7 @@ void moVideoManager::Update(moEventList *Events)
 				pSample = NULL;
 			}
 			tmp = actual->next;
-			Events->Delete(actual);
+			p_EventList->Delete(actual);
 			actual = tmp;
 		} else actual = actual->next;//no es el que necesitamos...
 	}
@@ -989,7 +1039,7 @@ void moVideoManager::Update(moEventList *Events)
 						}
 
 						//post to other moldeo objects
-						Events->Add( GetId(), i, -1, (unsigned char*)pSample);
+						p_EventList->Add( GetId(), i, -1, (unsigned char*)pSample);
 						//MODebug2->Push( moText("moVideoManager::Update Video Sample") );
 
 					}
@@ -1007,7 +1057,7 @@ void moVideoManager::Update(moEventList *Events)
 		moVideoBufferPath*	pVideoBufferPath = m_VideoBufferPaths[k];
 
 		if (pVideoBufferPath && !pVideoBufferPath->LoadCompleted()) {
-			pVideoBufferPath->UpdateImages( 10 );
+			pVideoBufferPath->UpdateImages( 1 );
 			MODebug2->Push( pVideoBufferPath->m_VideoBufferPath + moText(":") + IntToStr(pVideoBufferPath->m_ImagesProcessed));
 		}
 
@@ -1076,7 +1126,7 @@ moLiveSystem::moLiveSystem() {
 	m_pVideoGraph = NULL;
 	m_pVideoSample = NULL;
 
-	m_CodeName = "";
+	m_CodeName = moText("");
 	m_Type = LST_UNKNOWN;
 
 }
@@ -1117,7 +1167,7 @@ moLiveSystem::Init() {
 
 	if ( m_pBucketsPool!=NULL ) Finish();
 
-	m_pBucketsPool = new moBucketsPool;
+	m_pBucketsPool = new moBucketsPool();
 
 	#ifdef MO_WIN32
         #ifdef MO_DIRECTSHOW
@@ -1266,11 +1316,10 @@ moLiveSystems::LoadLiveSystems( moCaptureDevices* p_pPreferredDevices ) {
 	moText CodeStr;
 	int i;
 
-	moCaptureDevices* pCapDevs = m_pVideoFramework->LoadCaptureDevices();
-
 	//genera los descriptores de dispositivos de captura...
 	m_pVideoFramework->SetPreferredDevices( p_pPreferredDevices );
 
+	moCaptureDevices* pCapDevs = m_pVideoFramework->LoadCaptureDevices();
 
 	/**
 
@@ -1279,12 +1328,13 @@ moLiveSystems::LoadLiveSystems( moCaptureDevices* p_pPreferredDevices ) {
 		moLiveSystemPtr pLS = new moLiveSystem( pCapDevs->Get(i) );
 		if (pLS) {
 
-			CodeStr = "LIVEIN";
+			CodeStr = moText("LIVEIN");
 			CodeStr+= IntToStr(i);
 
 			pLS->SetCodeName( CodeStr );
 
 			Add( pLS );
+			moDebugManager::Message( moText("Added LiveSystem: CodeName:") + (moText)CodeStr + moText(" Device Name:") + pCapDevs->Get(i).GetName() );
 		}
 	}
 
@@ -1295,7 +1345,7 @@ moLiveSystems::LoadLiveSystems( moCaptureDevices* p_pPreferredDevices ) {
 		moLiveSystemPtr pLS = new moLiveSystem( Cap );
 		if (pLS) {
 
-			CodeStr = "LIVEIN";
+			CodeStr = moText("LIVEIN");
 			CodeStr+= IntToStr(i);
 
 			pLS->SetCodeName( CodeStr );

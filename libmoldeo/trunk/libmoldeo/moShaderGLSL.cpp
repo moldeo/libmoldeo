@@ -60,7 +60,7 @@ MOboolean moShaderGLSL::Finish()
         glDetachObjectARB(m_ProgramObject, m_VertexShader);
         m_VertexShader = 0;
     }
-    if (m_FragmentShader != 0) 
+    if (m_FragmentShader != 0)
     {
         glDetachObjectARB(m_ProgramObject, m_FragmentShader);
         m_FragmentShader = 0;
@@ -176,13 +176,13 @@ void moShaderGLSL::linkProgram()
     m_VertErrorCode = progLinkSuccess;
     m_FragErrorCode = progLinkSuccess;
     if (!progLinkSuccess)
-		if (MODebug != NULL) MODebug->Push(moText("Shader program could not be linked"));
+		if (MODebug2 != NULL) MODebug2->Error(moText("Shader program could not be linked"));
 }
 
 void moShaderGLSL::printInfoLog(GLhandleARB obj)
 {
-    int infologLength = 0;
-    int charsWritten  = 0;
+    GLint infologLength = 0;
+    GLsizei charsWritten  = 0;
     char *infoLog;
 
     glGetObjectParameterivARB(obj, GL_OBJECT_INFO_LOG_LENGTH_ARB, &infologLength);
@@ -192,7 +192,7 @@ void moShaderGLSL::printInfoLog(GLhandleARB obj)
         infoLog = (char *)malloc(infologLength);
         glGetInfoLogARB(obj, infologLength, &charsWritten, infoLog);
 		moText msg = moText(infoLog);
-        if (MODebug != NULL) MODebug->Push(msg);
+        if (MODebug2 != NULL) MODebug2->Push(msg);
         free(infoLog);
     }
 }

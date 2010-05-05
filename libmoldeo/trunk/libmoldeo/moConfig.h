@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                               moConfig.h
+							   moConfig.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
@@ -35,7 +35,7 @@
 #include "moTypes.h"
 #include "moText.h"
 #include "moParam.h"
-#include "moArrayH.h"
+#include "moArray.h"
 #include "moPreConfig.h"
 
 #define MO_PARAM_NOT_SEL  -1
@@ -44,360 +44,418 @@
 #define MO_CONFIG_OK 0
 #define MO_SELECTED -1
 
-/// definición de todos los parámetros a encontrar o a crear dentro del moConfig
+/// definicin de todos los parmetros a encontrar o a crear dentro del moConfig
 /**
- *  Cumple la función de describir detalladamente que nombres de parámetros y de que tipo
+ *  Cumple la funcin de describir detalladamente que nombres de parmetros y de que tipo
  *  deben ser encontrados en el moConfig correspondiente.
  *
- *  Esta clase es rellenada por cada plugin y objeto moldeo que necesite tener controlado el formato de su archivo de configuración
+ *  Esta clase es rellenada por cada plugin y objeto moldeo que necesite tener controlado el formato de su archivo de configuracin
  *  @see    moParamDefinition
  *  @see    moMoldeoObject
  *  @see    moConfig
  */
-
 class LIBMOLDEO_API moConfigDefinition
 {
 	public:
-        /// constructor
-		moConfigDefinition();
+		/// constructor
+		moConfigDefinition ();
 
 		/// destructor
-		virtual ~moConfigDefinition();
+		virtual ~ moConfigDefinition ();
 
-        /// Agrega la definición de un parámetro
-        /**
-        *
-        * @param p_name nombre del parámetro
-        * @param p_type tipo del parámetro
-        * @param p_index    índice del parámetro dentro del archivo de configuración (-1 si no está definido aún)
-        */
-		void Add( moText p_name, moParamType p_type, MOint p_index = -1 );
+		/// Agrega la definicin de un parmetro
+		/**
+		 *
+		 * @param p_name nombre del parmetro
+		 * @param p_type tipo del parmetro
+		 * @param p_index    ndice del parmetro dentro del archivo de configuracin (-1 si no est definido an)
+		 */
+		void Add (moText p_name, moParamType p_type, MOint p_index = -1);
 
-        /// Agrega la definición de un parámetro con un valor predeterminado a tomar
-        /**
-        *
-        * @param p_name nombre del parámetro
-        * @param p_type tipo del parámetro
-        * @param p_index    índice del parámetro dentro del archivo de configuración (-1 si no está definido aún)
-        * @param p_defaultvalue  valor predeterminado
-        */
+		/// Agrega la definicin de un parmetro con un valor predeterminado a tomar
+		/**
+		 *
+		 * @param p_name nombre del parmetro
+		 * @param p_type tipo del parmetro
+		 * @param p_index    ndice del parmetro dentro del archivo de configuracin (-1 si no est definido an)
+		 * @param p_defaultvalue  valor predeterminado
+		 */
 		//void Add( moText p_name, moParamType p_type, MOint p_index, const moValue& p_defaultvalue );
-		void Add( moText p_name, moParamType p_type, MOint p_index, moValue p_defaultvalue );
+		void Add (moText p_name, moParamType p_type, MOint p_index,
+			moValue p_defaultvalue);
 
-		/// Devuelve el puntero al arreglo de definciones de parámetros
-        /**
-        *   Este objeto permite la enumeración de las definiciones de cada parámetro
-        * @return el puntero al arreglo de definiciones de parámetros moParamDefinitions
-        */
-		moParamDefinitions*	GetParamDefinitions() {
+		/// Devuelve el puntero al arreglo de definciones de parmetros
+		/**
+		 *   Este objeto permite la enumeracin de las definiciones de cada parmetro
+		 * @return el puntero al arreglo de definiciones de parmetros moParamDefinitions
+		 */
+		moParamDefinitions * GetParamDefinitions ()
+		{
 			return &m_ParamDefinitions;
 		}
 
-		/// Devuelve el puntero al arreglo de índices de los parámetros
-        /**
-        *   Este objeto permite la enumeración de los índices correspondiente a cada parámetro
-        * @return el puntero al arreglo de índices de los parámetros
-        */
-		moParamIndexes& ParamIndexes() { return m_ParamIndexes; }
+		/// Devuelve el puntero al arreglo de ndices de los parmetros
+		/**
+		 *   Este objeto permite la enumeracin de los ndices correspondiente a cada parmetro
+		 * @return el puntero al arreglo de ndices de los parmetros
+		 */
+		moParamIndexes & ParamIndexes ()
+		{
+			return m_ParamIndexes;
+		}
 
 		/// Fija el nombre y la clase del objeto  a configurar
-        /**
-        * El nombre del objeto no especifica la clase.
-        * El nombre de la clase puede ser del objeto del que deriva este.
-        * @param p_objectname el nombre del objeto
-        * @param p_objectclass la clase del objeto
-        */
-        void Set( moText p_objectname, moText p_objectclass ) {
-            m_ObjectName = p_objectname;
-            m_ObjectClass = p_objectclass;
-        }
-
+		/**
+		 * El nombre del objeto no especifica la clase.
+		 * El nombre de la clase puede ser del objeto del que deriva este.
+		 * @param p_objectname el nombre del objeto
+		 * @param p_objectclass la clase del objeto
+		 */
+		void Set (moText p_objectname, moText p_objectclass)
+		{
+			m_ObjectName = p_objectname;
+			m_ObjectClass = p_objectclass;
+		}
 		/// Devuelve el nombre del objeto asociado a este config
-        /**
-        * El nombre del objeto no especifica la clase.
-        * @return el nombre del objeto
-        */
-        moText GetObjectName() {
-            return m_ObjectName;
-        }
+		/**
+		 * El nombre del objeto no especifica la clase.
+		 * @return el nombre del objeto
+		 */
+		moText GetObjectName ()
+		{
+			return m_ObjectName;
+		}
 
 		/// Devuelve el nombre de la clase del objeto asociado a este config
-        /**
-        * El nombre de la clase puede ser del objeto del que deriva este.
-        * @return el nombre de la clase
-        */
-        moText GetObjectClass() {
-            return m_ObjectClass;
-        }
-
+		/**
+		 * El nombre de la clase puede ser del objeto del que deriva este.
+		 * @return el nombre de la clase
+		 */
+		moText GetObjectClass ()
+		{
+			return m_ObjectClass;
+		}
 	private:
-		moParamDefinitions	m_ParamDefinitions;
-		moParamIndexes		m_ParamIndexes;
-
-		moText              m_ObjectName;
-		moText              m_ObjectClass;
+		moParamDefinitions m_ParamDefinitions;
+		moParamIndexes m_ParamIndexes;
+		moText m_ObjectName;
+		moText m_ObjectClass;
 
 };
 
-#define moDefineParamIndex(X,Y) if ( m_Config.GetConfigDefinition()!=NULL && X<m_Config.GetConfigDefinition()->ParamIndexes().Count() )\
-                                    m_Config.GetConfigDefinition()->ParamIndexes().Set( X, moParamIndex(m_Config.GetParamIndex(Y)))
-
-
-/// almacena la configuración de los parámetros de un objeto en un archivo XML
+#define moDefineParamIndex(X,Y) \
+	if ( m_Config.GetConfigDefinition()!=NULL && \
+	(MOuint)X<m_Config.GetConfigDefinition()->ParamIndexes().Count() )\
+	m_Config.GetConfigDefinition ()->ParamIndexes ().Set ((int) X,\
+	moParamIndex ((MOint) m_Config.GetParamIndex (Y)))
+/// almacena la configuracin de los parmetros de un objeto en un archivo XML
 /**
- *  Es una clase de manejo de archivo de configuración basado en XML
+ *  Es una clase de manejo de archivo de configuracin basado en XML
  *
  *  ex:	Config[ PARAM_INDEX ][ VALUE_INDEX ][ SUBVALUE_INDEX ].Float()
  *
  *  Config[ ICON_COLOR ][-1][MO_RED].Float()
  */
-
 class LIBMOLDEO_API moConfig
 {
 	public:
+		/// Constructor
+		moConfig ();
 
-        /// Constructor
-		moConfig();
-
-        /// Destructor
-		virtual	~moConfig();
+		/// Destructor
+			virtual ~ moConfig ();
 
 		/// Fija el nombre y la clase del objeto  a configurar
-        /**
-        * El nombre del objeto no especifica la clase.
-        * El nombre de la clase puede ser del objeto del que deriva este.
-        * @param p_objectname el nombre del objeto
-        * @param p_objectclass la clase del objeto
-        */
-        void Set( moText p_objectname, moText p_objectclass ) {
-            m_ConfigDefinition.Set( p_objectname, p_objectclass);
-        }
-
+		/**
+		 * El nombre del objeto no especifica la clase.
+		 * El nombre de la clase puede ser del objeto del que deriva este.
+		 * @param p_objectname el nombre del objeto
+		 * @param p_objectclass la clase del objeto
+		 */
+			void Set (moText p_objectname, moText p_objectclass)
+		{
+			m_ConfigDefinition.Set (p_objectname, p_objectclass);
+		}
 		/// Devuelve el nombre del objeto asociado a este config
-        /**
-        * El nombre del objeto no especifica la clase.
-        * @return el nombre del objeto
-        */
-        moText GetObjectName() {
-            return m_ConfigDefinition.GetObjectName();
-        }
+		/**
+		 * El nombre del objeto no especifica la clase.
+		 * @return el nombre del objeto
+		 */
+		moText GetObjectName ()
+		{
+			return m_ConfigDefinition.GetObjectName ();
+		}
 
 		/// Devuelve el nombre de la clase del objeto asociado a este config
-        /**
-        * El nombre de la clase puede ser del objeto del que deriva este.
-        * @return el nombre de la clase
-        */
-        moText GetObjectClass() {
-            return m_ConfigDefinition.GetObjectClass();
-        }
-
-        /// Devuelve el nombre del archivo de configuración
-        /** @return el nombre del archivo de configuración */
-		moText					GetName() { return m_FileName; }
-
-        /// Devuelve el puntero al arreglo de parámetros
-        /** @return una referencia al arreglo de parámetros*/
-		moParams&				GetParams();
-
-
-        /// Indica si ha sido cargado con éxito el archivo de configuración
-        /** @return verdadero si ha sido cargado el archivo, falso si no*/
-        MOboolean				IsConfigLoaded();
-
-        /// Lee la configuracion de un archivo.
-        /**  @return MO_CONFIG_OK, MO_CONFIGFILE_NOT_FOUND, -1 si es otro error*/
-        int						LoadConfig( moText p_filename );
-
-        /// Devuelve true si pudo crear el archivo de configuración junto con su archivo correspondiente
-        /**
-        * @param
-        * @return true si fue exitoso, false si no lo fue
-        */
-		MOboolean               CreateDefault( moText p_fullconfigfilename );
-
-        /// Elimina todos los parámetros anteriormente cargados
-        /**
-        * Limpia la configuración.
-        */
-        void					UnloadConfig();
-
-        /// Guarda la configuracion en un archivo físico
-        /**  @param p_filename   nombre completo del archivo incluyendo el camino
-        * @return 0 si fue exitoso, otro valor en otro caso*/
-        int						SaveConfig( moText p_filename = moText(""));
-
-
-        /// Borra la configuracion de parámetros con sus respectivos valores
-        void					DeleteConfig();
-
-        /// Devuelve el contenido completo de la configuración como texto plano
-        /**  @return el texto completo de la configuración*/
-        moText					GetFullText();
-
-        /// Devuelve la cantidad de valores que contiene el parámetro indexado
-        /**  @param p_paramindex índice del parámetro
-        * @return cantidad de valores*/
-		MOuint						GetValuesCount( int p_paramindex );
-
-        /// Devuelve el valor indicado por el nombre del parámetro y el índice del valor
-        /**  @param nameparam nombre del parámetro
-        * @param indexvalue   índice del valor dentro del parámetro
-        * @return referencia al valor moValue*/
-		moValue&				GetValue( moText nameparam, int indexvalue = -1 );//el valor seleccionado del parametro
-
-        /// Devuelve el valor indicado por el índice del parámetro y el índice del valor
-        /**  @param indexparam índice del parámetro
-        * @param indexvalue   índice del valor dentro del parámetro
-        * @return referencia al valor moValue*/
-		moValue&				GetValue( int indexparam, int indexvalue = -1 );//el valor seleccionado del parametro
-
-        /// Operador de acceso directo a un parámetro por índice
-        /**  @param p_paramindex índice del parámetro
-        * @return referencia al parámetro moParam*/
-		moParam&				operator [] ( MOint p_paramindex ) {
-			return GetParam( p_paramindex );
+		/**
+		 * El nombre de la clase puede ser del objeto del que deriva este.
+		 * @return el nombre de la clase
+		 */
+		moText GetObjectClass ()
+		{
+			return m_ConfigDefinition.GetObjectClass ();
 		}
 
-        /// Operador de acceso directo a un parámetro por nombre
-        /**  @param p_paramname nombre del parámetro
-        * @return referencia al parámetro moParam*/
-        moParam&				operator [] ( moText p_paramname ) {
-			return GetParam( p_paramname );
+		/// Devuelve el nombre del archivo de configuracin
+		/** @return el nombre del archivo de configuracin */
+		moText GetName ()
+		{
+			return m_FileName;
 		}
 
-        /// Operador de acceso directo a un parámetro por estructura de índice (moParamIndex)
-        /**  @param p_paramindex estructura de índice del parámetro
-        * @return referencia al parámetro moParam*/
-		moParam&				operator [] ( moParamIndex p_paramindex ) {
-			return GetParam(p_paramindex.index );
+		/// Devuelve el puntero al arreglo de parmetros
+		/** @return una referencia al arreglo de parmetros*/
+		moParams & GetParams ();
+
+		/// Indica si ha sido cargado con xito el archivo de configuracin
+		/** @return verdadero si ha sido cargado el archivo, falso si no*/
+			MOboolean IsConfigLoaded ();
+
+		/// Lee la configuracion de un archivo.
+		/**  @return MO_CONFIG_OK, MO_CONFIGFILE_NOT_FOUND, -1 si es otro error*/
+			int LoadConfig (moText p_filename);
+
+		/// Devuelve true si pudo crear el archivo de configuracin junto con su archivo correspondiente
+		/**
+		 * @param
+		 * @return true si fue exitoso, false si no lo fue
+		 */
+			MOboolean CreateDefault (moText p_fullconfigfilename);
+
+		/// Elimina todos los parmetros anteriormente cargados
+		/**
+		 * Limpia la configuracin.
+		 */
+			void UnloadConfig ();
+
+		/// Guarda la configuracion en un archivo fsico
+		/**  @param p_filename   nombre completo del archivo incluyendo el camino
+		 * @return 0 si fue exitoso, otro valor en otro caso*/
+			int SaveConfig (moText p_filename = moText (""));
+
+		/// Borra la configuracion de parmetros con sus respectivos valores
+			void DeleteConfig ();
+
+		/// Devuelve el contenido completo de la configuracin como texto plano
+		/**  @return el texto completo de la configuracin*/
+			moText GetFullText ();
+
+		/// Devuelve la cantidad de valores que contiene el parmetro indexado
+		/**  @param p_paramindex ndice del parmetro
+		 * @return cantidad de valores*/
+			MOuint GetValuesCount (int p_paramindex);
+
+		/// Devuelve el valor indicado por el nombre del parmetro y el ndice del valor
+		/**  @param nameparam nombre del parmetro
+		 * @param indexvalue   ndice del valor dentro del parmetro
+		 * @return referencia al valor moValue*/
+								 //el valor seleccionado del parametro
+			moValue & GetValue (moText nameparam, int indexvalue = -1);
+
+		/// Devuelve el valor indicado por el ndice del parmetro y el ndice del valor
+		/**  @param indexparam ndice del parmetro
+		 * @param indexvalue   ndice del valor dentro del parmetro
+		 * @return referencia al valor moValue*/
+								 //el valor seleccionado del parametro
+			moValue & GetValue (int indexparam, int indexvalue = -1);
+
+		/// Acceso rpido a un valor entero
+		/**  @param indexparam ndice del parmetro
+		 * @return el entero*/
+			MOint Int (moParamReference p_paramreference);
+
+		/// Acceso rpido a un valor double
+		/**  @param indexparam ndice del parmetro
+		 * @return el entero*/
+			MOdouble Double (moParamReference p_paramreference);
+
+		/// Acceso rpido a un valor de texto
+		/**  @param indexparam ndice del parmetro
+		 * @return el entero*/
+			moText Text (moParamReference p_paramreference);
+
+		/// Acceso rpido a evaluar la funcin
+		/**  @param indexparam ndice del parmetro
+		 * @return el entero*/
+			MOdouble Eval (moParamReference p_paramreference, double x, ...);
+			MOdouble Eval (moParamReference p_paramreference);
+
+		/// Operador de acceso directo a un parmetro por ndice
+		/**  @param p_paramindex ndice del parmetro
+		 * @return referencia al parmetro moParam*/
+			moParam & operator [](MOint p_paramindex)
+		{
+			return GetParam (p_paramindex);
 		}
 
-        /// Operador de acceso directo a un parámetro por referencia de parámetro (moParamReference)
-        /**  @param p_paramreference estructura de referenciado de parámetro moParamReference
-        * @return referencia al parámetro moParam*/
-        moParam&				operator [] ( moParamReference p_paramreference ) {
-			return GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) );
+		/// Operador de acceso directo a un parmetro por nombre
+		/**  @param p_paramname nombre del parmetro
+		 * @return referencia al parmetro moParam*/
+		moParam & operator [](moText p_paramname)
+		{
+			return GetParam (p_paramname);
 		}
 
-        /// Devuelve el parámetro actualmente seleccionado
-        /**  @return referencia al parámetro moParam*/
-		moParam&				GetCurrentParam();
-
-        /// Devuelve el parámetro por índice
-        /**  @param p_paramindex estructura de índice del parámetro
-        * @return referencia al parámetro moParam*/
-		moParam&				GetParam( MOint	p_paramindex = -1 );
-
-        /// Devuelve el parámetro por nombre
-        /**  @param p_paramname nombre del parámetro
-        * @return referencia al parámetro moParam*/
-		moParam&				GetParam( moText	p_paramname );
-
-        /// Devuelve el parámetro por estructura de índice (moParamIndex)
-        /**  @param p_paramindex estructura de índice del parámetro
-        * @return referencia al parámetro moParam*/
-		moParam&				GetParam( moParamIndex p_paramindex ) {
-			return GetParam(p_paramindex.index );
+		/// Operador de acceso directo a un parmetro por estructura de ndice (moParamIndex)
+		/**  @param p_paramindex estructura de ndice del parmetro
+		 * @return referencia al parmetro moParam*/
+		moParam & operator [](moParamIndex p_paramindex)
+		{
+			return GetParam (p_paramindex.index);
 		}
 
-        /// Devuelve el parámetro por referencia de parámetro (moParamReference)
-        /**  @param p_paramreference estructura de referenciado de parámetro moParamReference
-        * @return referencia al parámetro moParam*/
-		moParam&				GetParam( moParamReference p_paramreference ) {
-			return GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) );
+		/// Operador de acceso directo a un parmetro por referencia de parmetro (moParamReference)
+		/**  @param p_paramreference estructura de referenciado de parmetro moParamReference
+		 * @return referencia al parmetro moParam*/
+		moParam & operator [](moParamReference p_paramreference)
+		{
+			return GetParam (m_ConfigDefinition.
+				ParamIndexes ().Get (p_paramreference.reference));
 		}
 
+		/// Devuelve el parmetro actualmente seleccionado
+		/**  @return referencia al parmetro moParam*/
+		moParam & GetCurrentParam ();
 
-        /// Devuelve la cantidad de parámetros de la configuracíón
-        /**  @return cantidad de parámetros*/
-		int						GetParamsCount();
+		/// Devuelve el parmetro por ndice
+		/**  @param p_paramindex estructura de ndice del parmetro
+		 * @return referencia al parmetro moParam*/
+			moParam & GetParam (MOint p_paramindex = -1);
 
-        /// Devuelve el índice correspondiente al valor seleccionado del parámetro por índice de parámetro
-        /**  @param p_paramindex índice del parámetro
-        * @return índice del valor*/
-		int						GetCurrentValueIndex( MOint p_paramindex );
+		/// Devuelve el parmetro por nombre
+		/**  @param p_paramname nombre del parmetro
+		 * @return referencia al parmetro moParam*/
+			moParam & GetParam (moText p_paramname);
 
-        /// Devuelve el índice correspondiente al parámetro por nombre
-        /**  @param p_paramname nombre del parámetro
-        * @return índice del parámetro*/
-	    int						GetParamIndex( moText p_paramname);
+		/// Devuelve el parmetro por estructura de ndice (moParamIndex)
+		/**  @param p_paramindex estructura de ndice del parmetro
+		 * @return referencia al parmetro moParam*/
+			moParam & GetParam (moParamIndex p_paramindex)
+		{
+			return GetParam (p_paramindex.index);
+		}
 
-        /// Devuelve el índice del parámetro actualmente seleccionado
-        /**  @return índice del parámetro*/
-		int						GetCurrentParamIndex();
+		/// Devuelve el parmetro por referencia de parmetro (moParamReference)
+		/**  @param p_paramreference estructura de referenciado de parmetro moParamReference
+		 * @return referencia al parmetro moParam*/
+		moParam & GetParam (moParamReference p_paramreference)
+		{
+			return GetParam (m_ConfigDefinition.
+				ParamIndexes ().Get (p_paramreference.reference));
+		}
 
-        /// Selecciona el parámetro por el índice
-        /**  @param índice del parámetro*/
-        void					SetCurrentParamIndex( int);
+		/// Devuelve la cantidad de parmetros de la configuracn
+		/**  @return cantidad de parmetros*/
+		int GetParamsCount ();
 
-        /// Selecciona el primer parámetro
-        void					FirstParam();
+		/// Devuelve el ndice correspondiente al valor seleccionado del parmetro por ndice de parmetro
+		/**  @param p_paramindex ndice del parmetro
+		 * @return ndice del valor*/
+			int GetCurrentValueIndex (MOint p_paramindex);
 
-        /// Selecciona el próximo parámetro
-		void					NextParam();
+		/// Devuelve el ndice correspondiente al parmetro por nombre
+		/**  @param p_paramname nombre del parmetro
+		 * @return ndice del parmetro*/
+			int GetParamIndex (moText p_paramname);
 
-        /// Selecciona el parámetro anterior
-		void					PrevParam();
+		/// Devuelve el ndice del parmetro actualmente seleccionado
+		/**  @return ndice del parmetro*/
+			int GetCurrentParamIndex ();
 
-        /// Posiciona el puntero de selección del valor del parámetro a la posición indicada
-        /**  @param p_paramindex índice de parámetro a posicionar el valor
-        * @param p_valueindex índice de valor a posicionar*/
-		void					SetCurrentValueIndex( int p_paramindex, int p_valueindex );
+		/// Selecciona el parmetro por el ndice
+		/**  @param ndice del parmetro*/
+			void SetCurrentParamIndex (int);
 
-        /// Devuelve el valor actual del parámetro actual
-        /**  @return referencia al valor moValue*/
-		moValue&				GetCurrentValue();
+		/// Selecciona el primer parmetro
+			void FirstParam ();
 
-        /// Selecciona el primer valor del parámetro actual
-		void					FirstValue();
+		/// Selecciona el prximo parmetro
+			void NextParam ();
 
-        /// Selecciona el próximo valor del parámetro actual
-        void					NextValue();
+		/// Selecciona el parmetro anterior
+			void PrevParam ();
 
-        /// Selecciona el valor anterior del parámetro actual
-        void					PreviousValue();
+		/// Posiciona el puntero de seleccin del valor del parmetro a la posicin indicada
+		/**  @param p_paramindex ndice de parmetro a posicionar el valor
+		 * @param p_valueindex ndice de valor a posicionar*/
+			void SetCurrentValueIndex (int p_paramindex, int p_valueindex);
 
-        /// Devuelve el puntero al objeto de definición de la configuración
-        /**  @return puntero al objeto de definición de la configuración moConfigDefinition*/
-		moConfigDefinition*		GetConfigDefinition();
+		/// Devuelve el valor actual del parmetro actual
+		/**  @return referencia al valor moValue*/
+			moValue & GetCurrentValue ();
 
+		/// Selecciona el primer valor del parmetro actual
+			void FirstValue ();
 
-        /// Devuelve la cantidad de preconfiguraciones definidas
-        /**  @return cantidad de preconfiguraciones*/
-		MOint					GetPreConfCount();
+		/// Selecciona el prximo valor del parmetro actual
+			void NextValue ();
 
-        /// Devuelve el índice de la preconfiguración seleccionada
-        /**  @return índice de la preconfiguración*/
-		MOint					GetCurrentPreConf();
+		/// Selecciona el valor anterior del parmetro actual
+			void PreviousValue ();
 
-        /// Posiciona la preconfiguración actual en el índice indicado
-        /**  @param índice de la preconfiguración*/
-		void					SetCurrentPreConf( MOint p_actual );
+		/// Devuelve el puntero al objeto de definicin de la configuracin
+		/**  @return puntero al objeto de definicin de la configuracin moConfigDefinition*/
+			moConfigDefinition *GetConfigDefinition ();
 
-        /// Selecciona el primer valor de la preconfiguración
-		void					PreConfFirst();
+		/// Devuelve la cantidad de preconfiguraciones definidas
+		/**  @return cantidad de preconfiguraciones*/
+			MOint GetPreConfCount ();
 
-		/// Selecciona el próximo valor de la preconfiguración
-		void					PreConfNext();
+		/// Devuelve el ndice de la preconfiguracin seleccionada
+		/**  @return ndice de la preconfiguracin*/
+			MOint GetCurrentPreConf ();
 
-		/// Selecciona el valor anterior de la preconfiguración
-		void					PreConfPrev();
+		/// Posiciona la preconfiguracin actual en el ndice indicado
+		/**  @param ndice de la preconfiguracin*/
+			void SetCurrentPreConf (MOint p_actual);
 
-	private:
+		/// Selecciona el primer valor de la preconfiguracin
+			void PreConfFirst ();
 
-		MOboolean				m_ConfigLoaded;
-		moParams				m_Params;//los parametros del config
-		moPreConfigs			m_PreConfigs;
-		moConfigDefinition		m_ConfigDefinition;
+		/// Selecciona el prximo valor de la preconfiguracin
+			void PreConfNext ();
 
-		MOint					m_MajorVersion;
-		MOint					m_MinorVersion;
-		moText					m_FileName;
+		/// Selecciona el valor anterior de la preconfiguracin
+			void PreConfPrev ();
 
-		int						m_CurrentParam;// el indice que indica cual es el parametro actual.
-		MOint					m_PreconfParamNum;
-		MOint					m_PreconfActual;
+		/// Agrega un valor
+			void AddValue (int paramindex, moValue & p_value);
+
+		/// Inserta un valor
+			void InsertValue (int paramindex, int valueindex, moValue & p_value);
+
+		/// Fija un valor
+			void SetValue (int paramindex, int valueindex, moValue & p_value);
+
+		/// Borra un valor
+			void DeleteValue (int paramindex, int valueindex);
+
+		/// Agrega una pre-configuracin
+			void AddPreconfig (moPreconfigIndexes & p_preconfindexes);
+
+		/// Agrega una pre-configuracin
+			void InsertPreconfig (int valueindex,
+			moPreconfigIndexes & p_preconfindexes);
+
+		/// Agrega una pre-configuracin
+			void SetPreconfig (int valueindex,
+			moPreconfigIndexes & p_preconfindexes);
+
+		/// Borra una pre-configuracin
+			void DeletePreconfig (int valueindex);
+		private:
+
+		MOboolean m_ConfigLoaded;
+			moParams m_Params;	 //los parametros del config
+			moPreConfigs m_PreConfigs;
+			moConfigDefinition m_ConfigDefinition;
+
+			MOint m_MajorVersion;
+			MOint m_MinorVersion;
+			moText m_FileName;
+
+			int m_CurrentParam;	 // el indice que indica cual es el parametro actual.
+			MOint m_PreconfParamNum;
+			MOint m_PreconfActual;
 };
-
-
 #endif

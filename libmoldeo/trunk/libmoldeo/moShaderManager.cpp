@@ -29,8 +29,9 @@
 
 *******************************************************************************/
 
-#include "moShaderManager.h"
-#include "moTextureFilterIndex.h"
+#include <moShaderManager.h>
+#include <moTextureFilterIndex.h>
+#include <moDataManager.h>
 
 moShaderManager::moShaderManager()
 {

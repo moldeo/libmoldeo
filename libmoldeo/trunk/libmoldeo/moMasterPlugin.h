@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                              moMasterPlugin.h
+							  moMasterPlugin.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 #include "moBasePlugin.h"
@@ -36,48 +36,73 @@
 
 class LIBMOLDEO_API moMasterEffectFactory
 {
-public:
-    moMasterEffectFactory() {}
-    virtual ~moMasterEffectFactory();
-    virtual moMasterEffect* Create(void) = 0;
-    virtual void Destroy(moMasterEffect* fx) = 0;
+	public:
+		moMasterEffectFactory ()
+		{
+		}
+		virtual ~ moMasterEffectFactory ();
+		virtual moMasterEffect *Create (void) = 0;
+		virtual void Destroy (moMasterEffect * fx) = 0;
 };
 
-typedef moMasterEffectFactory*(MO_PLG_ENTRY *CreateMasterEffectFactoryFunction)();
-typedef void(MO_PLG_ENTRY *DestroyMasterEffectFactoryFunction)();
+typedef moMasterEffectFactory *(MO_PLG_ENTRY *
+CreateMasterEffectFactoryFunction) ();
+typedef void (MO_PLG_ENTRY * DestroyMasterEffectFactoryFunction) ();
 
 class LIBMOLDEO_API moMasterPlugin
 {
-public:
-    moMasterEffect **array;
-    int n;
+	public:
+		moMasterEffect ** array;
+		int n;
 
-    CreateMasterEffectFactoryFunction CreateMasterEffectFactory;
-    DestroyMasterEffectFactoryFunction DestroyMasterEffectFactory;
+		CreateMasterEffectFactoryFunction CreateMasterEffectFactory;
+		DestroyMasterEffectFactoryFunction DestroyMasterEffectFactory;
 
-    moMasterEffectFactory* m_factory;
+		moMasterEffectFactory *m_factory;
 
-    moMasterPlugin() { handle = NULL; n=0; array = NULL; m_factory = NULL; }
-    moMasterPlugin(moText plugin_file) { m_factory = NULL; handle = NULL; n = 0; array = NULL; Load(plugin_file); }
-    virtual ~moMasterPlugin() { if(handle != NULL) Unload(); }
+		moMasterPlugin ()
+		{
+			handle = NULL;
+			n = 0;
+			array = NULL;
+			m_factory = NULL;
+		}
+		moMasterPlugin (moText plugin_file)
+		{
+			m_factory = NULL;
+			handle = NULL;
+			n = 0;
+			array = NULL;
+			Load (plugin_file);
+		}
+		virtual ~ moMasterPlugin ()
+		{
+			if (handle != NULL)
+				Unload ();
+		}
 
-    void Load(moText plugin_file);
-    void Unload();
-    moMasterEffect* Create();
-    void Destroy(moMasterEffect *mastereffect);
-    moText GetName() { return name; }
-private:
-    moText name;
-    MOpluginHandle handle;
+		void Load (moText plugin_file);
+		void Unload ();
+		moMasterEffect *Create ();
+		bool Destroy (moMasterEffect * mastereffect);
+		moText GetName ()
+		{
+			return name;
+		}
+	private:
+		moText name;
+		MOpluginHandle handle;
 };
 
 /*
 template class LIBMOLDEO_API moDynamicArray<moMasterPlugin*>;
 typedef moDynamicArray<moMasterPlugin*> moMasterPluginsArray;
 */
-moDeclareExportedDynamicArray( moMasterPlugin*, moMasterPluginsArray )
-
-LIBMOLDEO_API moMasterEffect* moNewMasterEffect(moText effect_name, moMasterPluginsArray &plugins);
-LIBMOLDEO_API void moDeleteMasterEffect(moMasterEffect* effect, moMasterPluginsArray &plugins);
-
+moDeclareExportedDynamicArray (moMasterPlugin *, moMasterPluginsArray)
+LIBMOLDEO_API moMasterEffect *moNewMasterEffect (moText effect_name,
+moMasterPluginsArray &
+plugins);
+LIBMOLDEO_API bool
+moDeleteMasterEffect (moMasterEffect * effect,
+moMasterPluginsArray & plugins);
 #endif

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                                moDebugManager.h
+								moDebugManager.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
@@ -37,18 +37,46 @@
 
 #ifndef __MODEBUGMANAGER_H
 #define __MODEBUGMANAGER_H
+class moDebugManager:public moResource
+{
+	public:moDebugManager ();
+	virtual ~ moDebugManager ();
+	virtual MOboolean Init ();
+	virtual MOboolean Finish ();
 
-class moDebugManager : public moResource {
+	/// Anuncia un error
+	/**
+	 *   Anuncia un error apilandolo en la lista de mensajes y escribindolo
+	 *   al archivo de mensajes de errores y al de mensajes registrados...
+	 */
+	static void Error (moText p_text);
 
-	public:
-		moDebugManager();
-		virtual ~moDebugManager();
+	/// Anuncia un mensaje al usuario adems de guardarlo en el log de texto
+	/**
+	 * Pone el mensaje en la pila de mensajes, y escribe este al log de texto
+	 *
+	 */
+	static void Message (moText p_text);
 
-		virtual MOboolean Init();
-		virtual MOboolean Finish();
+	/// Escribe un mensaje en el archivo de registro (log)
+	/**
+	 *   El archivo log se llama comunmente moldeolog.txt y se encuentra en el raz del archivo ejecutable
+	 *   de Moldeo
+	 *
+	 */
+	static void Log (moText p_text);
 
-		void Push( moText text ) ;
+	/**
+	 *   Apila el mensaje dentro de la pila de mensajes
+	 *   @param p_text el mensaje
+	 */
+	static void Push (moText p_text);
 
+	/**
+	 *   Saca y devuelve el primer texto ingresado a la lista
+	 *   @return un mensaje de texto
+	 */
+	static moText Pop ();
+	static MOint Count ();
 };
-
-#endif
+#endif							 /*  */

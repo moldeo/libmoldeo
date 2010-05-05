@@ -32,7 +32,7 @@
 
 #include "moVideoGraph.h"
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray(moCaptureDevices)
 
 
@@ -61,6 +61,37 @@ moVideoFormat moVideoGraph::GetVideoFormat() {
 
 }
 
+moStreamState    moVideoGraph::GetState() {
+
+   return MO_STREAMSTATE_UNKNOWN;
+
+}
+
+moText  moVideoGraph::StateToText( moStreamState state ) {
+
+    switch((int)state) {
+        case MO_STREAMSTATE_UNKNOWN:
+            return moText("UNKNOWN");
+            break;
+        case MO_STREAMSTATE_PAUSED:
+            return moText("PAUSED");
+            break;
+        case MO_STREAMSTATE_PLAYING:
+            return moText("PLAYING");
+            break;
+        case MO_STREAMSTATE_WAITING:
+            return moText("WAITING");
+            break;
+        case MO_STREAMSTATE_READY:
+            return moText("READY");
+            break;
+        case MO_STREAMSTATE_STOPPED:
+            return moText("STOPPED");
+            break;
+    }
+
+    return moText("invalid state");
+}
 
 //==========================================================================
 // moVideoFramework

@@ -29,7 +29,100 @@
 
 *******************************************************************************/
 
-#include "moDataManager.h"
+#include <moDataManager.h>
+#include <moArray.h>
+#include <moVideoGraph.h>
+#include <moGsGraph.h>
+#include <moResourceManager.h>
+#include <moRenderManager.h>
+
+moDefineDynamicArray(moDataSessionKeys)
+moDefineDynamicArray(moDataSessionEventKeys)
+
+//===========================================
+//
+//				moDataSession
+//
+//===========================================
+
+moDataSession::moDataSession() {
+    m_pVideoGraph = NULL;
+    m_pDataSessionConfig = NULL;
+}
+
+moDataSession::~moDataSession() {
+    if (m_pVideoGraph) {
+        delete m_pVideoGraph;
+        m_pVideoGraph = NULL;
+    }
+}
+
+void
+moDataSession::Set(   moText p_Name,
+            moDataSessionConfig* pSessionConfig,
+            moDataSessionMode p_sessionmode,
+            moDataSessionRecordMode p_recordmode,
+            moDataSessionPlaybackMode p_playbackmode ) {
+    m_Name = p_Name;
+    m_pDataSessionConfig = pSessionConfig;
+    m_SessionMode = p_sessionmode;
+    m_SessionPlaybackMode = p_playbackmode;
+    m_SessionRecordMode = p_recordmode;
+    m_Keys.Init( pSessionConfig->GetMaxKeys(), NULL );
+    if (m_pVideoGraph) {
+        delete m_pVideoGraph;
+        m_pVideoGraph = (moVideoGraph*) new moGsGraph();
+        m_pVideoGraph->InitGraph();
+    } else {
+        m_pVideoGraph = (moVideoGraph*) new moGsGraph();
+        m_pVideoGraph->InitGraph();
+    }
+}
+
+
+bool
+moDataSession::SaveToFile( moText p_filename ) {
+
+
+}
+
+bool
+moDataSession::LoadFromFile( moText p_filename ) {
+
+}
+
+bool
+moDataSession::AddKey( moDataSessionKey* p_key ) {
+
+    m_Keys.Add( p_key );
+
+}
+
+bool
+moDataSession::AddEventKey( moDataSessionEventKey* p_eventkey ) {
+    m_EventKeys.Add( p_eventkey );
+}
+
+bool
+moDataSession::Playback() {
+    m_SessionPlaybackMode = MO_DATASESSION_PLAY_LIVETOCONSOLE;
+}
+
+bool
+moDataSession::Record() {
+
+    m_SessionRecordMode = MO_DATASESSION_RECORD_DIRECTTOFILE;
+
+}
+
+bool
+moDataSession::RecordLive( moResourceManager* pRM ) {
+
+    m_SessionPlaybackMode = MO_DATASESSION_PLAY_LIVETOVIDEO;
+    if (m_pVideoGraph && m_pDataSessionConfig) {
+        m_pVideoGraph->BuildRecordGraph( m_pDataSessionConfig->GetVideoFileName(), pRM->GetRenderMan()->GetFramesPool() );
+    }
+}
 
 //===========================================
 //
@@ -38,13 +131,24 @@
 //===========================================
 
 moDataSessionConfig::moDataSessionConfig() {
-	m_DataPath = "";
-	m_ConsoleConfigName = "";
+	m_DataPath = moText("");
+	m_ConsoleConfigName = moText("");
 }
 
-moDataSessionConfig::moDataSessionConfig( moText p_datapath, moText p_consoleconfig ) {
+moDataSessionConfig::moDataSessionConfig(   moText p_datapath,
+                                            moText p_consoleconfig,
+                                            moText p_SessionFileName,
+                                            moText p_VideoFileName,
+                                            long p_MaxKeys,
+                                            long p_MaxTimecode,
+                                            long p_Port,
+                                            long p_Address ) {
 	m_DataPath = p_datapath;
 	m_ConsoleConfigName = p_consoleconfig;
+	m_SessionFileName = p_SessionFileName;
+	m_VideoFileName = p_VideoFileName;
+	m_MaxKeys = p_MaxKeys;
+	m_MaxTimecode = p_MaxTimecode;
 }
 
 moDataSessionConfig::~moDataSessionConfig() {
@@ -60,6 +164,17 @@ moDataSessionConfig::GetConsoleConfigName() {
 	return m_ConsoleConfigName;
 }
 
+moText
+moDataSessionConfig::GetVideoFileName() {
+	return m_VideoFileName;
+}
+
+moText
+moDataSessionConfig::GetSessionFileName() {
+	return m_SessionFileName;
+}
+
+
 //===========================================
 //
 //				moDataManager
@@ -74,7 +189,7 @@ moDataManager::moDataManager() {
 	SetName("Data Manager");
 
 	m_pDataSession = NULL;
-	m_DataSessionIndex = -1;
+    m_pDataSessionConfig = NULL;
 }
 
 moDataManager::~moDataManager() {
@@ -82,22 +197,38 @@ moDataManager::~moDataManager() {
 }
 
 MOboolean moDataManager::Init() {
-	m_pDataSession = new moDataSessionConfig( moText("data"), moText("data/console.mol") );
+	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( moText("../../data/test"), moText("../../data/test/console.mol") );
+    if (!m_pDataSession) {
+        m_pDataSession = new moDataSession();
+        if (m_pDataSession)
+            m_pDataSession->Set( moText("session 1"),
+                                 m_pDataSessionConfig,
+                                 MO_DATASESSION_INACTIVE,
+                                 MO_DATASESSION_RECORD_BUFFERINGTOFILE,
+                                 MO_DATASESSION_PLAY_LIVETOCONSOLE );
+    }
 	return true;
 }
 
 MOboolean moDataManager::Init( moText p_datapath, moText p_consoleconfig ) {
 
-	m_pDataSession = new moDataSessionConfig( p_datapath, p_consoleconfig );
-	m_DataSessionIndex = 0;
+	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( p_datapath, p_consoleconfig );
+	if (!m_pDataSession) {
+        m_pDataSession = new moDataSession();
+            m_pDataSession->Set( moText("session 1"),
+                                 m_pDataSessionConfig,
+                                 MO_DATASESSION_INACTIVE,
+                                 MO_DATASESSION_RECORD_BUFFERINGTOFILE,
+                                 MO_DATASESSION_PLAY_LIVETOCONSOLE );
+	}
 	return true;
 }
 
 moText
 moDataManager::GetDataPath() {
 	//m_DataSessionIndex
-	if (m_pDataSession)
-		return m_pDataSession->GetDataPath();
+	if (m_pDataSessionConfig)
+		return m_pDataSessionConfig->GetDataPath();
 	return moText("");
 }
 
@@ -105,13 +236,27 @@ moDataManager::GetDataPath() {
 moText
 moDataManager::GetConsoleConfigName() {
 	//m_DataSessionIndex
-	if (m_pDataSession)
-		return m_pDataSession->GetConsoleConfigName();
+	if (m_pDataSessionConfig)
+		return m_pDataSessionConfig->GetConsoleConfigName();
 	return moText("");
 }
 
 
 MOboolean moDataManager::Finish() {
 	return true;
+}
+
+void moDataManager::StartRecordingSession(  ) {
+
+    m_pDataSession->Record();
+
+}
+
+void moDataManager::StartPlayinbackSession(  ) {
+    m_pDataSession->Playback();
+}
+
+moDataSession*  moDataManager::GetSession() {
+        return m_pDataSession;
 }
 

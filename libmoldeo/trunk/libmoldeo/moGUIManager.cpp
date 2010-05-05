@@ -29,9 +29,10 @@
 
 *******************************************************************************/
 
-#include "moGUIManager.h"
+#include <moGUIManager.h>
+#include <moArray.h>
+#include <moFontManager.h>
 
-#include "moArray.h"
 moDefineDynamicArray(moGuiObjectArray)
 //===========================================
 //
@@ -89,7 +90,8 @@ moGUIManager::Init(/*HWND p_hOpWnd, HWND p_hVisWnd*/) {
 }
 
 MOboolean
-moGUIManager::Init( MO_HANDLE p_OpWindowHandle ) {
+moGUIManager::Init( MO_HANDLE p_OpWindowHandle, MO_DISPLAY p_Display ) {
+    SetDisplay( p_Display );
     SetOpWindowHandle( p_OpWindowHandle );
     return true;
 }
@@ -122,6 +124,13 @@ moGUIManager::DisplayInfoWindow( MOfloat x, MOfloat y, MOfloat width, MOfloat he
 }
 
 void
+moGUIManager::SetDisplay( MO_DISPLAY p_Display )  {
+
+    m_Display = p_Display;
+
+}
+
+void
 moGUIManager::SetOpWindowHandle( MO_HANDLE p_OpHandle )  {
 
     m_OpHandle = p_OpHandle;
@@ -134,6 +143,14 @@ moGUIManager::SetVisWindowHandle( MO_HANDLE p_VisHandle )  {
     m_VisHandle = p_VisHandle;
 
 }
+
+MO_DISPLAY
+moGUIManager::GetDisplay()  {
+
+    return m_Display;
+
+}
+
 
 MO_HANDLE
 moGUIManager::GetOpWindowHandle()  {

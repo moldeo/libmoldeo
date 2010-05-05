@@ -37,7 +37,8 @@
 
 #include "moMathVector4.h"
 
-#include "moArray.h"
+#include <moArray.h>
+moDefineDynamicArray(moVector4iArray)
 moDefineDynamicArray(moVector4fArray)
 moDefineDynamicArray(moVector4dArray)
 
@@ -118,12 +119,19 @@ bool moVector4<Real>::operator>= (const moVector4& rkV) const
     return CompareArrays(rkV) >= 0;
 }
 */
+template<> const moVector4<MOlong> moVector4<MOlong>::ZERO(0,0,0,0);
+template<> const moVector4<MOlong> moVector4<MOlong>::UNIT_X(1,0,0,0);
+template<> const moVector4<MOlong> moVector4<MOlong>::UNIT_Y(0,1,0,0);
+template<> const moVector4<MOlong> moVector4<MOlong>::UNIT_Z(0,0,1,0);
+template<> const moVector4<MOlong> moVector4<MOlong>::UNIT_W(0,0,0,1);
+template<> const moVector4<MOlong> moVector4<MOlong>::ONE(1,1,1,1);
+
 template<> const moVector4<MOfloat> moVector4<MOfloat>::ZERO(0.0f,0.0f,0.0f,0.0f);
-template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_X(1.0f,0.0f,0.0f,0.0f);
-template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_Y(0.0f,1.0f,0.0f,0.0f);
-template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_Z(0.0f,0.0f,1.0f,0.0f);
-template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_W(0.0f,0.0f,0.0f,1.0f);
-template<> const moVector4<MOfloat> moVector4<MOfloat>::ONE(1.0f,1.0f,1.0f,1.0f);
+template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_X(1,0.0f,0.0f,0.0f);
+template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_Y(0.0f,1,0.0f,0.0f);
+template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_Z(0.0f,0.0f,1,0.0f);
+template<> const moVector4<MOfloat> moVector4<MOfloat>::UNIT_W(0.0f,0.0f,0.0f,1);
+template<> const moVector4<MOfloat> moVector4<MOfloat>::ONE(1,1,1,1);
 
 template<> const moVector4<MOdouble> moVector4<MOdouble>::ZERO(0.0,0.0,0.0,0.0);
 template<> const moVector4<MOdouble> moVector4<MOdouble>::UNIT_X(1.0,0.0,0.0,0.0);

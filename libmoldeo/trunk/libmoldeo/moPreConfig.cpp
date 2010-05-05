@@ -31,9 +31,9 @@
 
 #include "moPreConfig.h"
 
-#include "moArray.h"
-
+#include <moArray.h>
 moDefineDynamicArray( moPreConfigs )
+moDefineDynamicArray( moPreconfigIndexes )
 
 moPreConfig::moPreConfig() {
 }
@@ -41,6 +41,32 @@ moPreConfig::moPreConfig() {
 moPreConfig::~moPreConfig()
 {
 	Finish();
+}
+
+moPreConfig::moPreConfig( moPreconfigIndexes& preconfindexes ) {
+    m_PreconfIndexes = preconfindexes;
+    m_ValueIndexes.Empty();
+    for( int i=0; i<m_PreconfIndexes.Count(); i++ ) {
+
+        moValueIndex PIndex;
+        PIndex.m_ParamIndex = m_PreconfIndexes[i].m_ParamIndex;
+        PIndex.m_ValueIndex = m_PreconfIndexes[i].m_ValueIndex;
+
+        m_ValueIndexes.Add( PIndex );
+    }
+}
+
+moPreConfig::moPreConfig( moValueIndexes& valueindexes ) {
+    m_ValueIndexes = valueindexes;
+    m_PreconfIndexes.Empty();
+    for( int i=0; i<m_PreconfIndexes.Count(); i++ ) {
+
+        moPreconfigParamIndex PIndex;
+        PIndex.m_ParamIndex = m_ValueIndexes[i].m_ParamIndex;
+        PIndex.m_ValueIndex = m_ValueIndexes[i].m_ValueIndex;
+
+        m_PreconfIndexes.Add( PIndex );
+    }
 }
 
 MOboolean

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                                moFontManager.h
+								moFontManager.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,101 +25,96 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
-#ifndef __MOFONTMANAGER_H
-#define __MOFONTMANAGER_H
+#ifndef __MO_FONTMANAGER_H__
+#define __MO_FONTMANAGER_H__
 
-#include "moTypes.h"
-#include "moAbstract.h"
-#include "moArrayH.h"
-#include "moResourceManager.h"
-#include "moText.h"
-#include "moParam.h"
-#include "moOGLFT.h"
+#include <moTypes.h>
+//#include "moAbstract.h"
+//#include "moArray.h"
+#include <moResourceManager.h>
+//#include "moText.h"
+//#include "moParam.h"
+typedef void moFontFace;
 
 /**
-* Tipo de representación de tipografía
-*/
-
-enum moFontType {
-	MO_FONT_OUTLINE,
-	MO_FONT_TRANSLUCENT,
-	MO_FONT_TRANSLUCENTTEXTURE,
-	MO_FONT_GRAYSCALE,
-	MO_FONT_MONOCHROME,
-	MO_FONT_SOLID,
-	MO_FONT_FILLED
+ * Tipo de representacin de tipografa
+ */
+typedef MOfloat moFontSize;
+enum moFontType
+{
+	MO_FONT_OUTLINE = 0, MO_FONT_TRANSLUCENT =
+	1, MO_FONT_TRANSLUCENTTEXTURE = 2, MO_FONT_GRAYSCALE =
+	3, MO_FONT_MONOCHROME = 4, MO_FONT_SOLID = 5, MO_FONT_FILLED =
+	6, MO_FONT_GLBUILD = 7, MO_FONT_TYPES = 8, MO_FONT_UNDEFINED = -1
 };
-
 
 /// clase base para una fuente 3d o 2d
 /**
-*   Implementada a través de la librería freetype y OGLFT, permite crear y manipular tipografías vectoriales.
-*/
-class LIBMOLDEO_API moFont : public moAbstract {
+ *   Implementada a travs de la librera freetype y OGLFT, permite crear y manipular tipografas vectoriales.
+ */
+class LIBMOLDEO_API moFont:public moAbstract
+{
+	public:moFont ();
+	virtual ~ moFont ();
+	virtual MOboolean Init ();
+	virtual MOboolean Init (moFontType p_Type,
+		moText p_fontname /*or font bitmap name */ ,
+		MOint p_size, MOuint glid = 0);
+	virtual MOboolean Finish ();
+	moText GetName ();
+	void SetSize (MOfloat size);
+	void Draw (MOfloat x, MOfloat y, moText & text);
+	void Draw (MOfloat x, MOfloat y, moText & text, moFontSize p_fontsize,
+		MOint set = 0, MOfloat sx = 1.0, MOfloat sy = 1.0, MOfloat rt =
+		0.0);
+	void SetForegroundColor (MOfloat p_r, MOfloat p_g, MOfloat p_b);
+	void SetHorizontalJustification (int p_horizontal_justification);
+	void SetStringRotation (MOfloat p_string_rotation);
+	protected:moText m_Name;
+	moFontSize m_FontSize;
 
-	public:
-		moFont();
-		virtual ~moFont();
+	//Abstract instantiation of faces:
+	moFontFace * m_pFace;
 
-		virtual MOboolean Init();
-		virtual MOboolean Init( moFontType p_Type, moText p_fontname, MOint p_size );
-		virtual MOboolean Finish();
-
-		moText  GetName();
-
-		void SetSize( MOfloat	size );
-		void Draw( MOfloat x, MOfloat y, moText text );
-
-		void SetForegroundColor( MOfloat p_r, MOfloat p_g, MOfloat p_b);
-		void SetHorizontalJustification( OGLFT::Face::HorizontalJustification p_horizontal_justification);
-		void SetStringRotation( MOfloat p_string_rotation );
-
-	protected:
-
-		moText	m_Name;
-
-		//Abstract instantiation of faces:
-		OGLFT::Face* m_pFace;
-
-
+	//glPrint implementation
+	void BuildFont ();
+	void glPrint (GLint x, GLint y, char *string, int set, float scx,
+		float scy, float rt);
+	void KillFont ();
+	GLuint m_GLBaseList;		 // Base Display List For The Font
+	GLuint m_FontGLId;
 };
 
-/*
-template class LIBMOLDEO_API moDynamicArray<moFont*>;
-typedef moDynamicArray<moFont*> moFonts;
-*/
-moDeclareExportedDynamicArray(moFont*, moFonts)
-
+moDeclareExportedDynamicArray (moFont *, moFonts)
 /// administrator de fuentes
 /**
-*
-*/
-class LIBMOLDEO_API moFontManager : public moResource {
-
-	public:
-		moFontManager();
-		virtual ~moFontManager();
-		virtual MOboolean Init();
-		virtual MOboolean Finish();
-
-		moFont*     GetFont( moText p_fontname, bool create = false, moFontType p_fonttype = MO_FONT_OUTLINE, MOfloat p_fontsize = 12 );
-		moFont*     GetFont( MOint p_id );
-        moFont*     GetFont( moValue& p_value, bool create = true );
-
-		moFonts*	GetFonts();
-		moFont*     AddFont( moText p_fontname, moFontType p_fonttype = MO_FONT_OUTLINE, MOfloat p_fontsize = 12 );
-		void        AddFont( moFont*    p_pFont );
-
-	private:
-
-        moFont* LoadFont( moText p_fontname, moFontType p_fonttype = MO_FONT_OUTLINE, MOfloat p_fontsize = 12 );
-
-		moFonts		m_Fonts;
+ *
+ */
+class LIBMOLDEO_API moFontManager:public moResource
+{
+	public:moFontManager ();
+	virtual ~ moFontManager ();
+	virtual MOboolean Init ();
+	virtual MOboolean Finish ();
+	moFontType GetFontType (moText fonttype);
+	moFont * GetFont (moText p_fontname, bool create =
+		false, moFontType p_fonttype =
+		MO_FONT_OUTLINE, MOfloat p_fontsize = 12);
+	moFont * GetFont (MOint p_id);
+	moFont * GetFont (moValue & p_value, bool create = true);
+	moFonts * GetFonts ();
+	moFont * AddFont (moText p_fontname, moText p_fonttype =
+		"OUTLINE", MOfloat p_fontsize = 12);
+	moFont * AddFont (moText p_fontname, moFontType p_fonttype =
+		MO_FONT_OUTLINE, MOfloat p_fontsize = 12);
+	void AddFont (moFont * p_pFont);
+	private:moFont * LoadFont (moText p_fontname_path, moFontType p_fonttype =
+			MO_FONT_OUTLINE, MOfloat p_fontsize = 12);
+		moFonts m_Fonts;
 };
 
-
-#endif
+#endif /* __MO_FONTMANAGER_H__ */

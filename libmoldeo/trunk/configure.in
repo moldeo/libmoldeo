@@ -24,6 +24,9 @@ PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
 dnl check for sdl
 PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
 
+dnl check tinyxml
+PKG_CHECK_MODULES([TINYXML], [tinyxml] ,has_tinyxml=yes)
+
 dnl check for sdl-net
 AC_CHECK_HEADER(SDL/SDL_net.h, , AC_MSG_ERROR([SDL_net header not found.]))
 AC_CHECK_LIB(SDL_net, SDLNet_Init, AC_SUBST([SDL_NET_LIBS], [-lSDL_net]), AC_MSG_ERROR([SDL_net not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
@@ -47,6 +50,9 @@ AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([
 dnl check for gle
 AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
 AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
+
+dnl check for ftgl
+PKG_CHECK_MODULES([FTGL], [ftgl] ,has_ftgl=yes)
 
 dnl check for freeimage
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
@@ -126,6 +132,12 @@ AC_CHECK_FT2
 
 dnl check for check test suite
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
+
+dnl check boost libraries
+AX_BOOST_BASE
+AX_BOOST_ASIO
+AX_BOOST_THREAD
+AX_BOOST_FILESYSTEM
 
 dnl autoscan results
 AC_CHECK_FUNCS([floor])

@@ -5,6 +5,7 @@ lib_LTLIBRARIES = libmoldeo.la
 libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moText.cpp \
 	moAbstract.cpp \
+	moActions.cpp \
 	moArcBall.cpp \
 	moBuckets.cpp \
 	moConfig.cpp \
@@ -13,6 +14,7 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moConsoleState.cpp \
 	moDataManager.cpp \
 	moDebugManager.cpp \
+	moDecoderManager.cpp \
 	moDeviceCode.cpp \
 	moDsGraph.cpp \
 	moEffect.cpp \
@@ -22,7 +24,6 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moFBManager.cpp \
 	moFBO.cpp \
 	moFileManager.cpp \
-	moFilterManager.cpp \
 	moFontManager.cpp \
 	moGLManager.cpp \
 	moGsGraph.cpp \
@@ -83,31 +84,38 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moTimeManager.cpp \
 	moTypes.cpp \
 	moValue.cpp \
+	moVdpauGraph.cpp \
 	moVideoGraph.cpp \
 	moVideoManager.cpp \
 	moXmlConfig.cpp \
 	mo3ds.cpp \
-	tinyxml.cpp \
-	tinyxmlerror.cpp \
-	tinyxmlparser.cpp \
-	tinystr.cpp
+	moFilterManager.cpp 
 
 #	moMathMatrix.cpp \
 #	moMathQuaternion.cpp 
 
 libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
+	${MUPARSER_CFLAGS} \
+	${BOOST_CPPFLAGS} \
+	${SDL_CFLAGS} \
 	${LUA51_CFLAGS} 
 
 libmoldeo_la_LIBS = ${FT2_LIBS} \
 	${GST_LIBS} \
+	${BOOST_ASIO_LIB} \
+	${BOOST_THREAD_LIB} \
+	${BOOST_FILESYSTEM_LIB} \
 	${LUA51_LIBS} 
 
 libmoldeo_includedir = $(includedir)/libmoldeo
 
 libmoldeo_include_HEADERS = \
+	moldeo.h \
 	mo3dModelManager.h \
+	mo3ds.h \
 	moAbstract.h \
+	moActions.h \
 	moArcBall.h \
 	moArray.h \
 	moArrayH.h \
@@ -119,6 +127,7 @@ libmoldeo_include_HEADERS = \
 	moConsoleState.h \
 	moDataManager.h \
 	moDebugManager.h \
+	moDecoderManager.h \
 	moDeviceCode.h \
 	moDsGraph.h \
 	moEffect.h \
@@ -136,6 +145,7 @@ libmoldeo_include_HEADERS = \
 	moGLManager.h \
 	moGsGraph.h \
 	moGUIManager.h \
+	moIODevice.h \
 	moIODeviceManager.h \
 	moIODevicePlugin.h \
 	moLock.h \
@@ -196,11 +206,10 @@ libmoldeo_include_HEADERS = \
 	moTimeManager.h \
 	moTypes.h \
 	moValue.h \
+	moVdpauGraph.h \
 	moVideoGraph.h \
 	moVideoManager.h \
 	moXmlConfig.h \
-	tinystr.h \
-	tinyxml.h \
 	moPort.h \
 	mo3ds.h 
 

@@ -70,6 +70,16 @@ void moBucket::EmptyBucket() {
 	Unlock();
 }
 
+void moBucket::BuildBucket( MOlong size , int setvalue ) {
+    Lock();
+	m_lBufferSize = size;
+	m_pBuffer = new MOubyte [m_lBufferSize];
+	memset((void*)m_pBuffer,setvalue,  m_lBufferSize );
+	m_bEmpty = false;
+	Unlock();
+}
+
+
 void moBucket::SetBuffer( MOlong size, MOubyte *pbuf) {
 	Lock();
 	m_lBufferSize = size;
@@ -111,7 +121,7 @@ moBucketsPool::moBucketsPool() {
 	m_pFirstBucketToGo = m_pLastBucketToGo = NULL;
 	m_pFirstEmptyBucket = m_pLastEmptyBucket = NULL;
 	m_nBuckets = 0;
-	m_lMaxBuckets = MAX_BUCKETS;
+	m_lMaxBuckets = 1;
 }
 
 moBucketsPool::~moBucketsPool() {

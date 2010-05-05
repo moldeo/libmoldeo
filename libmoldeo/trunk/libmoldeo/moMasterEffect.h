@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                              moMasterEffect.h
+							  moMasterEffect.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
@@ -34,14 +34,13 @@
 
 #include "moEffect.h"
 #include "moConsoleState.h"
-
 class moEffectManager;
 
 /**
  * clase base para definir Efectos Maestro.
  * los efectos maestro se diferencian de los pre-efectos, post-efectos y efectos en que
  * tienen acceso a modificar y crear efectos
- * Los efectos maestro predeterminados son por ejemplo: el moMasterEffectChannel, que puede modificar aquellos efectos que tiene seleccionado alterando sus parámetros de dibujado y sincronización.
+ * Los efectos maestro predeterminados son por ejemplo: el moMasterEffectChannel, que puede modificar aquellos efectos que tiene seleccionado alterando sus parmetros de dibujado y sincronizacin.
  * El efecto maestro moMasterEffectPanel, enciende y apaga los efectos cargados en moConsole
  * @see moMoldeoObject
  * @see moPreEffect
@@ -51,58 +50,60 @@ class moEffectManager;
  * @see moResource
  * @see moMoldeoObjectType
  */
-class LIBMOLDEO_API moMasterEffect : public moEffect
+class LIBMOLDEO_API moMasterEffect:public moEffect
 {
-public:
-
-        /**
-         * constructor genérico de la clase.
-         */
-        moMasterEffect();
-
-        /**
-         * destructor genérico de la clase.
-         */
-        virtual ~moMasterEffect();
+	public:
+		/**
+		 * constructor genrico de la clase.
+		 */
+		moMasterEffect ();
 
 		/**
-		* Pre-Inicializador genérico derivado de moEffect.
-		*/
-		virtual MOboolean PreInit();
+		 * destructor genrico de la clase.
+		 */
+		virtual ~ moMasterEffect ();
 
 		/**
-		* Inicializador genérico derivado de moAbstract.
-		* @see moAbstract
-		*/
-        virtual MOboolean Init() = 0;
+		 * Pre-Inicializador genrico derivado de moEffect.
+		 */
+		virtual MOboolean PreInit ();
 
-        /**
-        * Función de asignación del puntero al Administrador de efectos a controlar
-        * @see moEffectManager
-        */
-        virtual void Set( moEffectManager *pEffectManager, moConsoleState* cstate);
+		/**
+		 * Inicializador genrico derivado de moAbstract.
+		 * @see moAbstract
+		 */
+		virtual MOboolean Init () = 0;
 
-        /**
-        * Función de dibujado derivada de moEffect
-        * @see moEffect
-        */
-        virtual void Draw(moTempo*, moEffectState* parentstate = NULL) = 0;
-    virtual void Interaction(moIODeviceManager*) = 0;
-    virtual MOboolean Finish() = 0;
+		/**
+		 * Funcin de asignacin del puntero al Administrador de efectos a controlar
+		 * @see moEffectManager
+		 */
 
-    protected:
+		virtual void Set (moEffectManager * pEffectManager,
+			moConsoleState * cstate);
 
-        /**
-        * Puntero al Administrador de efectos a controlar
-        */
-        moEffectManager*	m_pEffectManager;//cada effect maestro tiene acceso a los otros effects maestros
+		/**
+		 * Funcin de dibujado derivada de moEffect
+		 * @see moEffect
+		 */
+		virtual void Draw (moTempo *, moEffectState * parentstate = NULL) = 0;
+		virtual void Interaction (moIODeviceManager *) = 0;
+		virtual MOboolean Finish () = 0;
+	protected:
+		/**
+		 * Puntero al Administrador de efectos a controlar
+		 */
+								 //cada effect maestro tiene acceso a los otros effects maestros
+		moEffectManager * m_pEffectManager;
 
-        /**
-        * Puntero al estado general de la consola
-        */
-        moConsoleState *consolestate;    //el state de la consola
+		/**
+		 * Puntero al estado general de la consola
+		 */
+								 //el state de la consola
+		moConsoleState *consolestate;
 
 };
+
 /*
 template class LIBMOLDEO_API moDynamicArray<moMasterEffect*>;
 typedef moDynamicArray<moMasterEffect*> moMasterEffectsArray;
@@ -110,9 +111,6 @@ typedef moDynamicArray<moMasterEffect*> moMasterEffectsArray;
 /**
  * moMasterEffectsArray: clase arreglo de punteros de objetos moMasterEffect
  */
-moDeclareExportedDynamicArray( moMasterEffect*, moMasterEffectsArray)
-
-
+moDeclareExportedDynamicArray (moMasterEffect *, moMasterEffectsArray)
 #include "moEffectManager.h"
-
 #endif

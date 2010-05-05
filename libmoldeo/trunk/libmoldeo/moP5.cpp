@@ -83,6 +83,7 @@ void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
 void moP5::arc(float x, float y, float width, float height, float start, float stop)
 {
 	// Implement display list with precomputed circle coordinates...
+
 }
 
 void moP5::point(float x, float y)
@@ -110,6 +111,30 @@ void moP5::ellipse(float x, float y, float width, float height)
 {
 	// Implement display list with precomputed circle coordinates...
 	// and scale it to the right size.
+
+	int N;
+
+	N = 12;
+
+	switch(fillMode) {
+
+        case MO_P5_NOFILL:
+            glBegin(GL_LINE_LOOP);
+                for(float t = 0; t <= MO_P5_TWO_PI; t += MO_P5_TWO_PI/N)
+                    glVertex2f(width* cos(t) + (float)x, height * sin(t) + (float)y);
+            glEnd();
+            break;
+
+        case MO_P5_FILL:
+            glBegin(GL_POLYGON);
+                for(float t = 0; t <= MO_P5_TWO_PI; t += MO_P5_TWO_PI/N)
+                    glVertex2f(width * cos(t) + (float)x, height * sin(t) + (float)y);
+            glEnd();
+            break;
+	}
+
+
+
 }
 
 void moP5::rect(float x, float y, float width, float height)
@@ -270,6 +295,7 @@ void moP5::stroke(float value1, float value2, float value3, float alpha)
 
 void moP5::noFill()
 {
+    fillMode = MO_P5_NOFILL;
 }
 
 void moP5::noStroke()
@@ -278,18 +304,35 @@ void moP5::noStroke()
 
 void moP5::fill(float gray)
 {
+    fillMode = MO_P5_FILL;
+    fillColor[0] = gray;
+    fillColor[1] = gray;
+    fillColor[2] = gray;
+    fillColor[3] = 1.0;
 }
 
 void moP5::fill(float gray, float alpha)
 {
+    fill(gray);
+    fillColor[3] = alpha;
 }
 
 void moP5::fill(float value1, float value2, float value3)
 {
+    fillMode = MO_P5_FILL;
+    fillColor[0] = value1;
+    fillColor[1] = value2;
+    fillColor[2] = value3;
+    fillColor[3] = 1.0;
 }
 
 void moP5::fill(float value1, float value2, float value3, float alpha)
 {
+    fillMode = MO_P5_FILL;
+    fillColor[0] = value1;
+    fillColor[1] = value2;
+    fillColor[2] = value3;
+    fillColor[3] = alpha;
 }
 
 void moP5::pushMatrix()

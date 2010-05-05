@@ -31,10 +31,27 @@
 
 #include "moSoundManager.h"
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray(moSoundArray)
 moDefineDynamicArray(moSoundEffectArray)
 moDefineDynamicArray(moSoundBufferArray)
+
+#ifdef MO_WIN32
+    #include "Framework.h"
+    #include "CWaves.h"
+#endif
+
+#ifdef MO_LINUX
+    #include <AL/al.h>
+    #include <AL/alut.h>
+    #include <AL/alext.h>
+#endif
+
+#ifdef MO_MACOSX
+    #include <al.h>
+    #include <alut.h>
+    //#include <alext.h>
+#endif
 
 moSound::moSound() {
 	pData = NULL;
@@ -126,12 +143,12 @@ void moSound::PlaySample( MOint sampleid ) {
 
 	m_OldSample = m_ActualSample;
 
-	alGetSourcei( m_SourceId , AL_BYTE_OFFSET, &m_ActualSample);
+	alGetSourcei( m_SourceId , AL_BUFFER /*AL_BYTE_OFFSET*/, &m_ActualSample);
 
 	alSourceStop(m_SourceId);
 
 	if (m_ActualSample!=sampleid) {
-		alSourcei( m_SourceId, AL_BYTE_OFFSET, sampleid );
+		alSourcei( m_SourceId, AL_BUFFER /*AL_BYTE_OFFSET*/, sampleid );
 		m_ActualSample = sampleid;
 	}
 
@@ -176,7 +193,7 @@ MOint moSound::State() {
 
 void moSound::Update() {
 	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_State );
-	alGetSourcei( m_SourceId, AL_BYTE_OFFSET, &m_ActualSample );
+	alGetSourcei( m_SourceId, AL_BUFFER /*AL_BYTE_OFFSET*/, &m_ActualSample );
 }
 
 void moSound::SetPosition( float x, float y, float z ) {
@@ -340,10 +357,10 @@ moSound* moSoundManager::GetSound( moText p_name) {
 	id = GetSoundId( p_name);
 
 	if(id == MO_SOUNDERROR) {
-                text = "\nERROR DE SONIDO, no se encontro un id para ";
+                text = moText("\nERROR DE SONIDO, no se encontro un id para ");
                 text += p_name;
                 text +=  moText("\n");
-		printf(text);
+		MODebug2->Error(text);
 		return(NULL);
 	}  //error
 	else {

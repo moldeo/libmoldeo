@@ -31,7 +31,7 @@
 
 #include "moTextureFilter.h"
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray(moTextureFilterArray)
 
 moColorMatrix::moColorMatrix()
@@ -522,13 +522,13 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
 		m_src_tex_offset[i] = pglsl->GetUniformID(uname);
 	}
 
-	uname = "tempo_angle";
+	uname = moText("tempo_angle");
 	m_tempo_angle = pglsl->GetUniformID(uname);
 
-	uname = "dest_tex_size";
+	uname = moText("dest_tex_size");
 	m_dest_tex_size = pglsl->GetUniformID(uname);
 
-    uname = "fade_const";
+    uname = moText("fade_const");
     m_fade_const = pglsl->GetUniformID(uname);
 
     if (p_params == NULL) m_DefParams = new moTextFilterParam();

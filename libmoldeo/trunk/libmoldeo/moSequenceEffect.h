@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                              moSequenceEffect.h
+							  moSequenceEffect.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,20 +25,20 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
 //========================================
-//	MOAY CLASS
+//      MOAY CLASS
 //
-//	MO EFFECT ESCENA
+//      MO EFFECT ESCENA
 //
-//	09/03/2004
+//      09/03/2004
 //
 //========================================
-//Descripción:
-//Esta clase fue escrita con intención
+//Descripcin:
+//Esta clase fue escrita con intencin
 //de superponer varios efectos en uno solo
 //por ejemplo un efecto icono con un efecto imagen
 //
@@ -63,35 +63,68 @@
 #include "moPlugin.h"
 #include "moMasterEffect.h"
 
+/// Efecto Secuencia
 /**
  * moSequenceEffect
- * el efecto secuencia permite generar una secuencia de distintos efectos, que será tratado como un solo efecto con su ciclo de tiempo
+ * el efecto secuencia permite generar una secuencia de distintos efectos, que ser tratado como un solo efecto con su ciclo de tiempo
  * independiente *
  * @see moMoldeoObject
  * @see moSceneEffect
  * @see moEffect
  */
-
-class LIBMOLDEO_API moSequenceEffect : public moMasterEffect
+class LIBMOLDEO_API moSequenceEffect:public moMasterEffect
 {
-public:
-    //config
-    MOint idp_effects;//indice del parametro escena
-    MOint idp_alpha;//indice del parametro alpha
-    MOint idp_sequence;//indice del parametro escenas
+	public:
+		//config
+		MOint idp_effects;		 //indice del parametro escena
+		MOint idp_alpha;		 //indice del parametro alpha
+		MOint idp_sequence;		 //indice del parametro escenas
 
-    //Arrays
-    moEffectsArray effects;
-    moPluginsArray plugins;
+		//Arrays
+		moEffectsArray effects;
+		moPluginsArray plugins;
 
-    moSequenceEffect();
-    moSequenceEffect(char*);
-    virtual ~moSequenceEffect();
-    MOboolean Init();
-    void Draw(moTempo*,moEffectState* parentstate=NULL);
-    MOboolean Finish();
-    void Interaction(moIODeviceManager *);
-    void LoadCodes(moIODeviceManager *);
+		/// Constructor
+		/**
+		 * Constructor
+		 */
+		moSequenceEffect ();
+
+		/// Constructor
+		/**
+		 * Constructor
+		 */
+		moSequenceEffect (char *);
+
+		/// Destructor
+		/**
+		 * Destructor
+		 */
+		virtual ~ moSequenceEffect ();
+
+		/// Inicializacin
+		/**
+		 * Inicializacin
+		 */
+		MOboolean Init ();
+
+		/// Dibujar
+		/**
+		 * Dibujar
+		 */
+		void Draw (moTempo *, moEffectState * parentstate = NULL);
+
+		/// Finalizacin
+		/**
+		 * Finalizacin
+		 */
+		MOboolean Finish ();
+
+		/// Interaccin
+		/**
+		 * Interaccin
+		 */
+		void Interaction (moIODeviceManager *);
+		void LoadCodes (moIODeviceManager *);
 };
-
 #endif

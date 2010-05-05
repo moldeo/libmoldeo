@@ -81,6 +81,11 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BOOST_ASIO_LIB = @BOOST_ASIO_LIB@
+BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
+BOOST_FILESYSTEM_LIB = @BOOST_FILESYSTEM_LIB@
+BOOST_LDFLAGS = @BOOST_LDFLAGS@
+BOOST_THREAD_LIB = @BOOST_THREAD_LIB@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -111,6 +116,8 @@ FREEIMAGE_LIBS = @FREEIMAGE_LIBS@
 FT2_CFLAGS = @FT2_CFLAGS@
 FT2_CONFIG = @FT2_CONFIG@
 FT2_LIBS = @FT2_LIBS@
+FTGL_CFLAGS = @FTGL_CFLAGS@
+FTGL_LIBS = @FTGL_LIBS@
 GLEW_LIBS = @GLEW_LIBS@
 GLE_LIBS = @GLE_LIBS@
 GLUT_LIBS = @GLUT_LIBS@
@@ -161,6 +168,8 @@ SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TINYXML_CFLAGS = @TINYXML_CFLAGS@
+TINYXML_LIBS = @TINYXML_LIBS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -215,7 +224,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-INCLUDES = @CHECK_CFLAGS@
+INCLUDES = @CHECK_CFLAGS@ -I../libmoldeo
 check_libmoldeo_SOURCES = check_libmoldeo.cpp
 check_libmoldeo_LDADD = @CHECK_LIBS@ \
 	-L../libmoldeo -lmoldeo \
@@ -229,7 +238,12 @@ check_libmoldeo_LDADD = @CHECK_LIBS@ \
 	@CGGL_LIBS@ \
 	@LUA51_LIBS@ \
 	@GST_LIBS@ \
-	@FT2_LIBS@
+	@TINYXML_LIBS@ \
+	@FT2_LIBS@ \
+	@BOOST_ASIO_LIB@ \
+	@BOOST_FILESYSTEM_LIB@ \
+	@BOOST_THREAD_LIB@ \
+	@FTGL_LIBS@ 
 
 CLEANFILES = check_libmoldeo.log
 all: all-am

@@ -44,9 +44,11 @@ MOint moMathFunctionIndex::Add(moMathFunction* p_tex)
 	m_functions_array.Add(p_tex);
 	idx = m_functions_array.Count() - 1;
 	moText msg;
-	msg = "Function loaded: ";
-	msg += m_functions_array[idx]->GetExpression();
-	//MODebug->Push(msg);
+	#ifdef _DEBUG
+        msg = moText("Function loaded: ");
+        msg += m_functions_array[idx]->GetExpression();
+        MODebug2->Log(msg);
+    #endif
 	return idx;
 }
 
@@ -63,10 +65,10 @@ MOboolean moMathFunctionIndex::ValidIndex(MOuint p_idx)
 	else
 	{
 		moText text;
-		text =  "Error(moMathFunctionIndex): the index: ";
+		text =  moText("Error(moMathFunctionIndex): the index: ");
 		text += IntToStr(p_idx);
-		text +=  " does not exists.";
-		//MODebug->Push(text);
+		text +=  moText(" does not exists.");
+		MODebug2->Error(text);
 		return false;
 	}
 }
@@ -103,10 +105,12 @@ MOuint moMathFunctionIndex::LoadFunctions(moConfig* p_cfg,  moMathManager* p_mat
 			idx++;
 			pfunc = p_math_man->GetFunction(moid);
 			m_functions_array.Add(pfunc);
-			moText msg;
-			msg = "Function loaded: ";
-			msg += pfunc->GetExpression();
-			//MODebug->Push(msg);
+			#ifdef _DEBUG
+                moText msg;
+                msg = moText("Function loaded: ");
+                msg += pfunc->GetExpression();
+                MODebug2->Log(msg);
+            #endif
 		}
 		p_cfg->NextValue();
 	}

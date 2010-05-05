@@ -35,10 +35,9 @@
 *******************************************************************************/
 
 #include "moLuaBase.h"
+#include <assert.h>
 #include <string.h>
 #include <stdio.h>
-
-#include <assert.h>
 
 //============================================================================
 // int printMessage

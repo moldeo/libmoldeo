@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                              moPreEffect.h
+							  moPreEffect.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
@@ -37,15 +37,16 @@
 
 #include "moEffect.h"
 
+/// clase base para definir Pre-Efectos.
 /**
  * clase base para definir Pre-Efectos.
- * los efectos son los objetos basicos y define cada uno una capa que será dibujada
- * en función del orden en el que ha sido cargado en la consola de efectos
- * los pre-efectos se cargan generalmente en la capa más baja, la primera a ser dibujada
- * un pre-efecto es por ejemplo el del borrado de la pantalla, así como aquellos efectos de procesamiento
+ * los efectos son los objetos basicos y define cada uno una capa que ser dibujada
+ * en funcin del orden en el que ha sido cargado en la consola de efectos
+ * los pre-efectos se cargan generalmente en la capa ms baja, la primera a ser dibujada
+ * un pre-efecto es por ejemplo el del borrado de la pantalla, as como aquellos efectos de procesamiento
  * sobre el fotograma anterior al actual
  * Es importante implementar las funciones de Init, Draw, Update e Interaction que son
- * necesarias para las operaciones de Inicialización, Dibujado, Actualización e Interacción.
+ * necesarias para las operaciones de Inicializacin, Dibujado, Actualizacin e Interaccin.
  * @see moMoldeoObject
  * @see moEffect
  * @see moPostEffect
@@ -54,21 +55,16 @@
  * @see moResource
  * @see moMoldeoObjectType
  */
-
-class LIBMOLDEO_API moPreEffect: public moEffect
+class LIBMOLDEO_API moPreEffect:public moEffect
 {
-public:
-    GLuint ScreenAll;
-    moPreEffect();
-    virtual ~moPreEffect();
-    virtual MOboolean Init() = 0;
-    virtual void Draw(moTempo*, moEffectState* = NULL) = 0;
-    virtual MOboolean Finish() = 0;
+	public:
+		GLuint ScreenAll;
+		moPreEffect ();
+		virtual ~ moPreEffect ();
+		virtual MOboolean Init () = 0;
+		virtual void Draw (moTempo *, moEffectState * = NULL) = 0;
+		virtual MOboolean Finish () = 0;
 };
-/*
-template class LIBMOLDEO_API moDynamicArray<moPreEffect*>;
-typedef moDynamicArray<moPreEffect*> moPreEffectsArray;
-*/
-moDeclareExportedDynamicArray( moPreEffect*, moPreEffectsArray)
 
+moDeclareExportedDynamicArray (moPreEffect *, moPreEffectsArray);
 #endif
