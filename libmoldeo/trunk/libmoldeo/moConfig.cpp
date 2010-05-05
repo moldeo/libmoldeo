@@ -31,11 +31,8 @@
 
 #include "moConfig.h"
 
-#include "moArray.h"
-moDefineDynamicArray(moParamIndexes)
-
 #include <tinyxml.h>
-
+#include "moFileManager.h"
 
 //================================================================
 //	moConfigDefinition
@@ -110,8 +107,8 @@ int moConfig::LoadConfig( moText p_filename ) {
 //		FirstChild( "DEFINITION" ).Child( "Child", 1 ).Element();
 		if ( MOCONFIG )
 		{
-			MOCONFIG->QueryIntAttribute( "majorversion", &m_MajorVersion);
-			MOCONFIG->QueryIntAttribute( "minorversion", &m_MinorVersion);
+			MOCONFIG->QueryIntAttribute( "majorversion", &((int&)m_MajorVersion));
+			MOCONFIG->QueryIntAttribute( "minorversion", &((int&)m_MinorVersion));
 
 			TiXmlNode* NODEDEFINITION = MOCONFIG->FirstChild( "DEFINITION" );
 			TiXmlElement* DEFINITION = NULL;
@@ -219,6 +216,7 @@ int moConfig::LoadConfig( moText p_filename ) {
 			if (PRECONFIGS) {
 
 				moPreConfig PreConfig;
+
 				TiXmlNode* PRECONFIGNODE = PRECONFIGS->FirstChild("PRE");
 				TiXmlElement* PRECONFIG = NULL;
 				if (PRECONFIGNODE) {
@@ -228,6 +226,7 @@ int moConfig::LoadConfig( moText p_filename ) {
 
 					TiXmlElement*  PREVALUE = NULL;
 					TiXmlNode* NODE = PRECONFIG->FirstChild("P");
+					PreConfig.m_ValueIndexes.Empty();
 
 					if (NODE) {
 						PREVALUE = NODE->ToElement();
@@ -299,7 +298,7 @@ int moConfig::SaveConfig( moText p_filename ) {
         TiXmlElement* CONFIGPARAMS = new TiXmlElement( "CONFIGPARAMS" );
         if (CONFIGPARAMS) {
 
-            for( int p = 0; p< m_Params.Count(); p++ ) {
+            for( int p = 0; p< (int)m_Params.Count(); p++ ) {
 
                 //proximo parámetro
                 moParam& xparam( m_Params.Get(p) );
@@ -311,14 +310,14 @@ int moConfig::SaveConfig( moText p_filename ) {
                     PARAM->SetAttribute( "name" , definition.GetName() );
                     PARAM->SetAttribute( "type" , definition.GetTypeStr() );
 
-                    for( int  v = 0; v< xparam.GetValuesCount(); v++ ) {
+                    for( int  v = 0; v< (int)xparam.GetValuesCount(); v++ ) {
 
                         //proximo valor
                         moValue &xvalue( xparam.GetValue(v) );
 
                         TiXmlElement* VALUE = new TiXmlElement("VAL");
                         if (VALUE) {
-                            for( int s = 0; s< xvalue.GetSubValueCount(); s++ ) {
+                            for( int s = 0; s< (int)xvalue.GetSubValueCount(); s++ ) {
 
                                 //proximo subvalor
                                 moValueBase& xvaluedata( xvalue.GetSubValue(s) );
@@ -358,14 +357,14 @@ int moConfig::SaveConfig( moText p_filename ) {
         TiXmlElement* PRECONFIGS = new TiXmlElement( "PRECONFIGS" );
         if (PRECONFIGS) {
 
-            for( int pc=0; pc< m_PreConfigs.Count(); pc++) {
+            for( int pc=0; pc< (int)m_PreConfigs.Count(); pc++) {
 
                 moPreConfig& xPreConfig( m_PreConfigs.Get(pc) );
 
                 TiXmlElement* PRECONFIG = new TiXmlElement("PRE");
                 if (PRECONFIG) {
 
-                    for( int pv=0; pv< xPreConfig.m_ValueIndexes.Count(); pv++) {
+                    for( int pv=0; pv< (int)xPreConfig.m_ValueIndexes.Count(); pv++) {
 
                         moValueIndex xValueIndex = xPreConfig[pv];
 
@@ -401,6 +400,12 @@ int moConfig::SaveConfig( moText p_filename ) {
 MOboolean
 moConfig::CreateDefault( moText p_fullconfigfilename ) {
 
+    moFile cFile( p_fullconfigfilename );
+
+    /// Do not overwrite... by default
+    if (cFile.Exists())
+        return false;
+
     if (this->IsConfigLoaded())
         return false;
 
@@ -414,7 +419,7 @@ moConfig::CreateDefault( moText p_fullconfigfilename ) {
         this->UnloadConfig();
 
 
-        for(int i=0; i<pParamDefinitions->Count() ; i++) {
+        for(int i=0; i<(int)pParamDefinitions->Count() ; i++) {
 
             moParamDefinition pParamDefinition = pParamDefinitions->Get(i);
 
@@ -562,6 +567,57 @@ moConfig::GetValuesCount( int p_paramindex ) {
 	return m_Params.Get( p_paramindex ).GetValuesCount();
 }
 
+moValue&
+moConfig::GetValue( moText nameparam, int indexvalue ) {
+
+    moParam& param( GetParam( nameparam ));
+
+    return param.GetValue( indexvalue );
+}
+
+moValue&
+moConfig::GetValue( int indexparam, int indexvalue ) {
+
+    moParam& param( GetParam( indexparam ));
+
+    return param.GetValue( indexvalue );
+
+}
+
+
+MOint
+moConfig::Int( moParamReference p_paramreference ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    return param.GetValue().GetSubValue().Int();
+}
+
+MOdouble
+moConfig::Double( moParamReference p_paramreference ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    return param.GetValue().GetSubValue().Double();
+}
+
+moText
+moConfig::Text( moParamReference p_paramreference ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    return param.GetValue().GetSubValue().Text();
+}
+
+MOdouble
+moConfig::Eval( moParamReference p_paramreference, double x, ... ) {
+
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    return param.GetData()->Eval( x );
+}
+
+MOdouble
+moConfig::Eval( moParamReference p_paramreference ) {
+
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    return param.GetData()->Eval();
+}
+
+
 void
 moConfig::SetCurrentValueIndex( int p_paramindex, int p_valueindex ) {
 	m_Params[p_paramindex].SetIndexValue( p_valueindex );
@@ -687,4 +743,57 @@ void
 moConfig::PreConfPrev() {
     if(m_PreconfActual!=-1 && m_PreconfActual>0)
         SetCurrentPreConf( --m_PreconfActual );
+}
+
+
+/// Agrega un valor
+void
+moConfig::AddValue( int paramindex,  moValue& p_value ) {
+    GetParam( paramindex ).AddValue( p_value );
+}
+
+/// Inserta un valor
+void
+moConfig::InsertValue( int paramindex,  int valueindex, moValue& p_value ) {
+    GetParam( paramindex ).GetValues().Insert( valueindex, p_value );
+}
+
+/// Fija un valor
+void
+moConfig::SetValue( int paramindex,  int valueindex, moValue& p_value ) {
+    GetParam( paramindex ).GetValue( valueindex ) = p_value;
+}
+
+/// Borra un valor
+void
+moConfig::DeleteValue( int paramindex,  int valueindex ) {
+
+    GetParam( paramindex ).DeleteValue( valueindex );
+
+}
+
+
+
+/// Agrega una pre-configuración
+void
+moConfig::AddPreconfig( moPreconfigIndexes& p_preconfindexes ) {
+    m_PreConfigs.Add( moPreConfig( p_preconfindexes ) );
+}
+
+/// Agrega una pre-configuración
+void
+moConfig::InsertPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes ) {
+    m_PreConfigs.Insert( valueindex,  moPreConfig( p_preconfindexes ) );
+}
+
+/// Agrega una pre-configuración
+void
+moConfig::SetPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes ) {
+    m_PreConfigs.Set( valueindex, moPreConfig( p_preconfindexes ) );
+}
+
+/// Borra una pre-configuración
+void
+moConfig::DeletePreconfig( int valueindex ) {
+    m_PreConfigs.Remove( valueindex );
 }

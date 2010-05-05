@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                              moPostEffect.h
+							  moPostEffect.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andr� Colubri
+  Andr Colubri
 
 *******************************************************************************/
 
@@ -36,12 +36,12 @@
 
 /**
  * clase base para definir Post-Efectos.
- * los efectos son los objetos basicos y define cada uno una capa que será dibujada
- * en función del orden en el que ha sido cargado en la consola de efectos
- * los post-efectos se cargan generalmente en la capa más alta, la última a ser dibujada
+ * los efectos son los objetos basicos y define cada uno una capa que ser dibujada
+ * en funcin del orden en el que ha sido cargado en la consola de efectos
+ * los post-efectos se cargan generalmente en la capa ms alta, la ltima a ser dibujada
  * Ejemplo: el post-efecto debug imprime en pantalla los mensajes de error y status de la consola por sobre todo el resto
  * Es importante implementar las funciones de Init, Draw, Update e Interaction que son
- * necesarias para las operaciones de Inicialización, Dibujado, Actualización e Interacción.
+ * necesarias para las operaciones de Inicializacin, Dibujado, Actualizacin e Interaccin.
  * @see moMoldeoObject
  * @see moEffect
  * @see moPreEffect
@@ -50,18 +50,14 @@
  * @see moResource
  * @see moMoldeoObjectType
  */
-class LIBMOLDEO_API moPostEffect: public moEffect {
-public:
-    moPostEffect();
-    virtual ~moPostEffect();
-    virtual MOboolean Init() = 0;
-    virtual void Draw(moTempo*,moEffectState * parentstate = NULL) = 0;
-    virtual MOboolean Finish() = 0;
+class LIBMOLDEO_API moPostEffect:public moEffect
+{
+	public:
+		moPostEffect ();
+		virtual ~ moPostEffect ();
+		virtual MOboolean Init () = 0;
+		virtual void Draw (moTempo *, moEffectState * parentstate = NULL) = 0;
+		virtual MOboolean Finish () = 0;
 };
-/*
-template class LIBMOLDEO_API moDynamicArray<moPostEffect*>;
-typedef moDynamicArray<moPostEffect*> moPostEffectsArray;
-*/
-moDeclareExportedDynamicArray( moPostEffect*, moPostEffectsArray)
-
+moDeclareExportedDynamicArray (moPostEffect *, moPostEffectsArray);
 #endif

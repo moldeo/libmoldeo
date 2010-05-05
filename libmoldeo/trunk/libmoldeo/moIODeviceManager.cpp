@@ -31,7 +31,19 @@
 
 #include "moIODeviceManager.h"
 
-#include "moArray.h"
+#ifdef MO_WIN32
+  #include <SDL.h>
+#endif
+
+#ifdef MO_LINUX
+  #include <SDL/SDL.h>
+#endif
+
+#ifdef MO_MACOSX
+  #include <SDL/SDL.h>
+#endif
+
+#include <moArray.h>
 moDefineDynamicArray(moIODevicesArray)
 
 moIODevice::moIODevice() {
@@ -164,6 +176,7 @@ moIODeviceManager::Update() {
 void
 moIODeviceManager::PollEvents() {
 
+	/*
 	SDL_Event event;
 
 	   //SDL_KEYDOWN,			// Keys pressed
@@ -184,7 +197,7 @@ moIODeviceManager::PollEvents() {
 					Events->Add(MO_IODEVICE_MOUSE,SDL_MOUSEBUTTONUP, event.button.button, event.button.x, event.button.y);
 					break;
 				case SDL_KEYDOWN:
-					/* Ignore ALT-TAB for windows */
+					// Ignore ALT-TAB for windows
 					if((event.key.keysym.sym == SDLK_LALT) ||
 						(event.key.keysym.sym == SDLK_RALT) ||
 						(event.key.keysym.sym == SDLK_TAB)) {
@@ -205,6 +218,7 @@ moIODeviceManager::PollEvents() {
 					break;
 		}
 	}
+	*/
 }
 
 moEventList*

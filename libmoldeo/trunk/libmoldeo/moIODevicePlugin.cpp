@@ -31,7 +31,7 @@
 
 #include "moIODevicePlugin.h"
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray(moIODevicePluginsArray)
 
 #include <iostream>
@@ -117,7 +117,7 @@ moIODevice* moIODevicePlugin::Create() {
 	return NULL;
 }
 
-void moIODevicePlugin::Destroy(moIODevice *EfectoMaestro) {
+bool moIODevicePlugin::Destroy(moIODevice *iodevice) {
 
 	moIODevice **narray;
 	int i,j;
@@ -125,64 +125,26 @@ void moIODevicePlugin::Destroy(moIODevice *EfectoMaestro) {
 	if(m_factory!=NULL) {
 
 		for(j=0;j<n;j++)
-			if(array[j]==EfectoMaestro) break;
+			if(array[j]==iodevice) {
 
-		m_factory->Destroy(EfectoMaestro);
+                m_factory->Destroy(iodevice);
 
-		if(n==1) {//muere
-			delete [] array;
-		} else if(n>1) {//array dinamico
-			narray = new moIODevice* [n-1];//generamos el nuevo vacio
-			for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
-			for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
-			delete [] array;
-			array = narray;
-		}
-		n--;
-		return;
+                if(n==1) {//muere
+                    delete [] array;
+                } else if(n>1) {//array dinamico
+                    narray = new moIODevice* [n-1];//generamos el nuevo vacio
+                    for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
+                    for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
+                    delete [] array;
+                    array = narray;
+                }
+                n--;
+                return true;
+			}
 	}
-	return;
+	return false;
 }
 
-//===========================================
-//
-//                             moIODevicePluginsArray
-//
-//===========================================
-/*
-void moIODevicePluginsArray::Add(moIODevicePlugin* plugin)
-{
-    if(length < max_length)
-    {
-        if(plugin!=NULL) {
-			cout << "plugin agregado\n";
-			array[length] = plugin;
-			length++;
-		} else {
-			cout << "error: plugin no fue creado!\n";
-		}
-    }
-}
-
-void moIODevicePluginsArray::Init(MOuint nplugins)
-{
-    max_length = 256;
-    length = nplugins;
-    array = new moIODevicePlugin*[max_length];
-    for(MOuint i = 0; i < max_length; i++) array[i] = NULL;
-}
-
-void moIODevicePluginsArray::Finish()
-{
-    if(array != NULL)
-    {
-        delete[] array;
-        array = NULL;
-    }
-
-    length = 0;
-}
-*/
 
 LIBMOLDEO_API moIODevice* moNewIODevice(moText effect_name, moIODevicePluginsArray &plugins)
 {
@@ -193,17 +155,17 @@ LIBMOLDEO_API moIODevice* moNewIODevice(moText effect_name, moIODevicePluginsArr
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = "plugins/iodevices/" + effect_name;
+    complete_name = moText("plugins/iodevices/") + (moText)effect_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".dll";
+    complete_name += moText(".dll");
     #else
-    complete_name = "plugins/iodevices/lib" + effect_name;
+    complete_name = moText("plugins/iodevices/lib") + (moText)effect_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("d");
 		#endif
-    complete_name += ".so";
+    complete_name += moText(".so");
     #endif
 
     // Indice del plugin que se utilizara para crear a este efecto.
@@ -233,26 +195,26 @@ LIBMOLDEO_API moIODevice* moNewIODevice(moText effect_name, moIODevicePluginsArr
 }
 
 
-LIBMOLDEO_API void moDeleteIODevice(moIODevice *IODevice, moIODevicePluginsArray &plugins)
+LIBMOLDEO_API bool moDeleteIODevice(moIODevice *IODevice, moIODevicePluginsArray &plugins)
 {
     // Creando el nombre complete del plugin(incluyendo ruta por defecto)
     // a partir del nombre del efecto.
     moText complete_name;
 
-    if(!stricmp(IODevice->GetName(), "")) return;
+    if(!stricmp(IODevice->GetName(), "")) return false;
 
     #if defined(_WIN32)
     complete_name = moText("plugins/iodevices/") + moText(IODevice->GetName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("d");
 		#endif
-    complete_name += ".dll";
+    complete_name += moText(".dll");
     #else
     complete_name = moText("plugins/iodevices/lib") + moText(IODevice->GetName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("d");
 		#endif
-    complete_name += ".so";
+    complete_name += moText(".so");
     #endif
 		printf("completename:%s\n", (char*)complete_name);
 
@@ -269,8 +231,17 @@ LIBMOLDEO_API void moDeleteIODevice(moIODevice *IODevice, moIODevicePluginsArray
 
     if(plg_index == -1)
     {
-        return;
+        return false;
     }
 
-    plugins[plg_index]->Destroy(IODevice);
+    bool res = plugins[plg_index]->Destroy(IODevice);
+
+    ///unload plugin if all instances were delete
+    if (res && plugins[plg_index]->n == 0) {
+        plugins[plg_index]->Unload();
+        plugins.Remove(plg_index);
+
+    }
+
+    return res;
 }

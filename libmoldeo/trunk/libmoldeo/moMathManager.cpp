@@ -87,7 +87,7 @@ MOint moMathManager::GetFunctionIdx(const moText& p_expr)
 	return -1;
 }
 
-MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new)
+MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new, moConfig* p_pConfig )
 {
 
 	MOint idx = -1;
@@ -108,12 +108,13 @@ MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new)
 	if (p_math_fun == NULL)
 	{
 		p_parser_fun = new moParserFunction();
+
 		p_math_fun = (moMathFunction*)p_parser_fun;
 	}
 
 	if (p_math_fun != NULL)
 	{
-	    bool res = p_math_fun->Init(p_expr);
+	    bool res = p_math_fun->Init( p_expr, p_pConfig );
 		if (res)
 		{
 			m_functions.Add(p_math_fun);
@@ -128,6 +129,7 @@ MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new)
 	}
 	else return -1;
 }
+
 
 double moMathManager::EvalFunction(MOuint p_idx, double x0)
 {

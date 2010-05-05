@@ -64,8 +64,32 @@ moDebugManager::Finish() {
 }
 
 
-void moDebugManager::Push( moText text) {
-	//printf(text);
-	//flushall();//en gnu??
-	MODebug->Push(text);
+void moDebugManager::Error( moText p_text ) {
+    MODebug2->Error(p_text);
 }
+
+void moDebugManager::Message( moText p_text ) {
+
+    MODebug2->Message( p_text );
+}
+
+void moDebugManager::Log( moText p_text ) {
+    MODebug2->Log( p_text );
+}
+
+void moDebugManager::Push( moText p_text ) {
+    MODebug2->Push( p_text );
+}
+
+/**
+*   Saca y devuelve el primer texto ingresado a la lista
+*   @return un mensaje de texto
+*/
+moText moDebugManager::Pop() {
+    return MODebug2->Pop();
+}
+
+MOint  moDebugManager::Count() {
+    return MODebug2->Count();
+}
+

@@ -30,8 +30,8 @@
 *******************************************************************************/
 
 #include "moFBO.h"
+#include <moArray.h>
 
-#include "moArray.h"
 moDefineDynamicArray(moFBOArray)
 
 //===========================================

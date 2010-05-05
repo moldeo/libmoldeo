@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                                moMathDVector.h
+								moMathDVector.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
   Portions taken from
   Wild Magic Source Code
@@ -39,71 +39,70 @@
 
 #ifndef __MO_MATH_DVECTOR_H__
 #define __MO_MATH_DVECTOR_H__
-
-template <class Real>
-class LIBMOLDEO_API moDVector : public moAbstract
+template < class Real > class LIBMOLDEO_API moDVector:public moAbstract
 {
-public:
-    // construction
-    moDVector (int iSize = 0);
-    moDVector (int iSize, const Real* afTuple);
-    moDVector (const moDVector& rkV);
-    ~moDVector ();
+	public:
+		// construction
+		moDVector (int iSize = 0);
+		moDVector (int iSize, const Real * afTuple);
+		moDVector (const moDVector & rkV);
+		~moDVector ();
 
-    // coordinate access
-    void SetSize (int iSize);
-    int GetSize () const;
-    operator const Real* () const;
-    operator Real* ();
-    Real operator[] (int i) const;
-    Real& operator[] (int i);
+		// coordinate access
+		void SetSize (int iSize);
+		int GetSize () const;
+		operator   const Real *() const;
+		operator   Real * ();
+		Real operator[](int i) const;
+		Real & operator[](int i);
 
-    // assignment
-    moDVector& operator= (const moDVector& rkV);
+		// assignment
+		moDVector & operator= (const moDVector & rkV);
 
-    // comparison
-    bool operator== (const moDVector& rkV) const;
-    bool operator!= (const moDVector& rkV) const;
-    bool operator<  (const moDVector& rkV) const;
-    bool operator<= (const moDVector& rkV) const;
-    bool operator>  (const moDVector& rkV) const;
-    bool operator>= (const moDVector& rkV) const;
+		// comparison
+		bool operator== (const moDVector & rkV) const;
+		bool operator!= (const moDVector & rkV) const;
+		bool operator< (const moDVector & rkV) const;
+		bool operator<= (const moDVector & rkV) const;
+		bool operator> (const moDVector & rkV) const;
+		bool operator>= (const moDVector & rkV) const;
 
-    // arithmetic operations
-    moDVector operator+ (const moDVector& rkV) const;
-    moDVector operator- (const moDVector& rkV) const;
-    moDVector operator* (Real fScalar) const;
-    moDVector operator/ (Real fScalar) const;
-    moDVector operator- () const;
+		// arithmetic operations
+		moDVector operator+ (const moDVector & rkV) const;
+		moDVector operator- (const moDVector & rkV) const;
+		moDVector operator* (Real fScalar) const;
+		moDVector operator/ (Real fScalar) const;
+		moDVector operator- ()const;
 
-    // arithmetic updates
-    moDVector& operator+= (const moDVector& rkV);
-    moDVector& operator-= (const moDVector& rkV);
-    moDVector& operator*= (Real fScalar);
-    moDVector& operator/= (Real fScalar);
+		// arithmetic updates
+		moDVector & operator+= (const moDVector & rkV);
+		moDVector & operator-= (const moDVector & rkV);
+		moDVector & operator*= (Real fScalar);
+		moDVector & operator/= (Real fScalar);
 
-    // vector operations
-    Real Length () const;
-    Real SquaredLength () const;
-    Real Dot (const moDVector& rkV) const;
-    Real Normalize ();
-
-protected:
-    // support for comparisons
-    int CompareArrays (const moDVector& rkV) const;
-
-    int m_iSize;
-    Real* m_afTuple;
+		// vector operations
+		Real Length ()const;
+		Real SquaredLength ()const;
+		Real Dot (const moDVector & rkV) const;
+		Real Normalize ();
+	protected:
+		// support for comparisons
+		int CompareArrays (const moDVector & rkV) const;
+		int m_iSize;
+		Real * m_afTuple;
 };
 
-template <class Real>
-moDVector<Real> operator* (Real fScalar, const moDVector<Real>& rkV);
+template < class Real > moDVector < Real > operator* (Real fScalar,
+const moDVector <
+Real > &rkV);
 
-template class LIBMOLDEO_API moDVector<MOfloat>;
-typedef moDVector<MOfloat> moDVectorf;
-
-template class LIBMOLDEO_API moDVector<MOdouble>;
-typedef moDVector<MOdouble> moDVectord;
-
-
+#ifndef MO_MACOSX
+template class LIBMOLDEO_API moDVector < MOfloat >;
 #endif
+typedef moDVector < MOfloat > moDVectorf;
+
+#ifndef MO_MACOSX
+template class LIBMOLDEO_API moDVector < MOdouble >;
+#endif
+typedef moDVector < MOdouble > moDVectord;
+#endif							 /*  */

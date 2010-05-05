@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                               moEffect.h
+							   moEffect.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,16 +25,15 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
 
 #ifndef __MO_EFFECT_H__
 #define __MO_EFFECT_H__
 
-
 #include "moAbstract.h"
-#include "moArrayH.h"
+#include "moArray.h"
 #include "moMathFunctionIndex.h"
 #include "moIODeviceManager.h"
 #include "moConfig.h"
@@ -56,13 +55,20 @@
 #include "moRenderManager.h"
 #include "moGUIManager.h"
 
-
-/**
+/// clase base para objetos dibujables
+/** \if spanish
  * clase base para definir Efectos.
- * los efectos son los objetos basicos y define cada uno una capa que será dibujada
- * en función del orden en el que ha sido cargado en la consola de efectos
+ * un efecto es el objeto dibujable en la consola (simil de una capa)
+ * en funcin del orden en el que ha sido cargado en la consola de efectos
  * Es importante implementar las funciones de Init, Draw, Update e Interaction que son
- * necesarias para las operaciones de Inicialización, Dibujado, Actualización e Interacción.
+ * necesarias para las operaciones de Inicializacin, Dibujado, Actualizacin e Interaccin.
+ * \endif
+ * \if english
+ * Base class to derive an effect object
+ * the objects derived from this class are drawable objects
+ * each plugin that is necessarely drawable by the principal console
+ * instantiate one of this
+ * \endif
  * @see moMoldeoObject
  * @see moPreEffect
  * @see moPostEffect
@@ -71,92 +77,90 @@
  * @see moResource
  * @see moMoldeoObjectType
  */
-class LIBMOLDEO_API moEffect : public moMoldeoObject
+class LIBMOLDEO_API moEffect:public moMoldeoObject
 {
-public:
-
-        /**
-         * constructor genérico de la clase.
-         */
-        moEffect();
-
-        /**
-         * destructor genérico de la clase.
-         */
-        virtual ~moEffect();
+	public:
 
 		/**
-		* Inicializador genérico derivado de moAbstract.
-		* @see moAbstract
-		*/
-        virtual MOboolean Init() = 0;
+		 * constructor genrico de la clase.
+		 */
+		moEffect ();
 
 		/**
-		* Función de dibujado del efecto
-		*/
-		virtual void Draw( moTempo*,moEffectState* parentstate=NULL) = 0;
+		 * destructor genrico de la clase.
+		 */
+		virtual ~ moEffect ();
 
 		/**
-		* Finalizador genérico derivado de moAbstract. Es importante que esta función libere los recursos que han sido creados en la función Init().
-		* @see moAbstract
-		*/
-        virtual MOboolean Finish() = 0;
+		 * Inicializador genrico derivado de moAbstract.
+		 * @see moAbstract
+		 */
+		virtual MOboolean Init () = 0;
 
 		/**
-		* Este inicializador se ejecuta en primer lugar dentro de la función Init, y efectua las inicializaciones espécíficas de cualquier derivado de moEffect´.
-		* a) carga del archivo de configuración
-		* b) verifica que existan parámetros necesarios específicos de los efectos como ser SYNCRO y PHASE
-		* c) llamar a MoldeoObject::Init() para la inclusión y parseo de todos los parámetros...
-		*/
-        virtual MOboolean PreInit();
+		 * Funcin de dibujado del efecto
+		 */
+		virtual void Draw (moTempo *, moEffectState * parentstate = NULL) = 0;
 
 		/**
-		* PreDraw debe ejecutarse en la función Draw, antes de cualquier operación de dibujo.
-		* a) toma el nuevo Syncro establecido del config o
-		* b) Sincroniza el beat
-		*/
-        virtual void PreDraw( moTempo*,moEffectState* parentstate=NULL);
+		 * Finalizador genrico derivado de moAbstract. Es importante que esta funcin libere los recursos que han sido creados en la funcin Init().
+		 * @see moAbstract
+		 */
+		virtual MOboolean Finish () = 0;
 
-    virtual MOboolean PreFinish();
+		/**
+		 * Este inicializador se ejecuta en primer lugar dentro de la funcin Init, y efectua las inicializaciones espcficas de cualquier derivado de moEffect.
+		 * a) carga del archivo de configuracin
+		 * b) verifica que existan parmetros necesarios especficos de los efectos como ser SYNCRO y PHASE
+		 * c) llamar a MoldeoObject::Init() para la inclusin y parseo de todos los parmetros...
+		 */
+		virtual MOboolean PreInit ();
 
-    virtual void Interaction( moIODeviceManager* );
-    virtual void LoadCodes( moIODeviceManager* );
-	virtual moConfigDefinition * GetDefinition( moConfigDefinition *p_configdefinition = NULL );//retreive the parameters definition of the Moldeo Object
+		/**
+		 * PreDraw debe ejecutarse en la funcin Draw, antes de cualquier operacin de dibujo.
+		 * a) toma el nuevo Syncro establecido del config o
+		 * b) Sincroniza el beat
+		 */
+		virtual void PreDraw (moTempo *, moEffectState * parentstate = NULL);
+		virtual MOboolean PreFinish ();
 
-    //virtual void SetNombreConfig(moText texto);
+		virtual void Interaction (moIODeviceManager *);
+		virtual void LoadCodes (moIODeviceManager *);
+								 //retreive the parameters definition of the Moldeo Object
+		virtual moConfigDefinition *GetDefinition (moConfigDefinition * p_configdefinition = NULL);
 
-    static void SetColor( moValue& color, moValue& alpha, moEffectState& pstate  );
-    static void SetBlending( moBlendingModes blending );
-    static void SetPolygonMode( moPolygonModes polygonmode );
-
-
-	void TurnOn();
-    void TurnOff();
-    void Enable();
-    void Disable();
-    void SwitchOn();
-    void SwitchEnabled();
+		//virtual void SetNombreConfig(moText texto);
+		static void SetColor (moValue & color, moValue & alpha,
+			moEffectState & pstate);
+		static void SetBlending (moBlendingModes blending);
+		static void SetPolygonMode (moPolygonModes polygonmode);
+		void TurnOn ();
+		void TurnOff ();
+		void Enable ();
+		void Disable ();
+		void SwitchOn ();
+		void SwitchEnabled ();
 
 	public:
 
-		moEffectState		state;
-		moPresets			presets;
-		moMotion			mov;
-		moDeviceCodeList*	devicecode; //accion vs moDeviceCode, personalizable
-		MOint				ncodes;
+		moEffectState state;
+		moPresets presets;
+		moMotion mov;
+								 //accion vs moDeviceCode, personalizable
+		moDeviceCodeList *devicecode;
+		MOint ncodes;
 
-		MOint				isyncro;
-		MOint				iphase;
+		MOint isyncro;
+		MOint iphase;
 
 		// Agregado para poder asignar efectos a teclas arbitrarias de las 4 filas del teclado.
 		// Luego hay que discutirlo/implementarlo mejor...
-		MOint				keyidx;
-
+		MOint keyidx;
 };
+
 /*
 template class LIBMOLDEO_API moDynamicArray<moEffect*>;
 typedef moDynamicArray<moEffect*> moEffectsArray;
 */
-moDeclareExportedDynamicArray( moEffect*, moEffectsArray)
-
+moDeclareExportedDynamicArray (moEffect *, moEffectsArray)
 #endif

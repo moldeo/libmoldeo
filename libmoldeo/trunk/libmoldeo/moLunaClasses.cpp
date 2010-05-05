@@ -224,7 +224,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, Tan)
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, UnitRandom)
 {
 	MOuint uiSeed = (MOuint) lua_tonumber (L, 1);
-	MOdouble rand = moMathd::UnitRandom(uiSeed);
+	MOdouble rand = moMathd::UnitRandom((unsigned int)uiSeed);
 	lua_pushnumber(L, (lua_Number)rand);
     return 1;
 }
@@ -232,7 +232,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, UnitRandom)
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, SymmetricRandom)
 {
 	MOuint uiSeed = (MOuint) lua_tonumber (L, 1);
-	MOdouble rand = moMathd::SymmetricRandom(uiSeed);
+	MOdouble rand = moMathd::SymmetricRandom((unsigned int)uiSeed);
 	lua_pushnumber(L, (lua_Number)rand);
     return 1;
 }
@@ -242,7 +242,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, IntervalRandom)
 	MOdouble fMin = (MOdouble) lua_tonumber (L, 1);
 	MOdouble fMax = (MOdouble) lua_tonumber (L, 2);
 	MOuint uiSeed = (MOuint) lua_tonumber (L, 3);
-	MOdouble rand = moMathd::IntervalRandom(fMin, fMax, uiSeed);
+	MOdouble rand = moMathd::IntervalRandom(fMin, fMax, (unsigned int)uiSeed);
 	lua_pushnumber(L, (lua_Number)rand);
     return 1;
 }

@@ -38,7 +38,7 @@
 #include "moMathMatrix.h"
 
 // momoMatrix2 class ------------------------------------------------------------
-
+/*
 template <class Real>
 moMatrix2<Real>::moMatrix2 (bool bZero)
 {
@@ -421,8 +421,8 @@ void moMatrix2<Real>::EigenDecomposition (moMatrix2& rkRot, moMatrix2& rkDiag) c
     rkRot.m_afEntry[2] = fSin;
     rkRot.m_afEntry[3] = fCos;
 }
- 
-/*
+*/
+
 template<> const moMatrix2<MOfloat> moMatrix2<MOfloat>::ZERO(
     0.0f,0.0f,
     0.0f,0.0f);
@@ -436,10 +436,9 @@ template<> const moMatrix2<MOdouble> moMatrix2<MOdouble>::ZERO(
 template<> const moMatrix2<MOdouble> moMatrix2<MOdouble>::IDENTITY(
     1.0,0.0,
     0.0,1.0);
-*/
 
 // momoMatrix3 class ------------------------------------------------------------
-
+/*
 template <class Real>
 moMatrix3<Real>::moMatrix3 (bool bZero)
 {
@@ -2379,8 +2378,8 @@ void moMatrix3<Real>::QDUDecomposition (moMatrix3& rkQ, moMatrix3& rkD,
     rkU[2][1] = (Real)0.0;
     rkU[2][2] = (Real)1.0;
 }
+*/
 
-/*
 template<> const moMatrix3<MOfloat> moMatrix3<MOfloat>::ZERO(
     0.0f,0.0f,0.0f,
     0.0f,0.0f,0.0f,
@@ -2398,10 +2397,9 @@ template<> const moMatrix3<MOdouble> moMatrix3<MOdouble>::IDENTITY(
     1.0,0.0,0.0,
     0.0,1.0,0.0,
     0.0,0.0,1.0);
-*/
- 
-// momoMatrix4 class ------------------------------------------------------------
 
+// momoMatrix4 class ------------------------------------------------------------
+/*
 template <class Real>
 moMatrix4<Real>::moMatrix4 (bool bZero)
 {
@@ -3083,7 +3081,6 @@ void moMatrix4<Real>::MakeReflection (const moVector3<Real>& rkNormal,
     m_afEntry[15] = (Real)1.0;
 }
 
-/*
 template<> const moMatrix4<MOfloat> moMatrix4<MOfloat>::ZERO(
     0.0f,0.0f,0.0f,0.0f,
     0.0f,0.0f,0.0f,0.0f,

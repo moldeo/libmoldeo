@@ -31,7 +31,7 @@
 
 #include "moPostPlugin.h"
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray( moPostPluginsArray )
 
 moPostEffectFactory::~moPostEffectFactory() {
@@ -114,7 +114,7 @@ moPostEffect* moPostPlugin::Create() {
 	return NULL;
 }
 
-void moPostPlugin::Destroy(moPostEffect *PostEfecto) {
+bool moPostPlugin::Destroy(moPostEffect *PostEfecto) {
 
 	moPostEffect **narray;
 	int i,j;
@@ -122,65 +122,28 @@ void moPostPlugin::Destroy(moPostEffect *PostEfecto) {
 	if(m_factory!=NULL) {
 
 		for(j=0;j<n;j++)
-			if(array[j]==PostEfecto) break;
+			if(array[j]==PostEfecto) {
 
-		m_factory->Destroy(PostEfecto);
+                m_factory->Destroy(PostEfecto);
 
-		if(n==1) {//muere
-			delete [] array;
-		} else if(n>1) {//array dinamico
-			narray = new moPostEffect* [n-1];//generamos el nuevo vacio
-			for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
-			for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
-			delete [] array;
-			array = narray;
-		}
-		n--;
-		return;
+                if(n==1) {//muere
+                    delete [] array;
+                } else if(n>1) {//array dinamico
+                    narray = new moPostEffect* [n-1];//generamos el nuevo vacio
+                    for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
+                    for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
+                    delete [] array;
+                    array = narray;
+                }
+                n--;
+                return true;
+			}
+
 	}
-	return;
+	return false;
 }
 
-//===========================================
-//
-//                             moPostPluginsArray
-//
-//===========================================
-/*
-void moPostPluginsArray::Add(moPostPlugin* plugin)
-{
-    if(length < max_length)
-    {
-        if(plugin!=NULL) {
-			cout << "plugin agregado\n";
-			array[length] = plugin;
-			length++;
-		} else {
-			cout << "error: plugin no fue creado!\n";
-		}
-    }
-}
 
-void moPostPluginsArray::Init(MOuint nplugins)
-{
-    max_length = 256;
-    length = nplugins;
-    array = new moPostPlugin*[max_length];
-    for(MOuint i = 0; i < max_length; i++) array[i] = NULL;
-}
-
-void moPostPluginsArray::Finish()
-{
-    if(array != NULL)
-    {
-        delete[] array;
-        array = NULL;
-    }
-
-    length = 0;
-}
-
-*/
 LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArray &plugins)
 {
     // Creando el nombre complete del plugin(incluyendo ruta por defecto)
@@ -190,17 +153,17 @@ LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArr
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = "plugins/posteffects/" + effect_name;
+    complete_name = moText("plugins/posteffects/") + (moText)effect_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".dll";
+    complete_name += moText(".dll");
     #else
-    complete_name = "plugins/posteffects/lib" + effect_name;
+    complete_name = moText("plugins/posteffects/lib") + (moText)effect_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".so";
+    complete_name += moPluginExtension;
     #endif
 		//printf("completename:%s\n",complete_name);
 
@@ -231,26 +194,26 @@ LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArr
 }
 
 
-LIBMOLDEO_API void moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArray &plugins)
+LIBMOLDEO_API bool moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArray &plugins)
 {
     // Creando el nombre complete del plugin(incluyendo ruta por defecto)
     // a partir del nombre del efecto.
     moText complete_name;
 
-    if(!stricmp(posteffect->GetName(), "")) return;
+    if(!stricmp(posteffect->GetName(), "")) return false;
 
     #if defined(_WIN32)
     complete_name = moText("plugins/posteffects/") + moText(posteffect->GetName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".dll";
+    complete_name += moText(".dll");
     #else
     complete_name = moText("plugins/posteffects/lib") + moText(posteffect->GetName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".so";
+    complete_name += moText(".so");
     #endif
 
     // Indice del plugin que se utilizara para crear a este efecto.
@@ -266,8 +229,17 @@ LIBMOLDEO_API void moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArr
 
     if(plg_index == -1)
     {
-        return;
+        return false;
     }
 
-    plugins[plg_index]->Destroy(posteffect);
+    bool res = plugins[plg_index]->Destroy(posteffect);
+
+    ///unload plugin if all instances were delete
+    if (res && plugins[plg_index]->n == 0) {
+        plugins[plg_index]->Unload();
+        plugins.Remove(plg_index);
+
+    }
+
+    return res;
 }

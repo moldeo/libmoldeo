@@ -40,12 +40,13 @@ moGLManager::moGLManager()
 	SetName("GL Manager");
 
 	m_gpu_vendor_code = 0;
-	m_gpu_ventor_string = "";
+	m_gpu_ventor_string = moText("");
 
 	m_current_fbo = m_previous_fbo = 0;
 
 	m_current_read_buffer = m_current_draw_buffer = 0;
 	m_previous_read_buffer = m_previous_draw_buffer = 0;
+	m_bFrameBufferObjectActive = false;
 }
 
 moGLManager::~moGLManager()
@@ -57,6 +58,7 @@ MOboolean moGLManager::Init()
 {
 	QueryGPUVendorString();
 	m_current_fbo = 0;
+	m_bFrameBufferObjectActive = false;
 	glGetIntegerv(GL_DRAW_BUFFER, &m_current_draw_buffer);
 	glGetIntegerv(GL_READ_BUFFER, &m_current_read_buffer);
 	return true;
@@ -65,6 +67,12 @@ MOboolean moGLManager::Init()
 MOboolean moGLManager::Finish()
 {
 	return true;
+}
+
+void moGLManager::SetFrameBufferObjectActive( bool active ) {
+
+    m_bFrameBufferObjectActive = active;
+
 }
 
 MOboolean moGLManager::CheckErrors(moText p_location)
@@ -234,13 +242,14 @@ void moGLManager::RestoreView()
 void moGLManager::RestoreFramebuffer()
 {
     m_current_fbo = m_saved_fbo;
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_current_fbo);
+    if (m_bFrameBufferObjectActive) glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_current_fbo);
 
 	m_current_read_buffer = m_saved_read_buffer;
-	glReadBuffer(m_current_read_buffer);
+	if (m_bFrameBufferObjectActive) glReadBuffer(m_current_read_buffer);
 
 	m_current_draw_buffer = m_saved_draw_buffer;
-	glDrawBuffer(m_current_draw_buffer);
+	if (m_bFrameBufferObjectActive) glDrawBuffer(m_current_draw_buffer);
+
 }
 
 moTexParam moGLManager::BuildFPTexParam(MOboolean p_16bits, MOushort p_num_components)
@@ -320,19 +329,19 @@ MOboolean moGLManager::MipMapTexture(GLint p_min_filter)
 void moGLManager::SetCurrentFBO(MOuint m_fbo)
 {
 	m_current_fbo = m_fbo;
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_current_fbo);
+	if (m_bFrameBufferObjectActive) glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_current_fbo);
 }
 
 void moGLManager::SetCurrentReadBuffer(MOint p_buffer)
 {
 	m_current_read_buffer = p_buffer;
-	glReadBuffer(m_current_read_buffer);
+	if (m_bFrameBufferObjectActive) glReadBuffer(m_current_read_buffer);
 }
 
 void moGLManager::SetCurrentDrawBuffer(MOint p_buffer)
 {
 	m_current_draw_buffer = p_buffer;
-	glDrawBuffer(m_current_draw_buffer);
+	if (m_bFrameBufferObjectActive) glDrawBuffer(m_current_draw_buffer);
 }
 
 void moGLManager::SaveFBOState()
@@ -348,3 +357,4 @@ void moGLManager::RestoreFBOState()
 	SetCurrentReadBuffer(m_previous_read_buffer);
 	SetCurrentDrawBuffer(m_previous_draw_buffer);
 }
+

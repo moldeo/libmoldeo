@@ -29,16 +29,13 @@
 
 *******************************************************************************/
 
-#include "moResourcePlugin.h"
-
-#if !defined(WIN32)
-#include "moPort.h"
-#endif
+#include <moResourcePlugin.h>
+#include <moPort.h>
 
 #include <iostream>
 using namespace std;
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray( moResourcePluginsArray )
 
 moResourceFactory::~moResourceFactory() {
@@ -122,7 +119,7 @@ moResource* moResourcePlugin::Create() {
 	return NULL;
 }
 
-void moResourcePlugin::Destroy(moResource *EfectoMaestro) {
+bool moResourcePlugin::Destroy(moResource *EfectoMaestro) {
 
 	moResource **narray;
 	int i,j;
@@ -130,23 +127,24 @@ void moResourcePlugin::Destroy(moResource *EfectoMaestro) {
 	if(m_factory!=NULL) {
 
 		for(j=0;j<n;j++)
-			if(array[j]==EfectoMaestro) break;
+			if(array[j]==EfectoMaestro) {
+                m_factory->Destroy(EfectoMaestro);
 
-		m_factory->Destroy(EfectoMaestro);
+                if(n==1) {//muere
+                    delete [] array;
+                } else if(n>1) {//array dinamico
+                    narray = new moResource* [n-1];//generamos el nuevo vacio
+                    for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
+                    for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
+                    delete [] array;
+                    array = narray;
+                }
+                n--;
+                return true;
+			}
 
-		if(n==1) {//muere
-			delete [] array;
-		} else if(n>1) {//array dinamico
-			narray = new moResource* [n-1];//generamos el nuevo vacio
-			for(i=0;i<j;i++) narray[i] = array[i];//copiamos el array hasta el j(destruido)
-			for(i=j;i<(n-1);i++) narray[i] = array[i+1];//copiamos el array desde el j
-			delete [] array;
-			array = narray;
-		}
-		n--;
-		return;
 	}
-	return;
+	return false;
 }
 
 //===========================================
@@ -189,26 +187,26 @@ void moResourcePluginsArray::Finish()
 }
 */
 
-LIBMOLDEO_API moResource* moNewResource(moText effect_name, moResourcePluginsArray &plugins)
+LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsArray &plugins)
 {
     // Creando el nombre complete del plugin(incluyendo ruta por defecto)
     // a partir del name del efecto.
     moText complete_name;
 
-    if(!stricmp(effect_name, "nil")) return NULL;
+    if(!stricmp(resource_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = "plugins/resources/" + effect_name;
+    complete_name = moText("plugins/resources/") + (moText)resource_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".dll";
+    complete_name += moText(".dll");
     #else
-    complete_name = "plugins/resources/lib" + effect_name;
+    complete_name = moText("plugins/resources/lib") + (moText)resource_name;
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".so";
+    complete_name += moText(".so");
     #endif
 
     // Indice del plugin que se utilizara para crear a este efecto.
@@ -240,26 +238,26 @@ LIBMOLDEO_API moResource* moNewResource(moText effect_name, moResourcePluginsArr
 }
 
 
-LIBMOLDEO_API void moDeleteResource(moResource *Resource, moResourcePluginsArray &plugins)
+LIBMOLDEO_API bool moDeleteResource(moResource *Resource, moResourcePluginsArray &plugins)
 {
     // Creando el nombre complete del plugin(incluyendo ruta por defecto)
     // a partir del nombre del efecto.
     moText complete_name;
 
-    if(!stricmp(Resource->GetResourceName(), "")) return;
+    if(!stricmp(Resource->GetResourceName(), "")) return false;
 
     #if defined(_WIN32)
     complete_name = moText("plugins/resources/") + moText(Resource->GetResourceName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".dll";
+    complete_name += moText(".dll");
     #else
     complete_name =  moText("plugins/resources/lib") +  moText(Resource->GetResourceName());
 		#ifdef _DEBUG
-		complete_name+= "d";
+		complete_name+= moText("_d");
 		#endif
-    complete_name += ".so";
+    complete_name += moText(".so");
     #endif
 		printf("completename:%s\n",(char*)complete_name);
 
@@ -276,8 +274,18 @@ LIBMOLDEO_API void moDeleteResource(moResource *Resource, moResourcePluginsArray
 
     if(plg_index == -1)
     {
-        return;
+        ///existe ningun plugin con ese nombre
+        return false;
     }
 
-    plugins[plg_index]->Destroy(Resource);
+    bool res = plugins[plg_index]->Destroy(Resource);
+
+    ///unload plugin if all instances were delete
+    if (res && plugins[plg_index]->n == 0) {
+        plugins[plg_index]->Unload();
+        plugins.Remove(plg_index);
+
+    }
+
+    return res;
 }

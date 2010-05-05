@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-                              moIODevicePlugin.h
+							  moIODevicePlugin.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,72 +25,89 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
 *******************************************************************************/
-#ifndef __MO_IODEVICE_PLUGIN_H__
-#define __MO_IODEVICE_PLUGIN_H__
-
 #include "moTypes.h"
-#include "moArrayH.h"
+#include "moArray.h"
 #include "moBasePlugin.h"
 #include "moIODeviceManager.h"
 
-/// clase base para una fábrica de plugins de dipositivos de E/S
+#ifndef __MO_IODEVICE_PLUGIN_H__
+#define __MO_IODEVICE_PLUGIN_H__
+
+/// clase base para una fbrica de plugins de dipositivos de E/S
 /**
  * Comentar.
  */
 class LIBMOLDEO_API moIODeviceFactory
 {
-public:
-    moIODeviceFactory() {}
-    virtual ~moIODeviceFactory();
-    virtual moIODevice* Create(void) = 0;
-    virtual void Destroy(moIODevice* fx) = 0;
+	public:
+		moIODeviceFactory ()
+		{
+		}
+		virtual ~ moIODeviceFactory ();
+		virtual moIODevice *Create (void) = 0;
+		virtual void Destroy (moIODevice * fx) = 0;
 };
 
-typedef moIODeviceFactory*(MO_PLG_ENTRY *CreateIODeviceFactoryFunction)();
-typedef void(MO_PLG_ENTRY *DestroyIODeviceFactoryFunction)();
-
+typedef moIODeviceFactory *(MO_PLG_ENTRY * CreateIODeviceFactoryFunction) ();
+typedef void (MO_PLG_ENTRY * DestroyIODeviceFactoryFunction) ();
 
 /// clase base para un plugin de dipositivos de E/S
 /**
  * Comentar.
  */
-
 class LIBMOLDEO_API moIODevicePlugin
 {
-public:
-    moIODevice **array;
-    int n;
+	public:
+		moIODevice ** array;
+		int n;
 
-    CreateIODeviceFactoryFunction CreateIODeviceFactory;
-    DestroyIODeviceFactoryFunction DestroyIODeviceFactory;
+		CreateIODeviceFactoryFunction CreateIODeviceFactory;
+		DestroyIODeviceFactoryFunction DestroyIODeviceFactory;
 
-    moIODeviceFactory* m_factory;
+		moIODeviceFactory *m_factory;
 
-    moIODevicePlugin() { handle = NULL; n=0; array = NULL; m_factory = NULL; }
-    moIODevicePlugin(moText plugin_file) { m_factory = NULL; handle = NULL; n = 0; array = NULL; Load(plugin_file); }
-    virtual ~moIODevicePlugin() { if(handle != NULL) Unload(); }
+		moIODevicePlugin ()
+		{
+			handle = NULL;
+			n = 0;
+			array = NULL;
+			m_factory = NULL;
+		}
+		moIODevicePlugin (moText plugin_file)
+		{
+			m_factory = NULL;
+			handle = NULL;
+			n = 0;
+			array = NULL;
+			Load (plugin_file);
+		}
+		virtual ~ moIODevicePlugin ()
+		{
+			if (handle != NULL)
+				Unload ();
+		}
 
-    void Load(moText plugin_file);
-    void Unload();
-    moIODevice* Create();
-    void Destroy(moIODevice *iodevice);
-    moText GetName() { return name; }
+		void Load (moText plugin_file);
+		void Unload ();
+		moIODevice *Create ();
+		bool Destroy (moIODevice * iodevice);
+		moText GetName ()
+		{
+			return name;
+		}
 
-private:
-    moText name;
-    MOpluginHandle handle;
+	private:
+		moText name;
+		MOpluginHandle handle;
 
 };
-/*
-template class LIBMOLDEO_API moDynamicArray<moIODevicePlugin*>;
-typedef moDynamicArray<moIODevicePlugin*> moIODevicePluginsArray;
-*/
-moDeclareExportedDynamicArray( moIODevicePlugin*, moIODevicePluginsArray )
 
-LIBMOLDEO_API moIODevice* moNewIODevice(moText effect_name, moIODevicePluginsArray &plugins);
-LIBMOLDEO_API void moDeleteIODevice(moIODevice* effect, moIODevicePluginsArray &plugins);
-
+moDeclareExportedDynamicArray (moIODevicePlugin *, moIODevicePluginsArray);
+LIBMOLDEO_API moIODevice * moNewIODevice (moText iodevice_name,
+moIODevicePluginsArray & plugins);
+LIBMOLDEO_API bool moDeleteIODevice (moIODevice * iodevice,
+moIODevicePluginsArray & plugins);
 #endif

@@ -44,6 +44,8 @@ moEffectState::moEffectState() {
 		tintb = 1.0;
 		tintc = 0.0;
 		tints = 0.0;
+		stereo = MO_DEACTIVATED;
+		stereoside = MO_STEREO_NONE;
 		fulldebug = MO_DEACTIVATED;
 }
 

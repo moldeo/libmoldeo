@@ -1,5 +1,5 @@
 /*******************************************************************************
-                               moPort.h
+							   moPort.h
   ****************************************************************************
   *                                                                          *
   *   This source is free software; you can redistribute it and/or modify    *
@@ -18,12 +18,12 @@
   *   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.         *
   *                                                                          *
   ****************************************************************************
-  
+
   Copyright(C) 2006 Fabricio Costa
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrs Colubri
 
  ******************************************************************************
  Use it for Linux compilation.
@@ -36,32 +36,40 @@
 #include <stdio.h>
 #include <cstdio>
 
-inline int getch(void)
+inline int
+getch (void)
 {
-    int ch, charactr;
-    while((ch=getchar()) != '\n') { charactr = ch; }
+	int ch, charactr;
+	while ((ch = getchar ()) != '\n')
+	{
+		charactr = ch;
+	}
 }
 
-inline char* itoa(int value, char* str, int radix)
+
+inline char *
+itoa (int value, char *str, int radix)
 {
-    char buffer[100];
-    char* res;
-    snprintf(buffer, 100, "%i", value); // Memory-safe version of sprintf.
-    res = buffer;
-    return res;
+	char buffer[100];
+	char *res;
+								 // Memory-safe version of sprintf.
+	snprintf (buffer, 100, "%i", value);
+	res = buffer;
+	return res;
 }
 
-/* Bug! Esto ya está definido en FreeImage.h */
+
+/* Bug! Esto ya est definido en FreeImage.h */
 /*
 typedef uint8_t BYTE;
 
-struct RGBTRIPLE 
+struct RGBTRIPLE
 {
-    BYTE   rgbtBlue;
-    BYTE   rgbtGreen;
-    BYTE   rgbtRed;
-    RGBTRIPLE(BYTE r, BYTE g, BYTE b)
-      : rgbtBlue(b), rgbtGreen(g), rgbtRed(r) {}
+	BYTE   rgbtBlue;
+	BYTE   rgbtGreen;
+	BYTE   rgbtRed;
+	RGBTRIPLE(BYTE r, BYTE g, BYTE b)
+	  : rgbtBlue(b), rgbtGreen(g), rgbtRed(r) {}
 };
 */
 
@@ -105,11 +113,9 @@ const char *const icono3d_STR = "icono3d";
 #include <string>
 using namespace std;
 
-inline bool stricmp(const char* str1, const char* str2)
+inline bool
+stricmp (const char *str1, const char *str2)
 {
-    return strcmp(str1, str2);
+	return strcmp (str1, str2);
 }
-
-#endif /* _MOPORT_H_ */
-
-
+#endif							 /* _MOPORT_H_ */

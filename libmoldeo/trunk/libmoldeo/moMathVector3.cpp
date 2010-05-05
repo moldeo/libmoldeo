@@ -37,7 +37,8 @@
 
 #include "moMathVector3.h"
 
-#include "moArray.h"
+#include <moArray.h>
+moDefineDynamicArray(moVector3iArray)
 moDefineDynamicArray(moVector3fArray)
 moDefineDynamicArray(moVector3dArray)
 
@@ -645,6 +646,12 @@ Real moVector3<Real>::Angle (const moVector3<Real>& rkV) {
   return moMath<Real>::ACos(Cosine(rkV));
 }
 */
+template<> const moVector3<MOlong> moVector3<MOlong>::ZERO(0,0,0);
+template<> const moVector3<MOlong> moVector3<MOlong>::UNIT_X(1,0,0);
+template<> const moVector3<MOlong> moVector3<MOlong>::UNIT_Y(0,1,0);
+template<> const moVector3<MOlong> moVector3<MOlong>::UNIT_Z(0,0,1);
+template<> const moVector3<MOlong> moVector3<MOlong>::ONE(1,1,1);
+
 template<> const moVector3<MOfloat> moVector3<MOfloat>::ZERO(0.0f,0.0f,0.0f);
 template<> const moVector3<MOfloat> moVector3<MOfloat>::UNIT_X(1.0f,0.0f,0.0f);
 template<> const moVector3<MOfloat> moVector3<MOfloat>::UNIT_Y(0.0f,1.0f,0.0f);

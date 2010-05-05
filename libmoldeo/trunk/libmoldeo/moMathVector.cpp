@@ -37,7 +37,8 @@
 
 #include "moMathVector.h"
 
-#include "moArray.h"
+#include <moArray.h>
+moDefineDynamicArray(moVector2iArray)
 moDefineDynamicArray(moVector2fArray)
 moDefineDynamicArray(moVector2dArray)
 
@@ -418,6 +419,11 @@ Real moVector2<Real>::Angle (const moVector2<Real>& rkV) {
   return moMath<Real>::ACos(Cosine(rkV));
 }
 */
+template<> const moVector2<MOlong> moVector2<MOlong>::ZERO(0,0);
+template<> const moVector2<MOlong> moVector2<MOlong>::UNIT_X(1,0);
+template<> const moVector2<MOlong> moVector2<MOlong>::UNIT_Y(0,1);
+template<> const moVector2<MOlong> moVector2<MOlong>::ONE(1,1);
+
 template<> const moVector2<MOfloat> moVector2<MOfloat>::ZERO(0.0f,0.0f);
 template<> const moVector2<MOfloat> moVector2<MOfloat>::UNIT_X(1.0f,0.0f);
 template<> const moVector2<MOfloat> moVector2<MOfloat>::UNIT_Y(0.0f,1.0f);

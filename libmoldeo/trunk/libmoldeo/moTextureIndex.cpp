@@ -45,10 +45,12 @@ MOint moTextureIndex::Add(moTexture* p_tex)
 	MOint idx;
 	m_textures_array.Add(p_tex);
 	idx = m_textures_array.Count() - 1;
-	moText msg;
-	msg = "Texture loaded: ";
-	msg += m_textures_array[idx]->GetName();
-	//MODebug->Push(msg);
+	#ifdef _DEBUG
+        moText msg;
+        msg = moText("Texture added: ");
+        msg += m_textures_array[idx]->GetName();
+        MODebug2->Message(msg);
+	#endif
 	return idx;
 }
 
@@ -117,11 +119,13 @@ MOboolean moTextureIndex::ValidIndex(MOuint p_idx)
 	if (p_idx < m_textures_array.Count()) return true;
 	else
 	{
-		moText text;
-		text =  "Error(moTextureIndex): the index: ";
-		text += IntToStr(p_idx);
-		text +=  " does not exists.";
-		//MODebug->Push(text);
+	    #ifdef _DEBUG
+            moText text;
+            text =  moText("Error(moTextureIndex): the index: ");
+            text += IntToStr(p_idx);
+            text +=  moText(" does not exists.");
+            MODebug2->Error(text);
+		#endif
 		return false;
 	}
 }
@@ -143,10 +147,12 @@ MOuint moTextureIndex::LoadTextures(moConfig* p_cfg, MOuint p_param_idx, moTextu
 			idx++;
 			ptex = p_tex_man->GetTexture(moid);
 			m_textures_array.Add(ptex);
-			moText msg;
-			msg = "Texture loaded: ";
-			msg += ptex->GetName();
-			//MODebug->Push(msg);
+			#ifdef _DEBUG
+                moText msg;
+                msg = moText("Texture loaded: ");
+                msg += ptex->GetName();
+                MODebug2->Message(msg);
+			#endif
 		} else {
 			m_textures_array.Add(NULL);
 		}

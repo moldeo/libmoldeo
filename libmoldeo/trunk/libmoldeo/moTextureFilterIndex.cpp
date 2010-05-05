@@ -131,10 +131,10 @@ MOboolean moTextureFilterIndex::ValidIndex(MOuint p_idx)
 	else
 	{
 		moText text;
-		text =  "Error(moTextureIndex): the index: ";
+		text =  moText("Error(moTextureIndex): the index: ");
 		text += IntToStr(p_idx);
-		text +=  " does not exists.";
-		MODebug->Push(text);
+		text +=  moText(" does not exists.");
+		MODebug2->Error(text);
 		return false;
 	}
 }
@@ -153,11 +153,6 @@ moTextureFilterIndex::MakeTextureFilterLabelName( moValue* p_value ) {
 
 
 MOint moTextureFilterIndex::TextureFilterExists( moValue* p_value ) {
-
-     //check if it exists:
-    bool issrcequal = false;
-    bool isdestequal = false;
-    bool isshaderequal = false;
 
     moText  TextureFilterLabelName = MakeTextureFilterLabelName( p_value );
 
@@ -458,7 +453,7 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 		j = 0;
 		while (tmp != moText(""))
 		{
-			name = tmp.Scan(" ");
+			name = tmp.Scan(moText(" "));
 			name = name.Trim();
 
 			extension = name;
@@ -549,7 +544,7 @@ MOint moTextureFilterIndex::LoadDestTexResolution( const moText& name, MOuint& d
 	MOint l;
 
 	tmp_height = name;
-	tmp_height.Scan("x");
+	tmp_height.Scan(moText("x"));
 	l = tmp_height.Length();
 	tmp_height.Mid(1, l - 1);
 

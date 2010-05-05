@@ -31,17 +31,20 @@
 
 #include "moParam.h"
 
-#include "moArray.h"
+#include <moArray.h>
 
 moDefineDynamicArray(moParamDefinitions)
 moDefineDynamicArray(moParams)
+moDefineDynamicArray( moParamIndexes )
 
 //================================================================
 //	moParamDefinition
 //================================================================
 
 moParamDefinition::moParamDefinition() {
-
+    m_Name = moText("");
+    m_Index = -1;
+    m_Type = MO_PARAM_UNDEFINED;
 }
 
 moParamDefinition::moParamDefinition(const moParamDefinition &src) {
@@ -52,6 +55,11 @@ moParamDefinition::moParamDefinition( moText& p_name, moParamType& p_type ) {
 		m_Name = p_name;
 		m_Type = p_type;
 		m_Index = -1;
+}
+
+bool
+moParamDefinition::IsValid() {
+    return (m_Type!=MO_PARAM_UNDEFINED);
 }
 /*
 MO_PARAM_ALPHA,			//value type: NUM or FUNCTION
@@ -95,6 +103,9 @@ moParamDefinition::moParamDefinition( moText& p_name, moText& p_type ) {
 		} else
 		if ( p_type == moText("TEXTURE") ) {
 			m_Type = MO_PARAM_TEXTURE;
+		} else
+		if ( p_type == moText("TEXTUREFOLDER") ) {
+			m_Type = MO_PARAM_TEXTUREFOLDER;
 		} else
 		if ( p_type == moText("FONT") ) {
 			m_Type = MO_PARAM_FONT;
@@ -153,11 +164,17 @@ moParamDefinition::moParamDefinition( moText& p_name, moText& p_type ) {
 		if ( p_type == moText("COMPOSE") ) {
 			m_Type = MO_PARAM_COMPOSE;
 		} else
+		if ( p_type == moText("VECTOR") ) {
+			m_Type = MO_PARAM_VECTOR;
+		} else
 		if ( p_type == moText("INLET") ) {
 			m_Type = MO_PARAM_INLET;
 		} else
 		if ( p_type == moText("OUTLET") ) {
 			m_Type = MO_PARAM_OUTLET;
+		} else
+		if ( p_type == moText("UNDEFINED") ) {
+			m_Type = MO_PARAM_UNDEFINED;
 		}
 
 		m_Index = -1;
@@ -179,6 +196,9 @@ moParamDefinition &moParamDefinition::operator = (const moParamDefinition &src)
 moText
 moParamDefinition::GetTypeStr() {
     switch(m_Type) {
+        case MO_PARAM_UNDEFINED:
+            return moText("UNDEFINED");
+            break;
         case MO_PARAM_ALPHA:
             return moText("ALPHA");
             break;
@@ -202,6 +222,9 @@ moParamDefinition::GetTypeStr() {
             break;
         case MO_PARAM_TEXTURE:
             return moText("TEXTURE");
+            break;
+        case MO_PARAM_TEXTUREFOLDER:
+            return moText("TEXTUREFOLDER");
             break;
         case MO_PARAM_FONT:
             return moText("FONT");
@@ -259,6 +282,9 @@ moParamDefinition::GetTypeStr() {
             break;
         case MO_PARAM_COMPOSE:
             return moText("COMPOSE");
+            break;
+        case MO_PARAM_VECTOR:
+            return moText("VECTOR");
             break;
         case MO_PARAM_INLET:
             return moText("INLET");
@@ -335,7 +361,7 @@ void moParam::SetDefaultValue() {
         moValue xvalue;
         moValueBase valuebase;
 
-        switch( m_ParamDefinition.GetType() ) {
+        switch( (int)m_ParamDefinition.GetType() ) {
             case MO_PARAM_COLOR:
                 valuebase.SetText( "1.0" );
                 valuebase.SetType( MO_VALUE_FUNCTION );
@@ -375,9 +401,14 @@ void moParam::SetDefaultValue() {
                 break;
 
             case MO_PARAM_TEXTURE:
+                valuebase.SetText( "default" );
+                valuebase.SetType( MO_VALUE_TXT );
+                xvalue.AddSubValue( valuebase );
+                break;
             case MO_PARAM_3DMODEL:
             case MO_PARAM_OBJECT:
             case MO_PARAM_VIDEO:
+            case MO_PARAM_TEXTUREFOLDER:
             case MO_PARAM_SOUND:
             case MO_PARAM_SCRIPT:
             case MO_PARAM_TEXT:
@@ -416,6 +447,12 @@ void moParam::SetDefaultValue() {
                 xvalue.AddSubValue( valuebase );
                 xvalue.AddSubValue( valuebase );
                 break;
+            case MO_PARAM_VECTOR:
+                valuebase.SetText( "0.0" );
+                valuebase.SetType( MO_VALUE_NUM_FLOAT );
+                xvalue.AddSubValue( valuebase );
+                xvalue.AddSubValue( valuebase );
+                break;
 
         }
 
@@ -438,8 +475,10 @@ moParam::GetValue( MOint i ) {
 void
 moParam::SetIndexValue( int indexvalue ) {
 
-	if (0<=indexvalue && indexvalue<(MOint)m_Values.Count() )
+	if (0<=indexvalue && indexvalue<(MOint)m_Values.Count() ) {
 		m_CurrentIndexValue = indexvalue;
+		m_bExternDataUpdated = false;
+	}
 
 }
 
@@ -454,6 +493,7 @@ moParam::GetIndexValue() {
 void
 moParam::NextValue() {
 	if ( m_Values.Count() > 0 ) {
+	    m_bExternDataUpdated = false;
 		if ( m_CurrentIndexValue < ((MOint)m_Values.Count()-1) ) {
 			m_CurrentIndexValue++;
 		}
@@ -463,6 +503,7 @@ moParam::NextValue() {
 void
 moParam::PrevValue() {
 	if ( m_Values.Count() > 0 ) {
+	    m_bExternDataUpdated = false;
 		if ( m_CurrentIndexValue > 0 ) {
 			m_CurrentIndexValue--;
 		}
@@ -472,6 +513,7 @@ moParam::PrevValue() {
 void
 moParam::FirstValue() {
 	if (m_Values.Count() > 0) {
+	    m_bExternDataUpdated = false;
 		m_CurrentIndexValue = 0;
 	} else m_CurrentIndexValue = -1;
 }
@@ -502,8 +544,11 @@ moParam::Update() {
 
 moData*
 moParam::GetData() {
+    ///dato modificado externamente
 	if (m_pExternData && m_bExternDataUpdated)
 		return (m_pExternData);
+
+	///dato original del config
 	return GetValue().GetSubValue().GetData();
 }
 

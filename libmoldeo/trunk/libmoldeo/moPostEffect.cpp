@@ -31,7 +31,7 @@
 
 #include "moPostEffect.h"
 
-#include "moArray.h"
+#include <moArray.h>
 moDefineDynamicArray(moPostEffectsArray)
 
 moPostEffect::moPostEffect()

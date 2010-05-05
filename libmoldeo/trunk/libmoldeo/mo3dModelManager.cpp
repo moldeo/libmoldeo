@@ -29,30 +29,80 @@
 
 *******************************************************************************/
 
-#include "mo3dModelManager.h"
+#include <mo3dModelManager.h>
+#include <mo3ds.h>
+#include <moDataManager.h>
+#include <moTextureManager.h>
+
+//#include "moArray.h"
+//moDefineDynamicArray( moCoords )
 
 
-mo3DModel::mo3DModel() {
+moSceneNode::moSceneNode() {
+
+}
+
+moSceneNode*
+moSceneNode::GetParent() {
+    return NULL;
+}
+
+
+void
+moSceneNode::SetParent( moSceneNode* p_SceneNode ) {
+
+}
+
+
+moSceneNode::~moSceneNode() {
+
+}
+
+MOboolean moSceneNode::Init() {
+
+  return true;
+
+}
+
+MOboolean moSceneNode::Finish() {
+  return true;
+}
+
+void moSceneNode::Draw( moEffectState *state, GLuint g_ViewMode ) {
+
+
+}
+
+void moSceneNode::Update() {
+
+}
+
+void moSceneNode::Interaction() {
+
+}
+
+
+mo3DModelSceneNode::mo3DModelSceneNode() {
     m_pModel = NULL;
 }
 
 
-mo3DModel::~mo3DModel() {
+mo3DModelSceneNode::~mo3DModelSceneNode() {
 
 }
 
 MOboolean
-mo3DModel::Init() {
+mo3DModelSceneNode::Init() {
     m_pModel = NULL;
     return true;
 }
 
-MOboolean mo3DModel::Finish() {
+MOboolean mo3DModelSceneNode::Finish() {
     return true;
 }
 
 
-void mo3DModel::Draw(moEffectState *state, GLuint g_ViewMode) {
+void mo3DModelSceneNode::Draw(moEffectState *state, GLuint g_ViewMode) {
 
 	int i;
 	float x,y;
@@ -184,11 +234,11 @@ void mo3DModel::Draw(moEffectState *state, GLuint g_ViewMode) {
 
 }
 
-void mo3DModel::Update() {
+void mo3DModelSceneNode::Update() {
 
 }
 
-void mo3DModel::Interaction() {
+void mo3DModelSceneNode::Interaction() {
 
 }
 
@@ -235,7 +285,7 @@ mo3dModelManager::Init() {
 	if (!m_pMoldeoLogo) {
 	    mo3dModel* pmodel = Load3dModel( "objetos/iconos3d/moldeologo.3ds", "../../data/test" );
 	    if (pmodel) {
-            m_pMoldeoLogo = new mo3DModel();
+            m_pMoldeoLogo = new mo3DModelSceneNode();
             m_pMoldeoLogo->Init(pmodel);
         }
     }
@@ -279,7 +329,7 @@ mo3dModelManager::Load3dModel( moText Tname, moText datapath ) {
 						// We pass in our global texture array, the name of the texture, and an ID to reference it.
 						//CreateTexture(g_Texture, g_3DModel.pMaterials[i].strFile, i);
 						strTexture = Models[nModels]->pMaterials[i].texMaps[j].strFile;
-						strTexture = "objetos/materials/"+strTexture;
+						strTexture = moText("objetos/materials/")+(moText)strTexture;
 						texid = Textures->GetTextureMOId(strTexture, true);
 					}
 
@@ -369,7 +419,7 @@ void mo3dModelManager::MoldeoLogo(long ticks) {
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
 		// Transformations
-		GLfloat m[4][4];
+		//GLfloat m[4][4];
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
 		glRotatef(33, 0, 0 , 1 );
@@ -404,9 +454,9 @@ mo3dModelManagerRef::LoadModels(moConfig *cfg,MOuint param,mo3dModelManager*M) {
 		namemodelo =	cfg->GetParam().GetValue().GetSubValue(0).Text();
 		Models[i] = M->Get3dModel(namemodelo);
 		if(Models[i] != MO_3DMODEL_ERROR) {
-			MODebug->Push(moText("Modelo cargado: ") + (moText)Models[i]->name);
+			MODebug2->Push(moText("Modelo cargado: ") + (moText)Models[i]->name);
 		} else {
-			MODebug->Push(moText("ERROR! Modelo  no cargado: "));
+			MODebug2->Push(moText("ERROR! Modelo  no cargado: "));
 		}
 		cfg->NextValue();
 	}
@@ -451,12 +501,12 @@ int mo3dModelManagerRef::Add(moText namemodelo,mo3dModelManager *M) {
         i = nModels - 1 ;
 
         Models[i] = newModel;
-        MODebug->Push("Modelo cargado: " + Models[i]->name);
+        MODebug2->Push(moText("Modelo cargado: ") + (moText)Models[i]->name);
 
         delete [] ModelsAux;
         return i;
 	} else {
-		MODebug->Push(moText("ERROR! Modelo  no cargado: "));
+		MODebug2->Push(moText("ERROR! Modelo  no cargado: "));
 	}
 
 	return MO_UNDEFINED;
@@ -477,15 +527,15 @@ mo3dModelManagerRef::Init(moConfig * cfg, MOuint param, mo3dModelManager *M) {
         moText text;
 
 	nModels = cfg->GetValuesCount(param);
-        text = "nModels: ";
+        text = moText("nModels: ");
         text +=  IntToStr(nModels);
-	MODebug->Push(text);
+	MODebug2->Push(text);
 	Models = new mo3dModel* [nModels];
 	for(MOuint i=0;i<nModels;i++) Models[i] = NULL;
 
-	MODebug->Push(moText("Espacio asignado: cargando modelos... 8o|"));
+	MODebug2->Push(moText("Espacio asignado: cargando modelos... 8o|"));
 	LoadModels(cfg,param,M);
-	MODebug->Push(moText("Models cargados 8oD"));
+	MODebug2->Push(moText("Models cargados 8oD"));
 	return true;
 }
 
@@ -504,10 +554,10 @@ mo3dModelManagerRef::Get(int i) {
 		return(Models[i]);
 	} else {
                 moText text;
-                text = "Error(ajModelsRef): el indice: ";
+                text = moText("Error(ajModelsRef): el indice: ");
                 text += IntToStr(i);
                 text += moText(" no existe.");
-		MODebug->Push(text);
+		MODebug2->Error(text);
 		return(0);
 	}
 }
@@ -522,7 +572,7 @@ void mo3dModelManagerRef::Draw(int imodel, moEffectState *state, GLuint g_ViewMo
 	int TID;
 	moMaterialInfo MAT;
 
-    if ( imodel < this->nModels )
+    if ( imodel < (int)this->nModels )
 	if (Models[imodel]!=NULL)
 	for(i = 0; i < Models[imodel]->numOfObjects; i++)
 	{
