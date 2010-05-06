@@ -172,6 +172,14 @@ LT_INIT
 AC_STRUCT_TM
 AC_TYPE_SIZE_T
 
+dnl Additional arguments (and substitutions)
+dnl Allow the pkg-config directory to be set
+AC_ARG_WITH(pkgconfigdir,
+	AC_HELP_STRING([--with-pkgconfigdir],
+	[Use the specified pkgconfig dir (default is libdir/pkgconfig)]),
+	[pkgconfigdir=${withval}],
+	[pkgconfigdir='${libdir}/pkgconfig'])
+
 dnl Makefile outputs
 AC_OUTPUT([
 Makefile
