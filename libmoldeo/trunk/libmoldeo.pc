@@ -1,0 +1,12 @@
+prefix=/usr/local/
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libMoldeo
+Description: Moldeo is an open source framework that allows the experimentation of new artistic, scientific and communicational concepts with new computer graphics technologies. It is an open source development that allows the development of interactive environments with 2D, 3D animation and video elements as well as digital effects in real time.
+Version: 0.7
+Requires: 
+Libs: -L${libdir} -lmoldeo 
+Cflags: -I${includedir} 
+
