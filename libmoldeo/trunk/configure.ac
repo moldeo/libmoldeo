@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo],[0.7], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [0.7], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -21,23 +21,21 @@ PKG_CHECK_MODULES([MUPARSER], [muparser] ,has_muparser=yes)
 dnl check for lua51
 PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
 
-dnl check for sdl
-PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
-
 dnl check tinyxml
 PKG_CHECK_MODULES([TINYXML], [tinyxml] ,has_tinyxml=yes)
+
+dnl check for sdl
+PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
 
 dnl check for sdl-net
 AC_CHECK_HEADER(SDL/SDL_net.h, , AC_MSG_ERROR([SDL_net header not found.]))
 AC_CHECK_LIB(SDL_net, SDLNet_Init, AC_SUBST([SDL_NET_LIBS], [-lSDL_net]), AC_MSG_ERROR([SDL_net not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
 
 dnl check for sdl-image
-AC_CHECK_HEADER(SDL/SDL_image.h, , AC_MSG_ERROR([SDL_image header not found.]))
-AC_CHECK_LIB(SDL_image, IMG_Linked_Version, AC_SUBST([SDL_IMAGE_LIBS], [-lSDL_image]), AC_MSG_ERROR([SDL_image not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
+PKG_CHECK_MODULES([SDL_IMAGE], [SDL_image] ,has_sdl_image=yes)
 
 dnl check for opengl
-AC_CHECK_HEADER(GL/gl.h, , AC_MSG_ERROR([opengl header not found.]))
-AC_CHECK_LIB(GL, glEnd, AC_SUBST([GL_LIBS], [-lGL]), AC_MSG_ERROR([opengl not found.]), )
+PKG_CHECK_MODULES([GL], [gl] ,has_gl=yes)
 
 dnl check for glew
 AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
