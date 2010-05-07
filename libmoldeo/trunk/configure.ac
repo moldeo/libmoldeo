@@ -1,4 +1,4 @@
-AC_INIT(libmoldeo,0,7)
+AC_INIT([libmoldeo],[0.7], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -179,6 +179,8 @@ AC_ARG_WITH(pkgconfigdir,
 	[Use the specified pkgconfig dir (default is libdir/pkgconfig)]),
 	[pkgconfigdir=${withval}],
 	[pkgconfigdir='${libdir}/pkgconfig'])
+
+AC_SUBST([pkgconfigdir])
 
 dnl Makefile outputs
 AC_OUTPUT([
