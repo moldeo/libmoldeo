@@ -283,12 +283,12 @@ mo3dModelManager::Init() {
 		Textures = m_pResourceManager->GetTextureMan();
 	}
 	if (!m_pMoldeoLogo) {
-	    mo3dModel* pmodel = Load3dModel( "objetos/iconos3d/moldeologo.3ds", "../../data/test" );
-	    if (pmodel) {
-            m_pMoldeoLogo = new mo3DModelSceneNode();
-            m_pMoldeoLogo->Init(pmodel);
-        }
-    }
+		mo3dModel* pmodel = Load3dModel("moldeologo.3ds", DATADIR);
+		if (pmodel) {
+			m_pMoldeoLogo = new mo3DModelSceneNode();
+			m_pMoldeoLogo->Init(pmodel);
+		}
+	}
 	return true;
 }
 

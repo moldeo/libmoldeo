@@ -417,7 +417,7 @@ void moParam::SetDefaultValue() {
                 xvalue.AddSubValue( valuebase );
                 break;
             case MO_PARAM_FONT:
-                valuebase.SetText( "fonts/arial.ttf" );
+                valuebase.SetText( DATADIR "/arial.ttf" );
                 valuebase.SetType( MO_VALUE_TXT );
                 xvalue.AddSubValue( valuebase );
                 break;
