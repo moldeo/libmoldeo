@@ -197,7 +197,7 @@ moDataManager::~moDataManager() {
 }
 
 MOboolean moDataManager::Init() {
-	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( moText("../../data/test"), moText("../../data/test/console.mol") );
+	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( moText(DATADIR), moText(DATADIR "/console.mol") );
     if (!m_pDataSession) {
         m_pDataSession = new moDataSession();
         if (m_pDataSession)

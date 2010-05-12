@@ -1,5 +1,11 @@
 ACLOCAL_AMFLAGS=-I m4
-AM_CPPFLAGS = $(all_includes)
+
+datadir = ${prefix}/share/moldeo
+modulesdir = ${libdir}/moldeo
+docdir = ${prefix}/share/doc/moldeo
+
+AM_CPPFLAGS = $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
+AM_CXXFLAGS = $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
 
 lib_LTLIBRARIES = libmoldeo.la
 libmoldeo_la_SOURCES = mo3dModelManager.cpp \

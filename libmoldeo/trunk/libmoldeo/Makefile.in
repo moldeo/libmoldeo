@@ -261,9 +261,9 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
-datadir = @datadir@
+datadir = ${prefix}/share/moldeo
 datarootdir = @datarootdir@
-docdir = @docdir@
+docdir = ${prefix}/share/doc/moldeo
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -297,7 +297,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-AM_CPPFLAGS = $(all_includes)
+modulesdir = ${libdir}/moldeo
+AM_CPPFLAGS = $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
+AM_CXXFLAGS = $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
 lib_LTLIBRARIES = libmoldeo.la
 libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moText.cpp \

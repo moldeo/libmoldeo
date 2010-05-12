@@ -8,3 +8,13 @@ EXTRA_DIST = AUTHORS ChangeLog NEWS README
 pkgconfigdir = @pkgconfigdir@
 pkgconfig_DATA = libmoldeo.pc
 
+datadir = ${prefix}/share/moldeo
+modulesdir = ${libdir}/moldeo
+docdir = ${prefix}/share/doc/moldeo
+
+dist_doc_DATA = README
+dist_modules_DATA = README.modules
+dist_data_DATA = README.data moldeologo.3ds Tuffy.ttf arial.ttf
+
+AM_CPPFLAGS = -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
+
