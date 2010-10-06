@@ -161,7 +161,7 @@ LIBMOLDEO_API moIODevice* moNewIODevice(moText effect_name, moIODevicePluginsArr
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText("plugins/iodevices/lib") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/iodevices/libmod_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("d");
 		#endif
@@ -210,13 +210,13 @@ LIBMOLDEO_API bool moDeleteIODevice(moIODevice *IODevice, moIODevicePluginsArray
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText("plugins/iodevices/lib") + moText(IODevice->GetName());
+    complete_name = moText(MODULESDIR "/iodevices/libmod_") + moText(IODevice->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("d");
 		#endif
     complete_name += moText(".so");
     #endif
-		printf("completename:%s\n", (char*)complete_name);
+    printf("completename:%s\n", (char*)complete_name);
 
     // Indice del plugin que se utilizara para crear a este efecto.
     int plg_index = -1;
