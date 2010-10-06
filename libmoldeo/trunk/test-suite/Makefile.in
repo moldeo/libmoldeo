@@ -51,7 +51,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = check_libmoldeo$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am_check_libmoldeo_OBJECTS = check_libmoldeo.$(OBJEXT)
+am_check_libmoldeo_OBJECTS =  \
+	check_libmoldeo-check_libmoldeo.$(OBJEXT)
 check_libmoldeo_OBJECTS = $(am_check_libmoldeo_OBJECTS)
 check_libmoldeo_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -229,6 +230,20 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = @CHECK_CFLAGS@ -I../libmoldeo
 check_libmoldeo_SOURCES = check_libmoldeo.cpp
+check_libmoldeo_CPPFLAGS = ${FT2_CFLAGS} \
+	${GST_CFLAGS} \
+	${MUPARSER_CFLAGS} \
+	${BOOST_CPPFLAGS} \
+	${SDL_CFLAGS} \
+	${LUA51_CFLAGS} 
+
+check_libmoldeo_LIBS = ${FT2_LIBS} \
+	${GST_LIBS} \
+	${BOOST_ASIO_LIB} \
+	${BOOST_THREAD_LIB} \
+	${BOOST_FILESYSTEM_LIB} \
+	${LUA51_LIBS} 
+
 check_libmoldeo_LDADD = @CHECK_LIBS@ \
 	-L../libmoldeo -lmoldeo \
 	@MUPARSER_LIBS@ \
@@ -302,7 +317,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_libmoldeo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_libmoldeo-check_libmoldeo.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -324,6 +339,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+check_libmoldeo-check_libmoldeo.o: check_libmoldeo.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(check_libmoldeo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT check_libmoldeo-check_libmoldeo.o -MD -MP -MF $(DEPDIR)/check_libmoldeo-check_libmoldeo.Tpo -c -o check_libmoldeo-check_libmoldeo.o `test -f 'check_libmoldeo.cpp' || echo '$(srcdir)/'`check_libmoldeo.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/check_libmoldeo-check_libmoldeo.Tpo $(DEPDIR)/check_libmoldeo-check_libmoldeo.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='check_libmoldeo.cpp' object='check_libmoldeo-check_libmoldeo.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(check_libmoldeo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o check_libmoldeo-check_libmoldeo.o `test -f 'check_libmoldeo.cpp' || echo '$(srcdir)/'`check_libmoldeo.cpp
+
+check_libmoldeo-check_libmoldeo.obj: check_libmoldeo.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(check_libmoldeo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT check_libmoldeo-check_libmoldeo.obj -MD -MP -MF $(DEPDIR)/check_libmoldeo-check_libmoldeo.Tpo -c -o check_libmoldeo-check_libmoldeo.obj `if test -f 'check_libmoldeo.cpp'; then $(CYGPATH_W) 'check_libmoldeo.cpp'; else $(CYGPATH_W) '$(srcdir)/check_libmoldeo.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/check_libmoldeo-check_libmoldeo.Tpo $(DEPDIR)/check_libmoldeo-check_libmoldeo.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='check_libmoldeo.cpp' object='check_libmoldeo-check_libmoldeo.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(check_libmoldeo_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o check_libmoldeo-check_libmoldeo.obj `if test -f 'check_libmoldeo.cpp'; then $(CYGPATH_W) 'check_libmoldeo.cpp'; else $(CYGPATH_W) '$(srcdir)/check_libmoldeo.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

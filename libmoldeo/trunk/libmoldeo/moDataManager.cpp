@@ -165,15 +165,14 @@ moDataSessionConfig::GetConsoleConfigName() {
 }
 
 moText
-moDataSessionConfig::GetVideoFileName() {
-	return m_VideoFileName;
-}
-
-moText
 moDataSessionConfig::GetSessionFileName() {
 	return m_SessionFileName;
 }
 
+moText
+moDataSessionConfig::GetVideoFileName() {
+	return m_VideoFileName;
+}
 
 //===========================================
 //
