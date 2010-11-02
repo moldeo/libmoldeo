@@ -73,7 +73,11 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(libmoldeo_includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libmoldeo_la_LIBADD =
+am__DEPENDENCIES_1 =
+libmoldeo_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libmoldeo_la_OBJECTS = libmoldeo_la-mo3dModelManager.lo \
 	libmoldeo_la-moText.lo libmoldeo_la-moAbstract.lo \
 	libmoldeo_la-moActions.lo libmoldeo_la-moArcBall.lo \
@@ -229,6 +233,8 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 SDL_CFLAGS = @SDL_CFLAGS@
 SDL_IMAGE_CFLAGS = @SDL_IMAGE_CFLAGS@
@@ -241,6 +247,7 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 TINYXML_CFLAGS = @TINYXML_CFLAGS@
 TINYXML_LIBS = @TINYXML_LIBS@
+TUIO_LIBS = @TUIO_LIBS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -400,12 +407,13 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${SDL_CFLAGS} \
 	${LUA51_CFLAGS} 
 
-libmoldeo_la_LIBS = ${FT2_LIBS} \
+libmoldeo_la_LIBADD = ${FT2_LIBS} \
 	${GST_LIBS} \
 	${BOOST_ASIO_LIB} \
 	${BOOST_THREAD_LIB} \
 	${BOOST_FILESYSTEM_LIB} \
-	${LUA51_LIBS} 
+	${LUA51_LIBS} \
+	${TUIO_LIBS}
 
 libmoldeo_includedir = $(includedir)/libmoldeo
 libmoldeo_include_HEADERS = \
@@ -509,7 +517,13 @@ libmoldeo_include_HEADERS = \
 	moVideoManager.h \
 	moXmlConfig.h \
 	moPort.h \
-	mo3ds.h 
+	mo3ds.h \
+	TuioCursor.h \
+	TuioObject.h \
+	TuioContainer.h \
+	TuioPoint.h \
+	TuioTime.h \
+       	TuioClient.h
 
 METASOURCES = AUTO
 all: all-am
@@ -525,9 +539,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu libmoldeo/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign libmoldeo/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu libmoldeo/Makefile
+	  $(AUTOMAKE) --foreign libmoldeo/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

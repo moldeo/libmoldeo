@@ -28,3 +28,59 @@ source qui permet la réalisation d'espaces interactivfs avec des éléments de
 vidéo et d'animation - en deux et trois dimensions - et des effets numériques
 en temps réel.
 
+Instalación del TUIO.
+---------------------
+
+El TUIO no viene como paquete actualmente y tampoco tiene una forma sencilla de instalación.
+
+Hay que bajar la API C++ de http://www.tuio.org/?software
+
+luego de bajarlo hay que agregar las siguientes linea al Makefile
+
+"""
+install_root=/usr/local
+install_libdir=${install_root}/lib
+install_includedir=${install_root}/include/TUIO
+
+INSTALL = /usr/bin/install -c
+MKDIR_P = /bin/mkdir -p
+
+TUIO_INCLUDES = TUIO/TuioClient.h \
+	       	TUIO/TuioContainer.h \
+	       	TUIO/TuioCursor.h \
+	       	TUIO/TuioListener.h \
+	       	TUIO/TuioObject.h \
+	       	TUIO/TuioPoint.h \
+		TUIO/TuioServer.h \
+	       	TUIO/TuioTime.h
+
+install: install_lib install_include
+	
+install_lib: $(TUIO_SHARED)
+	test -z "$(install_libdir)" || $(MKDIR_P) "$(install_libdir)"
+	${INSTALL} $? ${install_libdir}
+
+install_include: $(TUIO_INCLUDES)
+	test -z "$(install_includedir)" || $(MKDIR_P) "$(install_includedir)"
+	${INSTALL} $? ${install_includedir}
+
+
+"""
+
+y luego ejecutar
+
+$ sudo make install
+
+a partir de ahí ya se puede ejecutar el ./configure
+
+
+TODO:
+
+	Eliminar archivos de datos de la libreria!
+
+	arial.ttf, Tuffy.ttf y moldeologo.3ds
+
+	Esos son parte de la demo o de moldeodirector!!!
+
+
+

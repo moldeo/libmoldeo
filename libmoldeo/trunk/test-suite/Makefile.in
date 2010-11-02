@@ -161,6 +161,8 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 SDL_CFLAGS = @SDL_CFLAGS@
 SDL_IMAGE_CFLAGS = @SDL_IMAGE_CFLAGS@
@@ -173,6 +175,7 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 TINYXML_CFLAGS = @TINYXML_CFLAGS@
 TINYXML_LIBS = @TINYXML_LIBS@
+TUIO_LIBS = @TUIO_LIBS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -261,7 +264,8 @@ check_libmoldeo_LDADD = @CHECK_LIBS@ \
 	@BOOST_ASIO_LIB@ \
 	@BOOST_FILESYSTEM_LIB@ \
 	@BOOST_THREAD_LIB@ \
-	@FTGL_LIBS@ 
+	@FTGL_LIBS@ \
+	@TUIO_LIBS@
 
 CLEANFILES = check_libmoldeo.log
 all: all-am
@@ -277,9 +281,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu test-suite/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign test-suite/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu test-suite/Makefile
+	  $(AUTOMAKE) --foreign test-suite/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

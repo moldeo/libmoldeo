@@ -159,7 +159,7 @@ LIBMOLDEO_API moEffect* moNewEffect(moText effect_name, moPluginsArray &plugins)
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/effects/libmod_") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/effects/lib") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -208,7 +208,7 @@ LIBMOLDEO_API bool moDeleteEffect(moEffect *effect, moPluginsArray &plugins)
 		#endif
     complete_name +=  moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/effects/libmod_") + moText(effect->GetName());
+    complete_name = moText(MODULESDIR "/effects/lib") + moText(effect->GetName());
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif
