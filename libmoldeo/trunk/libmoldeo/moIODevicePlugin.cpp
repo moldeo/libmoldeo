@@ -161,7 +161,7 @@ LIBMOLDEO_API moIODevice* moNewIODevice(moText effect_name, moIODevicePluginsArr
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/iodevices/libmod_") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/iodevices/lib") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("d");
 		#endif
@@ -210,7 +210,7 @@ LIBMOLDEO_API bool moDeleteIODevice(moIODevice *IODevice, moIODevicePluginsArray
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/iodevices/libmod_") + moText(IODevice->GetName());
+    complete_name = moText(MODULESDIR "/iodevices/lib") + moText(IODevice->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("d");
 		#endif

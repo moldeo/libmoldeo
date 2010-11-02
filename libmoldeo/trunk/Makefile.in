@@ -225,6 +225,8 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 SDL_CFLAGS = @SDL_CFLAGS@
 SDL_IMAGE_CFLAGS = @SDL_IMAGE_CFLAGS@
@@ -237,6 +239,7 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 TINYXML_CFLAGS = @TINYXML_CFLAGS@
 TINYXML_LIBS = @TINYXML_LIBS@
+TUIO_LIBS = @TUIO_LIBS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -307,7 +310,7 @@ iodevicesdir = ${modulesdir}/iodevices
 resourcesdir = ${modulesdir}/resources
 dist_doc_DATA = README
 dist_modules_DATA = README.modules
-dist_data_DATA = README.data moldeologo.3ds Tuffy.ttf arial.ttf
+dist_data_DATA = README.data arial.ttf moldeologo.3ds 
 dist_preeffects_DATA = 
 dist_effects_DATA = 
 dist_posteffects_DATA = 
@@ -324,15 +327,15 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu Makefile
+	  $(AUTOMAKE) --foreign Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

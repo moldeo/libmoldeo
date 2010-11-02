@@ -498,14 +498,12 @@ void moMoldeoObject::RegisterFunctions()
 	RegisterFunction("GetInletData");//7
 	RegisterFunction("SetInletData");//8
 
-#ifdef USE_TUIO
     ///for TUIO tracking
     RegisterFunction("GetTuioSystem");//9
     RegisterFunction("GetTuioCursorCount");//10
     RegisterFunction("GetTuioCursor");//11
     RegisterFunction("GetTuioObjectCount");//12
     RegisterFunction("GetTuioObject");//13
-#endif /* USE_TUIO */
 
     ///for features tracking
 
@@ -561,7 +559,6 @@ int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) 
             return luaSetInletData(vm);//8
 
 
-#ifdef USE_TUIO
         ///functions to access Inlets Data
         ///TUIO
         ///Tracker, etc...
@@ -580,9 +577,6 @@ int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) 
         case 13:
             ResetScriptCalling();
             return  luaGetTuioObject(vm);//13
-#endif /* USE_TUIO */
-
-
         case 14:
             ResetScriptCalling();
             return luaGetTrackerSystemData(vm);//14
@@ -978,8 +972,6 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
 */
 
 
-#if USE_TUIO
-
 using namespace TUIO;
 ///functions to access Inlets Data
 ///TUIO
@@ -1140,7 +1132,6 @@ int moMoldeoObject::luaGetTuioObject(moLuaVirtualMachine& vm) {
     return 1;
 
 }
-#endif /* USE_TUIO */
 
 /**
 *

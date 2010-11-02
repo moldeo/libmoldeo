@@ -59,6 +59,22 @@ AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfree
 dnl check for alut
 PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
+dnl check for TUIO
+AC_LANG_PUSH(C++)dnl
+AC_CHECK_HEADER(TUIO/TuioObject.h, , AC_MSG_ERROR([TUIO header not found. Please read README.]))
+
+SAVED_LDFLAGS=$LDFLAGS
+LDFLAGS="$LDFLAGS -lTUIO"
+AC_LINK_IFELSE(
+  [AC_LANG_PROGRAM([#include <TUIO/TuioTime.h>],
+    [using namespace TUIO],
+    [TUIO::TuioTime::getSessionTime()])],
+    AC_SUBST([TUIO_LIBS],[-lTUIO]),
+    AC_MSG_ERROR([TUIO not found. Please read README.])
+)
+LDFLAGS=$SAVED_LDFLAGS
+AC_LANG_POP(C++)
+
 dnl nvidia-cG-toolkit requires pthread
 AC_CHECK_LIB(pthread, pthread_attr_init, LIBS="$LIBS -lpthread")
 

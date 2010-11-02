@@ -19,7 +19,7 @@ resourcesdir = ${modulesdir}/resources
 
 dist_doc_DATA = README
 dist_modules_DATA = README.modules
-dist_data_DATA = README.data moldeologo.3ds Tuffy.ttf arial.ttf
+dist_data_DATA = README.data arial.ttf moldeologo.3ds 
 dist_preeffects_DATA = 
 dist_effects_DATA = 
 dist_posteffects_DATA = 

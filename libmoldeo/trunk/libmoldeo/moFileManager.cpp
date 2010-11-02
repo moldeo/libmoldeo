@@ -30,10 +30,9 @@
 *******************************************************************************/
 
 #include <boost/filesystem.hpp>
-
 #include "moFileManager.h"
-
 #include <moArray.h>
+
 moDefineDynamicArray(moFileArray)
 moDefineDynamicArray(moDirectoryArray)
 

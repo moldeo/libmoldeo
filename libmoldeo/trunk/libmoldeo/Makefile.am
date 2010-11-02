@@ -107,12 +107,13 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${SDL_CFLAGS} \
 	${LUA51_CFLAGS} 
 
-libmoldeo_la_LIBS = ${FT2_LIBS} \
+libmoldeo_la_LIBADD = ${FT2_LIBS} \
 	${GST_LIBS} \
 	${BOOST_ASIO_LIB} \
 	${BOOST_THREAD_LIB} \
 	${BOOST_FILESYSTEM_LIB} \
-	${LUA51_LIBS} 
+	${LUA51_LIBS} \
+	${TUIO_LIBS}
 
 libmoldeo_includedir = $(includedir)/libmoldeo
 
@@ -217,7 +218,13 @@ libmoldeo_include_HEADERS = \
 	moVideoManager.h \
 	moXmlConfig.h \
 	moPort.h \
-	mo3ds.h 
+	mo3ds.h \
+	TuioCursor.h \
+	TuioObject.h \
+	TuioContainer.h \
+	TuioPoint.h \
+	TuioTime.h \
+       	TuioClient.h
 
 METASOURCES = AUTO
 

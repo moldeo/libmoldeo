@@ -32,14 +32,11 @@
 #include "moFilterManager.h"
 #include <moArray.h>
 
-#ifdef USE_TUIO
 moDefineDynamicArray( moTuioCursorArray )
 moDefineDynamicArray( moTuioObjectArray )
-#endif /* USE_TUIO */
 
 moDefineDynamicArray( moTrackerFeatureArray )
 
-#ifdef USE_TUIO
 moTUIOSystemData::moTUIOSystemData() {
 
 	currentFrameTime = TuioTime::getSessionTime().getSeconds();
@@ -420,15 +417,6 @@ void moTUIOSystemData::removeUntouchedStoppedCursors() {
 		} else tuioCursor++;
 	}
 }
-
-#endif /* USE_TUIO */
-
-
-
-
-
-
-
 
 moTrackerSystemData::moTrackerSystemData() {
         m_ZoneW = 4;
