@@ -35,9 +35,10 @@ El TUIO no viene como paquete actualmente y tampoco tiene una forma sencilla de 
 
 Hay que bajar la API C++ de http://www.tuio.org/?software
 
-luego de bajarlo hay que agregar las siguientes lineas al Makefile
+luego de bajarlo hay que agregar las siguientes lineas al Makefile luego del "endif"
 
 """
+CFLAGS += -fPIC
 install_root=/usr/local
 install_libdir=${install_root}/lib
 install_includedir=${install_root}/include/TUIO
@@ -54,7 +55,7 @@ TUIO_INCLUDES = TUIO/TuioClient.h \
 		TUIO/TuioServer.h \
 	       	TUIO/TuioTime.h
 
-install: install_lib install_include
+install: all install_lib install_include
 	
 install_lib: $(TUIO_SHARED)
 	test -z "$(install_libdir)" || $(MKDIR_P) "$(install_libdir)"
@@ -64,12 +65,11 @@ install_lib: $(TUIO_SHARED)
 install_include: $(TUIO_INCLUDES)
 	test -z "$(install_includedir)" || $(MKDIR_P) "$(install_includedir)"
 	${INSTALL} $? ${install_includedir}
-
-
 """
 
 y luego ejecutar
 
+$ make all
 $ sudo make install
 
 a partir de ahí ya se puede ejecutar el ./configure
