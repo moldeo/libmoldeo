@@ -162,7 +162,7 @@ LIBMOLDEO_API moPreEffect* moNewPreEffect(moText effect_name, moPrePluginsArray 
 		#endif
     complete_name +=  moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/preeffects/lib") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/preeffects/libmod_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif
@@ -211,7 +211,7 @@ LIBMOLDEO_API bool moDeletePreEffect(moPreEffect *preeffect, moPrePluginsArray &
 		#endif
     complete_name +=  moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/preeffects/lib") + moText(preeffect->GetName());
+    complete_name = moText(MODULESDIR "/preeffects/libmod_") + moText(preeffect->GetName());
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif

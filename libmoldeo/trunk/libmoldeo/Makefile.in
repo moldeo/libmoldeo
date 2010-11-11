@@ -517,13 +517,7 @@ libmoldeo_include_HEADERS = \
 	moVideoManager.h \
 	moXmlConfig.h \
 	moPort.h \
-	mo3ds.h \
-	TuioCursor.h \
-	TuioObject.h \
-	TuioContainer.h \
-	TuioPoint.h \
-	TuioTime.h \
-       	TuioClient.h
+	mo3ds.h 
 
 METASOURCES = AUTO
 all: all-am
