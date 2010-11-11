@@ -159,7 +159,7 @@ LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArr
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/posteffects/lib") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/posteffects/libmod_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -209,7 +209,7 @@ LIBMOLDEO_API bool moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArr
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/posteffects/lib") + moText(posteffect->GetName());
+    complete_name = moText(MODULESDIR "/posteffects/libmod_") + moText(posteffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

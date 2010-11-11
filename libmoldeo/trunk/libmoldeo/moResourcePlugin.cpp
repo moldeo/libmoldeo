@@ -202,7 +202,7 @@ LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsA
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/resources/lib") + (moText)resource_name;
+    complete_name = moText(MODULESDIR "/resources/lib/mod_") + (moText)resource_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -253,7 +253,7 @@ LIBMOLDEO_API bool moDeleteResource(moResource *Resource, moResourcePluginsArray
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name =  moText(MODULESDIR "/resources/lib") +  moText(Resource->GetResourceName());
+    complete_name =  moText(MODULESDIR "/resources/libmod_") +  moText(Resource->GetResourceName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

@@ -35,7 +35,7 @@ El TUIO no viene como paquete actualmente y tampoco tiene una forma sencilla de 
 
 Hay que bajar la API C++ de http://www.tuio.org/?software
 
-luego de bajarlo hay que agregar las siguientes linea al Makefile
+luego de bajarlo hay que agregar las siguientes lineas al Makefile
 
 """
 install_root=/usr/local
@@ -59,6 +59,7 @@ install: install_lib install_include
 install_lib: $(TUIO_SHARED)
 	test -z "$(install_libdir)" || $(MKDIR_P) "$(install_libdir)"
 	${INSTALL} $? ${install_libdir}
+	ldconfig
 
 install_include: $(TUIO_INCLUDES)
 	test -z "$(install_includedir)" || $(MKDIR_P) "$(install_includedir)"
