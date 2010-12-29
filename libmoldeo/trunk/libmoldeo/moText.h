@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-								moText.h
+                                moText.h
 
   ****************************************************************************
   *                                                                          *
@@ -40,7 +40,7 @@
 
 #ifdef WIN32
 #define snprintf _snprintf
-#endif							 /*  */
+#endif
 
 //====================================================================================
 //  class: moText
@@ -52,100 +52,104 @@
 
 #define MO_TXT_COMPLETE        65534
 #define MO_TXT_NOT_FOUND   65534
-enum txtcval
-{ MO_TXT_LESSER, MO_TXT_EQUAL, MO_TXT_GREATER };
-enum txtpert
-{ MO_TXT_BELONG, MO_TXT_NOT_BELONG };
-typedef char *CHARP;
+
+enum txtcval    { MO_TXT_LESSER, MO_TXT_EQUAL, MO_TXT_GREATER };
+enum txtpert    { MO_TXT_BELONG, MO_TXT_NOT_BELONG };
+
+typedef char* CHARP;
+
 class moTextArray;
 
 /// clase de para manejar textos
 /**
- * Operaciones y funciones para la manipulacin de cadenas de caracteres.
+ * Operaciones y funciones para la manipulación de cadenas de caracteres.
  */
 #ifdef USE_MOTEXT0
 class LIBMOLDEO_API moText0
 {
-	public:moText0 ();
-	moText0 (const moText0 &);
-	moText0 (char *);
-	moText0 (const char *);
-	virtual ~ moText0 ();
-	MOuint Length () const;		 // devuelve el length del text sin contar el null del final.
-
-	// operadores que usan solo objetos de la clase //
-	moText0 & operator = (const moText0 & txt);
-	moText0 & operator += (const moText0 & txt);
-	moText0 operator + (const moText0 & txt) const;
-	int operator < (const moText0 & txt) const;
-	int operator > (const moText0 & txt) const;
-	int operator <= (const moText0 & txt) const;
-	int operator >= (const moText0 & txt) const;
-	int operator == (const moText0 & txt) const;
-	int operator != (const moText0 & txt) const;
-
-	// operadores que usan c-strings //
-	moText0 & operator = (const char *txt);
-	moText0 & operator = (const short *txt);
-	moText0 & operator += (const char *txt);
-	friend LIBMOLDEO_API moText0 operator + (const moText0 & txt1, const char *txt2);
-	friend LIBMOLDEO_API moText0 operator + (const char *txt1, const moText0 & txt2);
-	int operator < (const char *txt) const;
-	int operator > (const char *txt) const;
-	int operator <= (const char *txt) const;
-	int operator >= (const char *txt) const;
-	int operator == (const char *txt) const;
-	int operator != (const char *txt) const;
-
-	//char operator [](MOuint pos)            { return text[pos]; }
-	// operadores de conversion para poder usar c-strings //
-	virtual operator char *() { return text; }
-	virtual operator const char *() const { return text; }
-
-	// metodos comunes en una clase string//
-	const moText0 & Left (MOuint) const;	 // devuelve el comienzo de un text.
-	moText0 & Left (MOuint);	 // devuelve el comienzo de un text.
-	const moText0 & Right (MOuint) const;	 // devuelve el final de un text.
-	moText0 & Right (MOuint);	 // devuelve el final de un text.
-								 // devuelve un fragmento intermedio del text.(comienzo, cant de carac)
-	const moText0 & Mid (MOuint, MOuint) const;
-	moText0 & Mid (MOuint, MOuint);
-								 // devuelve un fragmento intermedio del text.(comienzo, final)
-	const moText0 & SubText (MOuint, MOuint) const;
-	moText0 & SubText (MOuint, MOuint);
-								 // inserta un text dentro de otro.
-	moText0 & Insert (const char *, MOuint);
-								 // borra una parte del text.
-	moText0 & Delete (MOuint, MOuint);
-	moText0 Scan (char *);		 // saca y devuelve el primer fragmento de text que este separado por alguno de los caracteres de un cjto.
-	moText0 ScanEx (char *);	 // saca y devuelve el primer fragmento de text que este separado por alguno de los caracteres de un cjto, y entre comillas.
-	moText0 & LTrim ();			 // saca los espacios del comienzo.
-	moText0 & RTrim ();			 // saca los espacios del final.
-	moText0 & Trim ();			 // saca los espacios del comienzo y del final.
-	unsigned short *Short() const;
-	void ToUpper ();			 // convierte el text a mayusculas.
-	void ToLower ();			 // convierte el text a minusculas.
-
-	moTextArray Explode (char *) const;
-	int Find (const moText0 & target) const;
-	void ReplaceChar (const char *target, const char *replacement);
-	void Replace (const moText0 & target, const moText0 & replacement);
-private:char *text;
-	MOuint length;
-
-	// Estos metodos son el motor de la clase. Contienen toda la logica
-	// de como se maneja moText0. Todos los metodos publicos las usan.
 public:
-	void txtcopy (const char *txt, MOuint pos = 0, MOuint com = 0, MOuint fin =
-			MO_TXT_COMPLETE);
-	// copy c-strings(reserva la memoria y pone los nulls al final)
-	void txtcopy (const short *txt, MOuint pos = 0, MOuint com = 0, MOuint fin = MO_TXT_COMPLETE);
+	moText0();
+	moText0(const moText0&);
+	moText0( char*);
+	moText0( const char*);
+
+	virtual ~moText0();
+
+    MOuint Length() const;               // devuelve el length del text sin contar el null del final.
+
+    // operadores que usan solo objetos de la clase //
+    moText0& operator = ( const moText0& txt);
+    moText0& operator +=( const moText0& txt);
+    //friend moText0 operator + ( const moText0& txt, );
+
+    int operator < ( const moText0& txt) const;
+    int operator > ( const moText0& txt) const;
+    int operator <=( const moText0& txt) const;
+    int operator >=( const moText0& txt) const;
+    int operator ==( const moText0& txt) const;
+    int operator !=( const moText0& txt) const;
+
+    // operadores que usan c-strings //
+    moText0& operator = ( const char* txt);
+    moText0& operator = ( const short* txt);
+    moText0& operator +=( const char* txt);
+
+    friend LIBMOLDEO_API moText0 operator +( const moText0& txt1, const moText0& txt2);
+    friend LIBMOLDEO_API moText0 operator +( const moText0& txt1, const char* txt2);
+    friend LIBMOLDEO_API moText0 operator +( const char* txt1,    const moText0& txt2);
+
+    int operator < ( const char* txt) const;
+    int operator > ( const char* txt) const;
+    int operator <=( const char* txt) const;
+    int operator >=( const char* txt) const;
+    int operator ==( const char* txt) const;
+    int operator !=( const char* txt) const;
+
+    //char operator [](MOuint pos)            { return text[pos]; }
+
+    // operadores de conversion para poder usar c-strings //
+    virtual operator char*()                { return text; }
+
+    // metodos comunes en una clase string//
+    moText0& Left( MOuint);            // devuelve el comienzo de un text.
+    moText0& Right( MOuint);           // devuelve el final de un text.
+    moText0& Mid( MOuint, MOuint);       // devuelve un fragmento intermedio del text.(comienzo, cant de carac)
+    moText0& SubText( MOuint, MOuint);   // devuelve un fragmento intermedio del text.(comienzo, final)
+
+    moText0& Insert( char*, MOuint);        // inserta un text dentro de otro.
+    moText0& Delete( MOuint, MOuint);           // borra una parte del text.
+
+    moText0  Scan( char*);                  // saca y devuelve el primer fragmento de text que este separado por alguno de los caracteres de un cjto.
+	moText0  ScanEx( char*);                // saca y devuelve el primer fragmento de text que este separado por alguno de los caracteres de un cjto, y entre comillas.
+
+    moText0& LTrim();                // saca los espacios del comienzo.
+    moText0& RTrim();                // saca los espacios del final.
+    moText0& Trim();                 // saca los espacios del comienzo y del final.
+
+	unsigned short* Short();
+    void ToUpper();                  // convierte el text a mayusculas.
+    void ToLower();                  // convierte el text a minusculas.
+
+
+    moTextArray     Explode( char* separator ) const; ///divide el texto separado por el caracter especificado
+    int             Find( const moText0& target );
+    void            ReplaceChar( const char* target, const char* replacement );
+    void            Replace( const moText0& target, const moText0& replacement );
+
 private:
-	txtcval txtcomp (const char *txt, MOuint com1 = 0, MOuint com2 = 0) const;
-	MOuint txtfind (const char *txt, txtpert pert = MO_TXT_BELONG, MOuint com =
-		0, int dir = 1) const;
+    char*   text;
+    MOuint    length;
+
+    // Estos metodos son el motor de la clase. Contienen toda la logica
+    // de como se maneja moText0. Todos los metodos publicos las usan.
+public:
+    void    txtcopy( const char* txt, MOuint pos = 0, MOuint com = 0, MOuint fin = MO_TXT_COMPLETE);        // copy c-strings(reserva la memoria y pone los nulls al final)
+    void    txtcopy( const short* txt, MOuint pos = 0, MOuint com = 0, MOuint fin = MO_TXT_COMPLETE);        // copy c-strings(reserva la memoria y pone los nulls al final)
+private:
+    txtcval txtcomp( const char* txt, MOuint com1 = 0, MOuint com2 = 0) const;
+    MOuint    txtfind( const char* txt, txtpert pert = MO_TXT_BELONG, MOuint com = 0, int dir = 1) const;
 };
-#endif							 /*  */
+#endif
 
 /*
 //====================================================================================
@@ -170,24 +174,24 @@ public:
 	moString(const moString& str, MOuint index, MOuint length) : std::string((std::string)str, index, length) {}
 
 	// Moldeo functions.
-	moString& Left(MOuint nchar);					// Sets the string to the first nchar characters in the string.
-	moString& Right(MOuint nchar);				// Sets the string to the last nchar characters in the string.
-	moString& Mid(MOuint first, MOuint nchar);		// Sets the string to an intermediate substring.
-	moString& SubText(MOuint first, MOuint last);	// Sets the string to an intermediate substring.
+    moString& Left(MOuint nchar);					// Sets the string to the first nchar characters in the string.
+    moString& Right(MOuint nchar);				// Sets the string to the last nchar characters in the string.
+    moString& Mid(MOuint first, MOuint nchar);		// Sets the string to an intermediate substring.
+    moString& SubText(MOuint first, MOuint last);	// Sets the string to an intermediate substring.
 
-	moString& Insert(char *str, MOuint pos);      // Inserts s at position pos.
-	moString& Delete(MOuint first, MOuint nchar);   // Deletes a part of the string.
+    moString& Insert(char *str, MOuint pos);      // Inserts s at position pos.
+    moString& Delete(MOuint first, MOuint nchar);   // Deletes a part of the string.
 
-	moString Scan(char *set);					// Returns the first substring separated by some of the characters in the set.
+    moString Scan(char *set);					// Returns the first substring separated by some of the characters in the set.
 	moString ScanEx(char *set);					// Returns the first substring separated by some of the characters in the set and between commas.
 
-	moString& LTrim();							// Removes the spaces at the beginning of the string.
-	moString& RTrim();							// Removes the spaces at the end of the string.
-	moString& Trim();							// Removes the spaces at both ends of the string.
+    moString& LTrim();							// Removes the spaces at the beginning of the string.
+    moString& RTrim();							// Removes the spaces at the end of the string.
+    moString& Trim();							// Removes the spaces at both ends of the string.
 
 	unsigned short* Short();					// Converts the string to an array of shorts.
-	void ToUpper();								// Converts the string to uppercase.
-	void ToLower();								// Converts the string to lowercase.
+    void ToUpper();								// Converts the string to uppercase.
+    void ToLower();								// Converts the string to lowercase.
 
 	MOuint Length() { return MOuint(length()); }
 
@@ -256,13 +260,14 @@ public:
 	virtual operator const char* () { return c_str(); }
 };
 */
+
 #ifndef USE_MOTEXT0
 typedef std::string moText;
 #endif
 
 #ifdef USE_MOTEXT0
 typedef moText0 moText;
-#endif							 /*  */
+#endif
 
 //====================================================================================
 //  class: moTextHeap
@@ -276,42 +281,33 @@ typedef moText0 moText;
 /**
  * lista tipo FIFO para textos.
  */
-class LIBMOLDEO_API moTextHeap
-{
+class LIBMOLDEO_API moTextHeap {
+public:
+	moText *array;
+	int n;
+	int count;
 
-	public:
-		moText * array;
-		int n;
-		int count;
+	moTextHeap();
+	moTextHeap(int);
+	~moTextHeap();
 
-		moTextHeap ();
-
-		moTextHeap (int);
-		~moTextHeap ();
-		void
-			Push (moText);
-
-		moText Pop ();
-
-		moText Get (int x);
-		void
-			Set (int, moText);
+	void Push(moText);
+	moText Pop();
+	moText Get( int x );
+	void Set(int,moText);
 };
 
-moDeclareExportedDynamicArray (moText, moTextArray);
+moDeclareExportedDynamicArray( moText, moTextArray );
 
 //===========================================
 //
-//                              Utilities
+//				Utilities
 //
 //===========================================
-LIBMOLDEO_API
-moText
-IntToStr (int a);
-LIBMOLDEO_API
-moText
-FloatToStr (double a);
-LIBMOLDEO_API
-moText
-FloatToStr (double a, int n);
-#endif							 /*  */
+
+LIBMOLDEO_API moText IntToStr(int a);
+LIBMOLDEO_API moText FloatToStr(double a);
+LIBMOLDEO_API moText FloatToStr(double a, int n);
+
+
+#endif

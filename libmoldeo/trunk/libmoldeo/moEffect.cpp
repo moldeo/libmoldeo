@@ -25,17 +25,18 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
 
 *******************************************************************************/
 
 // Clase padre de todos los efectos //
 
-#include <moEffect.h>
+#include "moEffect.h"
 #include <moArray.h>
 #include <moDataManager.h>
 #include <moFileManager.h>
 
+
+#include "moArray.cpp"
 moDefineDynamicArray( moEffectsArray)
 
 
@@ -64,6 +65,30 @@ moEffect::PreInit() {
 
 	devicecode = NULL;
 	state.Init();
+
+  moInlet* Inlet = new moInlet();
+  if (Inlet) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      Inlet->Init( moText("time"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(Inlet);
+  }
+
+  Inlet = new moInlet();
+  if (Inlet) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      Inlet->Init( moText("t"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(Inlet);
+  }
+
+  Inlet = new moInlet();
+  if (Inlet) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      Inlet->Init( moText("tempo"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(Inlet);
+  }
 
 	if (!m_pResourceManager) return false;
 
@@ -120,34 +145,63 @@ void moEffect::PreDraw( moTempo *tempogral,moEffectState* parentstate) {
 
 	if(isyncro != MO_PARAM_NOT_FOUND) {
 		moData *sync = m_Config.GetParam(isyncro).GetData();
-		if (sync->Type()==MO_DATA_FUNCTION) state.tempo.syncro = sync->Fun()->Eval(state.tempo.ang);
-		else state.tempo.syncro = sync->Double();
+		if (sync) {
+		  moMathFunction* pFun = sync->Fun();
+      if (sync->Type()==MO_DATA_FUNCTION && pFun) {
+        state.tempo.syncro = pFun->Eval(state.tempo.ang);
+      }
+      else state.tempo.syncro = sync->Double();
+		}
+
+		/**código alternativo*/
+		//state.tempo.syncro = m_Config.Fun(isyncro).Eval( state.tempo.ang );
 	}
 
     if(state.synchronized==MO_DEACTIVATED)
     {
         state.tempo.ticks = moGetTicks();
-		state.tempo.getTempo();
+        state.tempo.getTempo();
     }
     else
     {
         syncrotmp = state.tempo.syncro;
-		state.tempo = *tempogral;
-		state.tempo.syncro = syncrotmp;
-		state.tempo.getTempo();
-		//if(state.fulldebug==MO_ACTIVATED) MODebug2->Push("SYNCRO: " + FloatToStr(state.tempo.syncro,3));
+        state.tempo = *tempogral;
+        state.tempo.syncro = syncrotmp;
+        state.tempo.getTempo();
+        //if(state.fulldebug==MO_ACTIVATED) MODebug2->Push("SYNCRO: " + FloatToStr(state.tempo.syncro,3));
     }
 
 	if(iphase != MO_PARAM_NOT_FOUND) {
 		moData *phase = m_Config.GetParam(iphase).GetData();
-		if (phase->Type()==MO_DATA_FUNCTION) state.tempo.ang+= phase->Fun()->Eval(state.tempo.ang);
-		else state.tempo.ang+= phase->Double();
+		if (phase) {
+		  moMathFunction* pFun = phase->Fun();
+      if (phase->Type()==MO_DATA_FUNCTION && pFun) {
+        state.tempo.ang+= pFun->Eval(state.tempo.ang);
+      }
+      else state.tempo.ang+= phase->Double();
+    }
 	}
 
 	if(parentstate!=NULL) {
 		//asginar parametros del state del padre al state del hijo
 		state = *parentstate;
 	}
+
+	if (m_Inlets.Count()>2) {
+	  moInlet* InletTime = m_Inlets[0];
+	  moInlet* InletT = m_Inlets[1];
+	  moInlet* InletTempo = m_Inlets[2];
+	  if (InletTime) {
+        InletTime->GetData()->SetDouble( state.tempo.ang );
+    }
+	  if (InletT) {
+        InletT->GetData()->SetDouble( state.tempo.ang );
+    }
+	  if (InletTempo) {
+        InletTempo->GetData()->SetDouble( moMathd::FMod( state.tempo.ang , moMathd::TWO_PI ) );
+    }
+  }
+
 }
 
 // Esta funcion debe ser llamada al comienzo en cada implementacion
@@ -194,16 +248,29 @@ moEffect::LoadCodes(moIODeviceManager *consolaesarray) {
 			coddisp = -1;
 			strcod = m_Config.GetParam().GetValue().GetSubValue(k).Text();
 			for( j=0 ; j < consolaesarray->IODevices().Count(); j++) {
-				coddisp = consolaesarray->IODevices().Get(j)->GetCode(strcod);
+			  moIODevice* pIODevice;
+			  pIODevice = consolaesarray->IODevices().Get(j);
+			  if (pIODevice) {
+			    if (strcod.Trim().Length()>0) {
+            coddisp = pIODevice->GetCode(strcod);
+			    } else {
+			      MODebug2->Error("string code is empty: [" + moText(strcod) +"].");
+          }
+
+			  } else {
+
+			    MODebug2->Error("Device id:" + IntToStr(j) +" is null.");
+
+        }
 				if(coddisp != -1) break; //lo encontramos "j" es el nro de disp y "coddisp" el id
 			}
 
 			if((accioncod>=0) &&(accioncod<ncodes)) {
 				if(coddisp==-1) {
-				    texto += moText("\n");
-                    texto += GetConfigName();
-                    texto += moText(".cfg: no se encontró en ningun dispositivo el codigo de dispositivo correspondiente a: ");
-                    texto += strcod;
+				    texto = moText("\n");
+            texto += GetConfigName();
+            texto += moText(".cfg: no se encontró en ningun dispositivo el codigo de dispositivo correspondiente a: ");
+            texto += strcod;
 					MODebug2->Error(texto);
 				} else {
 					devicecode[accioncod].Add(j,coddisp); //agregar un cod disp a la lista
@@ -237,11 +304,11 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
 }
 
 void moEffect::SetColor( moValue& color, moValue& alpha, moEffectState& pstate ) {
-	glColor4f(  color[MO_RED].Fun()->Eval(pstate.tempo.ang) * pstate.tintr,
-                color[MO_GREEN].Fun()->Eval(pstate.tempo.ang) * pstate.tintg,
-                color[MO_BLUE].Fun()->Eval(pstate.tempo.ang) * pstate.tintb,
-				color[MO_ALPHA].Fun()->Eval(pstate.tempo.ang) *
-				alpha[0].GetData()->Fun()->Eval(pstate.tempo.ang) * pstate.alpha);
+	glColor4f(  color[MO_RED].Fun()->Eval() * pstate.tintr,
+                color[MO_GREEN].Fun()->Eval() * pstate.tintg,
+                color[MO_BLUE].Fun()->Eval() * pstate.tintb,
+				color[MO_ALPHA].Fun()->Eval() *
+				alpha[0].GetData()->Fun()->Eval() * pstate.alpha);
 
 }
 
@@ -269,6 +336,7 @@ void moEffect::SetPolygonMode( moPolygonModes polygonmode ) {
 
 
 void moEffect::SetBlending( moBlendingModes blending ) {
+  glEnable (GL_BLEND);
 	switch(blending) {
 		//ALPHA DEPENDENT
 		case MO_BLENDING_TRANSPARENCY:

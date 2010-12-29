@@ -29,14 +29,14 @@
 
 *******************************************************************************/
 
-#include <moFontManager.h>
+#include "moFontManager.h"
 #include <moDataManager.h>
 #include <moFileManager.h>
 #include <moTextureManager.h>
-#include <moArray.h>
 
 #include "FTGL/ftgl.h"
 
+#include "moArray.cpp"
 moDefineDynamicArray(moFonts)
 
 //===========================================
@@ -72,7 +72,7 @@ moFontManager::Init() {
 		moText	completepath;
 
 		//completepath = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
-		completepath = moText(DATADIR "/Tuffy.ttf");
+		completepath = moText("../../art/fonts/Tuffy.ttf");
 
 		pFont->Init( MO_FONT_OUTLINE, completepath, 16 );
 

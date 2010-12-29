@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							 moConsoleState.h
+                             moConsoleState.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
 
 *******************************************************************************/
 
@@ -37,31 +36,40 @@
 
 /// Estado de la consola
 /**
- * Estado de la consola
- *   tempo interno
- */
-class LIBMOLDEO_API moConsoleState:public moAbstract
+* Estado de la consola
+*   tempo interno
+*/
+class LIBMOLDEO_API moConsoleState : public moAbstract
 {
-	public:moConsoleState ();
-	virtual ~ moConsoleState ();
-	MOboolean Init ();
-	MOboolean Finish ();
-	public:moTempo tempo;
-	MOswitch pause;
-	MOswitch automatic;
-	MOswitch reinit;
-	MOswitch finish;
-	MOswitch setfps;
-	MOuint fps, fps0, fps1;
+	public:
 
-	//especiales
-	MOswitch stereooutput;
-	MOswitch savescreen;
-	MOuint frame;
-	MOuint m_nEffects;
-	MOuint m_nPreEffects;
-	MOuint m_nPostEffects;
-	MOuint m_nMasterEffects;
-	MOuint m_nAllEffects;
+		moConsoleState();
+		virtual ~moConsoleState();
+
+		MOboolean Init();
+		MOboolean Finish();
+
+    public:
+		moTempo tempo;
+		MOswitch pause;
+		MOswitch automatic;
+		MOswitch reinit;
+		MOswitch finish;
+		MOswitch setfps;
+		MOuint fps, fps0, fps1;
+
+		//especiales
+		MOswitch stereooutput;
+
+		MOswitch savescreen;
+		MOuint frame;
+
+		MOuint m_nEffects;
+		MOuint m_nPreEffects;
+		MOuint m_nPostEffects;
+		MOuint m_nMasterEffects;
+		MOuint m_nAllEffects;
+
 };
-#endif							 /*  */
+
+#endif

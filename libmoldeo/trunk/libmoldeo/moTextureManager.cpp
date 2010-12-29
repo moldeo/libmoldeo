@@ -29,12 +29,12 @@
 
 *******************************************************************************/
 
-#include <moTextureManager.h>
+#include "moTextureManager.h"
 #include <FreeImage.h>
 #include <moDataManager.h>
 #include <moFileManager.h>
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moTextureBuffers)
 moDefineDynamicArray(moTextureFrames)
 
@@ -475,7 +475,22 @@ MOboolean moTextureManager::Init()
 	//AddTexture("texture_clip1", 1024, 768);
 	//AddTexture("texture_clip2", 1024, 768);
 	//AddTexture("texture_clip3", 1024, 768);
-	AddTexture("default", 256, 256);
+
+	int m_id_default = AddTexture( "default", 256, 256);
+	moTexture* DefaultTexture =  GetTexture(m_id_default);
+    if (DefaultTexture) DefaultTexture->BuildFromFile(
+        m_pResourceManager->GetDataMan()->GetAppPath() +
+        moSlash +
+        moText("..") +
+        moSlash +
+        moText("..") +
+        moSlash +
+        moText("art") +
+        moSlash +
+        moText("icons") +
+        moSlash +
+        moText("moldeologo.png")
+    );
 
 	return (m_glmanager && m_fbmanager);
 }
@@ -746,7 +761,7 @@ MOuint moTextureManager::GetTypeForFile(moText p_filename)
 		return MO_TYPE_TEXTURE;
 	if (!stricmp(begin,"multiple"))
 		return MO_TYPE_TEXTURE_MULTIPLE;
-	if (!stricmp(extension,"avi") || !stricmp(extension,"mov") || !stricmp(extension,"mpg") || !stricmp(extension,"vob") || !stricmp(extension,"m2v") || !stricmp(extension,"mp4"))
+	if (!stricmp(extension,"mkv") || !stricmp(extension,"ogg") || !stricmp(extension,"avi") || !stricmp(extension,"mov") || !stricmp(extension,"mpg") || !stricmp(extension,"vob") || !stricmp(extension,"m2v") || !stricmp(extension,"mp4"))
 		return MO_TYPE_MOVIE;
 
 	return MO_TYPE_TEXTURE;
@@ -762,6 +777,12 @@ moTexture* moTextureManager::CreateTexture(MOuint p_type, moText p_name, moTexPa
 	moCircularVideoBuffer* ptex_circularvideobuffer;
 
 	MOuint new_moid = m_textures_array.Count();
+
+  if ( p_name.Trim().Length() == 0 ) {
+    ///atencion una textura sin nombre....
+    MODebug2->Error( moText("tratando de crear una textura sin nombre") );
+    return NULL;
+  }
 
 	if (p_type == MO_TYPE_TEXTURE)
 	{

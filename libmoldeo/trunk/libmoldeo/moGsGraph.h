@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-								moGsGraph.h
+                                moGsGraph.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,11 +25,11 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
 
 *******************************************************************************/
 
 /*==============================================
+
 
 Class:   moGsGraph
 
@@ -38,6 +38,7 @@ Description: DirectShow Device.
 Todo:
 
 Example:
+
 
 ==============================================*/
 
@@ -53,30 +54,35 @@ Example:
 #define __MO_GSGRAPH_H
 
 #ifdef MO_GSTREAMER
+
+
 typedef void moGstElement;
 typedef void moGstPad;
 typedef void moGstBus;
 typedef void moGstBuffer;
 typedef void moGstCaps;
 typedef void moGstMessage;
-typedef void *moGPointer;
+typedef void* moGPointer;
 typedef bool moGBoolean;
 typedef int moGstStateChangeReturn;
-typedef enum
-{
-	GST_VIDEO_TEST_SRC_SMPTE,
-	GST_VIDEO_TEST_SRC_SNOW,
-	GST_VIDEO_TEST_SRC_BLACK,
-	GST_VIDEO_TEST_SRC_WHITE,
-	GST_VIDEO_TEST_SRC_RED,
-	GST_VIDEO_TEST_SRC_GREEN,
-	GST_VIDEO_TEST_SRC_BLUE,
-	GST_VIDEO_TEST_SRC_CHECKERS1,
-	GST_VIDEO_TEST_SRC_CHECKERS2,
-	GST_VIDEO_TEST_SRC_CHECKERS4,
-	GST_VIDEO_TEST_SRC_CHECKERS8,
-	GST_VIDEO_TEST_SRC_CIRCULAR,
-	GST_VIDEO_TEST_SRC_BLINK
+typedef void moGMainLoop;
+typedef void moGMainContext;
+
+
+typedef enum {
+  GST_VIDEO_TEST_SRC_SMPTE,
+  GST_VIDEO_TEST_SRC_SNOW,
+  GST_VIDEO_TEST_SRC_BLACK,
+  GST_VIDEO_TEST_SRC_WHITE,
+  GST_VIDEO_TEST_SRC_RED,
+  GST_VIDEO_TEST_SRC_GREEN,
+  GST_VIDEO_TEST_SRC_BLUE,
+  GST_VIDEO_TEST_SRC_CHECKERS1,
+  GST_VIDEO_TEST_SRC_CHECKERS2,
+  GST_VIDEO_TEST_SRC_CHECKERS4,
+  GST_VIDEO_TEST_SRC_CHECKERS8,
+  GST_VIDEO_TEST_SRC_CIRCULAR,
+  GST_VIDEO_TEST_SRC_BLINK
 } GstVideoTestSrcPattern;
 
 /***
@@ -84,176 +90,217 @@ All functions related to GStreamer Framework
 
   in Linux:
 
-	  use the dv1394src for DV
-	  and the v4l2src for Webcams
+      use the dv1394src for DV
+      and the v4l2src for Webcams
 
-	  it's important to grant permission to device in linux running in terminal:
-		sudo chmod 666 raw1394
+      it's important to grant permission to device in linux running in terminal:
+        sudo chmod 666 raw1394
 
   in Windows:
-	  dshowvideosrc is used from the dshowvideowrapper
+      dshowvideosrc is used from the dshowvideowrapper
+
 
   To test gstreamer in linux run:
-	gst-launch -v -m v4l2src ! decodebin ! ffmpegcolorspace ! autovideosink
+    gst-launch -v -m v4l2src ! decodebin ! ffmpegcolorspace ! autovideosink
 
   To test gstreamer in windows run:
-	gst-launch -v -m dv1394src ! decodebin ! ffmpegcolorspace ! autovideosink
+    gst-launch -v -m dv1394src ! decodebin ! ffmpegcolorspace ! autovideosink
 
   ( tested with last gstreamer in linux: 0.10.20 )
   ( tested with last gstreamer in windows: 0.10.10 from windows official vinaries and special wrapper dshowvideowrapper )
 
 */
-class LIBMOLDEO_API moGsFramework:public moVideoFramework
-{
-	public:moGsFramework ();
-	virtual ~ moGsFramework ();
-	virtual moCaptureDevices * LoadCaptureDevices ();
-	virtual moCaptureDevices * UpdateCaptureDevices ();
-	virtual bool CheckCaptureDevice (int i);
-	virtual bool AddCaptureDevice (moCaptureDevice & p_capdev);
+class LIBMOLDEO_API moGsFramework : public moVideoFramework {
+
+	public:
+
+		moGsFramework();
+		virtual ~moGsFramework();
+
+		virtual moCaptureDevices* LoadCaptureDevices();
+		virtual moCaptureDevices* UpdateCaptureDevices();
+
+		virtual bool	CheckCaptureDevice( int i );
+	    virtual bool    AddCaptureDevice(  moCaptureDevice& p_capdev );
+
+
+
 	private:
+
 	#ifdef MO_WIN32
-		//ICreateDevEnum *m_pDevEnum;
+        //ICreateDevEnum *m_pDevEnum;
 		//IEnumMoniker *m_pEnum;
-	#endif						 /*  */
+	#endif
+
 };
 
 /// GStreamer Graph Class
 /**
- *  GStreamer Graph Class for video filters and video reproduction: you don't have to link to gstreamer
- * This is C++ wrapper to some GStreamer basic functions...
- *
- */
-class LIBMOLDEO_API moGsGraph:public moVideoGraph
-{
-	public:
-		/// Constructor
-		moGsGraph ();
+*  GStreamer Graph Class for video filters and video reproduction: you don't have to link to gstreamer
+* This is C++ wrapper to some GStreamer basic functions...
+*
+*/
+class LIBMOLDEO_API moGsGraph : public moVideoGraph {
 
-		/// Destructor
-		virtual ~ moGsGraph ();
+public:
 
-		//================================================
-		//      INITIALIZATION AND FINALIZATION METHODS
-		//================================================
-		virtual bool InitGraph ();
-		virtual bool FinishGraph ();
-		bool BuildLiveGraph (moBucketsPool * pBucketsPool, moCaptureDevice p_capdev);
+    /// Constructor
+	moGsGraph();
 
-		//================================================
-		//      FILTER METHODS CONSTRUCTION
-		//================================================
-		bool SetCaptureDevice (moText deviceport, MOint idevice /**/ = 0);
-		bool BuildLiveDVGraph (moBucketsPool * pBucketsPool,
-			moCaptureDevice & p_capdev);
-		bool BuildLiveWebcamGraph (moBucketsPool * pBucketsPool,
-			moCaptureDevice & p_capdev);
-		bool BuildLiveVideoGraph (moText filename, moBucketsPool * pBucketsPool);
-		bool BuildLiveQTVideoGraph (moText filename, moBucketsPool * pBucketsPool);
-		bool BuildLiveSound (moText filename);
-		bool BuildLiveStreamingGraph (moBucketsPool * pBucketsPool,
-			moText p_location);
-		bool BuildRecordGraph (moText filename, moBucketsPool * pBucketsPool);
-		virtual moStreamState GetState ();
+	/// Destructor
+	virtual ~moGsGraph();
 
-		//================================================
-		//      CONTROL METHODS
-		//================================================
-		void Play ();
-		void Stop ();
-		void Pause ();
-		void Seek (MOuint frame);
-		bool IsRunning ();
-								 /** cantidad de cuadros */
-		MOulong GetFramesLength ();
-		MObyte * GetFrameBuffer (MOlong * size);
-		MOulong GetDuration ();	 /** en nanosegundos para gstreamer!!! 1E-9  1 s = 1E9 ns = 1 billion ns */
-		MOulong GetPosition ();	 /** en cuadros */
+//================================================
+//	INITIALIZATION AND FINALIZATION METHODS
+//================================================
+	virtual bool InitGraph();
+	virtual bool FinishGraph();
+	bool BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev);
 
-		//================================================
-		//      MISC METHODS
-		//================================================
-		void SetVideoFormat (moGstCaps * caps, moGstBuffer * buffer = NULL);
+//================================================
+//	FILTER METHODS CONSTRUCTION
+//================================================
+	bool SetCaptureDevice( moText deviceport , MOint idevice /**/= 0);
+	bool BuildLiveDVGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p_capdev );
+	bool BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p_capdev );
+	bool BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPool );
+	bool BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBucketsPool );
 
-		/*
-		   bool ShowError( HRESULT hr );
-		   void SetVideoFormat( AM_MEDIA_TYPE* mt );
-		   IPin * GetInPin( IBaseFilter * pFilter, int nPin );
-		   IPin * GetOutPin( IBaseFilter * pFilter, int nPin );
-		   HRESULT GetPin( IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin **ppPin);
-		   void CheckMediaType( IPin* p_Pin );
-		   void ShowConfigureDialog(IBaseFilter *pFilter);
-		 */
-		static moGBoolean bus_call (moGstBus * bus, moGstMessage * msg,
-			moGPointer user_data);
-		static moGBoolean cb_have_data (moGstPad * pad, moGstBuffer * buffer,
-			moGPointer u_data);
-		long cb_have_data_handler_id;
-		static void cb_newpad (moGstElement * decodebin, moGstPad * pad,
-			moGBoolean last, moGPointer u_data);
-		long signal_newpad_id;
-		static void cb_handoff (moGstElement * fakesrc, moGstBuffer * buffer,
-			moGstPad * pad, moGPointer user_data);
-		long signal_handoff_id;
-		bool CheckState (moGstStateChangeReturn state_change_result,
-			bool waitforsync = false);
-		void RetreivePads (moGstElement * FilterElement);
-		void WaitForFormatDefinition (MOulong timeout);
-		void CopyVideoFrame (void *bufferdst, int size);
-	private:
-		moBucketsPool * m_pBucketsPool;
-		moGsFramework * m_pGsFramework;
-		moCaptureDevice m_CaptureDevice;
+    bool BuildLiveSound( moText filename  );
 
-		/** Bin's o Pipeline's (Filtergraph...)*/
-								 /**anlogo a ifiltergraph, oh si*/
-		moGstElement *m_pGstPipeline;
+	bool BuildLiveStreamingGraph( moBucketsPool *pBucketsPool, moText p_location );
+    bool BuildRecordGraph( moText filename, moBucketsPool* pBucketsPool);
 
-		/** Elements (filters) */
-								 /** "filesrc" */
-		moGstElement *m_pFileSource;
-								 /** "ffmpegcolorspace" */
-		moGstElement *m_pColorSpace;
-								 /** "capsfilter" */
-		moGstElement *m_pCapsFilter;
-								 /** "typefind" */
-		moGstElement *m_pTypeFind;
-								 /** "identity" */
-		moGstElement *m_pIdentity;
-		moGstElement * m_pVideoScale;
-		moGstElement * m_pVideoDeinterlace;
-								 /** "ffmpegcolorspace for deinterlace" */
-		moGstElement * m_pColorSpaceInterlace;
-								 /** "decodebin" */
-		moGstElement * m_pDecoderBin;
-								 /** "fakesink" */
-		moGstElement *m_pFakeSink;
-								 /** "videotestsrc" */
-		moGstElement *m_pVideoTestSrc;
-								 /** "fakesrc" */
-		moGstElement * m_pFakeSource;
-								 /** "encoder" */
-		moGstElement * m_pEncoder;
-								 /** "recorder" */
-		moGstElement * m_pMultiplexer;
-								 /** "filesink" */
-		moGstElement * m_pFileSink;
-								 /** "filesink" */
-		moGstElement * m_pAudioSink;
+    virtual moStreamState GetState();
+//================================================
+//	CONTROL METHODS
+//================================================
+	void Play();
+	void Stop();
+	void Pause();
+	void Seek( MOuint frame );
+	bool IsRunning();
+	MOulong	GetFramesLength(); /** cantidad de cuadros */
+	MObyte* GetFrameBuffer(MOlong *size);
+    MOulong GetDuration();  /** en nanosegundos para gstreamer!!! 1E-9  1 s = 1E9 ns = 1 billion ns */
+    MOulong GetPosition();  /** en cuadros */
 
-		/**audio elements*/
-		moGstElement * m_pAudioConverter;
+//================================================
+//	MISC METHODS
+//================================================
+    void    SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer = NULL );
+	/*
+	bool ShowError( HRESULT hr );
+	void SetVideoFormat( AM_MEDIA_TYPE* mt );
+	IPin * GetInPin( IBaseFilter * pFilter, int nPin );
+	IPin * GetOutPin( IBaseFilter * pFilter, int nPin );
+	HRESULT GetPin( IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin **ppPin);
+	void CheckMediaType( IPin* p_Pin );
+	void ShowConfigureDialog(IBaseFilter *pFilter);
+	*/
+    /*static moGBoolean bus_call (moGstBus *bus,
+                                moGstMessage *msg,
+                                moGPointer user_data);
+                                */
 
-		//GstElement  *m_pAudioConverter;
-		/**Pad's o Pines */
-		moGstPad *m_pVideoPad;	 /** audio pad last out */
-		moGstPad *m_pAudioPad;	 /** video pad last out*/
+    static moGBoolean cb_have_data (moGstPad    *pad,
+                                    moGstBuffer *buffer,
+                                    moGPointer   u_data);
 
-		/** Control Bus */
-		moGstBus * m_pGstBus;	 /** bus, analogo a IMediaControl...*/
+    static moGBoolean cb_buffer_disconnected (
+                                    moGPointer   u_data
+                                    );
 
-		MOulong m_Duration;
-		MOulong m_FramesLength;
+    long cb_have_data_handler_id;
+
+    static void on_rtsppadd_added(  moGstElement *rtspsrc,
+                                    moGstPad *pad,
+                                    moGPointer u_data );
+    long signal_rtsppad_added_id;
+
+    static void cb_newpad ( moGstElement *decodebin,
+                            moGstPad     *pad,
+                            moGBoolean    last,
+                            moGPointer    u_data);
+    long signal_newpad_id;
+    long m_BusWatchId;
+
+    static void cb_handoff ( moGstElement *fakesrc,
+	    moGstBuffer  *buffer,
+	    moGstPad     *pad,
+	    moGPointer    user_data);
+    long signal_handoff_id;
+
+    bool CheckState( moGstStateChangeReturn state_change_result, bool waitforsync = false);
+    void RetreivePads( moGstElement* FilterElement);
+    void WaitForFormatDefinition( MOulong timeout );
+
+    void CopyVideoFrame( void* bufferdst, int size );
+
+private:
+
+
+    moBucketsPool       *m_pBucketsPool;
+
+	moGsFramework*		m_pGsFramework;
+
+	moCaptureDevice     m_CaptureDevice;
+
+    /** Bin's o Pipeline's (Filtergraph...)*/
+    moGstElement          *m_pGstPipeline; /**análogo a ifiltergraph, oh si*/
+
+    /** Elements (filters) */
+    moGstElement          *m_pFileSource;/** "filesrc" */
+    moGstElement          *m_pRTSPSource;/** "rtsp depay" */
+    moGstElement          *m_pRTSPDepay;/** "rtsp depay" */
+    moGstElement          *m_pFinalSource;/** "finalsource" */
+    moGstElement          *m_pColorSpace;/** "ffmpegcolorspace" */
+    moGstElement          *m_pCapsFilter; /** "capsfilter" */
+    moGstElement          *m_pTypeFind; /** "typefind" */
+    moGstElement          *m_pIdentity; /** "identity" */
+
+    moGstElement          *m_pVideoScale;
+    moGstElement          *m_pVideoDeinterlace;
+    moGstElement          *m_pColorSpaceInterlace;/** "ffmpegcolorspace for deinterlace" */
+
+    moGstElement          *m_pDecoderBin;/** "decodebin" */
+    moGstElement          *m_pFakeSink; /** "fakesink" */
+    moGstElement          *m_pVideoTestSrc;/** "videotestsrc" */
+
+    moGstElement          *m_pFakeSource;/** "fakesrc" */
+    moGstElement          *m_pEncoder;/** "encoder" */
+    moGstElement          *m_pMultiplexer;/** "recorder" */
+    moGstElement          *m_pFileSink;/** "filesink" */
+
+    moGstElement          *m_pAudioSink;/** "filesink" */
+
+    /**audio elements*/
+    moGstElement          *m_pAudioConverter;
+    //GstElement  *m_pAudioConverter;
+
+    /**Pad's o Pines para el DecoderBin*/
+    moGstPad              *m_pVideoPad;/** audio pad last out */
+    moGstPad              *m_pAudioPad;/** video pad last out*/
+
+    /**Pad's o Pines para el DecoderBin*/
+    moGstPad             *m_pRTSPDepaySink;
+    moGstPad             *m_pRTSPSrcVideo;
+    moGstPad             *m_pRTSPSrcAudio;
+
+    /** Control Bus */
+    moGstBus              *m_pGstBus;/** bus, analogo a IMediaControl...*/
+
+    moGMainLoop         *m_pGMainLoop;
+    moGMainContext         *m_pGMainContext;
+
+    MOulong             m_Duration;
+    MOulong             m_FramesLength;
+
+
 };
-#endif							 /*  */
-#endif							 /*  */
+
+#endif
+
+#endif
+
+

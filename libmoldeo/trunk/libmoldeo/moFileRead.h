@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-								moFileRead.h
+                                moFileRead.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,12 +25,11 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
 
 *******************************************************************************/
 
-<<<<<<<.mine
 /*==============================================
+
 
 Class:   moFileRead
 
@@ -51,37 +50,50 @@ if(moFileRead::moIODevice::GetState( CHUNK_AVAILABLE )
 	moFileRead::moIODevice::GetValue( FILE_CHUNK,(MOpointer*)pChunk )
 
 ==============================================*/
+
 #include "moConfig.h"
 #include "moDeviceCode.h"
 #include "moEventList.h"
 #include "moIODeviceManager.h"
 #include "moTypes.h"
 
+
 //#include "sdlnet/SDL_net.h"
 #include "SDL_thread.h"
+
 #ifndef __MO_FILE_READ_H
 #define __MO_FILE_READ_H
 
+
 //typedef FileInThreadData* pFileInThreadData;
-class LIBMOLDEO_API moFileRead:public moIODevice
+
+class LIBMOLDEO_API moFileRead : public moIODevice 
 {
-	public:moFileRead (moEventList *);
-	~moFileRead ();
-	void Update (moEventList *);
-	MOboolean Init ();
-	MOswitch GetStatus (MOdevcode);
-	MOswitch SetStatus (MOdevcode, MOswitch);
-	MOint GetValue (MOdevcode);
-	MOdevcode GetCode (moText);
-	MOboolean Finish ();
-	private:moConfig config;
-	moEventList * events;
+public:
+    moFileRead(moEventList*);
+    ~moFileRead();
+    
+    void Update(moEventList*);
+    MOboolean Init();
+    MOswitch GetStatus(MOdevcode);
+    MOswitch SetStatus( MOdevcode,MOswitch);
+    MOint GetValue(MOdevcode);
+    MOdevcode GetCode( moText);
+    MOboolean Finish();
+
+private:
+    moConfig config;
+
+    moEventList *events;
 };
 
-int file_read_thread_main (void *);
-#endif							 /*  */
-== == == =
+int file_read_thread_main(void *);
+
+#endif
+=======
+
 /*==============================================
+
 
 Class:   ajFileRead
 
@@ -102,33 +114,44 @@ if(ajFileRead::moIODevice::GetState( CHUNK_AVAILABLE )
 	ajFileRead::moIODevice::GetValue( FILE_CHUNK,(MOpointer*)pChunk )
 
 ==============================================*/
+
 #include "moConfig.h"
 #include "ajCodigoDispositivo.h"
 #include "moEventList.h"
 #include "moIODeviceManager.h"
 #include "moTypes.h"
 
+
 //#include "sdlnet/SDL_net.h"
 #include "SDL_thread.h"
+
 #ifndef __MO_FILE_READ_H
 #define __MO_FILE_READ_H
 
+
 //typedef FileInThreadData* pFileInThreadData;
-class LIBMOLDEO_API ajFileRead:public moIODevice
+
+class LIBMOLDEO_API ajFileRead : public moIODevice 
 {
-	public:ajFileRead (moEventList *);
-	~ajFileRead ();
-	void Currentizar (moEventList *);
-	MOboolean Init ();
-	MOswitch getEstado (MOcodigodisp);
-	MOswitch setEstado (MOcodigodisp, MOswitch);
-	MOint getValor (MOcodigodisp);
-	MOcodigodisp getCodigo (moText);
-	MOboolean Finish ();
-	private:moConfig config;
-	moEventList * eventos;
+public:
+    ajFileRead(moEventList*);
+    ~ajFileRead();
+    
+    void Currentizar(moEventList*);
+    MOboolean Init();
+    MOswitch getEstado(MOcodigodisp);
+    MOswitch setEstado( MOcodigodisp,MOswitch);
+    MOint getValor(MOcodigodisp);
+    MOcodigodisp getCodigo( moText);
+    MOboolean Finish();
+
+private:
+    moConfig config;
+
+    moEventList *eventos;
 };
 
-int file_read_thread_main (void *);
-#endif							 /*  */
->>>>>>>.r166
+int file_read_thread_main(void *);
+
+#endif
+>>>>>>> .r166

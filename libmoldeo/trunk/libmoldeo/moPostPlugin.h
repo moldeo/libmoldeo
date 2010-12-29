@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							  moPostPlugin.h
+                              moPostPlugin.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
+  Andrés Colubri
 
 *******************************************************************************/
 
@@ -37,67 +37,44 @@
 
 class LIBMOLDEO_API moPostEffectFactory
 {
-	public:
-		moPostEffectFactory ()
-		{
-		}
-		virtual ~ moPostEffectFactory ();
-		virtual moPostEffect *Create (void) = 0;
-		virtual void Destroy (moPostEffect * fx) = 0;
+public:
+    moPostEffectFactory() {}
+    virtual ~moPostEffectFactory();
+    virtual moPostEffect* Create(void) = 0;
+    virtual void Destroy(moPostEffect* fx) = 0;
 };
 
-typedef moPostEffectFactory *(MO_PLG_ENTRY *
-CreatePostEffectFactoryFunction) ();
-typedef void (MO_PLG_ENTRY * DestroyPostEffectFactoryFunction) ();
+typedef moPostEffectFactory*(MO_PLG_ENTRY *CreatePostEffectFactoryFunction)();
+typedef void(MO_PLG_ENTRY *DestroyPostEffectFactoryFunction)();
 
 class LIBMOLDEO_API moPostPlugin
 {
-	public:
-		moPostEffect ** array;
-		int n;
+public:
+    moPostEffect **array;
+    int n;
 
-		CreatePostEffectFactoryFunction CreatePostEffectFactory;
-		DestroyPostEffectFactoryFunction DestroyPostEffectFactory;
+    CreatePostEffectFactoryFunction CreatePostEffectFactory;
+    DestroyPostEffectFactoryFunction DestroyPostEffectFactory;
 
-		moPostEffectFactory *m_factory;
+    moPostEffectFactory* m_factory;
 
-		moPostPlugin ()
-		{
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			m_factory = NULL;
-		}
-		moPostPlugin (moText plugin_file)
-		{
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			m_factory = NULL;
-			Load (plugin_file);
-		}
-		~moPostPlugin ()
-		{
-			if (handle != NULL)
-				Unload ();
-		}
+    moPostPlugin() { handle = NULL; n = 0; array = NULL; m_factory = NULL;}
+    moPostPlugin(moText plugin_file) { handle = NULL; n = 0; array = NULL; m_factory = NULL; Load(plugin_file); }
+    ~moPostPlugin() { if(handle != NULL) Unload(); }
 
-		void Load (moText plugin_file);
-		void Unload ();
-		moPostEffect *Create ();
-		bool Destroy (moPostEffect * posteffect);
-		moText GetName ()
-		{
-			return name;
-		}
-	private:
-		moText name;
-		MOpluginHandle handle;
+    void Load(moText plugin_file);
+    void Unload();
+    moPostEffect* Create();
+    bool Destroy(moPostEffect *posteffect);
+    moText GetName() { return name; }
+private:
+    moText name;
+    MOpluginHandle handle;
 };
 
-moDeclareExportedDynamicArray (moPostPlugin *, moPostPluginsArray);
-LIBMOLDEO_API moPostEffect * moNewPostEffect (moText effect_name,
-moPostPluginsArray & plugins);
-LIBMOLDEO_API bool moDeletePostEffect (moPostEffect * effect,
-moPostPluginsArray & plugins);
+moDeclareExportedDynamicArray( moPostPlugin*, moPostPluginsArray );
+
+LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArray &plugins);
+LIBMOLDEO_API bool moDeletePostEffect(moPostEffect* effect, moPostPluginsArray &plugins);
+
 #endif

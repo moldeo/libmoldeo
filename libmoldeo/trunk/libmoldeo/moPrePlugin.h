@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							  moPrePlugin.h
+                              moPrePlugin.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
+  Andrés Colubri
 
 *******************************************************************************/
 
@@ -37,66 +37,44 @@
 
 class LIBMOLDEO_API moPreEffectFactory
 {
-	public:
-		moPreEffectFactory ()
-		{
-		}
-		virtual ~ moPreEffectFactory ();
-		virtual moPreEffect *Create (void) = 0;
-		virtual void Destroy (moPreEffect * fx) = 0;
+public:
+    moPreEffectFactory() {}
+    virtual ~moPreEffectFactory();
+    virtual moPreEffect* Create(void) = 0;
+    virtual void Destroy(moPreEffect* fx) = 0;
 };
 
-typedef moPreEffectFactory *(MO_PLG_ENTRY * CreatePreEffectFactoryFunction) ();
-typedef void (MO_PLG_ENTRY * DestroyPreEffectFactoryFunction) ();
+typedef moPreEffectFactory*(MO_PLG_ENTRY *CreatePreEffectFactoryFunction)();
+typedef void(MO_PLG_ENTRY *DestroyPreEffectFactoryFunction)();
 
 class LIBMOLDEO_API moPrePlugin
 {
-	public:
-		moPreEffect ** array;
-		int n;
+public:
+    moPreEffect **array;
+    int n;
 
-		CreatePreEffectFactoryFunction CreatePreEffectFactory;
-		DestroyPreEffectFactoryFunction DestroyPreEffectFactory;
+    CreatePreEffectFactoryFunction CreatePreEffectFactory;
+    DestroyPreEffectFactoryFunction DestroyPreEffectFactory;
 
-		moPreEffectFactory *m_factory;
+    moPreEffectFactory* m_factory;
 
-		moPrePlugin ()
-		{
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			m_factory = NULL;
-		}
-		moPrePlugin (moText plugin_file)
-		{
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			m_factory = NULL;
-			Load (plugin_file);
-		}
-		virtual ~ moPrePlugin ()
-		{
-			if (handle != NULL)
-				Unload ();
-		}
+    moPrePlugin() { handle = NULL; n = 0; array = NULL; m_factory = NULL;}
+    moPrePlugin(moText plugin_file) { handle = NULL; n = 0; array = NULL; m_factory = NULL; Load(plugin_file); }
+    virtual ~moPrePlugin() { if(handle != NULL) Unload(); }
 
-		void Load (moText plugin_file);
-		void Unload ();
-		moPreEffect *Create ();
-		bool Destroy (moPreEffect * preeffect);
-		moText GetName ()
-		{
-			return name;
-		}
-	private:
-		moText name;
-		MOpluginHandle handle;
+    void Load(moText plugin_file);
+    void Unload();
+    moPreEffect* Create();
+    bool Destroy(moPreEffect *preeffect);
+    moText GetName() { return name; }
+private:
+    moText name;
+    MOpluginHandle handle;
 };
 
-moDeclareExportedDynamicArray (moPrePlugin *, moPrePluginsArray);
-LIBMOLDEO_API moPreEffect * moNewPreEffect (moText effect_name,
-moPrePluginsArray & plugins);
-LIBMOLDEO_API bool moDeletePreEffect (moPreEffect * effect,
-moPrePluginsArray & plugins);
+moDeclareExportedDynamicArray( moPrePlugin*, moPrePluginsArray );
+
+LIBMOLDEO_API moPreEffect* moNewPreEffect(moText effect_name, moPrePluginsArray &plugins);
+LIBMOLDEO_API bool moDeletePreEffect(moPreEffect* effect, moPrePluginsArray &plugins);
+
 #endif

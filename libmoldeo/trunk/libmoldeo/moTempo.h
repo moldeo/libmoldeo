@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-								moTempo.h
+                                moTempo.h
 
   ****************************************************************************
   *                                                                          *
@@ -37,31 +37,48 @@
 
 /// Tempo, beat, ritmo.
 /**
- *   Esta clase implementa las funciones de control de tempo
- *   @see moTimeManager
- *   @see moConsole
- *   @see moEffect
- */
-class LIBMOLDEO_API moTempo
-{
-	private:moTempo * m_pFromTempo;
-	public:MOulong ticks;		 //getticks() milisegundos del clock
-	MOulong ticks_0;			 //primer beat
-	MOulong ticks_1;			 //segundo beat
-	MOdouble delta;				 //ticks
+*   Esta clase implementa las funciones de control de tempo
+*   @see moTimeManager
+*   @see moConsole
+*   @see moEffect
+*/
+class LIBMOLDEO_API moTempo {
+
+private:
+	moTempo* m_pFromTempo;
+
+public:
+	MOulong ticks;      //getticks() milisegundos del clock
+	MOulong ticks_0;    //primer beat
+	MOulong ticks_1;    //segundo beat
+
+	MOdouble delta;     //ticks
 	MOdouble deltaprevious;
-	MOdouble factor;			 //grados(radianes)
-	MOdouble syncro;			 //factor de sincronizacion
-	MOdouble ang;
-	MOulong beat_0, beat_1, beatpulsecount;
-	moTempo ();
-	MOboolean Init ();
-	MOboolean Init (MOdouble sync);
-	MOdouble getPrincipalAngle ();
-	MOdouble getTempo ();
-	void BeatPulse (MOulong tik);
-	moTempo * getFromTempo ();
-	void SetFromTempo (moTempo * pfromtempo);
-	void getInterpolatedTempo (MOfloat inter_value);
+	MOdouble factor;    //grados(radianes)
+
+	MOdouble syncro;    //factor de sincronizacion
+
+	MOdouble ang;  //angulo en radianes entre 0 y 2*pi
+
+	MOulong beat_0,beat_1, beatpulsecount;
+
+	moTempo();
+
+	MOboolean Init();
+
+	MOboolean Init(MOdouble sync);
+
+	MOdouble getPrincipalAngle();
+
+	MOdouble getTempo();
+
+	void BeatPulse(MOulong tik);
+
+	moTempo* getFromTempo();
+
+	void SetFromTempo( moTempo *pfromtempo );
+
+	void getInterpolatedTempo( MOfloat inter_value );
 };
-#endif							 /*  */
+
+#endif

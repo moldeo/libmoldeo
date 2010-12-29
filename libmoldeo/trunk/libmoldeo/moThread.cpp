@@ -29,11 +29,15 @@
 
 *******************************************************************************/
 
-#include <moThread.h>
-#include <boost/thread/thread.hpp>
-#include <SDL_thread.h>
-#include <moDataManager.h>
-#include <moFileManager.h>
+#include "moThread.h"
+
+#include "boost/thread/thread.hpp"
+
+#ifdef MO_WIN32
+    #include "SDL_thread.h"
+#else
+    #include "SDL/SDL_thread.h"
+#endif
 
 using namespace boost;
 

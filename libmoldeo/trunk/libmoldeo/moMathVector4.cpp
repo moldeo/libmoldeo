@@ -37,7 +37,7 @@
 
 #include "moMathVector4.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moVector4iArray)
 moDefineDynamicArray(moVector4fArray)
 moDefineDynamicArray(moVector4dArray)

@@ -1,48 +1,48 @@
 #ifndef MO_MOLDEO_HEADERS
 #define MO_MOLDEO_HEADERS
 
-#include <moTypes.h>
-#include <moConsole.h>
+#include "moTypes.h"
+#include "moConsole.h"
 
 /**
- *   \mainpage
- *   \if spanish
- *
- *   \image html MoldeoHeaderLogoTransicionTierra2.png "Moldeo     http://www.moldeo.org"
- *
- *   Bienvenidos a la documentacin de Moldeo, una plataforma de desarrollo para aplicaciones multimediales interactivas en tiempo real.
- *
- *   \code
+*   \mainpage
+*   \if spanish
+*
+*   \image html MoldeoHeaderLogoTransicionTierra2.png "Moldeo     http://www.moldeo.org"
+*
+*   Bienvenidos a la documentación de Moldeo, una plataforma de desarrollo para aplicaciones multimediales interactivas en tiempo real.
+*
+*   \code
 
-	#include "moldeo.h"
+    #include "moldeo.h"
 
-	void main() {
+    void main() {
 
-		moConsole MoldeoConsole;
+        moConsole MoldeoConsole;
 
-		// Inicializamos en primer lugar
-		if ( MoldeoConsole.Init( moText("test"),
-								moText("test.mol") ) ) {
+        // Inicializamos en primer lugar
+        if ( MoldeoConsole.Init( moText("test"),
+                                moText("test.mol") ) ) {
 
-			// Ciclo principal
-			// Mientras interactuamos
-			while( MoldeoConsole.Interaction() ) {
+            // Ciclo principal
+            // Mientras interactuamos
+            while( MoldeoConsole.Interaction() ) {
 
-				//Actualizamos
-				MoldeoConsole.Update();
+                //Actualizamos
+                MoldeoConsole.Update();
 
-				//Dibujamos
-				MoldeoConsole.Draw();
-			}
-		 }
-	}
+                //Dibujamos
+                MoldeoConsole.Draw();
+            }
+         }
+    }
 *   \endcode
 *
 *
 *
 *   \author     Fabricio Costa Alisedo
 *   \author     Gustavo Orrillo
-*   \author     Andrs Colubri
+*   \author     Andrés Colubri
 *   \author     Cristian Rocha
 *   \author     Christian Parsons
 *   \author     Arturo Bianchetti
@@ -51,4 +51,5 @@
 *   \endif
 *
 */
-#endif							 /*  */
+
+#endif

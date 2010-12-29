@@ -29,10 +29,10 @@
 
 *******************************************************************************/
 
-#include <moPlugin.h>
-#include <moArray.h>
+#include "moPlugin.h"
 #include <moPort.h>
 
+#include "moArray.cpp"
 moDefineDynamicArray( moPluginDefinitions )
 moDefineDynamicArray( moPluginsArray )
 

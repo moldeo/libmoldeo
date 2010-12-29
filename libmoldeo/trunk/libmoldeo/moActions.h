@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-								moActions.h
+                                moActions.h
 
   ****************************************************************************
   *                                                                          *
@@ -32,29 +32,51 @@
 #define __MOACTIONS_H
 
 #include "moTypes.h"
-enum moMoldeoActionType
-{								 /* EDITOR */
-	MO_ACTION_VALUE_ADD,
-	MO_ACTION_VALUE_DELETE,		 /* EDITOR */
-	MO_ACTION_VALUE_SAVE,		 /* EDITOR */
-	MO_ACTION_VALUE_SET,		 /* PLAYER */
-	MO_ACTION_PRECONFIG_ADD,	 /* EDITOR */
-	MO_ACTION_PRECONFIG_DELETE,	 /* EDITOR */
-	MO_ACTION_PRECONFIG_SAVE,	 /* EDITOR */
-	MO_ACTION_PRECONFIG_SET,	 /* PLAYER */
-	MO_ACTION_PRESET_ADD,		 /* EDITOR */
-	MO_ACTION_PRESET_DELETE,	 /* EDITOR */
-	MO_ACTION_PRESET_SAVE,		 /* EDITOR */
-	MO_ACTION_PRESET_SET,		 /* PLAYER */
-	MO_ACTION_EVENT_ADD
+
+enum moMoldeoActionType {
+
+  MO_ACTION_VALUE_ADD,/* EDITOR */
+  MO_ACTION_VALUE_DELETE,/* EDITOR */
+  MO_ACTION_VALUE_SAVE,/* EDITOR */
+
+  MO_ACTION_VALUE_SET,/* PLAYER */
+
+  MO_ACTION_PRECONFIG_ADD,/* EDITOR */
+  MO_ACTION_PRECONFIG_DELETE,/* EDITOR */
+  MO_ACTION_PRECONFIG_SAVE,/* EDITOR */
+
+  MO_ACTION_PRECONFIG_SET,/* PLAYER */
+
+  MO_ACTION_PRESET_ADD,/* EDITOR */
+  MO_ACTION_PRESET_DELETE,/* EDITOR */
+  MO_ACTION_PRESET_SAVE,/* EDITOR */
+
+  MO_ACTION_PRESET_SET,  /* PLAYER */
+
+  MO_ACTION_EVENT_ADD
+
 };
-enum moMoldeoPlayerActionType
-{
-	MO_ACTION_PLAY_VALUE_SET, MO_ACTION_PLAY_PRECONFIG_SET,
-	MO_ACTION_PLAY_PRESET_SAVE, MO_ACTION_PLAY_PRESET_SET,
-	MO_ACTION_PLAY_EVENT_SET
+
+enum moMoldeoPlayerActionType {
+
+    MO_ACTION_PLAY_VALUE_SET,
+
+    MO_ACTION_PLAY_PRECONFIG_SET,
+
+    MO_ACTION_PLAY_PRESET_SAVE,
+    MO_ACTION_PLAY_PRESET_SET,
+
+    MO_ACTION_PLAY_EVENT_SET
+
+
 };
-enum moMoldeo
-{
+
+
+enum moMoldeo {
+
+
+
+
 };
-#endif							 /*  */
+
+#endif

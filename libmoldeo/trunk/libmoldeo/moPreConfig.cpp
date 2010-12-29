@@ -31,7 +31,7 @@
 
 #include "moPreConfig.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray( moPreConfigs )
 moDefineDynamicArray( moPreconfigIndexes )
 

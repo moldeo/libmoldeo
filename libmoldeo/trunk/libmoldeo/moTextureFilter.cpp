@@ -31,7 +31,7 @@
 
 #include "moTextureFilter.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moTextureFilterArray)
 
 moColorMatrix::moColorMatrix()

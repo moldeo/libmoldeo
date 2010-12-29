@@ -31,14 +31,14 @@
 
 #include "moNetManager.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moNetObjects)
 moDefineDynamicArray( moNetConnections )
 
 #include <boost/bind.hpp>
 
 #ifndef MO_MACOSX
-#include <boost/asio.hpp>
+#include "asio.hpp"
 #else
 #include <boost/asio.hpp>
 #endif

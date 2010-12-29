@@ -31,7 +31,7 @@
 
 #include "moPreEffect.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moPreEffectsArray)
 
 moPreEffect::moPreEffect() {

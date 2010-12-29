@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-								moDeviceCode.h
+                                moDeviceCode.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,36 +25,43 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
 
 *******************************************************************************/
+
+
+#ifndef __MODEVICECODE_H
+#define __MODEVICECODE_H
 
 #include "moTypes.h"
 #include "moAbstract.h"
 
-#ifndef __MODEVICECODE_H
-#define __MODEVICECODE_H
-class LIBMOLDEO_API moDeviceCode
-{
-	public:MOint device;
+class LIBMOLDEO_API moDeviceCode {
+public:	
+	MOint device;
 	MOint devicecode;
-	MOint value;
-	moDeviceCode * next;
-	moDeviceCode * previous;
-	moDeviceCode ();
-	moDeviceCode (MOint, MOint, MOint = 0);
+	MOint value;	
+	moDeviceCode *next;
+	moDeviceCode *previous;
+
+	moDeviceCode();
+	moDeviceCode(MOint,MOint,MOint=0);
 };
 
-class LIBMOLDEO_API moDeviceCodeList:public moAbstract
-{
-	public:moDeviceCode * First;
-	moDeviceCode * Last;
-	moDeviceCodeList ();
-	virtual ~ moDeviceCodeList ();
-	MOboolean Init ();
-	void Add (MOint, MOint, MOint = 0);
-	MOboolean Delete (moDeviceCode *);
-	void Copy (moDeviceCodeList *);
-	MOboolean Finish ();
+class LIBMOLDEO_API moDeviceCodeList : public moAbstract {
+public:	
+	
+	moDeviceCode *First;
+	moDeviceCode *Last;
+
+	moDeviceCodeList();
+	virtual ~moDeviceCodeList();
+
+	MOboolean Init();
+	void Add(MOint,MOint,MOint = 0);
+	MOboolean Delete(moDeviceCode *);
+	void Copy(moDeviceCodeList *);
+	MOboolean Finish();
+
 };
-#endif							 /*  */
+
+#endif

@@ -131,7 +131,7 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
     gluOrtho2D(0.0, p_width, 0.0, p_height);
 
     glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    glLoadIdentity();
 }
 
 MOint moGLManager::GetRenderMode()

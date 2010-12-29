@@ -195,11 +195,17 @@ MOuint moTextureFilterIndex::LoadFilter(moValue* p_value) {
     src_tex.Empty();
     dest_tex.Empty();
 
+
+
     for (j = 0; j < nFilterParts; j++)
     {
-        if ( p_value->GetSubValue(j).GetData()->Type()==MO_DATA_TEXT ||
-        p_value->GetSubValue(j).GetData()->Type()==MO_DATA_IMAGESAMPLE ||
-        p_value->GetSubValue(j).GetData()->Type()==MO_DATA_IMAGESAMPLE_FILTERED ) {
+        moValueBase& vbase( p_value->GetSubValue(j) );
+
+        if (  vbase.GetType() == MO_VALUE_TXT &&
+              ( vbase.Type()==MO_DATA_TEXT ||
+                vbase.Type()==MO_DATA_IMAGESAMPLE ||
+                vbase.Type()==MO_DATA_IMAGESAMPLE_FILTERED )
+              ) {
 
             name = p_value->GetSubValue(j).Text();
 
@@ -238,15 +244,15 @@ MOuint moTextureFilterIndex::LoadFilter(moValue* p_value) {
     {
         // Print some error message...
         if (error_code == 1)
-            MODebug2->Message("Error in creating filter: cannot load shader");
+            MODebug2->Error("Error in creating filter: cannot load shader");
         else if (error_code == 2)
-            MODebug2->Message("Error in creating filter: cannot load source texture");
+            MODebug2->Error("Error in creating filter: cannot load source texture");
         else if (error_code == 3)
-            MODebug2->Message("Error in creating filter: cannot read resolution of destination texture");
+            MODebug2->Error("Error in creating filter: cannot read resolution of destination texture");
         else if (error_code == 4)
-            MODebug2->Message("Error in creating filter: cannot create destination texture");
+            MODebug2->Error("Error in creating filter: cannot create destination texture");
         else
-            MODebug2->Message("Unknown error in creating filter.");
+            MODebug2->Error("Unknown error in creating filter.");
     }
 
 	SetupDestTexFBO();
@@ -321,15 +327,15 @@ MOuint moTextureFilterIndex::LoadFilters(moParam* p_param)
 		{
 			// Print some error message...
 			if (error_code == 1)
-				MODebug->Push("Error in creating filter: cannot load shader");
+				MODebug2->Error("Error in creating filter: cannot load shader");
 			else if (error_code == 2)
-				MODebug->Push("Error in creating filter: cannot load source texture");
+				MODebug2->Error("Error in creating filter: cannot load source texture");
 			else if (error_code == 3)
-				MODebug->Push("Error in creating filter: cannot read resolution of destination texture");
+				MODebug2->Error("Error in creating filter: cannot read resolution of destination texture");
 			else if (error_code == 4)
-				MODebug->Push("Error in creating filter: cannot create destination texture");
+				MODebug2->Error("Error in creating filter: cannot create destination texture");
 			else
-				MODebug->Push("Unknown error in creating filter.");
+				MODebug2->Error("Unknown error in creating filter.");
 		}
 
 		p_param->NextValue();
@@ -407,15 +413,15 @@ MOuint moTextureFilterIndex::LoadFilters(moConfig* p_cfg, MOuint p_param_idx)
 		{
 			// Print some error message...
 			if (error_code == 1)
-				MODebug->Push("Error in creating filter: cannot load shader");
+				MODebug2->Error("Error in creating filter: cannot load shader");
 			else if (error_code == 2)
-				MODebug->Push("Error in creating filter: cannot load source texture");
+				MODebug2->Error("Error in creating filter: cannot load source texture");
 			else if (error_code == 3)
-				MODebug->Push("Error in creating filter: cannot read resolution of destination texture");
+				MODebug2->Error("Error in creating filter: cannot read resolution of destination texture");
 			else if (error_code == 4)
-				MODebug->Push("Error in creating filter: cannot create destination texture");
+				MODebug2->Error("Error in creating filter: cannot create destination texture");
 			else
-				MODebug->Push("Unknown error in creating filter.");
+				MODebug2->Error("Unknown error in creating filter.");
 		}
 
 		p_cfg->NextValue();
@@ -489,15 +495,15 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 		{
 			// Print some error message...
 			if (error_code == 1)
-				MODebug->Push("Error in creating filter: cannot load shader");
+				MODebug2->Error("Error in creating filter: cannot load shader");
 			else if (error_code == 2)
-				MODebug->Push("Error in creating filter: cannot load source texture");
+				MODebug2->Error("Error in creating filter: cannot load source texture");
 			else if (error_code == 3)
-				MODebug->Push("Error in creating filter: cannot read resolution of destination texture");
+				MODebug2->Error("Error in creating filter: cannot read resolution of destination texture");
 			else if (error_code == 4)
-				MODebug->Push("Error in creating filter: cannot create destination texture");
+				MODebug2->Error("Error in creating filter: cannot create destination texture");
 			else
-				MODebug->Push("Unknown error in creating filter.");
+				MODebug2->Error("Unknown error in creating filter.");
 		}
 
 		j++;

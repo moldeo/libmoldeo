@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							  moResourcePlugin.h
+                              moResourcePlugin.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
+  Andrés Colubri
 
 *******************************************************************************/
 
@@ -37,66 +37,44 @@
 
 class LIBMOLDEO_API moResourceFactory
 {
-	public:
-		moResourceFactory ()
-		{
-		}
-		virtual ~ moResourceFactory ();
-		virtual moResource *Create (void) = 0;
-		virtual void Destroy (moResource * fx) = 0;
+public:
+    moResourceFactory() {}
+    virtual ~moResourceFactory();
+    virtual moResource* Create(void) = 0;
+    virtual void Destroy(moResource* fx) = 0;
 };
 
-typedef moResourceFactory *(MO_PLG_ENTRY * CreateResourceFactoryFunction) ();
-typedef void (MO_PLG_ENTRY * DestroyResourceFactoryFunction) ();
+typedef moResourceFactory*(MO_PLG_ENTRY *CreateResourceFactoryFunction)();
+typedef void(MO_PLG_ENTRY *DestroyResourceFactoryFunction)();
 
 class LIBMOLDEO_API moResourcePlugin
 {
-	public:
-		moResource ** array;
-		int n;
+public:
+    moResource **array;
+    int n;
 
-		CreateResourceFactoryFunction CreateResourceFactory;
-		DestroyResourceFactoryFunction DestroyResourceFactory;
+    CreateResourceFactoryFunction CreateResourceFactory;
+    DestroyResourceFactoryFunction DestroyResourceFactory;
 
-		moResourceFactory *m_factory;
+    moResourceFactory* m_factory;
 
-		moResourcePlugin ()
-		{
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			m_factory = NULL;
-		}
-		moResourcePlugin (moText plugin_file)
-		{
-			m_factory = NULL;
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			Load (plugin_file);
-		}
-		virtual ~ moResourcePlugin ()
-		{
-			if (handle != NULL)
-				Unload ();
-		}
+    moResourcePlugin() { handle = NULL; n=0; array = NULL; m_factory = NULL; }
+    moResourcePlugin(moText plugin_file) { m_factory = NULL; handle = NULL; n = 0; array = NULL; Load(plugin_file); }
+    virtual ~moResourcePlugin() { if(handle != NULL) Unload(); }
 
-		void Load (moText plugin_file);
-		void Unload ();
-		moResource *Create ();
-		bool Destroy (moResource * Resource);
-		moText GetName ()
-		{
-			return name;
-		}
-	private:
-		moText name;
-		MOpluginHandle handle;
+    void Load(moText plugin_file);
+    void Unload();
+    moResource* Create();
+    bool Destroy(moResource *Resource);
+    moText GetName() { return name; }
+private:
+    moText name;
+    MOpluginHandle handle;
 };
 
-moDeclareExportedDynamicArray (moResourcePlugin *, moResourcePluginsArray);
-LIBMOLDEO_API moResource * moNewResource (moText resource_name,
-moResourcePluginsArray & plugins);
-LIBMOLDEO_API bool moDeleteResource (moResource * Resource,
-moResourcePluginsArray & plugins);
+moDeclareExportedDynamicArray(moResourcePlugin*, moResourcePluginsArray);
+
+LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsArray &plugins);
+LIBMOLDEO_API bool moDeleteResource(moResource* Resource, moResourcePluginsArray &plugins);
+
 #endif

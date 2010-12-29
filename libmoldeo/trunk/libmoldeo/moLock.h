@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-								moLock.h
+                                moLock.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
 
   Class:
   moLock
@@ -40,19 +39,27 @@
 #ifndef __MO_LOCK_H
 #define __MO_LOCK_H
 
-/// implementacin de bloqueo de ejecucin, para el manejo asincrnico, primera versin basda en SDL_mutex
+/// implementación de bloqueo de ejecución, para el manejo asincrónico, primera versión basda en SDL_mutex
 /**
  * Revisar.
  */
-typedef void *moBoostMutex;
-typedef void *moBoostLock;
-class LIBMOLDEO_API moLock
-{
-	public:moLock ();
-	~moLock ();
-	bool Lock ();
-	bool Unlock ();
-	private:moBoostMutex m_mutex;
-	moBoostLock m_lock;
+
+typedef  void* moBoostMutex;
+typedef  void* moBoostLock;
+
+class LIBMOLDEO_API moLock {
+
+	public:
+		moLock();
+		~moLock();
+
+		bool Lock();
+
+		bool Unlock();
+
+	private:
+		moBoostMutex m_mutex;
+		moBoostLock m_lock;
 };
-#endif							 /*  */
+
+#endif

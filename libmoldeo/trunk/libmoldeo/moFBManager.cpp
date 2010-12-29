@@ -80,7 +80,9 @@ MOboolean moFBManager::DeleteFBO(MOuint p_fbo)
 {
 	if ( p_fbo!=(MOuint)MO_UNDEFINED && p_fbo < m_fbo_array.Count())
 	{
+		delete m_fbo_array.Get(p_fbo);
 		m_fbo_array.Remove(p_fbo);
+		UnbindAllFBO();
 		return true;
 	}
 	else return false;

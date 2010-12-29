@@ -29,13 +29,14 @@
 
 *******************************************************************************/
 
-#include <moDataManager.h>
+#include "moDataManager.h"
 #include <moArray.h>
 #include <moVideoGraph.h>
 #include <moGsGraph.h>
 #include <moResourceManager.h>
 #include <moRenderManager.h>
 
+#include "moArray.cpp"
 moDefineDynamicArray(moDataSessionKeys)
 moDefineDynamicArray(moDataSessionEventKeys)
 
@@ -135,7 +136,8 @@ moDataSessionConfig::moDataSessionConfig() {
 	m_ConsoleConfigName = moText("");
 }
 
-moDataSessionConfig::moDataSessionConfig(   moText p_datapath,
+moDataSessionConfig::moDataSessionConfig(   moText p_apppath,
+                                            moText p_datapath,
                                             moText p_consoleconfig,
                                             moText p_SessionFileName,
                                             moText p_VideoFileName,
@@ -143,6 +145,7 @@ moDataSessionConfig::moDataSessionConfig(   moText p_datapath,
                                             long p_MaxTimecode,
                                             long p_Port,
                                             long p_Address ) {
+    m_AppPath = p_apppath;
 	m_DataPath = p_datapath;
 	m_ConsoleConfigName = p_consoleconfig;
 	m_SessionFileName = p_SessionFileName;
@@ -152,6 +155,11 @@ moDataSessionConfig::moDataSessionConfig(   moText p_datapath,
 }
 
 moDataSessionConfig::~moDataSessionConfig() {
+}
+
+moText
+moDataSessionConfig::GetAppPath() {
+	return m_AppPath;
 }
 
 moText
@@ -165,14 +173,15 @@ moDataSessionConfig::GetConsoleConfigName() {
 }
 
 moText
+moDataSessionConfig::GetVideoFileName() {
+	return m_VideoFileName;
+}
+
+moText
 moDataSessionConfig::GetSessionFileName() {
 	return m_SessionFileName;
 }
 
-moText
-moDataSessionConfig::GetVideoFileName() {
-	return m_VideoFileName;
-}
 
 //===========================================
 //
@@ -196,7 +205,7 @@ moDataManager::~moDataManager() {
 }
 
 MOboolean moDataManager::Init() {
-	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( moText(DATADIR), moText(DATADIR "/console.mol") );
+	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( moText(""), moText(DATADIR), moText(DATADIR "/console.mol") );
     if (!m_pDataSession) {
         m_pDataSession = new moDataSession();
         if (m_pDataSession)
@@ -209,9 +218,9 @@ MOboolean moDataManager::Init() {
 	return true;
 }
 
-MOboolean moDataManager::Init( moText p_datapath, moText p_consoleconfig ) {
+MOboolean moDataManager::Init( moText p_apppath, moText p_datapath, moText p_consoleconfig ) {
 
-	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( p_datapath, p_consoleconfig );
+	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( p_apppath, p_datapath, p_consoleconfig );
 	if (!m_pDataSession) {
         m_pDataSession = new moDataSession();
             m_pDataSession->Set( moText("session 1"),
@@ -221,6 +230,14 @@ MOboolean moDataManager::Init( moText p_datapath, moText p_consoleconfig ) {
                                  MO_DATASESSION_PLAY_LIVETOCONSOLE );
 	}
 	return true;
+}
+
+moText
+moDataManager::GetAppPath() {
+	//m_DataSessionIndex
+	if (m_pDataSessionConfig)
+		return m_pDataSessionConfig->GetAppPath();
+	return moText("");
 }
 
 moText
