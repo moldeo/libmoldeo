@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
 
 *******************************************************************************/
 
@@ -35,7 +34,7 @@
 #include "moTexture.h"
 #include "moTextureFilter.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 
 moDefineDynamicArray( moValueIndexes )
 moDefineDynamicArray( moValueBases )
@@ -392,51 +391,66 @@ moData::Messages() {
 
 moMathFunction*
 moData::Fun() {
-	return (moMathFunction*) m_Number.m_Pointer;
+  if (m_DataType==MO_DATA_FUNCTION) {
+    return (moMathFunction*) m_Number.m_Pointer;
+  } else return NULL;
 }
 
 MOdouble
 moData::Eval() {
-    moMathFunction* pFun = Fun();
-    if (pFun)
-        return pFun->Eval();
+    if (m_DataType==MO_DATA_FUNCTION) {
+      moMathFunction* pFun = Fun();
+      if (pFun)
+          return pFun->Eval();
+    } else {
+      return Float();
+    }
     return 0.0;
 }
 
 MOdouble
 moData::Eval( double x ) {
-    moMathFunction* pFun = Fun();
-    if (pFun)
-        return pFun->Eval( x );
+    if (m_DataType==MO_DATA_FUNCTION) {
+      moMathFunction* pFun = Fun();
+      if (pFun)
+          return pFun->Eval( x );
+    } else {
+      return Float();
+    }
     return 0.0;
 }
 
 moFont*
 moData::Font() {
-    return (moFont*) m_Number.m_Pointer;
+    moFont* pFont = static_cast<moFont*>(m_Number.m_Pointer);
+    return pFont;
 }
 
 moTextureBuffer*     moData::TextureBuffer() {
-    return (moTextureBuffer*) m_Number.m_Pointer;
+    moTextureBuffer* pTexBuf = static_cast<moTextureBuffer*>(m_Number.m_Pointer);
+    return pTexBuf;
 
 }
 
 
 mo3DModelSceneNode*
 moData::Model() {
-    return (mo3DModelSceneNode*) m_Number.m_Pointer;
-}
-/*
-moTexture*
-moData::Texture() {
-	return (moTexture*) m_Number.m_Pointer;
+    mo3DModelSceneNode* pModel = static_cast<mo3DModelSceneNode*>(m_Number.m_Pointer);
+    return pModel;
 }
 
 moSound*
 moData::Sound() {
-	return (moSound*) m_Number.m_Pointer;
+    moSound* pSound = static_cast<moSound*>(m_Number.m_Pointer);
+    return pSound;
 }
-*/
+
+
+moTexture*
+moData::Texture() {
+  moTexture* pTexture = static_cast<moTexture*>(m_Number.m_Pointer);
+  return pTexture;
+}
 
 moText
 moData::Text() {
@@ -479,6 +493,9 @@ moData::TypeToText() {
             break;
         case MO_DATA_VIDEOSAMPLE:
             return moText("MO_DATA_VIDEOSAMPLE");
+            break;
+        case MO_DATA_SOUNDSAMPLE:
+            return moText("MO_DATA_SOUNDSAMPLE");
             break;
         case MO_DATA_POINTER:
             return moText("MO_DATA_POINTER");
@@ -554,6 +571,9 @@ moData::TextToType( moText texttype ) {
     } else
     if ( texttype ==  moText("MO_DATA_VIDEOSAMPLE") ) {
         return MO_DATA_VIDEOSAMPLE;
+    } else
+    if ( texttype ==  moText("MO_DATA_SOUNDSAMPLE") ) {
+        return MO_DATA_SOUNDSAMPLE;
     } else
     if ( texttype ==  moText("MO_DATA_POINTER") ) {
         return MO_DATA_POINTER;
@@ -645,7 +665,7 @@ moData::Int() {
 			break;
         case MO_DATA_FUNCTION:
             if (Fun()) {
-                return (MOint) Fun()->Eval();
+                return (MOint) Fun()->LastEval();
             } else return (MOint) (0);
             break;
 		default:
@@ -678,7 +698,7 @@ moData::Long() {
 			break;
         case MO_DATA_FUNCTION:
             if (Fun()) {
-                return (MOlonglong) Fun()->Eval();
+                return (MOlonglong) Fun()->LastEval();
             } else return (MOlonglong) (0);
             break;
 		default:
@@ -704,7 +724,7 @@ moData::Float() {
 			break;
         case MO_DATA_FUNCTION:
             if (Fun()) {
-                return (MOfloat) Fun()->Eval();
+                return (MOfloat) Fun()->LastEval();
             } else return (MOfloat) (0.0);
             break;
 		default:
@@ -730,7 +750,7 @@ moData::Double() {
 			break;
         case MO_DATA_FUNCTION:
             if (Fun()) {
-                return (MOdouble) Fun()->Eval();
+                return (MOdouble) Fun()->LastEval();
             } else return (MOdouble) (0.0);
             break;
 		default:
@@ -763,7 +783,7 @@ moData::Char() {
 			break;
         case MO_DATA_FUNCTION:
             if (Fun()) {
-                return (MOchar) Fun()->Eval();
+                return (MOchar) Fun()->LastEval();
             } else return (MOchar) (0);
             break;
 		default:
@@ -983,6 +1003,10 @@ moValueDefinition &moValueDefinition::operator = (const moValueDefinition &src)
 {
 		m_Type = src.m_Type;
 		m_Index = src.m_Index;
+		m_CodeName = src.m_CodeName;
+		m_Min = src.m_Min;
+		m_Max = src.m_Max;
+		m_Attribute = src.m_Attribute;
 		return *this;
 }
 
@@ -1163,6 +1187,41 @@ moValue::moValue(const moValue &src) {
 	MO_VALUE_FUNCTION,//function parameter value, with lots of attributes....
 	MO_VALUE_XML//
 */
+
+moValue::moValue( const moText &strvalue, moValueType p_type ) {
+  AddSubValue( strvalue, p_type );
+}
+
+moValue::moValue( MOchar p_char ) {
+  moValueBase valuebase;
+  valuebase.SetChar( p_char );
+  AddSubValue( valuebase );
+}
+
+moValue::moValue( MOint p_int ) {
+  moValueBase valuebase;
+  valuebase.SetInt( p_int );
+  AddSubValue( valuebase );
+}
+
+moValue::moValue( MOlong p_long ) {
+  moValueBase valuebase;
+  valuebase.SetLong( p_long );
+  AddSubValue( valuebase );
+}
+
+moValue::moValue( MOfloat p_float ) {
+  moValueBase valuebase;
+  valuebase.SetFloat( p_float );
+  AddSubValue( valuebase );
+}
+
+moValue::moValue( MOdouble p_double ) {
+  moValueBase valuebase;
+  valuebase.SetDouble( p_double );
+  AddSubValue( valuebase );
+}
+
 moValue::moValue( const moText &strvalue , const moText &type ) {
 	AddSubValue( strvalue, type );
 }
@@ -1171,7 +1230,6 @@ moValue::moValue( const moText &strvalue , const moText &type ) {
 moValue::moValue( const moText &strvalue, const moText &type, const moText &strvalue2, const moText &type2 ) {
 	AddSubValue( strvalue, type );
 	AddSubValue( strvalue2, type2 );
-
 }
 
 moValue::moValue( const moText &strvalue, const moText &type, const moText &strvalue2, const moText &type2, const moText &strvalue3, const moText &type3 ) {
@@ -1205,6 +1263,55 @@ void moValue::RemoveSubValues( bool leavefirstone ) {
 void
 moValue::AddSubValue( const moValueBase &valuebase ) {
     m_List.Add( valuebase );
+}
+
+void
+moValue::AddSubValue(const  moText &strvalue,  moValueType p_valuetype ) {
+
+  MOint tmpInt;
+  MOchar tmpChar;
+  MOlong tmpLong;
+  MOdouble tmpDouble;
+  MOfloat tmpFloat;
+
+  moValueBase valuebase;
+
+  valuebase.SetText( strvalue );
+
+  switch(p_valuetype) {
+
+    case MO_VALUE_NUM:
+    case MO_VALUE_NUM_INT:
+      sscanf( moText(strvalue), "%i", &tmpInt);
+      valuebase.SetInt( tmpInt );
+      break;
+
+    case MO_VALUE_NUM_LONG:
+      sscanf( moText(strvalue), "%li", &tmpLong);
+      valuebase.SetLong( tmpLong );
+      break;
+
+    case MO_VALUE_NUM_CHAR:
+      sscanf( moText(strvalue), "%c", &tmpChar);
+      valuebase.SetChar( tmpChar );
+      break;
+
+    case MO_VALUE_NUM_FLOAT:
+      sscanf( moText(strvalue), "%f", &tmpFloat);
+      valuebase.SetFloat( tmpFloat );
+      break;
+
+    case MO_VALUE_NUM_DOUBLE:
+      sscanf( moText(strvalue), "%lf", &tmpDouble);
+      valuebase.SetDouble( tmpDouble );
+      break;
+
+  }
+
+  valuebase.SetType( p_valuetype );
+
+  m_List.Add( valuebase );
+
 }
 
 

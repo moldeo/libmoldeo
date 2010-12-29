@@ -29,8 +29,10 @@
 
 *******************************************************************************/
 
-#include <moText.h>
-#include <moArray.h>
+#include "moText.h"
+
+
+#include "moArray.cpp"
 
 moDefineDynamicArray( moTextArray )
 
@@ -298,12 +300,6 @@ moText0& moText0::operator +=(const moText0& txt)
     return *this;
 }
 
-moText0 moText0::operator +(const moText0& txt) const
-{
-    moText0 txtres(text);
-    txtres.txtcopy(txt.text, MO_TXT_COMPLETE, 0, txt.length);
-    return txtres;
-}
 
 int moText0::operator <( const moText0& txt) const
 {
@@ -354,6 +350,14 @@ moText0& moText0::operator +=( const char* txt)
     return *this;
 }
 
+
+LIBMOLDEO_API moText0 operator +( const moText0& txt1, const moText0& txt2 )
+{
+    moText0 txtres(txt1);
+    txtres+= txt2;
+    return txtres;
+}
+
 LIBMOLDEO_API moText0 operator +( const moText0& txt1, const char* txt2)
 {
     moText0 txtres(txt1);
@@ -364,7 +368,7 @@ LIBMOLDEO_API moText0 operator +( const moText0& txt1, const char* txt2)
 LIBMOLDEO_API moText0 operator +( const char* txt1, const moText0& txt2)
 {
     moText0 txtres(txt1);
-    txtres.txtcopy( txt2, MO_TXT_COMPLETE, 0, txt2.Length());
+    txtres+= txt2;
     return txtres;
 }
 
@@ -399,7 +403,7 @@ int moText0::operator !=( const char* txt) const
     return( txtcomp(txt) != MO_TXT_EQUAL);
 }
 
-unsigned short* moText0::Short() const {
+unsigned short* moText0::Short() {
 
 	unsigned short *txtshort;
 	MOuint i = 0;
@@ -425,7 +429,7 @@ moText0& moText0::Left( MOuint cant)
 
 moText0& moText0::Right( MOuint cant)
 {
-    if ((length-cant)>0)
+    if ( length > cant)
       txtcopy( text, 0, length-cant, MO_TXT_COMPLETE);
     return *this;
 }
@@ -443,7 +447,7 @@ moText0& moText0::SubText( MOuint com, MOuint fin)
 }
 
 
-moText0& moText0::Insert( const char* txt, MOuint pos)
+moText0& moText0::Insert( char* txt, MOuint pos)
 {
     moText0 tmp( text+pos);
     txtcopy( txt, pos);
@@ -469,7 +473,8 @@ moText0 moText0::Scan( char* cjto)
     MOuint pos2 = txtfind( cjto, MO_TXT_BELONG, pos1);
     if(pos1 == MO_TXT_NOT_FOUND)  pos1 = 0;
     if(pos2 == MO_TXT_NOT_FOUND)  pos2 = length;
-    newtxt.txtcopy( text, 0, pos1, pos2-1);
+    if ( (pos1+1) < pos2 ) newtxt.txtcopy( text, 0, pos1, pos2-1);
+    else newtxt = "";
     txtcopy( text, 0, pos2);
     return newtxt;
 }
@@ -497,7 +502,8 @@ moText0 moText0::ScanEx( char* cjto)
 			//texto entre comillas
 			pos1 = pos1+1;
 			pos2 = pos2;
-			newtxt.txtcopy( text, 0, pos1, pos2-1);
+			if ( (pos1+1) < pos2 ) newtxt.txtcopy( text, 0, pos1, pos2-1);
+			else newtxt = "";
 			txtcopy( text, 0, pos2+1);
 			return newtxt;
 		}
@@ -508,7 +514,8 @@ moText0 moText0::ScanEx( char* cjto)
 
     if(pos2 == MO_TXT_NOT_FOUND)  pos2 = length;
 
-	newtxt.txtcopy( text, 0, pos1, pos2-1);
+    if ( (pos1+1) < pos2 ) newtxt.txtcopy( text, 0, pos1, pos2-1);
+    else newtxt = "";
     txtcopy( text, 0, pos2);
     return newtxt;
 }
@@ -612,7 +619,7 @@ moText0::Explode( char* separator ) const
 }
 
 int
-moText0::Find( const moText0& target ) const {
+moText0::Find( const moText0& target ) {
 
     moText0 newone;
     int founded,i,j;

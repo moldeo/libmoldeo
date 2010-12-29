@@ -34,8 +34,9 @@
 #include <moDataManager.h>
 #include <moTextureManager.h>
 
-//#include "moArray.h"
-//moDefineDynamicArray( moCoords )
+
+#include "moArray.cpp"
+moDefineDynamicArray( moCoords );
 
 
 moSceneNode::moSceneNode() {

@@ -25,14 +25,13 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
 
 *******************************************************************************/
 
-#include <moGUIManager.h>
-#include <moArray.h>
+#include "moGUIManager.h"
 #include <moFontManager.h>
 
+#include "moArray.cpp"
 moDefineDynamicArray(moGuiObjectArray)
 //===========================================
 //

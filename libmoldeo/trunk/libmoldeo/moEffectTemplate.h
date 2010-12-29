@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							 moEffectTemplate.h
+                             moEffectTemplate.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
 
 *******************************************************************************/
 
@@ -43,19 +42,20 @@
 #define MO_ALPHA    3
 #endif
 
-class LIBMOLDEO_API moEffectTemplate:public moEffect
+class LIBMOLDEO_API moEffectTemplate : public moEffect
 {
-	public:
-		MOint color;
-		MOint transx, transy, transz;
-		MOint rotatx, rotaty, rotatz;
-		MOint scalex, scaley, scalez;
+public:
+    MOint color;
+    MOint transx, transy, transz;
+    MOint rotatx, rotaty, rotatz;
+    MOint scalex, scaley, scalez;
 
-		moEffectTemplate ();
-		~moEffectTemplate ();
+    moEffectTemplate();
+    ~moEffectTemplate();
 
-		MOboolean Init ();
-		void Draw (moTempo *, moEffectState * parentstate = NULL);
-		MOboolean Finish ();
+    MOboolean Init();
+    void Draw( moTempo*,moEffectState* parentstate=NULL);
+    MOboolean Finish();
 };
+
 #endif

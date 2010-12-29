@@ -231,6 +231,64 @@ moEffectManager::GetEffectLabelName( MOint p_ID ) {
 
 }
 
+moEffect*
+moEffectManager::GetEffectByLabel( moText p_label_name, moMoldeoObjectType p_mob_type ) {
+
+  moEffect* peffect = NULL;
+  moText label_name;
+
+  for(int a=0; a<m_AllEffects.Count(); a++ ) {
+
+    peffect =  m_AllEffects.Get( a );
+    if (peffect) {
+     label_name = peffect->GetLabelName();
+
+      if (  ( label_name==p_label_name ) &&
+            ( p_mob_type==peffect->GetType() ) ) {
+          return peffect;
+      }
+    } else {
+        MODebug2->Error("moEffectManager::GetEffectByLabel >> Effect is null.");
+    }
+
+  }
+
+  return NULL;
+
+}
+
+bool
+moEffectManager::Set( int fx_index, moMoldeoObject*  p_pMOB ) {
+  if (p_pMOB==NULL)
+    return false;
+
+  switch(p_pMOB->GetType()) {
+
+    case MO_OBJECT_EFFECT:
+      m_Effects.Set( fx_index, (moEffect*) p_pMOB);
+      break;
+    case MO_OBJECT_PREEFFECT:
+      m_PreEffects.Set( fx_index, (moPreEffect*) p_pMOB);
+      break;
+    case MO_OBJECT_POSTEFFECT:
+      m_PostEffects.Set( fx_index, (moPostEffect*) p_pMOB);
+      break;
+    case MO_OBJECT_MASTEREFFECT:
+      m_MasterEffects.Set( fx_index, (moMasterEffect*) p_pMOB);
+      break;
+    default:
+      return false;
+      break;
+
+  }
+
+  //p_pMOB->GetMobDefinition().GetMobIndex().SetValueIndex();
+  return true;
+
+}
+
+
+
 MOboolean
 moEffectManager::Init() {
 

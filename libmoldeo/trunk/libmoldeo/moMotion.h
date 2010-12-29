@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							  moMotion.h
+                              moMotion.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
 
 *******************************************************************************/
 
@@ -35,45 +34,43 @@
 #include "moParam.h"
 #include "moTypes.h"
 
-								 // PI/180
-#define torad  0.0174532925199432957692369076848861f
-								 // 180/PI
-#define togra  57.2957795130823208767981548141052f
-								 // sqr(2)/2
-#define sqrt2  0.707106781186547524400844362104849f
+#define torad  0.0174532925199432957692369076848861f    // PI/180
+#define togra  57.2957795130823208767981548141052f      // 180/PI
+#define sqrt2  0.707106781186547524400844362104849f     // sqr(2)/2
 
 class LIBMOLDEO_API moMotion
 {
-	public:
-		moMotion ();
-		virtual ~ moMotion ();
+public:
+    moMotion();
+    virtual ~moMotion();
 
-		MOfloat movx (moParam & param, moTempo & tempo);
-		MOfloat movy (moParam & param, moTempo & tempo);
-		MOfloat movz (moParam & param, moTempo & tempo);
+    MOfloat movx( moParam& param, moTempo& tempo);
+    MOfloat movy( moParam& param, moTempo& tempo);
+    MOfloat movz( moParam& param, moTempo& tempo);
 
-		MOfloat movx (moParam & param, MOdouble ang);
-		MOfloat movy (moParam & param, MOdouble ang);
-		MOfloat movz (moParam & param, MOdouble ang);
+    MOfloat movx( moParam& param, MOdouble ang);
+    MOfloat movy( moParam& param, MOdouble ang);
+    MOfloat movz( moParam& param, MOdouble ang);
 
-	private:
-		//moPulse pulse;
+private:
+    //moPulse pulse;
 
-		MOdouble movEsf (char, int, double, double, double, double);
-		MOdouble movLin (char, int, double, double, double, double);
-		MOdouble movCub (char, int, double, double, double, double);
-		MOdouble movSEs (char, int, double, double, double, double);
-		MOdouble movFij (char, int, double, double, double, double);
-		MOdouble movBuc (char, int, double, double, double, double);
-		MOdouble movRan (char, int, double, double, double, double);
-		MOdouble movGan (char, int, double, double, double, double);
-		MOdouble movPul (char, int, double, double, double, double);
+    MOdouble movEsf( char, int, double, double, double, double);
+    MOdouble movLin( char, int, double, double, double, double);
+    MOdouble movCub( char, int, double, double, double, double);
+    MOdouble movSEs( char, int, double, double, double, double);
+    MOdouble movFij( char, int, double, double, double, double);
+    MOdouble movBuc( char, int, double, double, double, double);
+    MOdouble movRan( char, int, double, double, double, double);
+    MOdouble movGan( char, int, double, double, double, double);
+    MOdouble movPul( char, int, double, double, double, double);
 };
+
 #endif
 
 // :-D
 
-// Falta crear una clase ajFuncMov que tenga la estructura para contener las N funciones
-// de movimiento y que permita acceder a cualquier value en tiempo de ejecucion, para
+// Falta crear una clase ajFuncMov que tenga la estructura para contener las N funciones 
+// de movimiento y que permita acceder a cualquier value en tiempo de ejecucion, para 
 // poder hacer por ejemplo  fm.amplitude *= amp;  y que ademas se pueda convertir ida y
-// vuelta en un moParam.
+// vuelta en un moParam.    

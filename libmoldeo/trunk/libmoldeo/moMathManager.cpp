@@ -62,7 +62,7 @@ MOboolean moMathManager::Finish()
 		if (pfunc) {
 			pfunc->Finish();
 			delete pfunc;
-			pfunc=NULL;
+			m_functions.Set(i,NULL);
 		}
 	}
 	m_functions.Finish();
@@ -87,7 +87,7 @@ MOint moMathManager::GetFunctionIdx(const moText& p_expr)
 	return -1;
 }
 
-MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new, moConfig* p_pConfig )
+MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new, moMoldeoObject* p_pMOB )
 {
 
 	MOint idx = -1;
@@ -114,7 +114,7 @@ MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new, mo
 
 	if (p_math_fun != NULL)
 	{
-	    bool res = p_math_fun->Init( p_expr, p_pConfig );
+	    bool res = p_math_fun->Init( p_expr, p_pMOB );
 		if (res)
 		{
 			m_functions.Add(p_math_fun);

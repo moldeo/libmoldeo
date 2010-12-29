@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							  moPresets.h
+                              moPresets.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
+  Andrés Colubri
 
 *******************************************************************************/
 
@@ -36,25 +36,25 @@
 #include "moConfig.h"
 #include "moEffectState.h"
 
-class LIBMOLDEO_API moPresets:public moAbstract
+class LIBMOLDEO_API moPresets : public moAbstract
 {
-	public:
-		MOint presetnum;
-		MOint paramnum;
-		//void SetCantPreset(MOint);
-		//void SetCantParams(MOint);
-		MOint **preset;			 //presetnum*paramnum
-		moEffectState *state;	 //*presetnum
-		MOboolean *setting;
+public:
+    MOint presetnum;
+    MOint paramnum;
+//void SetCantPreset(MOint);
+//void SetCantParams(MOint);
+    MOint** preset;//presetnum*paramnum
+    moEffectState* state;//*presetnum
+    MOboolean* setting;
 
-		moPresets ();
-		moPresets (MOint, MOint);
-		virtual ~ moPresets ();
+    moPresets();
+    moPresets(MOint,MOint);
+    virtual ~moPresets();
 
-								 //(0) cuantos presets voy a guardar,(1) el archivo de configuracion para saber cuantos parametros tengo que guardar
-		MOboolean Init (MOint, MOint);
-		MOboolean Finish ();
-		void Load (MOint, moConfig *, moEffectState *);
-		void Save (MOint, moConfig *, moEffectState *);
+    MOboolean Init( MOint, MOint);//(0) cuantos presets voy a guardar,(1) el archivo de configuracion para saber cuantos parametros tengo que guardar
+    MOboolean Finish();
+    void Load(MOint, moConfig*, moEffectState*);
+    void Save(MOint, moConfig*, moEffectState*);
 };
+
 #endif

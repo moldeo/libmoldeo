@@ -32,7 +32,7 @@
 #include <moRenderManager.h>
 #include <moEffect.h>
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray( moRenderClips )
 moDefineDynamicArray( moDisplayOutputs )
 
@@ -87,7 +87,7 @@ void    moRenderManager::SetOutputConfiguration( moRenderOutputConfiguration p_o
 
 }
 
-moRenderOutputConfiguration moRenderManager::GetOutputConfiguration() {
+moRenderOutputConfiguration& moRenderManager::GetOutputConfiguration() {
 
     return m_OutputConfiguration;
 
@@ -103,14 +103,20 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	{
 		// Problem: glewInit failed, something is seriously wrong.
 		MODebug2->Error(moText("GLEW Error: ")+ moText((char*)glewGetErrorString(err)));
+		cout << glewGetErrorString(err) << endl;
+
+
 	}
 
     MODebug2->Message( moText("Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)));
     MODebug2->Message( moText("GLEW_ARB_texture_non_power_of_two: ") + moText(IntToStr(GLEW_ARB_texture_non_power_of_two)) );
     MODebug2->Message( moText("GLEW_ARB_color_buffer_float: ") + moText(IntToStr(GLEW_ARB_color_buffer_float))) ;
     MODebug2->Message( moText("GLEW_ARB_multitexture: ") + moText(IntToStr(GLEW_ARB_multitexture))) ;
+    MODebug2->Message( moText("GL_EXT_gpu_shader4: ") + moText(IntToStr(GL_EXT_gpu_shader4))) ;
+    MODebug2->Message( moText("GLEW_EXT_geometry_shader4: ") + moText(IntToStr(GLEW_EXT_geometry_shader4))) ;
     MODebug2->Message( moText("GLEW_ARB_imaging: ") + moText(IntToStr(GLEW_ARB_imaging))) ;
     MODebug2->Message( moText("GLEW_ARB_shading_language_100: ") + moText(IntToStr(GLEW_ARB_shading_language_100))) ;
+
 
 	m_render_to_texture_mode = p_render_to_texture_mode;
 
@@ -174,11 +180,13 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
     m_pGLManager->SetMoldeoGLState();
 	m_pGLManager->SetPerspectiveView(m_screen_width, m_screen_height);
 
-	if (GLEW_EXT_framebuffer_object && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU))
+/// && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU)
+	if (GLEW_EXT_framebuffer_object)
 	{
 	    m_pGLManager->SetFrameBufferObjectActive();
         MODebug2->Message( moText("Using framebuffer_object: creating one fbo per predefined textures (4). ") );
 		m_fbo_idx = m_pFBManager->CreateFBO();
+		/*
 		MOuint attach_point;
 		for (int i = 0; i < 4; i++)
 		{
@@ -194,6 +202,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 			}
 		}
 		m_pFBManager->GetFBO(m_fbo_idx)->AddDepthStencilBuffer();
+		*/
 	} else MODebug2->Message( moText("Framebuffer objects unavailable.") );
 	return true;
 }
@@ -258,8 +267,9 @@ void moRenderManager::EndUpdateObject()
 
 void moRenderManager::BeginDraw()
 {
+  /*
 	if (IsRenderToFBOEnabled())
-		m_pFBManager->BindFBO(m_fbo_idx, m_render_attach_points[0]);
+		m_pFBManager->BindFBO(m_fbo_idx, m_render_attach_points[0]);*/
 }
 
 void moRenderManager::BeginDrawEffect()
@@ -309,8 +319,9 @@ void moRenderManager::EndDraw()
     }
 
 */
+/*
 	if (IsRenderToFBOEnabled())
-		m_pFBManager->UnbindFBO();
+		m_pFBManager->UnbindFBO();*/
 }
 
 void moRenderManager::DrawTexture(MOint p_resolution, MOint p_tex_num)

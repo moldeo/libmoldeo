@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
 
 *******************************************************************************/
 
@@ -33,7 +32,52 @@
 
 moTextHeap *moAbstract::MODebug = new moTextHeap();
 
+
+moDebug::moDebug() {
+    moStdOut.open ("cout.txt");
+    moErr.open ("moldeoerrors.txt");
+    moLog.open ("moldeolog.txt");
+
+    backup = cout.rdbuf();     // back up cout's streambuf
+    psbuf = moStdOut.rdbuf();   // get file's streambuf
+    cout.rdbuf( psbuf );         // assign streambuf to cout
+
+    freopen("stdout.txt", "w", stdout);
+
+}
+
+moDebug::~moDebug() {
+
+    cout.rdbuf( backup );
+    setbuf(stdout,NULL);
+
+    moStdOut.close();
+    moErr.close();
+    moLog.close();
+}
+
+void
+moDebug::SetStdout( const moText& filename ) {
+
+    moText fname = filename;
+
+    if (fname.Trim().Length()>0) {
+        moStdOut.open ( fname );
+
+        psbuf = moStdOut.rdbuf();   // get file's streambuf
+        cout.rdbuf( psbuf );         // assign streambuf to cout
+
+        freopen( fname, "w", stdout);
+    } else {
+        cout.rdbuf( backup );         // assign streambuf to cout
+    }
+
+}
+
+
+
 moDebug *moAbstract::MODebug2 = new moDebug();
+
 
 moAbstract::moAbstract() {
 	//MODebug = NULL;

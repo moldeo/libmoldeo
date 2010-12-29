@@ -31,7 +31,7 @@
 
 #include "moSoundManager.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moSoundArray)
 moDefineDynamicArray(moSoundEffectArray)
 moDefineDynamicArray(moSoundBufferArray)

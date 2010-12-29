@@ -29,12 +29,16 @@
 
 *******************************************************************************/
 
-#include <moMathFunction.h>
-#include <muParser.h>
-#include <cstdarg>
-#include <moConfig.h>
-#include <moArray.h>
 
+#include "muParser.h"
+
+#include <cstdarg>
+
+#include "moConfig.h"
+#include "moMoldeoObject.h"
+#include "moMathFunction.h"
+
+#include "moArray.cpp"
 moDefineDynamicArray( moIntArray )
 moDefineDynamicArray( moBoolArray )
 moDefineDynamicArray( moFloatArray )
@@ -59,7 +63,7 @@ double* AddParserVariableFunction(const char *p_pVarName, void *p_pUserData)
 moMathVariable::moMathVariable() {
 
     m_pParam = NULL;
-
+    m_pInlet = NULL;
 }
 
 
@@ -68,6 +72,7 @@ moMathVariable::moMathVariable( const char* p_name, double p_value0 ) {
     m_name = (char*)p_name;
     m_value = p_value0;
     m_pParam = NULL;
+    m_pInlet = NULL;
 
 }
 
@@ -75,6 +80,12 @@ moMathVariable::moMathVariable( const char* p_name, double p_value0 ) {
 moMathVariable::moMathVariable( moParam* p_Param  ) {
 
     SetParam( p_Param );
+
+}
+
+moMathVariable::moMathVariable( moInlet* p_Inlet  ) {
+
+    SetInlet( p_Inlet );
 
 }
 
@@ -91,13 +102,28 @@ moMathVariable::SetParam( moParam* p_Param ) {
     }
 }
 
+void
+moMathVariable::SetInlet( moInlet* p_Inlet ) {
 
+
+    if (p_Inlet!=NULL) {
+
+        m_pInlet = p_Inlet;
+        m_name = m_pInlet->GetConnectorLabelName();
+        GetValue();
+
+    }
+}
 
 
 double moMathVariable::GetValue()
 {
     if (m_pParam) {
         moData* pData = m_pParam->GetData();
+        if (pData)
+            m_value = pData->Double();
+    } else if (m_pInlet) {
+        moData* pData = m_pInlet->GetData();
         if (pData)
             m_value = pData->Double();
     }
@@ -122,6 +148,7 @@ moMathFunction::moMathFunction()
     m_Expression = moText("");
     m_EmptyName = moText("");
     m_pConfig = NULL;
+    m_pMOB = NULL;
     m_LastEval = 0.0;
 }
 
@@ -130,15 +157,16 @@ moMathFunction::~moMathFunction()
     Finish();
 }
 
-MOboolean moMathFunction::Init( const moText& p_Expression, moConfig* p_pConfig )
+MOboolean moMathFunction::Init( const moText& p_Expression, moMoldeoObject* p_pMOB )
 {
 	SetExpression(p_Expression);
 	BuildParamList();
 	BuildVarList();
 
 ///ASSOCIATE VARIABLES WITH PARAMETERS....
-    if (p_pConfig) {
-        m_pConfig = p_pConfig;
+    if (p_pMOB) {
+        m_pMOB = p_pMOB;
+        m_pConfig = m_pMOB->GetConfig();
     }
 
     if ( m_pConfig ) {
@@ -157,6 +185,17 @@ MOboolean moMathFunction::Init( const moText& p_Expression, moConfig* p_pConfig 
                     pVariable->SetParam( param.GetPtr() );
 
                 }
+
+            }
+
+            for( int m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
+
+              moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
+
+              if ( pInlet->GetConnectorLabelName() == pVariable->GetName() ) {
+                  pVariable->SetInlet( pInlet );
+              }
+
 
             }
 
@@ -179,7 +218,8 @@ void moMathFunction::SetParameters(double s, ...)
 	if (num>0) {
 		va_list arguments;                     // A place to store the list of arguments
 
-		m_Parameters[0]->SetValue(s);
+    if (m_Parameters[0])
+      m_Parameters[0]->SetValue(s);
 
 		va_start(arguments, s);           // Initializing arguments to store all values after s
 		for (int i = 1; i < num; i++)
@@ -195,10 +235,10 @@ double moMathFunction::Eval() {
     int num = m_Variables.Count();
 
     if (num>0) {
-		for (int i = 1; i < num; i++) {
+		for (int i = 0; i < num; i++) {
             if (m_Variables[i] != NULL) {
                 /// Values are updated from params....
-				m_Variables[i]->GetValue();
+                m_Variables[i]->GetValue();
             }
         }
     }
@@ -217,7 +257,8 @@ double moMathFunction::Eval(double x, ...)
 	int num = m_Variables.Count();    // Number of variables. Must be equal to the number of arguments.
 
 	if (num>0) {
-		m_Variables[0]->SetValue(x);
+	  if (m_Variables[0])
+      m_Variables[0]->SetValue(x);
 
 		va_list arguments;                // A place to store the list of arguments
 		va_start(arguments, x);           // Initializing arguments to store all values after x.
@@ -525,15 +566,17 @@ void moTautInterpolant::BuildVarList()
 moParserFunction::moParserFunction() {
 
     m_pConfig = NULL;
+    m_pMOB = NULL;
 
 }
 
 
-MOboolean moParserFunction::Init(const moText& p_Expression, moConfig* p_pConfig )
+MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_pMOB )
 {
     mu::Parser* pParser = new mu::Parser();
     m_pParser = (moParser*) pParser;
-    m_pConfig = p_pConfig;
+    m_pMOB = p_pMOB;
+    if (m_pMOB) m_pConfig = m_pMOB->GetConfig();
 
     moMathVariableFactory* pVarFactory = new moMathVariableFactory(&m_Parameters, &m_Variables);
 
@@ -580,6 +623,17 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moConfig* p_pConfig
                     pVariable->SetParam( param.GetPtr() );
 
                 }
+
+            }
+
+            for( int m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
+
+              moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
+
+              if ( pInlet->GetConnectorLabelName() == pVariable->GetName() ) {
+                  pVariable->SetInlet( pInlet );
+              }
+
 
             }
 

@@ -29,11 +29,11 @@
 
 *******************************************************************************/
 
-#include <moMasterPlugin.h>
-#include <moArray.h>
+#include "moMasterPlugin.h"
 #include <moPort.h>
-
+#include "moArray.cpp"
 moDefineDynamicArray( moMasterPluginsArray )
+
 
 #include <iostream>
 using namespace std;
@@ -201,7 +201,7 @@ LIBMOLDEO_API moMasterEffect* moNewMasterEffect(moText effect_name, moMasterPlug
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/mastereffects/libmod_") + (moText)effect_name;
+    complete_name = moText("plugins/mastereffects/lib") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

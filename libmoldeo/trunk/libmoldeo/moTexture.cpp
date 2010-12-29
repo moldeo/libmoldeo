@@ -34,7 +34,7 @@
 #include <moFileManager.h>
 #include <moDataManager.h>
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moTextureArray)
 
 //===========================================
@@ -1173,12 +1173,17 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 	if(p_tempo==NULL) {
 			t = m_Time - moGetTicks();
 			ft =(t / 1000) * m_fFramesPerSecond;//frames que deberian haber pasado en este lapso...
+
 			if(ft >= 0.99)	{
+
 					m_FrameNext++;
+
 					if( m_FrameNext >= m_nFrames ) {
 						m_FrameNext = 0;
 					}
+
 			}
+
 	} else {
 		PeliV = fmod( float( p_tempo->ang ), float(2*moMathf::PI)) /(2*moMathf::PI);
 		m_FrameNext = min(MOuint(PeliV * m_nFrames), m_nFrames - 1);
@@ -1231,6 +1236,9 @@ MOint moTextureAnimated::GetGLId( MOfloat p_cycle ) {
 
 void
 moTextureAnimated::GetFrame( MOuint p_i) {
+
+  ///always needs implementation??? must be pure virtual.
+
 	return;
 }
 
@@ -1394,7 +1402,7 @@ MOboolean moMovie::Finish()
 MOboolean moMovie::SupportedFile(moText p_filename)
 {
 	moText extension = p_filename.Right(3);
-	return (!stricmp(extension,"avi") || !stricmp(extension,"mov") || !stricmp(extension,"mpg"));
+	return (!stricmp(extension,"avi") || !stricmp(extension,"mov") || !stricmp(extension,"mpg") || !stricmp(extension,"mp4")|| !stricmp(extension,"ogg") || !stricmp(extension,"mpv") || !stricmp(extension,"mkv") || !stricmp(extension,"m2v"));
 }
 
 MOboolean moMovie::LoadMovieFile(moText p_filename)
@@ -1417,12 +1425,12 @@ MOboolean moMovie::LoadMovieFile(moText p_filename)
 
 		if (quicktime)
 		{
-			//QUICKTIME FOR DIRECTSHOW
+			///QUICKTIME FOR DIRECTSHOW
 			graphloaded = m_pGraph->BuildLiveQTVideoGraph( p_filename, &m_BucketsPool);
 		}
 		else
 		{
-			//UNIVERSAL
+			///UNIVERSAL
 			graphloaded = m_pGraph->BuildLiveVideoGraph( p_filename, &m_BucketsPool);
 		}
 
@@ -1472,16 +1480,45 @@ void moMovie::EnableAudio(int enable) {}
 
 void moMovie::GetFrame( MOuint p_i )
 {
-	if(m_pGraph && !m_BucketsPool.IsEmpty())
+	if(m_pGraph)
 	{
+    moStreamState state = m_pGraph->GetState();
+
 		m_pGraph->Seek( p_i );
 		m_pGraph->Pause();
-		moBucket* pbucket = NULL;
-		MOubyte* pbuffer = NULL;
-		pbucket = m_BucketsPool.RetreiveBucket();
-		pbuffer = pbucket->GetBuffer();
-		SetBuffer(pbuffer, GL_BGR_EXT );
-		delete pbuffer;
-		delete pbucket;
-	}
+
+		if (!m_BucketsPool.IsEmpty()) {
+
+      moBucket* pbucket = NULL;
+      MOubyte* pbuffer = NULL;
+
+      pbucket = m_BucketsPool.RetreiveBucket();
+
+      if (pbucket) {
+        pbuffer = pbucket->GetBuffer();
+        if (pbuffer) {
+
+          ///lock to prevent any data or reference loss...
+          pbucket->Lock();
+          SetBuffer(pbuffer, GL_BGR_EXT );
+          pbucket->Unlock();
+
+          pbucket->EmptyBucket();
+        }
+        m_BucketsPool.DestroyRetreivedBucket();
+      }
+		}
+		/*
+		else {
+
+      MODebug2->Error(  moText("moMovie::GetFrame()")
+                      + moText(" m_BucketsPool is EMPTY !!!")
+                      + moText(" state:")
+                      + m_pGraph->StateToText(state) );
+
+    }
+    */
+	} else {
+      MODebug2->Error( moText("moMovie::GetFrame()") + moText(" m_pGraph is NULL !!!") );
+  }
 }

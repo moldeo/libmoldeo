@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
 
 *******************************************************************************/
 
@@ -128,4 +127,52 @@ LIBMOLDEO_API void HSVtoRGB(short iInHue, short iInSaturation, short iInValue, f
 				break;
 		}
 	}
+}
+
+/**
+// RGB are from 0..1, H is from 0..360, SV from 0..1
+double maxC = b;
+if (maxC < g) maxC = g;
+if (maxC < r) maxC = r;
+double minC = b;
+if (minC > g) minC = g;
+if (minC > r) minC = r;
+
+double delta = maxC - minC;
+
+double V = maxC;
+double S = 0;
+double H = 0;
+
+if (delta == 0)
+{
+	H = 0;
+	S = 0;
+}
+else
+{
+	S = delta / maxC;
+	double dR = 60*(maxC - r)/delta + 180;
+	double dG = 60*(maxC - g)/delta + 180;
+	double dB = 60*(maxC - b)/delta + 180;
+	if (r == maxC)
+		H = dB - dG;
+	else if (g == maxC)
+		H = 120 + dR - dB;
+	else
+		H = 240 + dG - dR;
+}
+
+if (H<0)
+	H+=360;
+if (H>=360)
+	H-=360;
+
+*/
+
+#include "config.h"
+moText moGetVersionStr() {
+
+    return moText(PACKAGE_VERSION);
+
 }

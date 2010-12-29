@@ -29,13 +29,13 @@
 
 *******************************************************************************/
 
-#include <moResourcePlugin.h>
+#include "moResourcePlugin.h"
 #include <moPort.h>
 
 #include <iostream>
 using namespace std;
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray( moResourcePluginsArray )
 
 moResourceFactory::~moResourceFactory() {
@@ -202,7 +202,7 @@ LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsA
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/resources/lib/mod_") + (moText)resource_name;
+    complete_name = moText(MODULESDIR "/resources/libmod_") + (moText)resource_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

@@ -32,7 +32,7 @@
 #include "moVideoManager.h"
 
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moCircularVideoBuffers)
 moDefineDynamicArray(moVideoFrames)
 moDefineDynamicArray(moVideoBuffers)
@@ -961,6 +961,7 @@ void moVideoManager::Update(moEventList * p_EventList)
 	moEvent *actual,*tmp;
 	moLiveSystemPtr pLS;
 	moVideoSample* pSample = NULL;
+	MOubyte* pbuffer = NULL;
 
 	if(!m_pLiveSystems) return;
 
@@ -1008,41 +1009,55 @@ void moVideoManager::Update(moEventList * p_EventList)
 
 					pbucket = pBucketsPool->RetreiveBucket();
 
-					pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
+					if ( pbucket && pLS->GetVideoGraph() ) {
 
-					if(pSample!=NULL) {
-						moTexture * ts =(moTexture*)Images[i];
-						if(ts!=NULL)
-						{
+            pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
 
-							if ((ts->GetGLId() == 0) || (ts->GetWidth() != pSample->m_VideoFormat.m_Width))
-							{
-								if (ts->GetGLId() != 0) ts->Finish();
-								ts->BuildEmpty(pSample->m_VideoFormat.m_Width,  pSample->m_VideoFormat.m_Height);
-							}
+            ///procesamos el GetState para que ejecute la iteracion del loop interno...obligatorio!!
+            pLS->GetVideoGraph()->GetState();
 
-							ts->SetBuffer( pbucket->GetBuffer(), GL_BGR_EXT);
+            if( pSample!=NULL ) {
+              moTexture * ts =(moTexture*)Images[i];
+              if(ts!=NULL)
+              {
 
-							//Update Circular buffers
-							for( MOuint c=0; c<m_CircularVideoBuffers.Count(); c++) {
+                if ((ts->GetGLId() == 0) || (ts->GetWidth() != pSample->m_VideoFormat.m_Width))
+                {
+                  if (ts->GetGLId() != 0) ts->Finish();
+                  ts->BuildEmpty(pSample->m_VideoFormat.m_Width,  pSample->m_VideoFormat.m_Height);
+                }
 
-								moCircularVideoBuffer*	pCircularVideoBuffer;
-								pCircularVideoBuffer = m_CircularVideoBuffers[c];
-								if (pCircularVideoBuffer &&
-									pCircularVideoBuffer->GetVideoInput() == ts->GetName() ) {
+                pbuffer = pbucket->GetBuffer();
 
-									pCircularVideoBuffer->LoadSample( pSample );
+                if (pbuffer) {
+                  pbucket->Lock();
+                  ts->SetBuffer( pbuffer, GL_BGR_EXT);
+                  pbucket->Unlock();
+                }
 
-								}
+                //Update Circular buffers
+                for( MOuint c=0; c<m_CircularVideoBuffers.Count(); c++) {
 
-							}
-						}
+                  moCircularVideoBuffer*	pCircularVideoBuffer;
+                  pCircularVideoBuffer = m_CircularVideoBuffers[c];
+                  if (pCircularVideoBuffer &&
+                    pCircularVideoBuffer->GetVideoInput() == ts->GetName() ) {
 
-						//post to other moldeo objects
-						p_EventList->Add( GetId(), i, -1, (unsigned char*)pSample);
-						//MODebug2->Push( moText("moVideoManager::Update Video Sample") );
+                    pCircularVideoBuffer->LoadSample( pSample );
 
-					}
+                  }
+
+                }
+              }
+
+              //post to other moldeo objects
+              p_EventList->Add( GetId(), i, -1, (unsigned char*)pSample);
+              //MODebug2->Push( moText("moVideoManager::Update Video Sample") );
+
+            }
+
+					} ///finish with pbucket
+
 				}
 
 			}

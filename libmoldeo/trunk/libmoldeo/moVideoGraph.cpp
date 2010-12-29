@@ -32,7 +32,7 @@
 
 #include "moVideoGraph.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moCaptureDevices)
 
 

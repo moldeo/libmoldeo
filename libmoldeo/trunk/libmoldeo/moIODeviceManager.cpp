@@ -43,7 +43,7 @@
   #include <SDL/SDL.h>
 #endif
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray(moIODevicesArray)
 
 moIODevice::moIODevice() {
@@ -176,7 +176,7 @@ moIODeviceManager::Update() {
 void
 moIODeviceManager::PollEvents() {
 
-	/*
+
 	SDL_Event event;
 
 	   //SDL_KEYDOWN,			// Keys pressed
@@ -218,7 +218,7 @@ moIODeviceManager::PollEvents() {
 					break;
 		}
 	}
-	*/
+
 }
 
 moEventList*

@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-							  moPlugin.h
+                              moPlugin.h
 
   ****************************************************************************
   *                                                                          *
@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrs Colubri
+  Andrés Colubri
 
 *******************************************************************************/
 
@@ -35,137 +35,125 @@
 #include "moBasePlugin.h"
 #include "moEffect.h"
 
-/// Definicin de un plugin
+
+/// Definición de un plugin
 /**
- *   Se necesitan tres parmetros para reconocer un plugin. Su nombre para ser invocado, su tipo, y la posicin del archivo.
- */
-class LIBMOLDEO_API moPluginDefinition
-{
-	public:moPluginDefinition ()
-	{
-		m_Name = moText ("");
-		m_FullPath = moText ("");
-		m_MoldeoObjectType = MO_OBJECT_UNDEFINED;
-	} moPluginDefinition (const moPluginDefinition & src)
-	{
-		*this = src;
-	}
-	///constructor
-	/**
-	 * @param p_name el nombre del plugin tal cual se invocar luego
-	 * @param p_fullpath el nombre del archivo completo incluyendo la ruta
-	 * @param p_type el tipo de objeto que este plugin implementa
-	 */
-	moPluginDefinition (const moText & p_name, const moText & p_fullpath,
-		moMoldeoObjectType p_type)
-	{
-		m_Name = p_name;
-		m_FullPath = p_fullpath;
-		m_MoldeoObjectType = p_type;
-	} virtual ~ moPluginDefinition ()
-	{
-	} moPluginDefinition & operator = (const moPluginDefinition & src)
-	{
-		m_Name = src.m_Name;
-		m_FullPath = src.m_FullPath;
-		m_MoldeoObjectType = src.m_MoldeoObjectType;
-		return *this;
-	}
+*   Se necesitan tres parámetros para reconocer un plugin. Su nombre para ser invocado, su tipo, y la posición del archivo.
+*/
+class LIBMOLDEO_API moPluginDefinition {
 
-	/// Devuelve el nombre del plugin
-	moText GetName ()
-	{
-		return m_Name;
-	}
+  public:
 
-	/// Devuelve la ruta y nombre completos del archivo del plugin
-	moText GetFullPath ()
-	{
-		return m_FullPath;
-	}
+    moPluginDefinition() {
+          m_Name = moText("");
+          m_FullPath = moText("");
+          m_MoldeoObjectType = MO_OBJECT_UNDEFINED;
+    }
 
-	/// Devuelve el tipo de objeto que crea el plugin
-	moMoldeoObjectType GetType ()
-	{
-		return m_MoldeoObjectType;
-	}
-	protected:moText m_Name;
-	moText m_FullPath;
-	moMoldeoObjectType m_MoldeoObjectType;
+    moPluginDefinition( const moPluginDefinition &src ) {
+        *this = src;
+    }
+
+    ///constructor
+    /**
+    * @param p_name el nombre del plugin tal cual se invocará luego
+    * @param p_fullpath el nombre del archivo completo incluyendo la ruta
+    * @param p_type el tipo de objeto que este plugin implementa
+    */
+    moPluginDefinition( const moText& p_name, const moText& p_fullpath, moMoldeoObjectType p_type ) {
+          m_Name = p_name;
+          m_FullPath = p_fullpath;
+          m_MoldeoObjectType = p_type;
+    }
+
+    virtual ~moPluginDefinition() {}
+
+    moPluginDefinition &operator = (const moPluginDefinition &src) {
+       m_Name = src.m_Name;
+       m_FullPath = src.m_FullPath;
+       m_MoldeoObjectType = src.m_MoldeoObjectType;
+       return *this;
+    }
+
+    /// Devuelve el nombre del plugin
+    moText GetName() {
+        return m_Name;
+    }
+
+    /// Devuelve la ruta y nombre completos del archivo del plugin
+    moText GetFullPath() {
+        return m_FullPath;
+    }
+
+    /// Devuelve el tipo de objeto que crea el plugin
+    moMoldeoObjectType GetType() {
+        return m_MoldeoObjectType;
+    }
+
+  protected:
+
+    moText              m_Name;
+    moText              m_FullPath;
+    moMoldeoObjectType  m_MoldeoObjectType;
+
+
 };
 
-moDeclareExportedDynamicArray (moPluginDefinition, moPluginDefinitions);
+moDeclareExportedDynamicArray( moPluginDefinition, moPluginDefinitions );
 
-/// Fbrica de efectos, clase abstracta pura a implementar para un plugin derivado de moEffect
+
+/// Fábrica de efectos, clase abstracta pura a implementar para un plugin derivado de moEffect
 /**
- *   Define las funciones de creacin y destruccin de un plugin.
- */
+*   Define las funciones de creación y destrucción de un plugin.
+*/
 class LIBMOLDEO_API moEffectFactory
 {
-	public:
-		moEffectFactory ()
-		{
-		}
-		virtual ~ moEffectFactory ();
-		virtual moEffect *Create (void) = 0;
-		virtual void Destroy (moEffect * fx) = 0;
+public:
+    moEffectFactory() {}
+    virtual ~moEffectFactory();
+    virtual moEffect* Create(void) = 0;
+    virtual void Destroy(moEffect* fx) = 0;
 };
 
-typedef moEffectFactory *(MO_PLG_ENTRY * CreateEffectFactoryFunction) ();
-typedef void (MO_PLG_ENTRY * DestroyEffectFactoryFunction) ();
+typedef moEffectFactory*(MO_PLG_ENTRY *CreateEffectFactoryFunction)();
+typedef void(MO_PLG_ENTRY *DestroyEffectFactoryFunction)();
+
 
 /// Plugin de efecto
 /**
- *   Este objeto se crea al invocar un plugin.
- *   Crea y administra las instancias de objetos que este plugin implementa.
- */
+*   Este objeto se crea al invocar un plugin.
+*   Crea y administra las instancias de objetos que este plugin implementa.
+*/
 class LIBMOLDEO_API moPlugin
 {
-	public:
-		moEffect ** array;
-		int n;
+    public:
+        moEffect **array;
+        int n;
 
-		CreateEffectFactoryFunction CreateEffectFactory;
-		DestroyEffectFactoryFunction DestroyEffectFactory;
+        CreateEffectFactoryFunction CreateEffectFactory;
+        DestroyEffectFactoryFunction DestroyEffectFactory;
 
-		moEffectFactory *m_factory;
+        moEffectFactory* m_factory;
 
-		moPlugin ()
-		{
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			m_factory = NULL;
-		}
-		moPlugin (moText plugin_file)
-		{
-			handle = NULL;
-			n = 0;
-			array = NULL;
-			m_factory = NULL;
-			Load (plugin_file);
-		}
-		virtual ~ moPlugin ()
-		{
-			if (handle != NULL)
-				Unload ();
-		}
+        moPlugin() { handle = NULL; n=0; array=NULL; m_factory = NULL;}
+        moPlugin(moText plugin_file) { handle = NULL; n=0; array=NULL; m_factory = NULL; Load(plugin_file); }
+        virtual ~moPlugin() { if(handle != NULL) Unload(); }
 
-		void Load (moText plugin_file);
-		void Unload ();
-		moEffect *Create ();
-		bool Destroy (moEffect * effect);
-		moText GetName ()
-		{
-			return name;
-		}
-	private:
-		moText name;
-		MOpluginHandle handle;
+        void Load(moText plugin_file);
+        void Unload();
+        moEffect* Create();
+        bool Destroy(moEffect *effect);
+        moText GetName() { return name; }
+
+    private:
+        moText name;
+        MOpluginHandle handle;
+
 };
 
-moDeclareExportedDynamicArray (moPlugin *, moPluginsArray);
-LIBMOLDEO_API moEffect * moNewEffect (moText effect_name,
-moPluginsArray & plugins);
-LIBMOLDEO_API bool moDeleteEffect (moEffect * effect, moPluginsArray & plugins);
+moDeclareExportedDynamicArray( moPlugin*, moPluginsArray );
+
+LIBMOLDEO_API moEffect* moNewEffect(moText effect_name, moPluginsArray &plugins);
+LIBMOLDEO_API bool moDeleteEffect(moEffect* effect, moPluginsArray &plugins);
+
 #endif

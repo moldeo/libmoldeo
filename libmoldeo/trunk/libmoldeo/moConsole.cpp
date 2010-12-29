@@ -43,11 +43,10 @@
     #include <SDL/SDL.h>
 #endif
 
-#include <moArray.h>
-
 #include <moDataManager.h>
 #include <moFileManager.h>
 
+#include "moArray.cpp"
 moDefineDynamicArray( moPresetParams )
 
 
@@ -71,6 +70,74 @@ moConsole::~moConsole()
     Finish();
 }
 
+bool moConsole::LabelNameExists( moText labelname ) {
+
+  int mobid = -1;
+
+  mobid = this->GetObjectId(labelname);
+
+  return ( mobid > -1 );
+}
+
+int
+moConsole::RelativeToGeneralIndex( int relativeindex, moMoldeoObjectType p_type ) {
+
+  int mindex = -1;
+
+  switch(p_type) {
+    case MO_OBJECT_EFFECT:
+      mindex = m_pResourceManager->Resources().Count();
+      mindex+= m_pIODeviceManager->IODevices().Count();
+      mindex+= m_EffectManager.PreEffects().Count();
+      mindex+= m_EffectManager.PostEffects().Count();
+      mindex+= relativeindex;
+      break;
+    case MO_OBJECT_PREEFFECT:
+      mindex = m_pResourceManager->Resources().Count();
+      mindex+= m_pIODeviceManager->IODevices().Count();
+      mindex+= relativeindex;
+      break;
+    case MO_OBJECT_POSTEFFECT:
+      mindex = m_pResourceManager->Resources().Count();
+      mindex+= m_pIODeviceManager->IODevices().Count();
+      mindex+= m_EffectManager.PreEffects().Count();
+      mindex+= relativeindex;
+      break;
+    case MO_OBJECT_MASTEREFFECT:
+      mindex = m_pResourceManager->Resources().Count();
+      mindex+= m_pIODeviceManager->IODevices().Count();
+      mindex+= m_EffectManager.PreEffects().Count();
+      mindex+= m_EffectManager.PostEffects().Count();
+      mindex+= m_EffectManager.Effects().Count();
+      mindex+= relativeindex;
+      break;
+    case MO_OBJECT_IODEVICE:
+      mindex = m_pResourceManager->Resources().Count();
+      mindex+= relativeindex;
+      break;
+    case MO_OBJECT_RESOURCE:
+      mindex = 0;
+      mindex+= relativeindex;
+      break;
+    case MO_OBJECT_CONSOLE:
+      mindex = m_pResourceManager->Resources().Count();
+      mindex+= m_pIODeviceManager->IODevices().Count();
+      mindex+= m_EffectManager.PreEffects().Count();
+      mindex+= m_EffectManager.PostEffects().Count();
+      mindex+= m_EffectManager.Effects().Count();
+      mindex+= m_EffectManager.MasterEffects().Count();
+      break;
+
+  }
+  if (mindex==-1) MODebug2->Error("moConsole::RelativeToGeneralIndex > type not found");
+  return mindex;
+
+}
+
+moMoldeoObjects& moConsole::GetMoldeoObjects() {
+  return m_MoldeoObjects;
+}
+
 moEffectManager& moConsole::GetEffectManager() {
 
     return m_EffectManager;
@@ -85,6 +152,7 @@ void moConsole::SetIODeviceManager( moIODeviceManager*	p_IODeviceManager ) {
 }
 
 void moConsole::InitResources( moResourceManager *pResourceManager,
+						moText	p_apppath,
 						moText	p_datapath,
 						moConfig&	p_consoleconfig,
 						MOint p_render_to_texture_mode,
@@ -102,7 +170,9 @@ void moConsole::InitResources( moResourceManager *pResourceManager,
 	}
 
 	if (m_pResourceManager) {
-		m_pResourceManager->Init( p_datapath,
+		m_pResourceManager->Init(
+                    p_apppath,
+                    p_datapath,
 					p_consoleconfig,
 					p_render_to_texture_mode,
 					p_screen_width, p_screen_height,
@@ -115,7 +185,7 @@ void moConsole::InitResources( moResourceManager *pResourceManager,
 
 MOboolean moConsole::Init()
 {
-	return Init( moText("data"), moText("data/console.mol"), NULL, NULL, RENDERMANAGER_MODE_NORMAL,
+	return Init( moText(""), moText("data"), moText("data/console.mol"), NULL, NULL, RENDERMANAGER_MODE_NORMAL,
 		MO_DEF_SCREEN_WIDTH,
 		MO_DEF_SCREEN_HEIGHT,
 		MO_DEF_RENDER_WIDTH,
@@ -124,10 +194,12 @@ MOboolean moConsole::Init()
 }
 
 
-MOboolean moConsole::Init( moText p_datapath,
-						  moText p_consoleconfig,
-						  moIODeviceManager* p_pIODeviceManager,
-						 moResourceManager*  p_pResourceManager,
+MOboolean moConsole::Init(
+                        moText p_apppath,
+                        moText p_datapath,
+						moText p_consoleconfig,
+						moIODeviceManager* p_pIODeviceManager,
+						moResourceManager*  p_pResourceManager,
 					  moRenderManagerMode p_render_to_texture_mode,
 					  MOint p_screen_width, MOint p_screen_height,
 					  MOint p_render_width, MOint p_render_height,
@@ -169,9 +241,8 @@ MOboolean moConsole::Init( moText p_datapath,
 	//   CARGAMOS EL ARCHIVO DE CONFIGURACION
 	//==========================================================================
 
-    if (MODebug2) MODebug2->Message(moText("moConsole:: Opening Console Config Project (.mol).")  + (moText)p_consoleconfig);
+  if (MODebug2) MODebug2->Message(moText("moConsole:: Opening Console Config Project (.mol).")  + (moText)p_consoleconfig);
 
-    this->GetDefinition();
 	verif = m_Config.LoadConfig( p_consoleconfig ) ;//este parametro debe pasarse desde fuera
 	if(verif != MO_CONFIG_OK) {
 
@@ -184,15 +255,12 @@ MOboolean moConsole::Init( moText p_datapath,
 
     if (MODebug2) MODebug2->Message(moText("moConsole:: mol project opening....success "));
 
-	moDefineParamIndex( CONSOLE_OUTPUTMODE, moText("outputmode") );
-	moDefineParamIndex( CONSOLE_OUTPUTRESOLUTION, moText("outputresolution") );
-	moDefineParamIndex( CONSOLE_RENDERMODE, moText("rendermode") );
-	moDefineParamIndex( CONSOLE_RENDERRESOLUTION, moText("renderresolution") );
 
     //if () {
-        moText mode = m_Config[moR(CONSOLE_OUTPUTMODE)][MO_SELECTED][0].Text();
+        moText mode = m_Config.Text("outputmode");
 
-        moText rendermode = m_Config[moR(CONSOLE_RENDERMODE)][MO_SELECTED][0].Text();
+        moText rendermode = m_Config.Text("rendermode");
+
         if ( rendermode != moText("") ) {
             if (rendermode==moText("RENDERMANAGER_MODE_NORMAL")) {
                 MODebug2->Message("moConsole :: Render Mode forced to RENDERMANAGER_MODE_NORMAL");
@@ -206,11 +274,11 @@ MOboolean moConsole::Init( moText p_datapath,
             }
         }
 
-        moText renderwidth = m_Config[moR(CONSOLE_RENDERRESOLUTION)][MO_SELECTED][0].Text();
-        moText renderheight = m_Config[moR(CONSOLE_RENDERRESOLUTION)][MO_SELECTED][1].Text();
+        moText renderwidth = m_Config.GetParam("renderresolution").GetValue().GetSubValue(0).Text();
+        moText renderheight = m_Config.GetParam("renderresolution").GetValue().GetSubValue(1).Text();
 
-        moText screenwidth = m_Config[moR(CONSOLE_OUTPUTRESOLUTION)][MO_SELECTED][0].Text();
-        moText screenheight = m_Config[moR(CONSOLE_OUTPUTRESOLUTION)][MO_SELECTED][1].Text();
+        moText screenwidth = m_Config.GetParam("outputresolution").GetValue().GetSubValue(0).Text();
+        moText screenheight = m_Config.GetParam("outputresolution").GetValue().GetSubValue(1).Text();
 
 
         if (renderwidth!=moText("") && renderheight!=moText("")) {
@@ -257,11 +325,12 @@ MOboolean moConsole::Init( moText p_datapath,
 	// Verificar que el nro de version sea correcto //
     //...
     ///los recursos se cargan antes que el moMoldeoObject::Init
-    ///ya que algnos parametros necesitan de todos los recursos para levantar
+    ///ya que algunos parametros necesitan de todos los recursos para levantar
     ///ejemplo: moMathFunction....
 
     if (MODebug2) MODebug2->Message(moText("moConsole:: Initializing Resource Manager."));
 	InitResources(  p_pResourceManager,
+                    p_apppath,
 					p_datapath,
 					m_Config,
 					p_render_to_texture_mode,
@@ -270,10 +339,10 @@ MOboolean moConsole::Init( moText p_datapath,
 					p_OpWindowHandle,
 					p_Display);
 
-    ///wem ust initialize the parametrization here
-    ///moldeoobect::init siempre antes que los moDefineParamIndex....
-    moMoldeoObject::Init();
 
+  ///we must initialize the parametrization here
+  ///moldeoobect::init siempre antes que los moDefineParamIndex....y justo despues del LoadConfig
+  moMoldeoObject::Init();
 
 	moDefineParamIndex( CONSOLE_DEVICES, moText("devices") );
 	moDefineParamIndex( CONSOLE_EFFECT, moText("effect") );
@@ -292,7 +361,6 @@ MOboolean moConsole::Init( moText p_datapath,
 	moDefineParamIndex( CONSOLE_CLIP1, moText("clip1") );
 	moDefineParamIndex( CONSOLE_CLIP2, moText("clip2") );
 	moDefineParamIndex( CONSOLE_CLIP3, moText("clip3") );
-
 
 	LoadResources();
 	LoadIODevices();
@@ -329,6 +397,52 @@ void
 moConsole::LoadConnections() {
 	///check for each outlet connector on MoldeoObject's connections to inlets...
 	MOuint i,j,k,l,m;
+
+  ///RECREATE ALL REFERENCES int this order
+  /**
+  RESOURCES
+  IODEVICES
+  PREEFFECTS
+  POSTEFFECTS
+  EFFECTS
+  MASTEREFFECTS
+  */
+
+  int max = RelativeToGeneralIndex( 0, MO_OBJECT_CONSOLE ) + 1;
+  m_MoldeoObjects.Empty();
+  m_MoldeoObjects.Init( max, NULL);
+
+  for( i=0; i<m_pResourceManager->Resources().Count(); i++ ) {
+    moResource* pResource = m_pResourceManager->Resources().Get(i);
+    m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_RESOURCE ), pResource );
+  }
+
+  for( i=0; i<m_pIODeviceManager->IODevices().Count(); i++ ) {
+    moIODevice* pIODevice = m_pIODeviceManager->IODevices().Get(i);
+    m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_IODEVICE ), pIODevice );
+  }
+
+  for( i=0; i<m_EffectManager.PreEffects().Count(); i++ ) {
+    moPreEffect* pFx = m_EffectManager.PreEffects().Get(i);
+    m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_PREEFFECT ), pFx );
+  }
+
+  for( i=0; i<m_EffectManager.PostEffects().Count(); i++ ) {
+    moPostEffect* pFx = m_EffectManager.PostEffects().Get(i);
+    m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_POSTEFFECT ), pFx );
+  }
+
+  for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
+    moEffect* pFx = m_EffectManager.Effects().Get(i);
+    m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_EFFECT ), pFx );
+  }
+
+  for( i=0; i<m_EffectManager.MasterEffects().Count(); i++ ) {
+    moMasterEffect* pFx = m_EffectManager.MasterEffects().Get(i);
+    m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_MASTEREFFECT ), pFx );
+  }
+
+  m_MoldeoObjects.Set( RelativeToGeneralIndex( 0, MO_OBJECT_CONSOLE ), this);
 
 	///SET Moldeo Objects Unique Id's
 	for( i=0; i<m_MoldeoObjects.Count(); i++) {
@@ -375,6 +489,19 @@ moConsole::LoadConnections() {
                                     if (pinlet->GetConnectorLabelName()==DestinationConnectorLabelName) {
                                         //update destination connector id
                                         p_connection->SetDestinationConnectorId( pinlet->GetConnectorId() );
+                                        MODebug2->Message(
+                                            moText(" Object <") +
+                                            psrcobject->GetLabelName() +
+                                            moText("> Outlet <") +
+                                            p_outlet->GetConnectorLabelName() +
+                                            moText("> connected succesfully to") +
+
+                                            moText(" Object <") +
+                                            pdstobject->GetLabelName() +
+                                            moText("> Inlet <") +
+                                            pinlet->GetConnectorLabelName() +
+                                            moText(">")
+                                            );
                                     }
                                 }
                             }
@@ -769,6 +896,7 @@ moConsole::LoadResources() {
 }
 
 void moConsole::UnloadResources() {
+    if (m_pResourceManager)
     for(int i=m_pResourceManager->Resources().Count()-1; i>=0; i--) {
         if (m_pResourceManager->Resources().Get(i)!=NULL) {
             m_pResourceManager->RemoveResource(i);
@@ -946,11 +1074,19 @@ moConsole::GLSwapBuffers() {
 }
 
 void
+moConsole::GUIYield() {
+  //no hace nada
+  return;
+}
+
+void
 moConsole::Draw() {
 	MOuint i;
 	moEffect* pEffect = NULL;
 	moText savename, framesavename;
 	moRenderManager* RenderMan = m_pResourceManager->GetRenderMan();
+
+  GUIYield();
 
 	if (RenderMan==NULL) return;
 
@@ -1197,7 +1333,25 @@ moConsole::Interaction() {
 	RenderMan->BeginUpdate();
 	if(m_pIODeviceManager!=NULL) {
 		RenderMan->BeginUpdateDevice();
+
 		m_pIODeviceManager->Update();
+
+		moEvent* event = m_pIODeviceManager->GetEvents()->First;
+		while(event!=NULL) {
+		    if ( event->deviceid == MO_IODEVICE_KEYBOARD ) {
+                MODebug2->Log("key pressed");
+                if (event->devicecode == SDL_KEYDOWN ) {
+                    MODebug2->Log("key down");
+                    if ( event->reservedvalue0 == SDLK_ESCAPE ) {
+                        MODebug2->Log("ESCAPE pressed");
+                        state.finish = MO_TRUE;
+                    }
+                }
+            }
+		    event = event->next;
+        }
+
+
 		RenderMan->EndUpdateDevice();
 	}
 	RenderMan->EndUpdate();
@@ -1220,24 +1374,29 @@ moConsole::Interaction() {
 	///channel0 y panel deben estar deshabilitados(las keys asociadas a ellos quedan liberadas)
 		//se pasa el control de events al CanalMaestro array[0], el sabra a quien pasar el control
 	if ( m_EffectManager.MasterEffects().Count() > 2 ) {
+
 		pChannel = m_EffectManager.MasterEffects().Get(0);
+		//pChannel = m_EffectManager.GetEffectByLabel( "channel0" );
 		pPanel = m_EffectManager.MasterEffects().Get(2);
+		//pPanel = m_EffectManager.GetEffectByLabel( "panel" );
+
 		if (pPanel && pChannel)
 		if((pChannel->state.on != MO_ACTIVATED) && (pPanel->state.on != MO_ACTIVATED) ) {
-		    ///signifa que el canal y el panel estan desactivados....
+		    /// signifa que el canal y el panel estan desactivados....
+		    /// modo de captura....   ( control del efecto seleccionado por el channel... )
 			pChannel->Interaction( m_pIODeviceManager );
 		}
 	} else {
-        ///MODO DIRECTO!!!!! todos los efectos prendidos reciben Interaccion
+      ///MODO DIRECTO!!!!! todos los efectos prendidos reciben Interaccion
 	    for(int all=0;all<m_EffectManager.AllEffects().Count(); all++) {
 	        moEffect* pEffect = NULL;
 
 	        pEffect = m_EffectManager.AllEffects().Get(all);
-	        if (pEffect && pEffect->state.on==MO_ON) {
-                pEffect->Interaction( m_pIODeviceManager );
+	        if ( pEffect && pEffect->state.on == MO_ON ) {
+            pEffect->Interaction( m_pIODeviceManager );
 	        }
-        }
-    }
+      }
+  }
 
 
 	//TAREAS ESPECIALES
@@ -1408,7 +1567,7 @@ int moConsole::GetObjectId( moText p_objectlabelname ) {
     return -1;
 }
 
-int moConsole::GetDirectoryFileCount( moText p_path ) {
+const int moConsole::GetDirectoryFileCount( moText p_path ) {
     int i;
     moDirectory* pDir;
     pDir = NULL;

@@ -31,7 +31,7 @@
 
 #include "moPostPlugin.h"
 
-#include <moArray.h>
+#include "moArray.cpp"
 moDefineDynamicArray( moPostPluginsArray )
 
 moPostEffectFactory::~moPostEffectFactory() {
