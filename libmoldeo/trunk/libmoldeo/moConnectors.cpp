@@ -30,7 +30,7 @@
 
 #include "moConnectors.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moConnectors)
 moDefineDynamicArray(moConnections)
 moDefineDynamicArray(moInlets)

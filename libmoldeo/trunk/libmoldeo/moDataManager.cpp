@@ -36,7 +36,6 @@
 #include <moResourceManager.h>
 #include <moRenderManager.h>
 
-#include "moArray.cpp"
 moDefineDynamicArray(moDataSessionKeys)
 moDefineDynamicArray(moDataSessionEventKeys)
 

@@ -113,9 +113,12 @@ const char *const icono3d_STR = "icono3d";
 #include <string>
 using namespace std;
 
+#ifndef MO_WIN32
 inline bool
 stricmp (const char *str1, const char *str2)
 {
 	return strcmp (str1, str2);
 }
+#endif
+
 #endif							 /* _MOPORT_H_ */

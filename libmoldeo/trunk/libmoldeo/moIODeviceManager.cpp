@@ -43,7 +43,7 @@
   #include <SDL/SDL.h>
 #endif
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moIODevicesArray)
 
 moIODevice::moIODevice() {

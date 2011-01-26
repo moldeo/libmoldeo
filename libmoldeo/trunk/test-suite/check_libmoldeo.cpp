@@ -24,6 +24,7 @@ END_TEST
 START_TEST(test_data_session_config) {
   bool res;
   moDataSessionConfig *DataSessionConfig = new moDataSessionConfig(
+		  moText("apppath"),
 		  moText("datapath"),
 		  moText("config.mol"),
 		  moText("session_file_name"),
@@ -59,7 +60,7 @@ START_TEST(test_data_manager) {
   bool res;
   moDataManager *DataManager = new moDataManager();
   fail_unless(DataManager != NULL);
-  res = DataManager->Init(moText("data"), moText("config.mol"));
+  res = DataManager->Init( moText(""),moText("data"), moText("config.mol"));
   fail_unless(res != true);
   fail_unless(DataManager->GetDataPath() == moText("data"));
   fail_unless(DataManager->GetConsoleConfigName() == moText("config.mol"));

@@ -37,7 +37,7 @@
 #include <mo3dModelManager.h>
 #include <moFilterManager.h>
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moMoldeoObjects)
 
 //===========================================

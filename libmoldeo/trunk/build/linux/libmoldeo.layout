@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="All" />
+	<File name="../../config.h" open="0" top="0" tabpos="0">
+		<Cursor position="3919" topLine="133" />
+	</File>
+	<File name="../../libmoldeo/mo3dModelManager.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="8545" topLine="278" />
+	</File>
+	<File name="../../libmoldeo/moTypes.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="4608" topLine="161" />
+	</File>
+</CodeBlocks_layout_file>

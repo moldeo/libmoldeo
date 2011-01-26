@@ -224,6 +224,19 @@ public:
 
 };
 
+/*
+Ejemplo:
+
+Header:
+#include "moArray.h"
+class MyClass;
+moDeclareDynamicArray( MyClass, ArrayOfMyClass);
+
+Source:
+#include "moArray.cpp" // this is a magic incantation which must be done!
+moDefineDynamicArray( ArrayOfMyClass );
+*/
+
 #define _moDeclareDynamicArray( T, name, classexp)						 \
 classexp name															 \
 {                                                                        \
@@ -241,8 +254,8 @@ public:                                                                  \
 	void Set(int x, const T &value);									 \
 	void Insert(int x, const T &value);									 \
 	T& Get(int x);														 \
-	T& operator[] (int x) { return Get(x); }						 \
-	MOuint Count();														 \
+	T& operator[] (int x) { return Get(x); }						     \
+	MOuint Count() const;														 \
 	void Add( const T &value );											 \
 	void Remove(int x);													 \
 	void Copy( const name &A);											 \
@@ -254,6 +267,7 @@ private:																 \
 	T m_NULL;															 \
 																		 \
 };
+
 
 
 #define moDeclareDynamicArray(T, name)									\

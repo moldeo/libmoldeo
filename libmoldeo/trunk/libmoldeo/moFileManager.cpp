@@ -33,7 +33,7 @@
 
 #include "moFileManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moFileArray)
 moDefineDynamicArray(moDirectoryArray)
 

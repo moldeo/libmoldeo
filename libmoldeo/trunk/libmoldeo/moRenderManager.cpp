@@ -32,7 +32,7 @@
 #include <moRenderManager.h>
 #include <moEffect.h>
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moRenderClips )
 moDefineDynamicArray( moDisplayOutputs )
 

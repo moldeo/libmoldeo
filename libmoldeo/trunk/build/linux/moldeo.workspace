@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="moldeo">
+		<Project filename="../../contrib/src/tinyxml/tinyxml_lib.cbp" />
+		<Project filename="libmoldeo.cbp">
+			<Depends filename="../../contrib/src/tinyxml/tinyxml_lib.cbp" />
+		</Project>
+		<Project filename="../../contrib/src/wxMoldeoControls/wxMoldeoControls linux.cbp" />
+		<Project filename="../../contrib/src/wxMoldeoControls/wxMoldeoControlsTest linux.cbp" />
+		<Project filename="../../src/moldeodirector/moldeodirectorlinux.cbp" active="1" />
+		<Project filename="../../plugins/MasterEffects/Channel/channellinux.cbp" />
+		<Project filename="../../src/main/moldeo_linux_sdl.cbp" />
+		<Project filename="../../plugins/MasterEffects/MasterChannel/masterchannellinux.cbp" />
+		<Project filename="../../plugins/MasterEffects/Panel/panellinux.cbp" />
+		<Project filename="../../plugins/MasterEffects/PresetPanel/presetpanellinux.cbp" />
+		<Project filename="../../plugins/IODevices/Keyboard/keyboardlinux.cbp" />
+		<Project filename="../../plugins/IODevices/Mouse/mouselinux.cbp" />
+		<Project filename="../../plugins/IODevices/Mixer/mixerlinux.cbp" />
+		<Project filename="../../plugins/PreEffects/Erase/eraselinux.cbp" />
+		<Project filename="../../plugins/PostEffects/Debug/debuglinux.cbp" />
+		<Project filename="../../plugins/Effects/Icon/iconlinux.cbp" />
+		<Project filename="../../plugins/Effects/CubeMap/cubemaplinux.cbp" />
+		<Project filename="../../plugins/Effects/Image/imagelinux.cbp" />
+		<Project filename="../../plugins/Effects/Tunel/tunellinux.cbp" />
+		<Project filename="../../plugins/Effects/Icon3D/icon3dlinux.cbp" />
+		<Project filename="../../plugins/Effects/Plane/planelinux.cbp" />
+		<Project filename="../../plugins/Effects/Painter/painterlinux.cbp" />
+		<Project filename="../../plugins/Effects/ImageFlow/imageflowlinux.cbp" />
+		<Project filename="../../plugins/PreEffects/Mirror/mirrorlinux.cbp" />
+		<Project filename="../../plugins/PreEffects/MirrorG/mirrorglinux.cbp" />
+		<Project filename="../../plugins/PostEffects/VideoWall/videowalllinux.cbp" />
+		<Project filename="../../plugins/Effects/Movie/movielinux.cbp" />
+		<Project filename="../../plugins/Effects/Text3D/text3dlinux.cbp" />
+		<Project filename="../../plugins/Effects/Text/textlinux.cbp" />
+		<Project filename="../../plugins/MasterEffects/Ligia/ligialinux.cbp" />
+		<Project filename="../../plugins/Resources/TrackerKLT/trackerkltlinux.cbp" />
+		<Project filename="../../plugins/Effects/ParticlesSimple/particlessimplelinux.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>

@@ -47,7 +47,7 @@
 #include <moGUIManager.h>
 #include <moScriptManager.h>
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moResources)
 
 moResource::moResource() {

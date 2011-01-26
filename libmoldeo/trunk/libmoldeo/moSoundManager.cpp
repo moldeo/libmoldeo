@@ -25,20 +25,18 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
 
 *******************************************************************************/
 
 #include "moSoundManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moSoundArray)
 moDefineDynamicArray(moSoundEffectArray)
 moDefineDynamicArray(moSoundBufferArray)
 
 #ifdef MO_WIN32
-    #include "Framework.h"
-    #include "CWaves.h"
+    #include <AL/alut.h>
 #endif
 
 #ifdef MO_LINUX
@@ -232,14 +230,14 @@ float moSound::GetVolume() {
 /*======================*/
 void moSoundEffect::SetParameterF( ALenum param, ALfloat flValue ) {
 #ifdef MO_WIN32
-	alEffectf( m_EffectId, param, flValue );
+	//alEffectf( m_EffectId, param, flValue );
 #endif
 
 }
 
 void moSoundEffect::GetParameterF( ALenum param, ALfloat *pflValue ) {
 #ifdef MO_WIN32
-	alGetEffectf( m_EffectId, param,  pflValue );
+	//alGetEffectf( m_EffectId, param,  pflValue );
 #endif
 
 }
