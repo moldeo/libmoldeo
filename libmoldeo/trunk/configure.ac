@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [0.7], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [0.7.9], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -199,6 +199,7 @@ AC_SUBST([pkgconfigdir])
 dnl Makefile outputs
 AC_OUTPUT([
 Makefile
+data/Makefile
 libmoldeo/Makefile
 test-suite/Makefile
 ])

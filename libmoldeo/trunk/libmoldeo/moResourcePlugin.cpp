@@ -35,7 +35,7 @@
 #include <iostream>
 using namespace std;
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moResourcePluginsArray )
 
 moResourceFactory::~moResourceFactory() {
@@ -196,7 +196,7 @@ LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsA
     if(!stricmp(resource_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/resources/") + (moText)resource_name;
+    complete_name = moText(MODULESDIR "/resources/") + (moText)resource_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -247,7 +247,7 @@ LIBMOLDEO_API bool moDeleteResource(moResource *Resource, moResourcePluginsArray
     if(!stricmp(Resource->GetResourceName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/resources/") + moText(Resource->GetResourceName());
+    complete_name = moText(MODULESDIR "/resources/") + moText(Resource->GetResourceName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

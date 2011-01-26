@@ -46,7 +46,7 @@
 #include <moDataManager.h>
 #include <moFileManager.h>
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moPresetParams )
 
 

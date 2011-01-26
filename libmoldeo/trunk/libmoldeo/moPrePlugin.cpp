@@ -31,7 +31,7 @@
 
 #include "moPrePlugin.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moPrePluginsArray )
 
 
@@ -156,7 +156,7 @@ LIBMOLDEO_API moPreEffect* moNewPreEffect(moText effect_name, moPrePluginsArray 
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/preeffects/") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/preeffects/") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif
@@ -205,7 +205,7 @@ LIBMOLDEO_API bool moDeletePreEffect(moPreEffect *preeffect, moPrePluginsArray &
     if(!stricmp(preeffect->GetName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/preeffects/") + moText(preeffect->GetName());
+    complete_name = moText(MODULESDIR "/preeffects/") + moText(preeffect->GetName());
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif

@@ -36,7 +36,7 @@
 
 #include "FTGL/ftgl.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moFonts)
 
 //===========================================
@@ -72,7 +72,7 @@ moFontManager::Init() {
 		moText	completepath;
 
 		//completepath = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
-		completepath = moText("../../art/fonts/Tuffy.ttf");
+		completepath = moText(DATADIR "/fonts/Tuffy.ttf");
 
 		pFont->Init( MO_FONT_OUTLINE, completepath, 16 );
 

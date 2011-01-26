@@ -36,7 +36,6 @@
 #include <moFileManager.h>
 
 
-#include "moArray.cpp"
 moDefineDynamicArray( moEffectsArray)
 
 

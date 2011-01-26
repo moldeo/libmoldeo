@@ -31,7 +31,7 @@
 
 #include "moPostPlugin.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moPostPluginsArray )
 
 moPostEffectFactory::~moPostEffectFactory() {
@@ -153,7 +153,7 @@ LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArr
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/posteffects/") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/posteffects/") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -203,7 +203,7 @@ LIBMOLDEO_API bool moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArr
     if(!stricmp(posteffect->GetName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/posteffects/") + moText(posteffect->GetName());
+    complete_name = moText(MODULESDIR "/posteffects/") + moText(posteffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

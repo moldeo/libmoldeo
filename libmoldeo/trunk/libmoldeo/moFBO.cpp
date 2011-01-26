@@ -31,7 +31,7 @@
 
 #include "moFBO.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moFBOArray)
 
 //===========================================

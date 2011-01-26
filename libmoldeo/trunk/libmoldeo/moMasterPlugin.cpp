@@ -31,7 +31,7 @@
 
 #include "moMasterPlugin.h"
 #include <moPort.h>
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moMasterPluginsArray )
 
 
@@ -244,7 +244,7 @@ LIBMOLDEO_API bool moDeleteMasterEffect(moMasterEffect *mastereffect, moMasterPl
     if(!stricmp(mastereffect->GetName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/mastereffects/") + moText(mastereffect->GetName());
+    complete_name = moText(MODULESDIR "/mastereffects/") + moText(mastereffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

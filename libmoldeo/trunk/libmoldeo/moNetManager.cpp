@@ -31,7 +31,7 @@
 
 #include "moNetManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moNetObjects)
 moDefineDynamicArray( moNetConnections )
 

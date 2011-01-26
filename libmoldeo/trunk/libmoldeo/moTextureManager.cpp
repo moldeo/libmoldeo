@@ -34,7 +34,7 @@
 #include <moDataManager.h>
 #include <moFileManager.h>
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moTextureBuffers)
 moDefineDynamicArray(moTextureFrames)
 
@@ -479,13 +479,7 @@ MOboolean moTextureManager::Init()
 	int m_id_default = AddTexture( "default", 256, 256);
 	moTexture* DefaultTexture =  GetTexture(m_id_default);
     if (DefaultTexture) DefaultTexture->BuildFromFile(
-        m_pResourceManager->GetDataMan()->GetAppPath() +
-        moSlash +
-        moText("..") +
-        moSlash +
-        moText("..") +
-        moSlash +
-        moText("art") +
+        moText(DATADIR) +
         moSlash +
         moText("icons") +
         moSlash +

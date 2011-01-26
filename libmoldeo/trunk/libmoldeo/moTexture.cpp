@@ -34,7 +34,7 @@
 #include <moFileManager.h>
 #include <moDataManager.h>
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray(moTextureArray)
 
 //===========================================

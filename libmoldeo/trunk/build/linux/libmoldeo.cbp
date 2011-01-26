@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libmoldeo" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="libmoldeod" prefix_auto="0" extension_auto="1" />
+				<Option object_output="Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add library="tinyxml" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="libmoldeo" prefix_auto="0" extension_auto="1" />
+				<Option object_output="Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-w" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="tinyxml" />
+				</Linker>
+			</Target>
+			<Environment>
+				<Variable name="libdir" value="/usr/lib" />
+				<Variable name="prefix" value="/usr" />
+			</Environment>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="Debug;Release;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`freetype-config --cflags`" />
+			<Add option="`pkg-config gstreamer-0.10 --cflags`" />
+			<Add option="`pkg-config muparser --cflags`" />
+			<Add option="`pkg-config lua5.1 --cflags`" />
+			<Add option='-DDATADIR=\\&quot;$(prefix)/share/moldeo\\&quot;' />
+			<Add option='-DMODULESDIR=\\&quot;$(libdir)/moldeo\\&quot;' />
+			<Add option="-DMO_GSTREAMER" />
+			<Add option="-DMO_VDPAU_NO" />
+			<Add directory="../../" />
+			<Add directory="../../libmoldeo" />
+		</Compiler>
+		<Linker>
+			<Add option="`freetype-config --libs`" />
+			<Add option="`pkg-config gstreamer-0.10 --libs`" />
+			<Add option="`pkg-config lua5.1 --libs`" />
+			<Add option="`pkg-config muparser --libs`" />
+			<Add library="freeimage" />
+			<Add library="libboost_filesystem-mt" />
+			<Add library="GLEW" />
+		</Linker>
+		<Unit filename="../../config.h" />
+		<Unit filename="../../libmoldeo/mo3dModelManager.cpp" />
+		<Unit filename="../../libmoldeo/mo3dModelManager.h" />
+		<Unit filename="../../libmoldeo/moAbstract.cpp" />
+		<Unit filename="../../libmoldeo/moAbstract.h" />
+		<Unit filename="../../libmoldeo/moArcBall.cpp" />
+		<Unit filename="../../libmoldeo/moArcBall.h" />
+		<Unit filename="../../libmoldeo/moArray.h" />
+		<Unit filename="../../libmoldeo/moBasePlugin.h" />
+		<Unit filename="../../libmoldeo/moBuckets.cpp" />
+		<Unit filename="../../libmoldeo/moBuckets.h" />
+		<Unit filename="../../libmoldeo/moConfig.cpp" />
+		<Unit filename="../../libmoldeo/moConfig.h" />
+		<Unit filename="../../libmoldeo/moConnectors.cpp" />
+		<Unit filename="../../libmoldeo/moConnectors.h" />
+		<Unit filename="../../libmoldeo/moConsole.cpp" />
+		<Unit filename="../../libmoldeo/moConsole.h" />
+		<Unit filename="../../libmoldeo/moConsoleState.cpp" />
+		<Unit filename="../../libmoldeo/moConsoleState.h" />
+		<Unit filename="../../libmoldeo/moDataManager.cpp" />
+		<Unit filename="../../libmoldeo/moDataManager.h" />
+		<Unit filename="../../libmoldeo/moDebugManager.cpp" />
+		<Unit filename="../../libmoldeo/moDebugManager.h" />
+		<Unit filename="../../libmoldeo/moDecoderManager.cpp" />
+		<Unit filename="../../libmoldeo/moDecoderManager.h" />
+		<Unit filename="../../libmoldeo/moDeviceCode.cpp" />
+		<Unit filename="../../libmoldeo/moDeviceCode.h" />
+		<Unit filename="../../libmoldeo/moDsGraph.cpp" />
+		<Unit filename="../../libmoldeo/moDsGraph.h" />
+		<Unit filename="../../libmoldeo/moEffect.cpp" />
+		<Unit filename="../../libmoldeo/moEffect.h" />
+		<Unit filename="../../libmoldeo/moEffectManager.cpp" />
+		<Unit filename="../../libmoldeo/moEffectManager.h" />
+		<Unit filename="../../libmoldeo/moEffectState.cpp" />
+		<Unit filename="../../libmoldeo/moEffectState.h" />
+		<Unit filename="../../libmoldeo/moEffectTemplate.h" />
+		<Unit filename="../../libmoldeo/moEventList.cpp" />
+		<Unit filename="../../libmoldeo/moEventList.h" />
+		<Unit filename="../../libmoldeo/moFBManager.cpp" />
+		<Unit filename="../../libmoldeo/moFBManager.h" />
+		<Unit filename="../../libmoldeo/moFBO.cpp" />
+		<Unit filename="../../libmoldeo/moFBO.h" />
+		<Unit filename="../../libmoldeo/moFileManager.cpp" />
+		<Unit filename="../../libmoldeo/moFileManager.h" />
+		<Unit filename="../../libmoldeo/moFileRead.h" />
+		<Unit filename="../../libmoldeo/moFileWrite.h" />
+		<Unit filename="../../libmoldeo/moFilterManager.cpp" />
+		<Unit filename="../../libmoldeo/moFilterManager.h" />
+		<Unit filename="../../libmoldeo/moFontManager.cpp" />
+		<Unit filename="../../libmoldeo/moFontManager.h" />
+		<Unit filename="../../libmoldeo/moGLManager.cpp" />
+		<Unit filename="../../libmoldeo/moGLManager.h" />
+		<Unit filename="../../libmoldeo/moGUIManager.cpp" />
+		<Unit filename="../../libmoldeo/moGUIManager.h" />
+		<Unit filename="../../libmoldeo/moGsGraph.cpp" />
+		<Unit filename="../../libmoldeo/moGsGraph.h" />
+		<Unit filename="../../libmoldeo/moIODeviceManager.cpp" />
+		<Unit filename="../../libmoldeo/moIODeviceManager.h" />
+		<Unit filename="../../libmoldeo/moIODevicePlugin.cpp" />
+		<Unit filename="../../libmoldeo/moIODevicePlugin.h" />
+		<Unit filename="../../libmoldeo/moLock.cpp" />
+		<Unit filename="../../libmoldeo/moLock.h" />
+		<Unit filename="../../libmoldeo/moLuaBase.cpp" />
+		<Unit filename="../../libmoldeo/moLuaBase.h" />
+		<Unit filename="../../libmoldeo/moLuna.h" />
+		<Unit filename="../../libmoldeo/moLunaClasses.cpp" />
+		<Unit filename="../../libmoldeo/moLunaClasses.h" />
+		<Unit filename="../../libmoldeo/moMasterEffect.cpp" />
+		<Unit filename="../../libmoldeo/moMasterEffect.h" />
+		<Unit filename="../../libmoldeo/moMasterPlugin.cpp" />
+		<Unit filename="../../libmoldeo/moMasterPlugin.h" />
+		<Unit filename="../../libmoldeo/moMath.cpp" />
+		<Unit filename="../../libmoldeo/moMath.h" />
+		<Unit filename="../../libmoldeo/moMathCurve.cpp" />
+		<Unit filename="../../libmoldeo/moMathCurve.h" />
+		<Unit filename="../../libmoldeo/moMathDMatrix.cpp" />
+		<Unit filename="../../libmoldeo/moMathDMatrix.h" />
+		<Unit filename="../../libmoldeo/moMathDVector.cpp" />
+		<Unit filename="../../libmoldeo/moMathDVector.h" />
+		<Unit filename="../../libmoldeo/moMathFFT.cpp" />
+		<Unit filename="../../libmoldeo/moMathFFT.h" />
+		<Unit filename="../../libmoldeo/moMathFunction.cpp" />
+		<Unit filename="../../libmoldeo/moMathFunction.h" />
+		<Unit filename="../../libmoldeo/moMathFunctionIndex.cpp" />
+		<Unit filename="../../libmoldeo/moMathFunctionIndex.h" />
+		<Unit filename="../../libmoldeo/moMathManager.cpp" />
+		<Unit filename="../../libmoldeo/moMathManager.h" />
+		<Unit filename="../../libmoldeo/moMathMatrix.cpp" />
+		<Unit filename="../../libmoldeo/moMathMatrix.h" />
+		<Unit filename="../../libmoldeo/moMathNumericalAnalysis.cpp" />
+		<Unit filename="../../libmoldeo/moMathNumericalAnalysis.h" />
+		<Unit filename="../../libmoldeo/moMathPolynomial.cpp" />
+		<Unit filename="../../libmoldeo/moMathPolynomial.h" />
+		<Unit filename="../../libmoldeo/moMathQuaternion.cpp" />
+		<Unit filename="../../libmoldeo/moMathQuaternion.h" />
+		<Unit filename="../../libmoldeo/moMathVector.cpp" />
+		<Unit filename="../../libmoldeo/moMathVector.h" />
+		<Unit filename="../../libmoldeo/moMathVector3.cpp" />
+		<Unit filename="../../libmoldeo/moMathVector3.h" />
+		<Unit filename="../../libmoldeo/moMathVector4.cpp" />
+		<Unit filename="../../libmoldeo/moMathVector4.h" />
+		<Unit filename="../../libmoldeo/moMoldeoObject.cpp" />
+		<Unit filename="../../libmoldeo/moMoldeoObject.h" />
+		<Unit filename="../../libmoldeo/moMotion.cpp" />
+		<Unit filename="../../libmoldeo/moMotion.h" />
+		<Unit filename="../../libmoldeo/moNetManager.cpp" />
+		<Unit filename="../../libmoldeo/moNetManager.h" />
+		<Unit filename="../../libmoldeo/moP5.cpp" />
+		<Unit filename="../../libmoldeo/moP5.h" />
+		<Unit filename="../../libmoldeo/moParam.cpp" />
+		<Unit filename="../../libmoldeo/moParam.h" />
+		<Unit filename="../../libmoldeo/moPlugin.cpp" />
+		<Unit filename="../../libmoldeo/moPlugin.h" />
+		<Unit filename="../../libmoldeo/moPostEffect.cpp" />
+		<Unit filename="../../libmoldeo/moPostEffect.h" />
+		<Unit filename="../../libmoldeo/moPostPlugin.cpp" />
+		<Unit filename="../../libmoldeo/moPostPlugin.h" />
+		<Unit filename="../../libmoldeo/moPreConfig.cpp" />
+		<Unit filename="../../libmoldeo/moPreConfig.h" />
+		<Unit filename="../../libmoldeo/moPreEffect.cpp" />
+		<Unit filename="../../libmoldeo/moPreEffect.h" />
+		<Unit filename="../../libmoldeo/moPrePlugin.cpp" />
+		<Unit filename="../../libmoldeo/moPrePlugin.h" />
+		<Unit filename="../../libmoldeo/moPresets.cpp" />
+		<Unit filename="../../libmoldeo/moPresets.h" />
+		<Unit filename="../../libmoldeo/moRenderManager.cpp" />
+		<Unit filename="../../libmoldeo/moRenderManager.h" />
+		<Unit filename="../../libmoldeo/moResourceManager.cpp" />
+		<Unit filename="../../libmoldeo/moResourceManager.h" />
+		<Unit filename="../../libmoldeo/moResourcePlugin.cpp" />
+		<Unit filename="../../libmoldeo/moResourcePlugin.h" />
+		<Unit filename="../../libmoldeo/moSceneEffect.cpp" />
+		<Unit filename="../../libmoldeo/moSceneEffect.h" />
+		<Unit filename="../../libmoldeo/moScript.cpp" />
+		<Unit filename="../../libmoldeo/moScript.h" />
+		<Unit filename="../../libmoldeo/moScriptManager.cpp" />
+		<Unit filename="../../libmoldeo/moScriptManager.h" />
+		<Unit filename="../../libmoldeo/moSequenceEffect.cpp" />
+		<Unit filename="../../libmoldeo/moSequenceEffect.h" />
+		<Unit filename="../../libmoldeo/moShader.cpp" />
+		<Unit filename="../../libmoldeo/moShader.h" />
+		<Unit filename="../../libmoldeo/moShaderCG.cpp" />
+		<Unit filename="../../libmoldeo/moShaderCG.h" />
+		<Unit filename="../../libmoldeo/moShaderGLSL.cpp" />
+		<Unit filename="../../libmoldeo/moShaderGLSL.h" />
+		<Unit filename="../../libmoldeo/moShaderManager.cpp" />
+		<Unit filename="../../libmoldeo/moShaderManager.h" />
+		<Unit filename="../../libmoldeo/moSoundManager.cpp" />
+		<Unit filename="../../libmoldeo/moSoundManager.h" />
+		<Unit filename="../../libmoldeo/moTempo.cpp" />
+		<Unit filename="../../libmoldeo/moTempo.h" />
+		<Unit filename="../../libmoldeo/moText.cpp" />
+		<Unit filename="../../libmoldeo/moText.h" />
+		<Unit filename="../../libmoldeo/moTextFilterParam.cpp" />
+		<Unit filename="../../libmoldeo/moTexture.cpp" />
+		<Unit filename="../../libmoldeo/moTexture.h" />
+		<Unit filename="../../libmoldeo/moTextureFilter.cpp" />
+		<Unit filename="../../libmoldeo/moTextureFilter.h" />
+		<Unit filename="../../libmoldeo/moTextureFilterIndex.cpp" />
+		<Unit filename="../../libmoldeo/moTextureFilterIndex.h" />
+		<Unit filename="../../libmoldeo/moTextureIndex.cpp" />
+		<Unit filename="../../libmoldeo/moTextureIndex.h" />
+		<Unit filename="../../libmoldeo/moTextureManager.cpp" />
+		<Unit filename="../../libmoldeo/moTextureManager.h" />
+		<Unit filename="../../libmoldeo/moThread.cpp" />
+		<Unit filename="../../libmoldeo/moThread.h" />
+		<Unit filename="../../libmoldeo/moTimeManager.cpp" />
+		<Unit filename="../../libmoldeo/moTimeManager.h" />
+		<Unit filename="../../libmoldeo/moTypes.cpp" />
+		<Unit filename="../../libmoldeo/moTypes.h" />
+		<Unit filename="../../libmoldeo/moValue.cpp" />
+		<Unit filename="../../libmoldeo/moValue.h" />
+		<Unit filename="../../libmoldeo/moVdpauGraph.cpp" />
+		<Unit filename="../../libmoldeo/moVdpauGraph.h" />
+		<Unit filename="../../libmoldeo/moVideoGraph.cpp" />
+		<Unit filename="../../libmoldeo/moVideoGraph.h" />
+		<Unit filename="../../libmoldeo/moVideoManager.cpp" />
+		<Unit filename="../../libmoldeo/moVideoManager.h" />
+		<Unit filename="../../libmoldeo/moXmlConfig.cpp" />
+		<Unit filename="../../libmoldeo/moXmlConfig.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="0" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

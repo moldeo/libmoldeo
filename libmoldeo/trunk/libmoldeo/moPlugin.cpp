@@ -32,7 +32,7 @@
 #include "moPlugin.h"
 #include <moPort.h>
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moPluginDefinitions )
 moDefineDynamicArray( moPluginsArray )
 
@@ -153,7 +153,7 @@ LIBMOLDEO_API moEffect* moNewEffect(moText effect_name, moPluginsArray &plugins)
     if(!stricmp(effect_name, "nil")) return NULL;
 
 		#if defined(_WIN32)
-    complete_name = moText("plugins/effects/") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/effects/") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -202,7 +202,7 @@ LIBMOLDEO_API bool moDeleteEffect(moEffect *effect, moPluginsArray &plugins)
     if(!stricmp(effect->GetName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/effects/") + moText(effect->GetName());
+    complete_name = moText(MODULESDIR "/effects/") + moText(effect->GetName());
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif

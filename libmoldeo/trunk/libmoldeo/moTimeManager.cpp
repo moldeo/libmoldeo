@@ -31,7 +31,7 @@
 
 #include "moTimeManager.h"
 
-#include "moArray.cpp"
+#include "moArray.h"
 moDefineDynamicArray( moTimers )
 
 
