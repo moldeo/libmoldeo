@@ -558,12 +558,30 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
         int luaGetTrackerSystemData(moLuaVirtualMachine& vm);
         int luaGetTrackerFeaturesCount(moLuaVirtualMachine& vm);
+        int luaGetTrackerValidFeatures(moLuaVirtualMachine& vm);
         int luaGetTrackerFeature(moLuaVirtualMachine& vm);
         int luaGetTrackerVariance(moLuaVirtualMachine& vm);
         int luaGetTrackerBarycenter(moLuaVirtualMachine& vm);
         int luaGetTrackerAcceleration(moLuaVirtualMachine& vm);
         int luaGetTrackerVelocity(moLuaVirtualMachine& vm);
         int luaGetTrackerZone(moLuaVirtualMachine& vm);
+
+        int luaGetTrackerHistory(moLuaVirtualMachine& vm); ///devuelve la cantidad de records registrados?!
+        int luaStartTrackerHistory(moLuaVirtualMachine& vm); ///arranca la grabacion
+        int luaPauseTrackerHistory(moLuaVirtualMachine& vm);
+        int luaContinueTrackerHistory(moLuaVirtualMachine& vm);
+        int luaStopTrackerHistory(moLuaVirtualMachine& vm);
+        ///Devuelve...el baricentro
+        int luaGetHistoryRecord(moLuaVirtualMachine& vm); ///va de parametro el id del tracker, el id de la instancia
+        int luaGetHistoryBarycenter(moLuaVirtualMachine& vm);
+        ///Devuelve las varianzas
+        int luaGetHistoryVariance(moLuaVirtualMachine& vm);
+        ///Devuelve los rectangulos
+        int luaGetHistoryBounding(moLuaVirtualMachine& vm);
+        ///Devuelve los promedios
+        int luaGetHistoryAverage(moLuaVirtualMachine& vm);
+        ///Devuelve el rectangulo max, min.
+        int luaGetHistoryMinMax(moLuaVirtualMachine& vm);
 
         /** @} */
 

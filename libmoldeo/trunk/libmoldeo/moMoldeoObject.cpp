@@ -529,12 +529,24 @@ void moMoldeoObject::RegisterFunctions()
     ///all values nvalids, nfeatures, barycenter, acceleration, velocity
 	RegisterFunction("GetTrackerSystemData"); //14
 	RegisterFunction("GetTrackerFeaturesCount"); //15
-	RegisterFunction("GetTrackerFeature"); //16
-	RegisterFunction("GetTrackerVariance"); //17
-	RegisterFunction("GetTrackerBarycenter"); //18
-	RegisterFunction("GetTrackerAcceleration"); //19
-	RegisterFunction("GetTrackerVelocity"); //20
-	RegisterFunction("GetTrackerZone"); //21
+	RegisterFunction("GetTrackerValidFeatures"); //16
+	RegisterFunction("GetTrackerFeature"); //17
+	RegisterFunction("GetTrackerVariance"); //18
+	RegisterFunction("GetTrackerBarycenter"); //19
+	RegisterFunction("GetTrackerAcceleration"); //20
+	RegisterFunction("GetTrackerVelocity"); //21
+	RegisterFunction("GetTrackerZone"); //22
+
+	RegisterFunction("GetTrackerHistory"); //23
+	RegisterFunction("StartTrackerHistory"); //24
+	RegisterFunction("PauseTrackerHistory"); //25
+	RegisterFunction("ContinueTrackerHistory"); //26
+	RegisterFunction("StopTrackerHistory"); //27
+	RegisterFunction("GetHistoryRecord"); //28
+	RegisterFunction("GetHistoryVariance"); //29
+	RegisterFunction("GetHistoryBounding"); //30
+	RegisterFunction("GetHistoryAverage"); //31
+	RegisterFunction("GetHistoryMinMax"); //32
 
 }
 
@@ -606,22 +618,60 @@ int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) 
             return luaGetTrackerFeaturesCount(vm);//15
         case 16:
             ResetScriptCalling();
-            return luaGetTrackerFeature(vm);//16
+            return luaGetTrackerValidFeatures(vm);//16
         case 17:
             ResetScriptCalling();
-            return luaGetTrackerVariance(vm);//17
+            return luaGetTrackerFeature(vm);//17
         case 18:
             ResetScriptCalling();
-            return luaGetTrackerBarycenter(vm);//18
+            return luaGetTrackerVariance(vm);//18
         case 19:
             ResetScriptCalling();
-            return luaGetTrackerAcceleration(vm);//19
+            return luaGetTrackerBarycenter(vm);//19
         case 20:
             ResetScriptCalling();
-            return luaGetTrackerVelocity(vm);//20
+            return luaGetTrackerAcceleration(vm);//20
         case 21:
             ResetScriptCalling();
-            return luaGetTrackerZone(vm);//21
+            return luaGetTrackerVelocity(vm);//21
+        case 22:
+            ResetScriptCalling();
+            return luaGetTrackerZone(vm);//22
+
+        case 23:
+            ResetScriptCalling();
+            return luaGetTrackerHistory(vm);//23
+        case 24:
+            ResetScriptCalling();
+            return luaStartTrackerHistory(vm);//24
+        case 25:
+            ResetScriptCalling();
+            return luaPauseTrackerHistory(vm);//25
+        case 26:
+            ResetScriptCalling();
+            return luaContinueTrackerHistory(vm);//26
+        case 27:
+            ResetScriptCalling();
+            return luaStopTrackerHistory(vm);//27
+
+        case 28:
+            ResetScriptCalling();
+            return luaGetHistoryRecord(vm);//28
+        case 29:
+            ResetScriptCalling();
+            return luaGetHistoryBarycenter(vm);//29
+        case 30:
+            ResetScriptCalling();
+            return luaGetHistoryVariance(vm);//30
+        case 31:
+            ResetScriptCalling();
+            return luaGetHistoryBounding(vm);//31
+        case 32:
+            ResetScriptCalling();
+            return luaGetHistoryAverage(vm);//32
+        case 33:
+            ResetScriptCalling();
+            return luaGetHistoryMinMax(vm);//33
 
 	}
     return 0;
@@ -1206,6 +1256,32 @@ int moMoldeoObject::luaGetTrackerFeaturesCount(moLuaVirtualMachine& vm) {
     return 1;
 }
 
+int moMoldeoObject::luaGetTrackerValidFeatures(moLuaVirtualMachine& vm) {
+
+    ///este debería devolver -1 si no existe un dato de trackeo disponible...
+    lua_State *state = (lua_State *) vm;
+    int ft_validcount = 0;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker) {
+            ft_validcount = pTracker->GetValidFeatures();
+        }
+    }
+
+    lua_pushnumber( state, (lua_Number) ft_validcount );
+
+    return 1;
+}
+
 int moMoldeoObject::luaGetTrackerFeature(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
@@ -1390,12 +1466,305 @@ int moMoldeoObject::luaGetTrackerZone(moLuaVirtualMachine& vm) {
         if (pTracker) {
             nitems = pTracker->GetPositionMatrix( pTracker->ZoneToPosition(izone) );
         }
-        return 1;
     }
 
     lua_pushnumber( state, (lua_Number) nitems);
     return 1;
 }
 
+int moMoldeoObject::luaGetTrackerHistory(moLuaVirtualMachine& vm) {
 
+    lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+
+    int nitems;
+    nitems = 0;
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker) {
+            nitems = pTracker->GetHistory().CountRecords();
+        }
+        return 1;
+    }
+
+    lua_pushnumber( state, (lua_Number) nitems);
+    return 1;
+
+}
+
+int moMoldeoObject::luaStartTrackerHistory(moLuaVirtualMachine& vm) {
+     lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+    int maxtime_ms = (int)lua_tonumber( state, 2);
+    int granularity_ms = (int)lua_tonumber( state, 3);
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker) {
+            pTracker->GetHistory().StartRecording(maxtime_ms,granularity_ms);
+        }
+    }
+    return 0;
+}
+
+int moMoldeoObject::luaPauseTrackerHistory(moLuaVirtualMachine& vm) {
+
+    lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker) {
+            pTracker->GetHistory().PauseRecording();
+        }
+    }
+    return 0;
+}
+
+
+int moMoldeoObject::luaContinueTrackerHistory(moLuaVirtualMachine& vm) {
+
+    lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker) {
+            pTracker->GetHistory().ContinueRecording();
+        }
+    }
+
+    return 0;
+}
+int moMoldeoObject::luaStopTrackerHistory(moLuaVirtualMachine& vm) {
+    lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker) {
+            pTracker->GetHistory().StopRecording();
+        }
+    }
+
+    return 0;
+
+}
+int moMoldeoObject::luaGetHistoryRecord(moLuaVirtualMachine& vm) {
+     lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+    int recordindex = (int)lua_tonumber( state, 2);
+
+    moTrackerInstanceRecord IRecord;
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker && recordindex>=0 && recordindex<pTracker->GetHistory().CountRecords()) {
+            IRecord = pTracker->GetHistory().Get( recordindex );
+        }
+    }
+
+    lua_pushnumber( state, (lua_Number) IRecord.m_ValidFeatures);
+    lua_pushnumber( state, (lua_Number) IRecord.m_nFeatures);
+    lua_pushnumber( state, (lua_Number) IRecord.m_SurfaceCovered);
+    lua_pushnumber( state, (lua_Number) IRecord.m_Tick);
+    return 4;
+}
+
+int moMoldeoObject::luaGetHistoryBarycenter(moLuaVirtualMachine& vm) {
+     lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+    int recordindex = (int)lua_tonumber( state, 2);
+
+    moTrackerInstanceRecord IRecord;
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker && recordindex>=0 && recordindex<pTracker->GetHistory().CountRecords()) {
+            IRecord = pTracker->GetHistory().Get( recordindex );
+        }
+    }
+
+    lua_pushnumber( state, (lua_Number) IRecord.m_Barycenter.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_Barycenter.Y());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BarycenterMotion.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BarycenterMotion.Y());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BarycenterAcceleration.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BarycenterAcceleration.Y());
+    return 6;
+}
+
+///Devuelve las varianzas
+int moMoldeoObject::luaGetHistoryVariance(moLuaVirtualMachine& vm) {
+     lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+    int recordindex = (int)lua_tonumber( state, 2);
+
+    moTrackerInstanceRecord IRecord;
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker && recordindex>=0 && recordindex<pTracker->GetHistory().CountRecords()) {
+            IRecord = pTracker->GetHistory().Get( recordindex );
+        }
+    }
+
+    lua_pushnumber( state, (lua_Number) IRecord.m_Variance.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_Variance.Y());
+    lua_pushnumber( state, (lua_Number) IRecord.m_SpeedVariance.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_SpeedVariance.Y());
+    lua_pushnumber( state, (lua_Number) IRecord.m_AccelerationVariance.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_AccelerationVariance.Y());
+    return 6;
+
+}
+
+///Devuelve los rectangulos
+int moMoldeoObject::luaGetHistoryBounding(moLuaVirtualMachine& vm) {
+     lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+    int recordindex = (int)lua_tonumber( state, 2);
+
+    moTrackerInstanceRecord IRecord;
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker && recordindex>=0 && recordindex<pTracker->GetHistory().CountRecords()) {
+            IRecord = pTracker->GetHistory().Get( recordindex );
+        }
+    }
+
+    lua_pushnumber( state, (lua_Number) IRecord.m_BoundingRectangle.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BoundingRectangle.Y());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BoundingRectangle.Z());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BoundingRectangle.Z());
+    lua_pushnumber( state, (lua_Number) IRecord.m_BoundingRectangleAngle );
+    lua_pushnumber( state, (lua_Number) IRecord.m_BlobCandidates );
+    return 6;
+
+}
+
+///Devuelve los promedios
+int moMoldeoObject::luaGetHistoryAverage(moLuaVirtualMachine& vm) {
+     lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+    int recordindex = (int)lua_tonumber( state, 2);
+
+    moTrackerInstanceRecord IRecord;
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker && recordindex>=0 && recordindex<pTracker->GetHistory().CountRecords()) {
+            IRecord = pTracker->GetHistory().Get( recordindex );
+        }
+    }
+
+    lua_pushnumber( state, (lua_Number) IRecord.m_AbsoluteSpeedAverage);
+    lua_pushnumber( state, (lua_Number) IRecord.m_AbsoluteAccelerationAverage);
+    lua_pushnumber( state, (lua_Number) IRecord.m_AbsoluteTorqueAverage);
+    return 3;
+
+}
+
+///Devuelve el rectangulo max, min.
+int moMoldeoObject::luaGetHistoryMinMax(moLuaVirtualMachine& vm) {
+
+     lua_State *state = (lua_State *) vm;
+
+    moTrackerSystemData* pTracker = NULL;
+
+    int trackerindex = (int)lua_tonumber( state, 1);
+    int recordindex = (int)lua_tonumber( state, 2);
+
+    moTrackerInstanceRecord IRecord;
+
+    moInlet* pInlet = NULL;
+
+    pInlet = m_Inlets[trackerindex];
+
+    if (pInlet && pInlet->Updated()) {
+        pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
+        if (pTracker && recordindex>=0 && recordindex<pTracker->GetHistory().CountRecords()) {
+            IRecord = pTracker->GetHistory().Get( recordindex );
+        }
+    }
+
+    lua_pushnumber( state, (lua_Number) IRecord.m_Min.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_Min.Y());
+    lua_pushnumber( state, (lua_Number) IRecord.m_Max.X());
+    lua_pushnumber( state, (lua_Number) IRecord.m_Max.Y());
+    return 4;
+
+}
 
