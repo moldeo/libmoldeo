@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
 
 *******************************************************************************/
 
@@ -35,7 +34,146 @@
 moDefineDynamicArray( moTuioCursorArray )
 moDefineDynamicArray( moTuioObjectArray )
 moDefineDynamicArray( moTrackerFeatureArray )
+moDefineDynamicArray( moTrackerInstanceRecords );
 
+
+moTrackerInstanceRecord::moTrackerInstanceRecord() {
+
+}
+
+moTrackerInstanceRecord & moTrackerInstanceRecord::operator = (const moTrackerInstanceRecord &src) {
+
+  m_Variance = src.m_Variance;
+  m_SpeedVariance = src.m_SpeedVariance;
+  m_AccelerationVariance = src.m_AccelerationVariance;
+
+  m_BoundingRectangle = src.m_BoundingRectangle;
+  m_BoundingRectangleAngle = src.m_BoundingRectangleAngle;
+  m_BlobCandidates =  src.m_BlobCandidates;
+
+  m_AbsoluteSpeedAverage =  src.m_AbsoluteSpeedAverage;
+  m_AbsoluteAccelerationAverage =  src.m_AbsoluteAccelerationAverage;
+  m_AbsoluteTorqueAverage =  src.m_AbsoluteTorqueAverage;
+
+  m_Barycenter =  src.m_Barycenter;
+  m_BarycenterMotion =  src.m_BarycenterMotion;
+  m_BarycenterAcceleration =  src.m_BarycenterAcceleration;
+
+
+  m_Max = src.m_Max;
+  m_Min = src.m_Min;
+
+  m_nFeatures = src.m_nFeatures;
+  m_SurfaceCovered = src.m_SurfaceCovered;
+  m_Tick = src.m_Tick;
+  m_ValidFeatures = src.m_ValidFeatures;
+}
+
+moTrackerSystemHistory::moTrackerSystemHistory() {
+  m_MaxTime = 60000;
+  m_Granularity = 33;
+  m_RecordFactor = m_MaxTime / m_Granularity;
+}
+
+moTrackerSystemHistory::~moTrackerSystemHistory() {
+
+}
+
+void
+moTrackerSystemHistory::StartRecording( long maxtime, long granularity ) {
+
+  if ( !m_Timer.Started() ) {
+    m_Timer.Start();
+
+    ///tiempo máximo de duracion de la grabacion
+    m_MaxTime = maxtime;
+
+    ///granularidad de la grabacion ( 30 ms [tiempo ] )
+    m_Granularity = granularity;
+
+    m_RecordFactor =  m_MaxTime / m_Granularity;
+
+    m_History.Empty();
+
+    moTrackerInstanceRecord dummyRec;
+
+    m_History.Init( (int)(m_RecordFactor)+1, dummyRec );
+  } else {
+    m_Timer.Continue();
+  }
+
+}
+
+void
+moTrackerSystemHistory::ContinueRecording() {
+  m_Timer.Continue();
+}
+
+long  moTrackerSystemHistory::CountRecords() {
+  return m_nRecorded;
+}
+
+
+void
+moTrackerSystemHistory::Record( moTrackerInstanceRecord& p_InstanceRecord, long p_Tick ) {
+
+  double rec_pos = 0;
+  long rec_posl = 0;
+  if (m_Timer.Started()) {
+
+      if ( p_Tick<0 || p_InstanceRecord.m_Tick<0) p_InstanceRecord.m_Tick = p_Tick;
+
+      if ( m_History.Count()==0 ) {
+
+        m_History.Add( p_InstanceRecord );
+
+      } else {
+
+        rec_pos = (double) ( p_InstanceRecord.m_Tick / m_Granularity );
+
+        rec_posl = (long)rec_pos;
+
+        if ( rec_posl < m_History.Count() ) {
+          m_History.Set( rec_posl, p_InstanceRecord );
+          m_nRecorded = rec_posl+1;
+        }
+
+      }
+  }
+}
+
+void moTrackerSystemData::Record() {
+
+   m_History.Record( m_ActualRecord );
+
+}
+
+///Util cuando no hay señales interesantes...
+void
+moTrackerSystemHistory::PauseRecording() {
+  m_Timer.Pause();
+}
+
+void
+moTrackerSystemHistory::StopRecording() {
+  m_Timer.Stop();
+}
+
+void
+moTrackerSystemHistory::Reset() {
+  m_Timer.Stop();
+  m_History.Empty();
+}
+
+bool
+moTrackerSystemHistory::SaveToFile( moText filename ) {
+    return false;
+}
+
+bool
+moTrackerSystemHistory::SaveToXML( moText filename ) {
+  return false;
+}
 
 
 moTUIOSystemData::moTUIOSystemData() {
@@ -439,7 +577,7 @@ moTrackerSystemData::moTrackerSystemData() {
         m_CircularPositionMatrix =  new int [m_Zones];
         m_CircularMotionMatrix =  new int [m_Zones];
         m_Features.Init( 0, NULL );
-        m_nFeatures = 0;
+        m_ActualRecord.m_nFeatures = 0;
 
         m_Distancias = NULL;
         m_Pares = NULL;
@@ -459,7 +597,7 @@ moTrackerSystemData::moTrackerSystemData( int ZoneW, int ZoneH ) {
         m_CircularPositionMatrix =  new int [m_Zones];
         m_CircularMotionMatrix =  new int [m_Zones];
         m_Features.Init( 0, NULL );
-        m_nFeatures = 0;
+        m_ActualRecord.m_nFeatures = 0;
 
         m_Distancias = NULL;
         m_Pares = NULL;
@@ -493,19 +631,19 @@ moTrackerSystemData::~moTrackerSystemData() {
 }
 
 void moTrackerSystemData::SetMax( float x, float y ) {
-    m_Max = moVector2f(x,y);
+    m_ActualRecord.m_Max = moVector2f(x,y);
 }
 
 void moTrackerSystemData::SetMin( float x, float y ) {
-    m_Min = moVector2f(x,y);
+    m_ActualRecord.m_Min = moVector2f(x,y);
 }
 
 moVector2f moTrackerSystemData::GetMax() {
-    return m_Max;
+    return m_ActualRecord.m_Max;
 }
 
 moVector2f moTrackerSystemData::GetMin() {
-    return m_Min;
+    return m_ActualRecord.m_Min;
 }
 
 int moTrackerSystemData::GetFeaturesCount() {
@@ -521,24 +659,35 @@ moTrackerFeatureArray& moTrackerSystemData::GetFeatures() {
 }
 
 moVector2f moTrackerSystemData::GetBarycenter() {
-        return m_Barycenter;
+        return m_ActualRecord.m_Barycenter;
 }
 
 moVector2f moTrackerSystemData::GetBarycenterMotion() {
-        return m_BarycenterMotion;
+        return m_ActualRecord.m_BarycenterMotion;
 }
 
 moVector2f moTrackerSystemData::GetBarycenterAcceleration() {
-        return m_BarycenterAcceleration;
+        return m_ActualRecord.m_BarycenterAcceleration;
 }
 
 moVector2f moTrackerSystemData::GetVariance() {
-        return m_Variance;
+        return m_ActualRecord.m_Variance;
 }
 
+moVector2f moTrackerSystemData::GetSpeedVariance() {
+    return m_ActualRecord.m_SpeedVariance;
+}
+
+moVector2f moTrackerSystemData::GetAccelerationVariance() {
+  return m_ActualRecord.m_AccelerationVariance;
+}
+
+moVector4f moTrackerSystemData::GetBoundingRectangle() {
+  return m_ActualRecord.m_BoundingRectangle;
+}
 
 int moTrackerSystemData::GetValidFeatures() {
-        return m_ValidFeatures;
+        return m_ActualRecord.m_ValidFeatures;
 }
 
 void moTrackerSystemData::ResetMatrix() {
@@ -582,7 +731,7 @@ int moTrackerSystemData::PositionToZoneC( float x, float y )  {
         float MaxRadius;
         moVector2f MaxCuad;
 
-        PosRePos = moVector2f( x - m_Barycenter.X(), y - m_Barycenter.Y() );
+        PosRePos = moVector2f( x - m_ActualRecord.m_Barycenter.X(), y - m_ActualRecord.m_Barycenter.Y() );
 
         if ( PosRePos.X() > 0 && PosRePos.Y() >= 0 ) {
             Teta = atan( PosRePos.Y() / PosRePos.X() );
@@ -598,7 +747,7 @@ int moTrackerSystemData::PositionToZoneC( float x, float y )  {
 
         Radius = PosRePos.Length();
 
-        MaxCuad = ( m_Max - m_Min ) ;
+        MaxCuad = ( m_ActualRecord.m_Max - m_ActualRecord.m_Min ) ;
         MaxRadius = fabs( MaxCuad.Length() / 2.0); ///&????
         ( MaxRadius > 0 ) ? MaxRadius = MaxRadius : MaxRadius = 1.5; ///sqrt(2)
 
@@ -620,9 +769,9 @@ moVector2f moTrackerSystemData::ZoneToPositionC( int zone ) {
         int j = zone / m_ZoneW;
         int i = zone - j*m_ZoneW;
 
-        PosRePos = moVector2f( m_Barycenter.X(), m_Barycenter.Y() );
+        PosRePos = moVector2f( m_ActualRecord.m_Barycenter.X(), m_ActualRecord.m_Barycenter.Y() );
 
-        MaxCuad = ( m_Max - m_Min ) ;
+        MaxCuad = ( m_ActualRecord.m_Max - m_ActualRecord.m_Min ) ;
         MaxRadius = fabs( MaxCuad.Length() / 2.0 ); ///&????
         ( MaxRadius > 0 ) ? MaxRadius = MaxRadius : MaxRadius = 1.5; ///sqrt(2)
 
