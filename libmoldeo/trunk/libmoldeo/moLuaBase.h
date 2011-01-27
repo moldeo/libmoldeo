@@ -142,7 +142,7 @@ protected:
  * Clase que encapsula una implementación de un debugger para la máquina virtual de LUA.
  */
 
-class LIBMOLDEO_API moLuaDebugger
+class LIBMOLDEO_API moLuaDebugger : public moAbstract
 {
 public:
     /**
