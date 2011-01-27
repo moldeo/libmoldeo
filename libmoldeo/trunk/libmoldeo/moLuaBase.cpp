@@ -415,20 +415,20 @@ void moLuaDebugger::ErrorRun (int iErrorCode)
    {
    case LUA_ERRRUN:
       printf ("LUA_ERRRUN\n");
-	  if (MODebug != NULL) MODebug->Push("LUA_ERRRUN");
+	  if (MODebug2 != NULL) MODebug2->Error("LUA_ERRRUN");
       break;
    case LUA_ERRMEM:
       printf ("LUA_ERRMEM\n");
-	  if (MODebug != NULL) MODebug->Push("LUA_ERRMEM");
+	  if (MODebug2 != NULL) MODebug2->Error("LUA_ERRMEM");
       break;
    case LUA_ERRERR:
       printf ("LUA_ERRERR\n");
-	  if (MODebug != NULL) MODebug->Push("LUA_ERRERR");
+	  if (MODebug2 != NULL) MODebug2->Error("LUA_ERRERR");
       break;
    }
 
    // Get the error string that appears on top of stack when a function
    // fails to run
    printf ("LUA Error: %s\n", lua_tostring ((lua_State *) m_vm, -1));
-   if (MODebug != NULL) MODebug->Push(moText("LUA Error: ") + moText((char*)lua_tostring ((lua_State *) m_vm, -1)));
+   if (MODebug2!= NULL) MODebug2->Error(moText("LUA Error: ") + moText((char*)lua_tostring ((lua_State *) m_vm, -1)));
 }
