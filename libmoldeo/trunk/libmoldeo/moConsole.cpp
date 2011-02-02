@@ -1328,6 +1328,7 @@ moConsole::Finish() {
 	m_Config.DeleteConfig();//finally we unload the console configuration
 
 	m_bInitialized = false;
+	m_bConnectorsLoaded = false;
 
 	return true;
 }
