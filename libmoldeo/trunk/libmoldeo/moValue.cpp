@@ -339,13 +339,13 @@ moData::SetMessages( moDataMessages *p_datamessages ) {
 	m_Number.m_Pointer = (MOpointer) p_datamessages;
 }
 
-/*
+
 void
 moData::SetSound( moSound*	p_Sound ) {
 	m_DataType = MO_DATA_SOUNDSAMPLE;
 	m_Number.m_Pointer = (MOpointer) p_Sound;
 }
-*/
+
 
 moVector2d *
 moData::Vector2d() {

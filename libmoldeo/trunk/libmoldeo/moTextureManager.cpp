@@ -446,7 +446,9 @@ moTextureManager::moTextureManager()
 {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_TEXTURE );
-	SetName("Texture Manager");
+
+	SetName("texturemanager");
+  SetLabelName("texturemanager");
 
     // In your main program ...
     FreeImage_SetOutputMessage(FreeImageErrorHandler);

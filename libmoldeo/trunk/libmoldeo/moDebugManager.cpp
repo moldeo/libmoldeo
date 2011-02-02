@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -43,7 +43,8 @@ moDebugManager::moDebugManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_DEBUG );
 
-	SetName("Debug Manager");
+	SetName("debugmanager");
+	SetLabelName("debugmanager");
 
 }
 

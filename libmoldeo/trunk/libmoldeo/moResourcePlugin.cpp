@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -244,16 +244,16 @@ LIBMOLDEO_API bool moDeleteResource(moResource *Resource, moResourcePluginsArray
     // a partir del nombre del efecto.
     moText complete_name;
 
-    if(!stricmp(Resource->GetResourceName(), "")) return false;
+    //if(!stricmp(Resource->GetResourceName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/resources/") + moText(Resource->GetResourceName());
+    complete_name = moText(MODULESDIR "/resources/") + moText(Resource->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name =  moText(MODULESDIR "/resources/libmod_") +  moText(Resource->GetResourceName());
+    complete_name =  moText(MODULESDIR "/resources/libmod_") +  moText(Resource->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

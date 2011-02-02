@@ -38,7 +38,30 @@ moDefineDynamicArray( moTrackerInstanceRecords );
 
 
 moTrackerInstanceRecord::moTrackerInstanceRecord() {
+  m_Variance = moVector2f(0,0);
+  m_SpeedVariance = moVector2f(0,0);
+  m_AccelerationVariance = moVector2f(0,0);
 
+  m_BoundingRectangle = moVector4f(0,0,0,0);
+  m_BoundingRectangleAngle = 0.0;
+  m_BlobCandidates =  0;
+
+  m_AbsoluteSpeedAverage =  0;
+  m_AbsoluteAccelerationAverage =  0;
+  m_AbsoluteTorqueAverage =  0;
+
+  m_Barycenter =  moVector2f(0,0);
+  m_BarycenterMotion =  moVector2f(0,0);
+  m_BarycenterAcceleration =  moVector2f(0,0);
+
+
+  m_Max = moVector2f(0,0);
+  m_Min = moVector2f(0,0);
+
+  m_nFeatures = 0;
+  m_SurfaceCovered = 0;
+  m_Tick = -1;
+  m_ValidFeatures = 0;
 }
 
 moTrackerInstanceRecord & moTrackerInstanceRecord::operator = (const moTrackerInstanceRecord &src) {
@@ -98,6 +121,9 @@ moTrackerSystemHistory::StartRecording( long maxtime, long granularity ) {
     moTrackerInstanceRecord dummyRec;
 
     m_History.Init( (int)(m_RecordFactor)+1, dummyRec );
+
+    MODebug2->Message("Tracker History Started with" + IntToStr(m_History.Count()) + " records in max " + IntToStr(m_MaxTime) + " ms." );
+
   } else {
     m_Timer.Continue();
   }
@@ -107,6 +133,7 @@ moTrackerSystemHistory::StartRecording( long maxtime, long granularity ) {
 void
 moTrackerSystemHistory::ContinueRecording() {
   m_Timer.Continue();
+  MODebug2->Message("Tracker History Resumed");
 }
 
 long  moTrackerSystemHistory::CountRecords() {
@@ -119,14 +146,19 @@ moTrackerSystemHistory::Record( moTrackerInstanceRecord& p_InstanceRecord, long 
 
   double rec_pos = 0;
   long rec_posl = 0;
+
   if (m_Timer.Started()) {
 
-      if ( p_Tick<0 || p_InstanceRecord.m_Tick<0) p_InstanceRecord.m_Tick = p_Tick;
+
+      if ( p_Tick>=0 && p_InstanceRecord.m_Tick<0) p_InstanceRecord.m_Tick = p_Tick;
+      else if ( p_Tick == -1 ) {
+          p_InstanceRecord.m_Tick = m_Timer.Duration();
+      }
 
       if ( m_History.Count()==0 ) {
 
         m_History.Add( p_InstanceRecord );
-
+        //MODebug2->Message("Tracker History Record Added at the end.");
       } else {
 
         rec_pos = (double) ( p_InstanceRecord.m_Tick / m_Granularity );
@@ -136,6 +168,7 @@ moTrackerSystemHistory::Record( moTrackerInstanceRecord& p_InstanceRecord, long 
         if ( rec_posl < m_History.Count() ) {
           m_History.Set( rec_posl, p_InstanceRecord );
           m_nRecorded = rec_posl+1;
+          //MODebug2->Message("Tracker History Record Added at "+IntToStr(rec_posl));
         }
 
       }
@@ -152,17 +185,20 @@ void moTrackerSystemData::Record() {
 void
 moTrackerSystemHistory::PauseRecording() {
   m_Timer.Pause();
+  MODebug2->Message("Tracker History Recording Paused.");
 }
 
 void
 moTrackerSystemHistory::StopRecording() {
   m_Timer.Stop();
+  MODebug2->Message("Tracker History Recording Stopped.");
 }
 
 void
 moTrackerSystemHistory::Reset() {
   m_Timer.Stop();
   m_History.Empty();
+  MODebug2->Message("Tracker History Recording Reset.");
 }
 
 bool
@@ -1295,6 +1331,47 @@ moTrackerFeature::~moTrackerFeature()
 {
 }
 
+
+moTrackerFeature & moTrackerFeature::operator = (const moTrackerFeature &src) {
+
+  x = src.x;
+  y =  src.y;
+
+  normx = src.normx;
+  normy = src.normy;
+
+  tr_x = src.tr_x;
+  tr_y = src.tr_y;
+
+  v_x = src.v_x;
+  v_y = src.v_y;
+  vp_x = src.vp_x;
+  vp_y = src.vp_y;
+  a_x = src.a_x;
+  a_y = src.a_y;
+  ap_x = src.ap_x;
+  ap_y = src.ap_y;
+  t_x = src.t_x;
+  t_y = src.t_y;
+
+  val = src.val;
+  valid = src.valid;
+
+  track = src.track;
+
+  FeaturesCaptured = src.FeaturesCaptured;
+  Parent = src.Parent;
+
+  is_object = src.is_object;
+  is_parent = src.is_parent;
+  is_cursor = src.is_cursor;
+  stime = src.stime;
+  sframe = src.sframe;
+  utime = src.utime;
+  uframe = src.uframe;
+
+}
+
 /*!
 \fn void GpuKLT_Feature::print();
 \brief Display Feature Details
@@ -1386,7 +1463,8 @@ moFilterManager::moFilterManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_FILTER );
 
-	SetName("Filter Manager");
+	SetName("filtermanager");
+	SetLabelName("filtermanager");
 
 }
 

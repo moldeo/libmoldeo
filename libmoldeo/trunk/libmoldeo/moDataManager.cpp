@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -193,7 +193,8 @@ moDataManager::moDataManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_DATA );
 
-	SetName("Data Manager");
+	SetName("datamanager");
+	SetLabelName("datamanager");
 
 	m_pDataSession = NULL;
     m_pDataSessionConfig = NULL;

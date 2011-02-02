@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -738,7 +738,8 @@ moFileManager::moFileManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_FILE );
 
-	SetName("File Manager");
+	SetName("filemanager");
+	SetLabelName("filemanager");
 
 }
 

@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -377,6 +377,14 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		virtual MOboolean Init( moResourceManager* p_pResources );
 
 		/**
+		* Carga los parámetros con información del resourcemanager y resuelve la creación de los conectores
+		* correspondientes.
+		* Atención  :CreateCOnnectors siempre debe llamarse despues del Init() y asegurándose de
+		* que el m_pResourceManager no sea nulo y esté inicializado.
+		*/
+		virtual MOboolean CreateConnectors();
+
+		/**
 		 * método de actualización de datos del objeto.
 		 * @param p_EventList puntero a la lista de eventos.
 		 */
@@ -523,6 +531,8 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/// Conectores de entrada, Arreglo de moInlet's
 		moInlets				m_Inlets;
 
+		MOboolean m_bConnectorsLoaded;
+
     private:
 
         /** \defgroup luascript Funciones accesibles por scripting de LUA */
@@ -530,6 +540,9 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
         /// Función de impresión de cadena de carácteres cómoda para la depuración
         int luaPushDebugString(moLuaVirtualMachine& vm);
+
+        /// Devuelve el objeto de moResourceManager para el manejo de recursos: texturas, videos, archivos, etc..
+        int luaGetResourceManager(moLuaVirtualMachine& vm);
 
         /// \if spanish Fija la preconfiguración de este objeto \endif \if english Set the preconfiguration value of this object \endif
         int luaSetPreconf(moLuaVirtualMachine& vm);

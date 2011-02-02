@@ -51,15 +51,210 @@ moDefineDynamicArray(moSoundBufferArray)
     //#include <alext.h>
 #endif
 
+
 moSound::moSound() {
-	pData = NULL;
+
+	SetName("");
+	SetFileName("");
+	m_pAudioGraph = NULL;
+	m_pAudioGraph = new moGsGraph();
 }
 
 moSound::~moSound() {
 	Finish();
 }
 
+
 MOboolean moSound::Finish() {
+  if (m_pAudioGraph) {
+    delete m_pAudioGraph;
+    m_pAudioGraph = NULL;
+  }
+
+}
+
+MOboolean moSound::Init() {
+
+  if (m_pAudioGraph) {
+    moAbstract::m_bInitialized = m_pAudioGraph->InitGraph();
+  }
+  return m_bInitialized;
+}
+
+		moText moSound::GetName() {
+		  return m_SoundName;
+		}
+
+		void moSound::SetName( moText name ) {
+      m_SoundName = name;
+		}
+
+		moText moSound::GetFileName() {
+		  return m_FileName;
+		}
+
+		void moSound::SetFileName( moText filename ) {
+        m_FileName = filename;
+		}
+
+		moSoundType moSound::GetType() {
+		  return m_SoundType;
+    }
+
+    MOboolean moSound::LoadFromFile( moText filename ) {
+      if (m_pAudioGraph) {
+        if (m_pAudioGraph->Initialized()) {
+          if (m_pAudioGraph->BuildLiveSound( filename )) {
+            SetFileName(filename);
+            return true;
+          }
+        } else {
+            MODebug2->Error("moSound::LoadFromFile >  Error: AudioGraph not initialized.");
+        }
+      }
+      return false;
+    }
+
+    MOboolean moSound::SupportedFile(moText p_filename) {
+      return true;
+    }
+
+void moSound::Play() {
+  if (m_pAudioGraph)
+    m_pAudioGraph->Play();
+}
+
+void moSound::Pause() {
+  if (m_pAudioGraph)
+    m_pAudioGraph->Pause();
+}
+
+void moSound::Stop() {
+  if (m_pAudioGraph)
+    m_pAudioGraph->Stop();
+}
+
+
+void moSound::Rewind()  {
+  if (m_pAudioGraph)
+    m_pAudioGraph->Stop();
+}
+
+
+moStreamState moSound::State()  {
+  if (m_pAudioGraph)
+    return m_pAudioGraph->GetState();
+}
+
+
+void moSound::Update()  {
+ // if (m_pAudioGraph)
+ //   m_pAudioGraph->Stop();
+}
+
+
+
+void moSound::SetVolume( float gain )  {
+  if (m_pAudioGraph)
+    m_pAudioGraph->SetVolume(gain);
+
+  m_Volume = gain;
+
+}
+
+
+float moSound::GetVolume()  {
+    return m_Volume;
+
+}
+
+
+void moSound::SetPitch( float pitch )  {
+  if (m_pAudioGraph) {
+    m_pAudioGraph->SetPitch(pitch);
+    m_Pitch = pitch;
+  }
+
+}
+
+
+float moSound::GetPitch()  {
+    return m_Pitch;
+}
+
+
+void moSound::SetBalance( float balance )  {
+  if (m_pAudioGraph) {
+    m_pAudioGraph->SetBalance( balance );
+    m_Balance = balance;
+  }
+}
+
+
+float moSound::GetBalance()  {
+    return m_Balance;
+}
+
+
+
+void moSound::SetEchoDelay( float delay )  {
+
+  if (m_pAudioGraph) {
+    m_pAudioGraph->SetEchoDelay(delay);
+    m_EchoDelay = delay;
+  }
+}
+
+
+float moSound::GetEchoDelay()  {
+    return m_EchoDelay;
+}
+
+
+void moSound::SetEchoIntensity( float intensity )  {
+  if (m_pAudioGraph) {
+    m_pAudioGraph->SetEchoIntensity(intensity);
+    m_EchoIntensity = intensity;
+  }
+}
+
+
+float moSound::GetEchoIntensity()  {
+ return m_EchoIntensity;
+}
+
+
+void moSound::SetEchoFeedback( float feedback )  {
+  if (m_pAudioGraph) {
+    m_pAudioGraph->SetEchoFeedback(feedback);
+    m_EchoFeedback = feedback;
+  }
+}
+
+
+float moSound::GetEchoFeedback()  {
+ return m_EchoFeedback;
+}
+
+
+
+
+
+/**-------------------------------------------------
+
+  OpenAl Sound - 3D + FX
+
+-------------------------------------------------*/
+
+moSound3D::moSound3D() {
+	pData = NULL;
+}
+
+moSound3D::~moSound3D() {
+	Finish();
+}
+
+MOboolean moSound3D::Finish() {
 	// Clean up by deleting Source(s) and Buffer(s)
 	alSourceStop(m_SourceId);
 	alSourcei(m_SourceId, AL_BUFFER, 0);
@@ -69,18 +264,16 @@ MOboolean moSound::Finish() {
 }
 
 
-MOboolean moSound::Init(moText p_name, MOuint p_moid, moSoundType p_type, moResourceManager* p_res, moSoundParam p_param ) {
-    m_name = p_name;
+MOboolean moSound3D::Init() {
 	m_BufferSize = 0;
 	m_ActualSample = 0;
 	m_OldSample = 0;
-	m_SoundType = p_type;
 	return true;
 }
 
 
 MOboolean
-moSound::BuildEmpty( MOuint p_size ) {
+moSound3D::BuildEmpty( MOuint p_size ) {
 
 	// Generate an AL Buffer
 	alGenBuffers( 1, &m_BufferId );
@@ -92,13 +285,13 @@ moSound::BuildEmpty( MOuint p_size ) {
 }
 
 MOboolean
-moSound::BuildFromBuffer( MOuint p_size, GLvoid* p_buffer ) {
+moSound3D::BuildFromBuffer( MOuint p_size, GLvoid* p_buffer ) {
 	BuildEmpty(p_size);
 	return true;
 }
 
 MOboolean
-moSound::BuildFromFile( moText p_filename ) {
+moSound3D::BuildFromFile( moText p_filename ) {
 
 	BuildEmpty(0);
 
@@ -131,13 +324,13 @@ moSound::BuildFromFile( moText p_filename ) {
 
 }
 
-void moSound::Play() {
+void moSound3D::Play() {
 	// Start playing source
 	alSourcePlay(m_SourceId);
 }
 
 
-void moSound::PlaySample( MOint sampleid ) {
+void moSound3D::PlaySample( MOint sampleid ) {
 
 	m_OldSample = m_ActualSample;
 
@@ -155,73 +348,101 @@ void moSound::PlaySample( MOint sampleid ) {
 
 }
 
-void moSound::Pause() {
+void moSound3D::Pause() {
 	alSourcePause(m_SourceId);
 }
 
-void moSound::Stop() {
+void moSound3D::Stop() {
 	// Stop the Source and clear the Queue
 	alSourceStop(m_SourceId);
 
 }
 
-void moSound::Rewind() {
+void moSound3D::Rewind() {
 	alSourceRewind(m_SourceId);
 }
 
 
-void moSound::Final() {
+void moSound3D::Final() {
 
 	Update();
 }
 
-void moSound::Frame(int frame) {
+void moSound3D::Frame(int frame) {
 	Update();
 }
 
-void moSound::Repeat(int repeat) {
+void moSound3D::Repeat(int repeat) {
 
 }
 
-MOint moSound::State() {
+moStreamState moSound3D::State() {
 	// Get Source State
-	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_State);
-	return m_State;
+	int m_iAlState;
+	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_iAlState);
+	switch(m_iAlState) {
+      case AL_INITIAL:
+        return MO_STREAMSTATE_READY;
+        break;
+
+      case AL_PLAYING:
+        return MO_STREAMSTATE_PLAYING;
+        break;
+
+      case AL_PAUSED:
+        return MO_STREAMSTATE_PAUSED;
+        break;
+
+      case AL_STOPPED:
+        return MO_STREAMSTATE_STOPPED;
+        break;
+	}
+  return MO_STREAMSTATE_UNKNOWN;
 }
 
-void moSound::Update() {
-	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_State );
+void moSound3D::Update() {
+	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_iAlState );
 	alGetSourcei( m_SourceId, AL_BUFFER /*AL_BYTE_OFFSET*/, &m_ActualSample );
 }
 
-void moSound::SetPosition( float x, float y, float z ) {
+void moSound3D::SetPosition( float x, float y, float z ) {
 
 	alSource3f( m_SourceId, AL_POSITION, x, y, z );
 
 }
 
-void moSound::SetVelocity( float x, float y, float z ) {
+void moSound3D::SetVelocity( float x, float y, float z ) {
 
 	alSource3f( m_SourceId, AL_VELOCITY, x, y, z );
 
 }
 
-void moSound::SetDirection( float x, float y, float z ) {
+void moSound3D::SetDirection( float x, float y, float z ) {
 
 	alSource3f( m_SourceId, AL_DIRECTION, x, y, z );
 
 }
 
-void moSound::SetVolume( float gain ) {
-	GetVolume();
-	alSourcef( m_SourceId, AL_GAIN, (m_Gain+gain) );
+void moSound3D::SetVolume( float volume ) {
+	alSourcef( m_SourceId, AL_GAIN, volume );
 }
 
-float moSound::GetVolume() {
+float moSound3D::GetVolume() {
 
-	alGetSourcef( m_SourceId, AL_GAIN, &m_Gain );
-	return m_Gain;
+	alGetSourcef( m_SourceId, AL_GAIN, &m_Volume );
+	return m_Volume;
 
+}
+
+void moSound3D::SetPitch( float pitch )  {
+    m_Pitch = pitch;
+    alSourcef(m_SourceId, AL_PITCH, pitch);
+}
+
+
+float moSound3D::GetPitch()  {
+  alGetSourcef( m_SourceId, AL_PITCH, &m_Pitch );
+  return m_Pitch;
 }
 
 
@@ -245,7 +466,9 @@ void moSoundEffect::GetParameterF( ALenum param, ALfloat *pflValue ) {
 moSoundManager::moSoundManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_SOUND );
+
 	SetName("soundmanager");
+	SetLabelName("soundmanager");
 }
 
 
@@ -256,20 +479,10 @@ moSoundManager::~moSoundManager() {
 
 MOboolean moSoundManager::Init() {
 
-	moText confignamecompleto;
-
 	if (!m_pResourceManager) return false;
 
-	confignamecompleto = m_pResourceManager->GetDataMan()->GetDataPath();
-	confignamecompleto +=  moText("/") + (const moText)GetConfigName();
-    confignamecompleto +=  moText(".cfg");
-/*
-	if(m_Config.LoadConfig(confignamecompleto) != MO_CONFIG_OK ) {
-    MODebug->Push(moText("ERROR: Config file not found."));
-		cout << "Error moSoundManager :"<< confignamecompleto << " invalid" << endl;
-		return false;//bad
-	}
-	*/
+  moResource::Init();
+
 #ifdef MO_WIN32
     #ifdef MO_USING_VC
 	ALenum			eBufferFormat = 0;
@@ -338,6 +551,11 @@ moSoundManager::GetEffects() {
 
 }
 
+int moSoundManager::GetSoundCount() {
+  return m_sounds_array.Count();
+}
+
+
 moSound* moSoundManager::GetSound( MOuint id) {
 
 	if (id>0 && id<m_sounds_array.Count()) {
@@ -348,9 +566,10 @@ moSound* moSoundManager::GetSound( MOuint id) {
 }
 
 moSound* moSoundManager::GetSound( moText p_name) {
+
 	int id;
 
-        moText text;
+  moText text;
 
 	id = GetSoundId( p_name);
 
@@ -382,13 +601,20 @@ moSoundManager::GetSoundId( moText p_name ) {
 	if (!m_pResourceManager) return MO_SOUNDERROR;
 
 	moText namefull = m_pResourceManager->GetDataMan()->GetDataPath();
-	namefull +=  moText("/") + (const moText)p_name;
+	namefull +=  moSlash + (const moText)p_name;
+
 	moSoundParam sparam = MODefSoundParams ;
-	moSound* psound = CreateSound( namefull, stype, sparam);
-	if (psound!=NULL) {
-		psound->BuildFromFile(namefull);
-		m_sounds_array.Add(psound);
+	moSound* pSound = CreateSound( p_name );
+
+	if (pSound) {
+
+		pSound->LoadFromFile( namefull );
+
+		m_sounds_array.Add(pSound);
+
 		idnuevo = m_sounds_array.Count() - 1;
+	} else {
+	  idnuevo = 65535;
 	}
 	//si es superior a 65535 es un error
 	return(idnuevo);
@@ -409,18 +635,18 @@ moSoundManager::GetTypeForFile( moText p_name ) {
 		} else return MO_SOUNDTYPE_UNDEFINED;
 }
 
-moSound* moSoundManager::CreateSound( moText p_name, moSoundType p_type, moSoundParam p_param ) {
+moSound* moSoundManager::CreateSound( moText p_name ) {
 
-	MOuint idnuevo;
-	moText namefull; //con path relativo al raiz
-	moText extension;
-	moSound* psound;
+	moSound* pSound;
 
-	psound = new moSound();
-	if (psound) {
-		idnuevo = m_sounds_array.Count();
-		psound->Init( p_name, idnuevo, p_type, m_pResourceManager, p_param);
-		return psound;
+	pSound = new moSound();
+
+	if (pSound) {
+
+		pSound->SetName(p_name);
+		pSound->Init();
+
+		return pSound;
 	} else return NULL;
 
 }

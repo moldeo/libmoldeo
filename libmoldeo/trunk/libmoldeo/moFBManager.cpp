@@ -41,7 +41,8 @@ moFBManager::moFBManager()
 {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_FB );
-    SetName("FB Manager");
+  SetName("fbmanager");
+  SetLabelName("fbmanager");
 	m_glmanager = NULL;
 }
 

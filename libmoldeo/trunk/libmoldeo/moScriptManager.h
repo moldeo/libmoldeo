@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -36,7 +36,6 @@
 #include "moAbstract.h"
 #include "moText.h"
 #include "moParam.h"
-#include "moLuaBase.h"
 #include "moLunaClasses.h"
 
 #include "moResourceManager.h"
@@ -79,7 +78,14 @@ public:
 	 * @return referencia al debugger.
      */
     static moLuaDebugger& GetDBG(void);
+
+
+    moLuaResourceManager* PushLuaResourceManager( moResourceManager* p_pResourceManager = NULL );
+
 private:
+
+    moLuaResourceManager*  m_pLuaResourceManager;
+
    void RegisterLunaClasses();
 };
 

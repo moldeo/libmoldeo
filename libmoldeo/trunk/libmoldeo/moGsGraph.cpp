@@ -728,6 +728,14 @@ moGsGraph::moGsGraph() {
     m_pColorSpace = NULL;
 
     m_pAudioConverter = NULL;
+    m_pAudioConverter2 = NULL;
+    m_pAudioConverter3 = NULL;
+    m_pAudioConverter4 = NULL;
+    m_pAudioEcho =  NULL;
+    m_pAudioPanorama =  NULL;
+    m_pAudioAmplify =  NULL;
+    m_pAudioSpeed =  NULL;
+    m_pAudioVolume =  NULL;
     m_pAudioSink = NULL;
 
     m_pAudioPad = NULL;
@@ -795,7 +803,7 @@ moGsGraph::InitGraph() {
     //char vers[10];
     //sprintf( vers, "version: %i.%i.%i.%i",major,minor, micro, nano);
 
-    //if (init_result) MODebug->Push(moText("Initializing GStreamer:OK "));
+    //if (init_result) MODebug2->Push(moText("Initializing GStreamer:OK "));
 
 //analogo a FilterGraph, con dos parametros para dar de alta el elemento: playbin
 //playbin
@@ -837,7 +845,8 @@ moGsGraph::InitGraph() {
 
     //g_main_loop_run (moGsGraph::loop);
     MODebug2->Message( moText("moGsGraph::Init result:") + moText(((m_pGstPipeline!=NULL) ? "success" : "failure")) );
-	return (m_pGstPipeline!=NULL);
+    m_bInitialized = m_pGstPipeline!=NULL;
+	return (m_bInitialized);
 }
 
 
@@ -1667,27 +1676,82 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
 
            m_pAudioConverter = NULL;
 /*
-           m_pAudioConverter =  gst_element_factory_make ("audioconverter", "converter");
+
 
            if (m_pAudioConverter) {
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), m_pAudioConverter );
            }
 */
            if (extension==moText(".wav")) {
-               m_pAudioConverter = gst_element_factory_make ("audioresample", "resample");
+              m_pAudioConverter = gst_element_factory_make ("audioresample", "resample");
            //    MODebug2->Push( "moGsGraph:: wav file" );
+           } else {
+              m_pAudioConverter =  gst_element_factory_make ("audioconvert", "converter");
            }
 
            if (m_pAudioConverter) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioConverter );
            }
 
-           m_pAudioSink = gst_element_factory_make ("directsoundsink", "audioout");
+           m_pAudioSink = gst_element_factory_make ("autoaudiosink", "audioout");
 
            if (m_pAudioSink) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioSink );
            }
 
+            /**
+              AUDIOFX
+            */
+
+            m_pAudioSpeed = gst_element_factory_make ("speed", "speed");
+
+            if (m_pAudioSpeed) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioSpeed );
+           }
+
+           m_pAudioVolume = gst_element_factory_make ("volume", "volume");
+
+           if (m_pAudioVolume) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioVolume );
+           }
+
+           m_pAudioPanorama = gst_element_factory_make ("audiopanorama", "audiopanorama");
+
+           if (m_pAudioPanorama) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioPanorama );
+           }
+
+           m_pAudioConverter2 = gst_element_factory_make ("audioconvert", "audioconvert2");
+
+           if (m_pAudioConverter2) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioConverter2 );
+           }
+
+           m_pAudioConverter3 = gst_element_factory_make ("audioconvert", "audioconvert3");
+
+           if (m_pAudioConverter3) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioConverter3 );
+           }
+
+          m_pAudioEcho = gst_element_factory_make ("audioecho", "audioecho");
+
+           if (m_pAudioEcho) {
+            res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioEcho );
+            unsigned long long max_delay,delay;
+            max_delay = 2000000000;
+            delay = 500000000;
+            float intensity = 0.9;
+
+            g_object_set ( (GstElement*)m_pAudioEcho, "max-delay", max_delay, NULL);
+            g_object_set ( (GstElement*)m_pAudioEcho, "delay", delay, NULL);
+            g_object_set ( (GstElement*)m_pAudioEcho, "intensity", intensity, NULL);
+           }
+
+           m_pAudioConverter4 = gst_element_factory_make ("audioconvert", "audioconvert4");
+
+           if (m_pAudioConverter4) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioConverter4 );
+           }
 
            m_pDecoderBin = gst_element_factory_make ("decodebin", "decoder");
             if (m_pDecoderBin) {
@@ -1700,12 +1764,23 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
             link_result = gst_element_link_many( (GstElement*)m_pFileSource, (GstElement*)m_pDecoderBin, NULL );
 
             if (link_result) {
-                if (m_pAudioConverter) link_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioSink, NULL );
+                if (m_pAudioConverter) link_result = gst_element_link_many(
+                                                                           (GstElement*)m_pAudioConverter,
+                                                                           (GstElement*)m_pAudioSpeed,
+                                                                           (GstElement*)m_pAudioConverter2,
+                                                                           (GstElement*)m_pAudioPanorama,
+                                                                           (GstElement*)m_pAudioConverter3,
+                                                                           (GstElement*)m_pAudioEcho,
+                                                                           (GstElement*)m_pAudioConverter4,
+                                                                           (GstElement*)m_pAudioVolume,
+                                                                           (GstElement*)m_pAudioSink,
+                                                                           NULL
+                                                                           );
                 //else link_result = gst_element_link_many( (GstElement*)m_pAudioSink, NULL );
 
                 if (link_result) {
 
-                    CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PAUSED), false /*SYNCRUNASLI*/ );
+                    CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PLAYING), false /*SYNCRUNASLI*/ );
 
                     //WaitForFormatDefinition( 600 );
 
@@ -2068,19 +2143,19 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
   if (!waitforsync)
   switch(Gstate_change_result) {
     case GST_STATE_CHANGE_FAILURE:
-        //MODebug->Push(moText("GST_STATE_CHANGE_FAILURE"));
+        //MODebug2->Push(moText("GST_STATE_CHANGE_FAILURE"));
         return false;
         break;
     case GST_STATE_CHANGE_SUCCESS:
-        //MODebug->Push(moText("GST_STATE_CHANGE_SUCCESS"));
+        //MODebug2->Push(moText("GST_STATE_CHANGE_SUCCESS"));
         return true;
         break;
     case GST_STATE_CHANGE_ASYNC:
-        //MODebug->Push(moText("GST_STATE_CHANGE_ASYNC"));
+        //MODebug2->Push(moText("GST_STATE_CHANGE_ASYNC"));
         return true;
         break;
     case GST_STATE_CHANGE_NO_PREROLL:
-        //MODebug->Push(moText("GST_STATE_CHANGE_NO_PREROLL"));
+        //MODebug2->Push(moText("GST_STATE_CHANGE_NO_PREROLL"));
         return false;
         break;
   }
@@ -2154,7 +2229,7 @@ moStreamState moGsGraph::GetState() {
                           );
 */
     state_wait = gst_element_get_state(GST_ELEMENT (m_pGstPipeline),&current_state, &pending_state, time_out);
-  /*
+  /*g_main_context_iteration
       GST_STATE_VOID_PENDING        = 0,
   GST_STATE_NULL                = 1,
   GST_STATE_READY               = 2,
@@ -2302,8 +2377,54 @@ moGsGraph::IsRunning() {
     return true;
 }
 
+void
+moGsGraph::SetVolume( float volume ) {
+  if (m_pAudioVolume && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pAudioVolume, "volume", volume, NULL);
+  }
+}
+
+void
+moGsGraph::SetBalance( float balance ) {
+  if (m_pAudioPanorama && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pAudioPanorama, "panorama", balance, NULL);
+  }
+}
+
+void
+moGsGraph::SetPitch( float pitch ) {
+  if (m_pAudioSpeed && m_bInitialized ) {
+    //Pause();
+    g_object_set ( (GstElement*)m_pAudioSpeed, "speed", pitch, NULL);
+    //Play();
+  }
+}
+
+void
+moGsGraph::SetEchoDelay( float delay ) {
+  unsigned long long delayl = delay;
+  if (m_pAudioEcho && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pAudioEcho, "delay", delayl, NULL);
+  }
+}
+
+void
+moGsGraph::SetEchoIntensity( float intensity ) {
+  if (m_pAudioEcho && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pAudioEcho, "intensity", intensity, NULL);
+  }
+}
+
+void
+moGsGraph::SetEchoFeedback( float feedback ) {
+  if (m_pAudioEcho && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pAudioEcho, "feedback", feedback, NULL);
+  }
+}
+
+
 MObyte *
-moGsGraph::GetFrameBuffer( MOlong *size ) {
+moGsGraph::GetFrameBuffer( MOlong *size )  {
 
 	return NULL;
 }

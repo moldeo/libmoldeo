@@ -36,6 +36,7 @@
 #include "moTextureManager.h"
 #include "mo3dModelManager.h"
 #include "moSoundManager.h"
+#include "moDebugManager.h"
 
 moFont*                 moConfig::m_pFont = new moFont();
 moMathFunction*         moConfig::m_pFun = new moParserFunction();
@@ -166,11 +167,42 @@ MOboolean moConfig::IsConfigLoaded() {
 
 }
 
+void
+moConfig::FixConfig() {
+
+  ///AGREGAMOS PARAMETROS FALTANTES
+  for(int j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
+    moParamDefinition& pDef( m_ConfigDefinition.GetParamDefinitions()->Get(j) );
+    int real_idx = GetParamIndex( pDef.GetName() );
+    if (real_idx==-1) {
+      CreateParam( pDef );
+    }
+  }
+
+  ///RE-INDEXAMOS....
+  for( int i=0; i< m_Params.Count(); i++ ) {
+    moParam& param(m_Params[i]);
+    for(int j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
+        moParamDefinition& pDef( m_ConfigDefinition.GetParamDefinitions()->Get(j) );
+        if ( param.GetParamDefinition().GetName() == pDef.GetName() ) {
+          pDef.SetIndex(i);
+          break;
+        }
+    }
+    param.GetParamDefinition().SetIndex(i);
+  }
+
+}
+
 int moConfig::LoadConfig( moText p_filename ) {
 
 	TiXmlDocument			m_XMLDocument;
 
 	UnloadConfig();
+
+  if (!moFileManager::FileExists(p_filename)) {
+    moDebugManager::Error( "moConfig::LoadConfig > Error " + p_filename + " doesn't exists." );
+  }
 
 	cout << "XML DOM about to load..." << endl;
 
@@ -334,6 +366,10 @@ int moConfig::LoadConfig( moText p_filename ) {
 			PreConfFirst();
 			m_FileName = p_filename;
 			m_ConfigLoaded = true;
+
+			///corregimos, asignamos indices, agregamos faltantes...
+			FixConfig();
+
 			return MO_CONFIG_OK;
 
 
@@ -483,6 +519,26 @@ int moConfig::SaveConfig( moText p_filename ) {
 
 }
 
+void
+moConfig::CreateParam( moParamDefinition& p_ParamDef ) {
+
+  moParam	xparam( p_ParamDef );
+
+  ///asigna valor predeterminado definido por el plugin, sino
+  ///aplica el estandar
+  if (p_ParamDef.GetDefaultValue().GetSubValueCount()>0) {
+      xparam.AddValue( p_ParamDef.GetDefaultValue() );
+  } else {
+      xparam.SetDefaultValue();
+  }
+  m_Params.Add( xparam );
+
+  ///asigna los indices...
+  moParam& pParam( m_Params.Get(m_Params.Count()-1) );
+  pParam.GetParamDefinition().SetIndex(m_Params.Count()-1);
+  p_ParamDef.SetIndex(m_Params.Count()-1);
+}
+
 MOboolean
 moConfig::CreateDefault( const moText &p_fullconfigfilename ) {
 
@@ -516,13 +572,7 @@ moConfig::CreateDefault( const moText &p_fullconfigfilename ) {
 
             moParamDefinition pParamDefinition = pParamDefinitions->Get(i);
 
-            moParam	xparam( pParamDefinition );
-            if (pParamDefinition.GetDefaultValue().GetSubValueCount()>0) {
-                xparam.AddValue( pParamDefinition.GetDefaultValue() );
-            } else {
-                xparam.SetDefaultValue();
-            }
-            m_Params.Add( xparam );
+            CreateParam( pParamDefinition );
         }
 
         cout << "moConfig::CreateDefault > Saving Config to disk..." << endl;
@@ -1021,7 +1071,7 @@ moConfig::Messages( moParamReference p_paramreference ) {
 
 }
 
-const moSound&
+moSound&
 moConfig::Sound(  moParamReference p_paramreference ) {
 
   moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
@@ -1032,7 +1082,7 @@ moConfig::Sound(  moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moSound();
+  return (*m_pSound);
 
 }
 

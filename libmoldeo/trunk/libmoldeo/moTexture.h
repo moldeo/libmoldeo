@@ -581,12 +581,12 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
          * Devuelve el número de cuadros de la animación.
          * @return número de cuadros.
          */
-		virtual MOuint		GetNumberFrames() { return m_nFrames; }
+		virtual MOuint		GetFrameCount() { return m_nFrames; }
         /**
          * Fija el número de cuadros de la animación
          * @param p_nframes Nuevo número de cuadros.
          */
-		virtual void 		SetNumberFrames( MOuint p_nframes ) { m_nFrames = p_nframes; } //
+		virtual void 		SetFrameCount( MOuint p_nframes ) { m_nFrames = p_nframes; } //
 
         /**
          * Devuelve los cuadros por segundo de la animación.

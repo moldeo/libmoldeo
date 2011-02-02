@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
   Description:
   Base class for Lua-scriptable classes.
@@ -271,6 +271,33 @@ bool moScript::CompileFile (const char *strFilename)
 // Success
 //
 //============================================================================
+int moScript::RegisterFunction (const char *strFuncName, moScript::Function& fun )
+{
+   assert (strFuncName != NULL && "moScript::RegisterFunction -> strFuncName == NULL");
+   assert (m_vm.Ok () && "VM Not OK");
+
+   int iMethodIdx = -1;
+
+   moLuaRestoreStack rs (m_vm);
+
+   BEGIN_LUA_CHECK (m_vm)
+      iMethodIdx = ++m_nMethods;
+      Functions[iMethodIdx] = fun;
+
+      // Register a function with the lua script. Added it to the "this" table
+      lua_rawgeti (state, LUA_REGISTRYINDEX, m_iThisRef);
+
+      // Push the function and parameters
+      lua_pushstring (state, strFuncName);
+      lua_pushnumber (state, (lua_Number) iMethodIdx);
+      lua_pushcclosure (state, LuaCallback, 1);
+      lua_settable (state, -3);
+
+   END_LUA_CHECK
+
+   return iMethodIdx;
+}
+
 int moScript::RegisterFunction (const char *strFuncName)
 {
    assert (strFuncName != NULL && "moScript::RegisterFunction -> strFuncName == NULL");
@@ -282,6 +309,7 @@ int moScript::RegisterFunction (const char *strFuncName)
 
    BEGIN_LUA_CHECK (m_vm)
       iMethodIdx = ++m_nMethods;
+      //Functions[iMethodIdx] = ;
 
       // Register a function with the lua script. Added it to the "this" table
       lua_rawgeti (state, LUA_REGISTRYINDEX, m_iThisRef);

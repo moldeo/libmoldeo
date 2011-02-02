@@ -743,13 +743,13 @@ MOboolean moParserFunction::CheckVariables()
 
         if (nvar != (MOint)m_Variables.Count())
         {
-            MODebug->Push("Error in number of parser variables.");
+            MODebug2->Push("Error in number of parser variables.");
             return false;
         }
 
         if (npar != (MOint)m_Parameters.Count())
         {
-            MODebug->Push("Error in number of parser parameters.");
+            MODebug2->Push("Error in number of parser parameters.");
             return false;
         }
         return true;

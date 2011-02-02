@@ -42,8 +42,8 @@ moDecoderManager::moDecoderManager()
 {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_DECODER );
-  SetName("Decoder Manager");
-
+  SetName("decodermanager");
+  SetLabelName("decodermanager");
 
   m_pDecoderDevice = NULL;
   m_pVideoDecoder = NULL;

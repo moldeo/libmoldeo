@@ -37,9 +37,109 @@
 #include "moMath.h"
 #include "moMathFunction.h"
 #include "moP5.h"
+#include "moSoundManager.h"
+#include "moVideoManager.h"
+#include "moResourceManager.h"
 
 #ifndef __MO_LUNA_CLASSES_H__
 #define __MO_LUNA_CLASSES_H__
+
+class LIBMOLDEO_API moLuaSoundManager : public moAbstract
+{
+	DECLARE_SCRIPT_CLASS(moLuaSoundManager)
+
+	SCRIPT_CONSTRUCTOR_DECLARATION(moLuaSoundManager)
+    ///TODO: Creacion dinamica de grafos de audio y video..a revisar
+    ///SCRIPT_FUNCTION_DECLARATION(GetSoundGraphCount);
+    ///SCRIPT_FUNCTION_DECLARATION(GetSoundGraph);
+    ///SCRIPT_FUNCTION_DECLARATION(GetSoundFramework);
+    ///SCRIPT_FUNCTION_DECLARATION(GetMicCount);
+    ///SCRIPT_FUNCTION_DECLARATION(GetMic);
+    SCRIPT_FUNCTION_DECLARATION(GetSoundCount);
+    SCRIPT_FUNCTION_DECLARATION(GetSound);
+    ///SCRIPT_FUNCTION_DECLARATION(GetSoundBufferCount);
+    ///SCRIPT_FUNCTION_DECLARATION(GetSoundBuffer);
+    ///SCRIPT_FUNCTION_DECLARATION(GetSoundSamplePathCount);
+    ///SCRIPT_FUNCTION_DECLARATION(GetSoundSanmplePathBuffer);
+
+    void Set( moSoundManager* p_pSoundMan);
+  private:
+    moSoundManager*  m_pSoundMan;
+
+};
+
+
+/**
+  Instancia de la clase moCircularVideoBuffer para Lua
+*/
+
+class moLuaCircularVideoBuffer : public moCircularVideoBuffer
+{
+  DECLARE_SCRIPT_CLASS(moLuaCircularVideoBuffer)
+
+    SCRIPT_CONSTRUCTOR_DECLARATION(moLuaCircularVideoBuffer)
+      SCRIPT_FUNCTION_DECLARATION(StartRecording);
+      SCRIPT_FUNCTION_DECLARATION(PauseRecording);
+      SCRIPT_FUNCTION_DECLARATION(ContinueRecording);
+      SCRIPT_FUNCTION_DECLARATION(StopRecording);
+      SCRIPT_FUNCTION_DECLARATION(GetRecordPosition);
+      SCRIPT_FUNCTION_DECLARATION(GetFrameCount);
+      SCRIPT_FUNCTION_DECLARATION(IsRecording);
+
+    void Set( moCircularVideoBuffer* p_pCircularVideoBuffer );
+
+    private:
+      moCircularVideoBuffer* m_pCircularVideoBuffer;
+};
+
+class LIBMOLDEO_API moLuaVideoManager : public moAbstract
+{
+	DECLARE_SCRIPT_CLASS(moLuaVideoManager)
+
+	SCRIPT_CONSTRUCTOR_DECLARATION(moLuaVideoManager)
+    ///TODO: Creacion dinamica de grafos de audio y video..a revisar
+    ///SCRIPT_FUNCTION_DECLARATION(GetVideoGraphCount);
+    ///SCRIPT_FUNCTION_DECLARATION(GetVideoGraph);
+    //SCRIPT_FUNCTION_DECLARATION(GetVideoFramework);
+    //SCRIPT_FUNCTION_DECLARATION(GetCameraCount);
+    //SCRIPT_FUNCTION_DECLARATION(GetCamera);
+    SCRIPT_FUNCTION_DECLARATION(GetCircularVideoBufferCount);
+    SCRIPT_FUNCTION_DECLARATION(GetCircularVideoBuffer);
+    //SCRIPT_FUNCTION_DECLARATION(GetVideoBufferPathCount);
+    //SCRIPT_FUNCTION_DECLARATION(GetVideoBufferPath);
+
+    void Set( moVideoManager* p_pVideoMan);
+  private:
+    moVideoManager*  m_pVideoMan;
+
+};
+
+/**
+*/
+class LIBMOLDEO_API moLuaResourceManager : public moAbstract
+{
+	DECLARE_SCRIPT_CLASS(moLuaResourceManager)
+
+	SCRIPT_CONSTRUCTOR_DECLARATION(moLuaResourceManager)
+
+    SCRIPT_FUNCTION_DECLARATION(GetResourceCount);
+    SCRIPT_FUNCTION_DECLARATION(GetResource);
+    SCRIPT_FUNCTION_DECLARATION(GetResourceIndex);
+    SCRIPT_FUNCTION_DECLARATION(GetResourceByType);
+    SCRIPT_FUNCTION_DECLARATION(GetResourceName);
+    SCRIPT_FUNCTION_DECLARATION(GetResourceLabelName);
+    SCRIPT_FUNCTION_DECLARATION(GetResourceType);
+
+    SCRIPT_FUNCTION_DECLARATION(GetTextureMan);
+    SCRIPT_FUNCTION_DECLARATION(GetVideoMan);
+    SCRIPT_FUNCTION_DECLARATION(GetSoundMan);
+
+    void Set( moResourceManager* p_pResourceManager);
+  private:
+    moResourceManager*  m_pResourceManager;
+
+};
+
 
 /**
  * Esta clase encapsula moMathd.

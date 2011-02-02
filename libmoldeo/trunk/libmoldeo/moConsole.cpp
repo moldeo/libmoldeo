@@ -25,7 +25,6 @@
 
   Authors:
   Fabricio Costa
-  Andres Colubri
 
 *******************************************************************************/
 
@@ -241,19 +240,16 @@ MOboolean moConsole::Init(
 	//   CARGAMOS EL ARCHIVO DE CONFIGURACION
 	//==========================================================================
 
-  if (MODebug2) MODebug2->Message(moText("moConsole:: Opening Console Config Project (.mol).")  + (moText)p_consoleconfig);
+  SetConfigName( p_consoleconfig );
 
-	verif = m_Config.LoadConfig( p_consoleconfig ) ;//este parametro debe pasarse desde fuera
-	if(verif != MO_CONFIG_OK) {
+  ///we must initialize the parametrization here
+  ///moldeoobect::init siempre antes que los moDefineParamIndex....y justo despues del LoadConfig
+  if (!moMoldeoObject::Init()) {
+    Finish();
+    return false;
+  }
 
-        if (MODebug2) MODebug2->Error(moText("moConsole::  .mol file invalid, check XML syntax..."));
-
-	    Finish();
-		//then
-		return false;
-	} else SetConfigName(p_consoleconfig);
-
-    if (MODebug2) MODebug2->Message(moText("moConsole:: mol project opening....success "));
+  if (MODebug2) MODebug2->Message(moText("moConsole:: mol project opening....success "));
 
 
     //if () {
@@ -339,10 +335,8 @@ MOboolean moConsole::Init(
 					p_OpWindowHandle,
 					p_Display);
 
-
-  ///we must initialize the parametrization here
-  ///moldeoobect::init siempre antes que los moDefineParamIndex....y justo despues del LoadConfig
-  moMoldeoObject::Init();
+  ///cargamos los inlets, outlets de la consola...
+  moMoldeoObject::CreateConnectors();
 
 	moDefineParamIndex( CONSOLE_DEVICES, moText("devices") );
 	moDefineParamIndex( CONSOLE_EFFECT, moText("effect") );
@@ -371,22 +365,34 @@ MOboolean moConsole::Init(
 
 	state.m_nAllEffects = m_EffectManager.AllEffects().Count();
 
-	this->InitializeAllEffects();
-	this->StartMasterEffects();
-
-
 	MOboolean m_bMasterEffects_On = m_Config.GetParam( moText("mastereffects_on") ).GetValue().GetSubValue(0).Int();
 	if (m_bMasterEffects_On) {
         //
-    }
+  }
 
-    m_MoldeoObjects.Add( (moMoldeoObject*)this );
+  m_MoldeoObjects.Add( (moMoldeoObject*)this );
 
-	LoadConnections();
+  ///RECONNECT!!!!!
 
-    InitScript();
-    RegisterFunctions();
+	UpdateMoldeoIds();
 
+
+  ///UPDATE VIDEOMANAGER FOR CAMERAS!!!! TO TEXTURE
+  if (m_pResourceManager->GetVideoMan()) {
+    if (MODebug2) MODebug2->Message(moText("moConsole:: VideoManager update function called."));
+    m_pResourceManager->GetVideoMan()->Update( m_pIODeviceManager->GetEvents() );
+  }
+
+	///Finalmente inicializamos los efectos
+	///asigna Inlets y outlets...
+	this->InitializeAllEffects();
+	this->StartMasterEffects();
+
+  ///CONECTAMOS Inlets con Outlets
+  LoadConnections();
+
+  InitScript();
+  RegisterFunctions();
 
 	m_bInitialized = true;
 
@@ -394,9 +400,8 @@ MOboolean moConsole::Init(
 }
 
 void
-moConsole::LoadConnections() {
-	///check for each outlet connector on MoldeoObject's connections to inlets...
-	MOuint i,j,k,l,m;
+moConsole::UpdateMoldeoIds() {
+  int i;
 
   ///RECREATE ALL REFERENCES int this order
   /**
@@ -450,6 +455,12 @@ moConsole::LoadConnections() {
 		if (mobject) mobject->SetId(MO_MOLDEOOBJECTS_OFFSET_ID + i);
 	}
 
+}
+
+void
+moConsole::LoadConnections() {
+	///check for each outlet connector on MoldeoObject's connections to inlets...
+	MOuint i,j,k,l,m;
 
 	///Connect outlets to inlets....
 	for( i=0; i<m_MoldeoObjects.Count(); i++) {
@@ -845,6 +856,10 @@ moConsole::LoadResources() {
 	moText cfname;
 	moText lblname;
 
+	int paramindex = m_Config.GetParamIndex(moText("resources"));
+	///TODO: chequear validez de este indice
+  int resource_valueindex = -1;
+
 	moParam& presources(m_Config.GetParam(moText("resources")));
 	presources.FirstValue();
 	for(MOuint r=0; r<presources.GetValuesCount(); r++) {
@@ -854,7 +869,7 @@ moConsole::LoadResources() {
 		cfname = presources[MO_SELECTED][MO_CFG_RESOURCE_CONFIG].Text();
 		lblname = presources[MO_SELECTED][MO_CFG_RESOURCE_LABEL].Text();
 
-		MOint rid = m_pResourceManager->GetResourceId( resname );
+		MOint rid = m_pResourceManager->GetResourceIndex( lblname );
 
 		if(rid>-1) presource = m_pResourceManager->GetResource(rid);
 
@@ -862,18 +877,14 @@ moConsole::LoadResources() {
 		    MODebug2->Message( moText("moConsole:: Already loaded plugin resource: ") + (moText)resname );
 		} else {
 			//maybe a plugin
-			if (m_pResourceManager->NewResource(resname)) {
-				rid = m_pResourceManager->GetResourceId(resname);
-				if (rid>=0) {
-					presource = m_pResourceManager->GetResource(rid);
-					if (presource) {
-						presource->SetConfigName(cfname);
-						presource->SetLabelName(lblname);
-						if (presource->Init()) {
-						    MODebug2->Message( moText("moConsole:: Loaded plugin resource: ") + (moText)resname );
-                        } else MODebug2->Error( moText("moConsole:: Error: Unloaded plugin resource: ") + (moText)resname );
-					}
-				}
+			resource_valueindex = r;
+			presource = m_pResourceManager->NewResource(resname, paramindex, resource_valueindex);
+			if (presource) {
+        presource->SetConfigName(cfname);
+        presource->SetLabelName(lblname);
+        if (presource->Init()) {
+            MODebug2->Message( moText("moConsole:: Loaded plugin resource: ") + (moText)resname );
+        } else MODebug2->Error( moText("moConsole:: Error: Loading plugin resource: ") + (moText)resname );
 			}
 		}
 		presources.NextValue();
@@ -891,7 +902,7 @@ moConsole::LoadResources() {
 
 	}
 
-    if (MODebug2) MODebug2->Message(moText("moConsole:: Resources Plugin loaded."));
+  if (MODebug2) MODebug2->Message(moText("moConsole:: Resources Plugin loaded."));
 
 }
 
@@ -1278,6 +1289,8 @@ moConsole::Draw() {
 
 MOboolean
 moConsole::Finish() {
+
+  moScript::FinishScript();
 
 	StopMasterEffects();
 
@@ -2007,7 +2020,7 @@ int moConsole::luaGetObjectDataIndex(moLuaVirtualMachine& vm) {
     if (Object) {
         inletid = Object->GetInletIndex( text );
     } else {
-        MODebug2->Error( moText("in console script: GetObjectDataIndex : object not founded : id:")+(moText)IntToStr(objectid) );
+        MODebug2->Error( moText("in console script: GetObjectDataIndex : object not founded : id:")+(moText)IntToStr(objectid)+moText(" for param:")+moText(text) );
     }
 
     lua_pushnumber(state, (lua_Number) inletid );
@@ -2124,6 +2137,7 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                     case MO_DATA_NUMBER_LONG:
                     case MO_DATA_NUMBER_MIDI:
                         pData->SetLong( (MOlong) lua_tonumber ( state, 3 ) );
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_3DMODELPOINTER:
@@ -2137,12 +2151,14 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                     case MO_DATA_VECTOR2I:
                         (*pData->Vector2i()) = moVector2i(  (MOlong) lua_tonumber ( state, 3 ),
                                                             (MOlong) lua_tonumber ( state, 4 ) );
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_VECTOR3I:
                         (*pData->Vector3i()) = moVector3i(  (MOlong) lua_tonumber ( state, 3 ),
                                                             (MOlong) lua_tonumber ( state, 4 ),
                                                             (MOlong) lua_tonumber ( state, 5 ) );
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_VECTOR4I:
@@ -2150,17 +2166,20 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                                                             (MOlong) lua_tonumber ( state, 4 ),
                                                             (MOlong) lua_tonumber ( state, 5 ),
                                                             (MOlong) lua_tonumber ( state, 6 ) );
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_VECTOR2F:
                         (*pData->Vector2d()) = moVector2d(  (MOdouble) lua_tonumber ( state, 3 ),
                                                             (MOdouble) lua_tonumber ( state, 4 ));
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_VECTOR3F:
                         (*pData->Vector3d()) = moVector3d(  (MOdouble) lua_tonumber ( state, 3 ),
                                                             (MOdouble) lua_tonumber ( state, 4 ),
                                                             (MOdouble) lua_tonumber ( state, 5 ));
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_VECTOR4F:
@@ -2168,6 +2187,7 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                                                             (MOdouble) lua_tonumber ( state, 4 ),
                                                             (MOdouble) lua_tonumber ( state, 5 ),
                                                             (MOdouble) lua_tonumber ( state, 6 ) );
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_MESSAGE:
@@ -2177,11 +2197,13 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                     case MO_DATA_NUMBER_DOUBLE:
                     case MO_DATA_NUMBER_FLOAT:
                         pData->SetDouble( (MOdouble) lua_tonumber ( state, 3 ) );
+                        pInlet->Update(true);
                         return 0;
 
                     case MO_DATA_TEXT:
                         //lua_pushstring(state, pData->Text() );
                         pData->SetText( lua_tostring ( state, 3 ) );
+                        pInlet->Update(true);
                         return 0;
 
                 }

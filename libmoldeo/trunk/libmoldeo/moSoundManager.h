@@ -37,7 +37,7 @@
 #include <moResourceManager.h>
 #include <moFileManager.h>
 #include <moDataManager.h>
-
+#include <moGsGraph.h>
 
 #define NUMBUFFERS              (4)
 #define	SERVICE_UPDATE_PERIOD	(20)
@@ -52,6 +52,12 @@ enum moSoundType {
 	MO_SOUNDTYPE_MP3,
 	MO_SOUNDTYPE_WAV,
 	MO_SOUNDTYPE_OGG
+};
+
+enum moSoundState {
+  MO_SOUND_PLAYING,
+  MO_SOUND_SEEKING,
+  MO_SOUND_STOPPED
 };
 
 /// Parámetros de sonido
@@ -125,104 +131,176 @@ class LIBMOLDEO_API moSoundBuffer : public moAbstract {
 
 moDeclareExportedDynamicArray( moSoundBuffer*, moSoundBufferArray);
 
+
 /// Clase base de sonido
 /**
 * Clase base de sonido
 */
 class LIBMOLDEO_API moSound : public  moAbstract {
+
     public:
 		moSound();
 		virtual ~moSound();
 
-		virtual MOboolean  Init(moText p_name, MOuint p_moid, moSoundType p_type, moResourceManager* p_res, moSoundParam p_param = MODefSoundParams);
-		virtual MOboolean  Finish();
+		virtual MOboolean Init();
+		virtual MOboolean Finish();
 
-		MOboolean BuildEmpty( MOuint p_size );
-		MOboolean BuildFromBuffer( MOuint p_size, GLvoid* p_buffer );
-		MOboolean BuildFromFile( moText p_filename );
+		virtual moText GetName();
+		virtual void SetName( moText name );
 
-		MOboolean SupportedFile(moText p_filename);
-		MOboolean Load( moParam* p_param );
+		virtual moText GetFileName();
+		virtual void SetFileName( moText filename );
 
-		moText GetName() { return m_name; }
-		void SetName(moText p_name) { m_name = p_name; }
-		MOint GetSourceId() { return m_SourceId; }
-		MOuint GetBufferId() { return m_BufferId; }
-		moSoundType GetType() { return m_SoundType; }
+		moSoundType GetType();
 
-		MOint	GetBufferSize() { return m_BufferSize; }
-		MOint	GetActualSample() { return m_ActualSample; }
+    MOboolean LoadFromFile( moText filename );
 
-		void Play();
-		void PlaySample( MOint sampleid );
-		void Stop();
-		void Pause();
-		void Rewind();
-		void Final();
-		void Frame(int frame);
-		void Repeat(int repeat);
-		MOint State();
-		void Update();
+    MOboolean SupportedFile(moText p_filename);
 
-		void SetPosition( float x, float y, float z );
-		void SetVelocity( float x, float y, float z );
-		void SetDirection( float x, float y, float z );
-		void SetVolume( float gain );
-		float GetVolume();
+		virtual void Play();
+		virtual void Stop();
+		virtual void Pause();
+		virtual void Rewind();
+		virtual moStreamState State();
+		virtual void Update();
+
+		virtual void SetVolume( float gain );
+		virtual float GetVolume();
+		virtual void SetPitch( float pitch );
+		virtual float GetPitch();
+		virtual void SetBalance( float balance );
+		virtual float GetBalance();
+
+    virtual void SetEchoDelay( float delay );
+		virtual float GetEchoDelay();
+    virtual void SetEchoIntensity( float intensity );
+		virtual float GetEchoIntensity();
+    virtual void SetEchoFeedback( float feedback );
+		virtual float GetEchoFeedback();
+
+    protected:
+
+      moText          m_SoundName;
+      moSoundType     m_SoundType;
+      moText          m_FileName;
+
+      moSoundParam	  m_SoundParam;
+
+      moGsGraph*      m_pAudioGraph;
+
+      float           m_Position;
+      float           m_Volume;
+      float           m_Pitch;
+      float           m_Balance; ///panorama
+
+      float           m_EchoDelay;
+      float           m_EchoIntensity;
+      float           m_EchoFeedback;
+
+
+    private:
+
+
+};
+
+
+/// Clase base de sonido
+/**
+* Clase base de sonido
+*/
+class LIBMOLDEO_API moSound3D : public  moSound {
+    public:
+
+      moSound3D();
+      virtual ~moSound3D();
+
+      virtual MOboolean  Init();
+      virtual MOboolean  Finish();
+
+  /**
+    OVERRIDE moSound functions
+    OpenAL es diferente a GStreamer
+  */
+      virtual void Play();
+      virtual void Stop();
+      virtual void Pause();
+      virtual void Rewind();
+      virtual moStreamState State();
+      virtual void Update();
+      virtual void SetVolume( float gain );
+      virtual float GetVolume();
+      virtual void SetPitch( float pitch );
+      virtual float GetPitch();
+
+  /**
+    OpenAL Specific
+  */
+
+      MOboolean BuildEmpty( MOuint p_size );
+      MOboolean BuildFromBuffer( MOuint p_size, GLvoid* p_buffer );
+      MOboolean BuildFromFile( moText p_filename );
+
+      MOint GetSourceId() { return m_SourceId; }
+      MOuint GetBufferId() { return m_BufferId; }
+      virtual void Final();
+      virtual void Frame(int frame);
+      virtual void Repeat(int repeat);
+      MOint	GetBufferSize() { return m_BufferSize; }
+      MOint	GetActualSample() { return m_ActualSample; }
+
+      /// OPENAL specific
+      void PlaySample( MOint sampleid );
+      void SetPosition( float x, float y, float z );
+      void SetVelocity( float x, float y, float z );
+      void SetDirection( float x, float y, float z );
+
 	protected:
 
-		MOint			m_ActualSample;
-		MOint			m_OldSample;
+      int m_iAlState;
 
-		moFile*			m_pFile;
-		moDataManager*	m_pDataMan;
-		moFileManager*	m_pFileMan;
+      MOint			m_ActualSample;
+      MOint			m_OldSample;
 
-		MOuint		    m_Buffers[NUMBUFFERS];
-		MOuint		    m_SourceId;
-		MOuint			m_BufferId;
-		MOint			m_State;
+      moFile*			m_pFile;
+      moDataManager*	m_pDataMan;
+      moFileManager*	m_pFileMan;
 
+      MOuint		    m_Buffers[NUMBUFFERS];
+      MOuint		    m_SourceId;
+      MOuint			  m_BufferId;
 
+      #ifdef MO_WIN32
+      /*
+      CWaves *		pWaveLoader;
+      WAVEID			WaveID;
+      ALint			iLoop;
+      ALint			iBuffersProcessed, iTotalBuffersProcessed, iQueuedBuffers;
+      WAVEFORMATEX	wfex;
+      */
+      #endif
 
-		#ifdef MO_WIN32
-		/*
-		CWaves *		pWaveLoader;
-		WAVEID			WaveID;
-		ALint			iLoop;
-		ALint			iBuffersProcessed, iTotalBuffersProcessed, iQueuedBuffers;
-		WAVEFORMATEX	wfex;
-		*/
-		#endif
-
-		MOint			eBufferFormat;
-
-
-		unsigned long	ulDataSize;
-		unsigned long	ulFrequency;
-		unsigned long	ulFormat;
-		unsigned long	ulBufferSize;
-		unsigned long	ulBytesWritten;
-		void *			pData;
+      MOint			eBufferFormat;
 
 
+      unsigned long	ulDataSize;
+      unsigned long	ulFrequency;
+      unsigned long	ulFormat;
+      unsigned long	ulBufferSize;
+      unsigned long	ulBytesWritten;
+      void *			pData;
 
-		MOint			m_BufferSize;
 
-		moSoundParam	m_SoundParam;
-		moSoundType		m_SoundType;
-		moText m_name;
 
-		float			m_Gain;
-/*AL_GAIN
-AL_MIN_GAIN
-AL_MAX_GAIN
-AL_MAX_DISTANCE
-AL_ROLLOFF_FACTOR
-AL_CONE_OUTER_GAIN
-AL_CONE_INNER_ANGLE
-AL_CONE_OUTER_ANGLE
-AL_REFERENCE_DISTANCE*/
+      MOint			m_BufferSize;
+      /*AL_GAIN
+      AL_MIN_GAIN
+      AL_MAX_GAIN
+      AL_MAX_DISTANCE
+      AL_ROLLOFF_FACTOR
+      AL_CONE_OUTER_GAIN
+      AL_CONE_INNER_ANGLE
+      AL_CONE_OUTER_ANGLE
+      AL_REFERENCE_DISTANCE*/
 
 };
 
@@ -245,12 +323,19 @@ class LIBMOLDEO_API moSoundManager : public moResource {
 
 		moSound* GetSound( moText p_name );
 		MOuint GetSoundId( moText p_name );
+
+		int GetSoundCount();
 		moSound* GetSound( MOuint id);
+
 		moSoundType GetTypeForFile( moText p_name );
 		moSoundEffectArray* GetEffects();
+
 	protected:
-		moSound* CreateSound( moText p_name, moSoundType p_type, moSoundParam p_param );
+
+		moSound* CreateSound( moText p_name );
+
 		moSoundArray	m_sounds_array;
+
 		moSoundEffectArray	m_effects_array;
 
 };

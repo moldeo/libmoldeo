@@ -97,7 +97,7 @@ class LIBMOLDEO_API moFont : public moAbstract {
 
 };
 
-moDeclareExportedDynamicArray(moFont*, moFonts)
+moDeclareExportedDynamicArray(moFont*, moFonts);
 
 /// administrator de fuentes
 /**

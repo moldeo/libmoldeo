@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -520,6 +520,43 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 }
 
 
+void  moCircularVideoBuffer::StartRecording( long at_position  ) {
+  if (!m_RecTimer.Started()) {
+    m_RecTimer.Start();
+  } else {
+    m_RecTimer.Continue();
+  }
+}
+
+void  moCircularVideoBuffer::PauseRecording() {
+  m_RecTimer.Pause();
+}
+
+void  moCircularVideoBuffer::ContinueRecording() {
+  m_RecTimer.Continue();
+}
+
+void  moCircularVideoBuffer::JumpRecording( long at_position ) {
+  //m_RecTimer.Start();
+  //chequear
+  if ( at_position>=0 && at_position<m_Frames.Count()) {
+    m_WriteIndex = at_position;
+  }
+}
+
+void  moCircularVideoBuffer::StopRecording() {
+  m_RecTimer.Stop();
+}
+
+bool  moCircularVideoBuffer::IsRecording() {
+  return m_RecTimer.Started();
+}
+
+long   moCircularVideoBuffer::GetRecordPosition() {
+  return m_WriteIndex;
+}
+
+
 //===========================================
 //
 //				moVideoBufferPath
@@ -651,7 +688,9 @@ moVideoManager::moVideoManager()
 {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_VIDEO );
+
 	SetName("videomanager");
+	SetLabelName("videomanager");
 
 	m_pLiveSystems = NULL;
 }
@@ -674,209 +713,203 @@ MOboolean moVideoManager::Init()
     // Loading config file.
 	if (!m_pResourceManager) return false;
 
-	if (!(GetConfigName()==moText(""))) {
+  moResource::Init();
 
-        confignamecompleto = m_pResourceManager->GetDataMan()->GetDataPath();
-        confignamecompleto +=  (moText)GetConfigName();
-        confignamecompleto +=  moText(".cfg");
+	if (m_Config.IsConfigLoaded()) {
 
-        if (m_Config.LoadConfig(confignamecompleto)!=MO_CONFIG_OK ) {
-            moText text = "Couldn't load videomanager config";
-            MODebug2->Error(text + (moText)confignamecompleto );
-            return false;
+      moText msg = "In moVideoManager::Init from config file ***********************\n";
+      msg+= moText("Initializing Live...\n");
+      MODebug2->Message( msg );
+
+      preferreddevices = m_Config.GetParamIndex("preferreddevices");//FIREWIRE, WEBCAMS, LIVEVIDEO[movie]
+      autoreconnect = m_Config.GetParamIndex("autoreconnect");//FIREWIRE, WEBCAMS, LIVEVIDEO[movie]
+      MOuint videoin = m_Config.GetParamIndex("videoin");
+
+      moText videoinname;
+
+      MODebug2->Message( "VideoManager:: Generating videoin textures" );
+
+      for(MOuint i=0; i<m_Config.GetValuesCount(videoin); i++ ) {
+        videoinname = m_Config.GetParam(videoin).GetValue(i).GetSubValue(0).Text();
+        if(videoinname!=moText("")) {
+           int tid = m_pResourceManager->GetTextureMan()->AddTexture( MO_TYPE_TEXTURE, videoinname);
+           if(tid>-1) Images.Add( m_pResourceManager->GetTextureMan()->GetTexture(tid));
+          MODebug2->Message( moText("VideoManager:: Added ") + moText(videoinname) );
+        }
+      }
+      /**	LOAD AUTORECONNECT PARAMETER...	*/
+      m_bAutoReconnect = (bool) m_Config.GetParam((MOint)autoreconnect).GetValue().GetSubValue().Int();
+
+      /**        LOAD PREFERRED DEVICES CONFIGURATION	*/
+      pPreferredDevices = new moCaptureDevices();
+
+      nvalues = m_Config.GetValuesCount( preferreddevices );
+      m_Config.SetCurrentParamIndex(preferreddevices);
+      /*
+    MO_LIVE_LABELNAME	0
+    MO_LIVE_DEVICENAME	1
+    MO_LIVE_WIDTH		2
+    MO_LIVE_HEIGHT		3
+    MO_LIVE_BITCOUNT	4
+      */
+      MODebug2->Message(moText("Setting preferred devices"));
+      for( MOuint i = 0; i < nvalues; i++) {
+
+        m_Config.SetCurrentValueIndex(preferreddevices, i);
+
+        MOint srcw(0),srch(0),srcbpp(0),flH(0),flV(0);
+        MOint ncount = m_Config.GetParam().GetValue().GetSubValueCount();
+
+
+        ( MO_LIVE_WIDTH < ncount ) ? srcw = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_WIDTH).Int() : srcw = 0;
+        ( MO_LIVE_HEIGHT < ncount ) ? srch = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_HEIGHT).Int() : srch = 0;
+        ( MO_LIVE_BITCOUNT < ncount ) ? srcbpp = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_BITCOUNT).Int() : srcbpp = 0;
+        ( MO_LIVE_FLIPH < ncount ) ? flH = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_FLIPH).Int() : flH = 0;
+        ( MO_LIVE_FLIPV < ncount ) ? flV = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_FLIPV).Int() : flV = 0;
+
+        moVideoFormat VF;
+        moCaptureDevice CD( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_DEVICENAME).Text(), moText(""), moText(""), 0, srcw, srch, srcbpp, flH, flV );
+
+        CD.SetCodeName( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_LABELNAME).Text() );
+
+        VF.m_Width = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEWIDTH).Int();
+        VF.m_Height = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEHEIGHT).Int();
+        VF.m_BitCount = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_BITCOUNT).Int();
+
+        VF.m_ColorMode = (moColorMode)m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_COLORMODE).Int();
+
+        CD.SetVideoFormat( VF );
+
+        pPreferredDevices->Add( CD );
+        MODebug2->Message(moText("Added preferred device setting: Device Name: ")+CD.GetName());
+        //for( int k = 1; k < m_Config.GetParam().GetSubCount(); k++);
+      }
+
+
+
+    //INITIALIZING LiveSystems
+
+      //try to connect to all
+      m_pLiveSystems = new moLiveSystems();
+      m_pLiveSystems->Init(0, NULL);
+
+        MODebug2->Message(moText("Finally load live systems grabber for each device...."));
+      if ( m_pLiveSystems->LoadLiveSystems( pPreferredDevices ) ) {
+        //los inicializa...
+        for( MOuint i = 0; i < m_pLiveSystems->Count(); i++) {
+
+          moLiveSystemPtr pLS = m_pLiveSystems->Get(i);
+
+          if (pLS && pLS->GetCaptureDevice().IsPresent()) {
+            if (pLS->Init()) {
+                MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
+                    } else {
+                        MODebug2->Error( moText(pLS->GetCaptureDevice().GetName()) + " not initialized");
+                    }
+          }
+
         }
 
-  moText msg = "In moVideoManager::Init ***********************************************\n";
-  msg+= moText("Initializing Live...\n");
-  MODebug2->Message( msg );
+
+      } else MODebug2->Error(moText("Error. No livesystems loaded??...."));
 
 
-  preferreddevices = m_Config.GetParamIndex("preferreddevices");//FIREWIRE, WEBCAMS, LIVEVIDEO[movie]
-	autoreconnect = m_Config.GetParamIndex("autoreconnect");//FIREWIRE, WEBCAMS, LIVEVIDEO[movie]
-	MOuint videoin = m_Config.GetParamIndex("videoin");
+      MOuint circularbuffer = m_Config.GetParamIndex("circularbuffer");
 
-	moText videoinname;
+      moText videobufferinput;
+      moText videobuffername;
+      moText videobufferformat;
+      MOint	xsource, ysource, width, height, sourcewidth, sourceheight, frames;
+      MOint	interpolation, interpolationjump, interpolationtime;
 
-	MODebug2->Message( "VideoManager:: Generating videoin textures" );
+      if (circularbuffer>0)
+      for(MOuint i=0; i<m_Config.GetValuesCount(circularbuffer); i++ ) {
 
-	for(MOuint i=0; i<m_Config.GetValuesCount(videoin); i++ ) {
-		videoinname = m_Config.GetParam(videoin).GetValue(i).GetSubValue(0).Text();
-		if(videoinname!=moText("")) {
-			 int tid = m_pResourceManager->GetTextureMan()->AddTexture( MO_TYPE_TEXTURE, videoinname);
-			 if(tid>-1) Images.Add( m_pResourceManager->GetTextureMan()->GetTexture(tid));
-		 	MODebug2->Message( moText("VideoManager:: Added ") + moText(videoinname) );
-		}
-	}
-	/**	LOAD AUTORECONNECT PARAMETER...	*/
-	m_bAutoReconnect = (bool) m_Config.GetParam((MOint)autoreconnect).GetValue().GetSubValue().Int();
+        videobufferinput = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERINPUT).Text();
+        videobuffername = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERNAME).Text();
+        videobufferformat = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERFORMAT).Text();
 
-	/**        LOAD PREFERRED DEVICES CONFIGURATION	*/
-	pPreferredDevices = new moCaptureDevices();
+        frames = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERFRAMES).Int();
+        width = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARWIDTH).Int();
+        height = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARHEIGHT).Int();
+        xsource = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEXOFFSET).Int();
+        ysource = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEYOFFSET).Int();
+        sourcewidth = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEWIDTH).Int();
+        sourceheight = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEHEIGHT).Int();
 
-	nvalues = m_Config.GetValuesCount( preferreddevices );
-	m_Config.SetCurrentParamIndex(preferreddevices);
-	/*
-MO_LIVE_LABELNAME	0
-MO_LIVE_DEVICENAME	1
-MO_LIVE_WIDTH		2
-MO_LIVE_HEIGHT		3
-MO_LIVE_BITCOUNT	4
-	*/
-	MODebug2->Message(moText("Setting preferred devices"));
-	for( MOuint i = 0; i < nvalues; i++) {
+        if(videobufferinput!=moText("")) {
+          moCircularVideoBuffer* pCircularBuffer = NULL;
+          int tid = m_pResourceManager->GetTextureMan()->AddTexture( MO_TYPE_CIRCULARVIDEOBUFFER, videobuffername );
+          if(tid>-1) {
+            pCircularBuffer =  (moCircularVideoBuffer*) m_pResourceManager->GetTextureMan()->GetTexture(tid);
+          }
+          if (pCircularBuffer) {
+            pCircularBuffer->Init(  videobufferinput, videobufferformat, GetResourceManager(), frames, width, height, xsource, ysource, sourcewidth, sourceheight);
+            m_CircularVideoBuffers.Add(pCircularBuffer);
+            pCircularBuffer->StartRecording();
+          }
+        }
 
-		m_Config.SetCurrentValueIndex(preferreddevices, i);
+      }
 
-		MOint srcw(0),srch(0),srcbpp(0),flH(0),flV(0);
-		MOint ncount = m_Config.GetParam().GetValue().GetSubValueCount();
+      MOuint videobuffer = m_Config.GetParamIndex("videobuffer");
 
+      moText videobufferpath;
+      //moText videobuffername;
+      //moText videobufferformat;
+      //MOint	xsource, ysource, width, height, sourcewidth, sourceheight;
+      if (videobuffer>0)
+      for(MOuint i=0; i<m_Config.GetValuesCount(videobuffer); i++ ) {
 
-		( MO_LIVE_WIDTH < ncount ) ? srcw = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_WIDTH).Int() : srcw = 0;
-		( MO_LIVE_HEIGHT < ncount ) ? srch = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_HEIGHT).Int() : srch = 0;
-		( MO_LIVE_BITCOUNT < ncount ) ? srcbpp = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_BITCOUNT).Int() : srcbpp = 0;
-		( MO_LIVE_FLIPH < ncount ) ? flH = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_FLIPH).Int() : flH = 0;
-		( MO_LIVE_FLIPV < ncount ) ? flV = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_FLIPV).Int() : flV = 0;
+        videobufferpath = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(0).Text();
 
-		moVideoFormat VF;
-		moCaptureDevice CD( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_DEVICENAME).Text(), moText(""), moText(""), 0, srcw, srch, srcbpp, flH, flV );
+        moVideoBufferPath* pVideoBufferPath = new moVideoBufferPath();
 
-		CD.SetCodeName( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_LABELNAME).Text() );
+        if (pVideoBufferPath) {
 
-		VF.m_Width = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEWIDTH).Int();
-		VF.m_Height = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEHEIGHT).Int();
-		VF.m_BitCount = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_BITCOUNT).Int();
+          pVideoBufferPath->Init( GetResourceManager(), videobufferpath );
+          m_VideoBufferPaths.Add(pVideoBufferPath);
 
-		VF.m_ColorMode = (moColorMode)m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_COLORMODE).Int();
+          for(MOuint j=0; j < ( m_Config.GetParam(videobuffer).GetValue(i).GetSubValueCount() - 1 ) / 11; j++) {
 
-		CD.SetVideoFormat( VF );
+            videobuffername = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_BUFFERNAME).Text();
+            videobufferformat = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_BUFFERFORMAT).Text();
 
-		pPreferredDevices->Add( CD );
-		MODebug2->Message(moText("Added preferred device setting: Device Name: ")+CD.GetName());
-		//for( int k = 1; k < m_Config.GetParam().GetSubCount(); k++);
-	}
+            width = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_WIDTH).Int();
+            height = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_HEIGHT).Int();
+            xsource = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEXOFFSET).Int();
+            ysource = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEYOFFSET).Int();
+            sourcewidth = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEWIDTH).Int();
+            sourceheight = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEHEIGHT).Int();
 
+            interpolation = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATION).Int();
+            interpolationjump = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONJUMP).Int();
+            interpolationtime = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONTIME).Int();
 
+            if(videobufferpath!=moText("")) {
+              moVideoBuffer* pVideoBuffer = NULL;
+              int tid = m_pResourceManager->GetTextureMan()->AddTexture( MO_TYPE_VIDEOBUFFER, videobuffername );
+              if(tid>-1) {
+                pVideoBuffer =  (moVideoBuffer*) m_pResourceManager->GetTextureMan()->GetTexture(tid);
+              }
+              if (pVideoBuffer) {
+                pVideoBuffer->Init(  videobufferpath, videobufferformat, GetResourceManager(), width, height, xsource, ysource, sourcewidth, sourceheight, interpolation, interpolationjump, interpolationtime);
+                pVideoBufferPath->m_VideoBuffers.Add(pVideoBuffer);
+              }
+            }
+          }
+        }
+      }
 
-//INITIALIZING LiveSystems
-
-	//try to connect to all
-	m_pLiveSystems = new moLiveSystems();
-	m_pLiveSystems->Init(0, NULL);
-
-    MODebug2->Message(moText("Finally load live systems grabber for each device...."));
-	if ( m_pLiveSystems->LoadLiveSystems( pPreferredDevices ) ) {
-		//los inicializa...
-		for( MOuint i = 0; i < m_pLiveSystems->Count(); i++) {
-
-			moLiveSystemPtr pLS = m_pLiveSystems->Get(i);
-
-			if (pLS && pLS->GetCaptureDevice().IsPresent()) {
-				if (pLS->Init()) {
-				    MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
-                } else {
-                    MODebug2->Error( moText(pLS->GetCaptureDevice().GetName()) + " not initialized");
-                }
-			}
-
-		}
-
-
-	} else MODebug2->Error(moText("Error. No livesystems loaded??...."));
-
-
-	MOuint circularbuffer = m_Config.GetParamIndex("circularbuffer");
-
-	moText videobufferinput;
-	moText videobuffername;
-	moText videobufferformat;
-	MOint	xsource, ysource, width, height, sourcewidth, sourceheight, frames;
-	MOint	interpolation, interpolationjump, interpolationtime;
-
-	if (circularbuffer>0)
-	for(MOuint i=0; i<m_Config.GetValuesCount(circularbuffer); i++ ) {
-
-		videobufferinput = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERINPUT).Text();
-		videobuffername = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERNAME).Text();
-		videobufferformat = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERFORMAT).Text();
-
-		frames = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARBUFFERFRAMES).Int();
-		width = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARWIDTH).Int();
-		height = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARHEIGHT).Int();
-		xsource = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEXOFFSET).Int();
-		ysource = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEYOFFSET).Int();
-		sourcewidth = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEWIDTH).Int();
-		sourceheight = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEHEIGHT).Int();
-
-		if(videobufferinput!=moText("")) {
-			moCircularVideoBuffer* pCircularBuffer = NULL;
-			int tid = m_pResourceManager->GetTextureMan()->AddTexture( MO_TYPE_CIRCULARVIDEOBUFFER, videobuffername );
-			if(tid>-1) {
-				pCircularBuffer =  (moCircularVideoBuffer*) m_pResourceManager->GetTextureMan()->GetTexture(tid);
-			}
-			if (pCircularBuffer) {
-				pCircularBuffer->Init(  videobufferinput, videobufferformat, GetResourceManager(), frames, width, height, xsource, ysource, sourcewidth, sourceheight);
-				m_CircularVideoBuffers.Add(pCircularBuffer);
-			}
-		}
-
-	}
-
-	MOuint videobuffer = m_Config.GetParamIndex("videobuffer");
-
-	moText videobufferpath;
-	//moText videobuffername;
-	//moText videobufferformat;
-	//MOint	xsource, ysource, width, height, sourcewidth, sourceheight;
-	if (videobuffer>0)
-	for(MOuint i=0; i<m_Config.GetValuesCount(videobuffer); i++ ) {
-
-		videobufferpath = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(0).Text();
-
-		moVideoBufferPath* pVideoBufferPath = new moVideoBufferPath();
-
-		if (pVideoBufferPath) {
-
-			pVideoBufferPath->Init( GetResourceManager(), videobufferpath );
-			m_VideoBufferPaths.Add(pVideoBufferPath);
-
-			for(MOuint j=0; j < ( m_Config.GetParam(videobuffer).GetValue(i).GetSubValueCount() - 1 ) / 11; j++) {
-
-				videobuffername = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_BUFFERNAME).Text();
-				videobufferformat = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_BUFFERFORMAT).Text();
-
-				width = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_WIDTH).Int();
-				height = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_HEIGHT).Int();
-				xsource = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEXOFFSET).Int();
-				ysource = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEYOFFSET).Int();
-				sourcewidth = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEWIDTH).Int();
-				sourceheight = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEHEIGHT).Int();
-
-				interpolation = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATION).Int();
-				interpolationjump = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONJUMP).Int();
-				interpolationtime = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONTIME).Int();
-
-				if(videobufferpath!=moText("")) {
-					moVideoBuffer* pVideoBuffer = NULL;
-					int tid = m_pResourceManager->GetTextureMan()->AddTexture( MO_TYPE_VIDEOBUFFER, videobuffername );
-					if(tid>-1) {
-						pVideoBuffer =  (moVideoBuffer*) m_pResourceManager->GetTextureMan()->GetTexture(tid);
-					}
-					if (pVideoBuffer) {
-						pVideoBuffer->Init(  videobufferpath, videobufferformat, GetResourceManager(), width, height, xsource, ysource, sourcewidth, sourceheight, interpolation, interpolationjump, interpolationtime);
-						pVideoBufferPath->m_VideoBuffers.Add(pVideoBuffer);
-					}
-				}
-			}
-		}
-	}
-
-	delete pPreferredDevices;
+      delete pPreferredDevices;
 
 	} else {
 
-        //create values from default
+      /// TODO: create values from default
+      /// making accesible default camera if present with default value
+      /// ....
 
-    }
+  }
 
 
 	m_bLoading = true;
@@ -947,6 +980,34 @@ MOdevcode moVideoManager::GetCode(moText strcod)
 	}
 
     return(-1);
+}
+
+moCamera* moVideoManager::GetCamera( int cam_idx ) {
+  if (m_pLiveSystems)
+    return m_pLiveSystems->Get(cam_idx);
+  return NULL;
+}
+
+int moVideoManager::GetCameraCount() {
+  if (m_pLiveSystems)
+    return m_pLiveSystems->Count();
+  return 0;
+}
+
+moCircularVideoBuffer* moVideoManager::GetCircularVideoBuffer( int cb_idx ) {
+  return m_CircularVideoBuffers.Get(cb_idx);
+}
+
+int moVideoManager::GetCircularVideoBufferCount() {
+  return m_CircularVideoBuffers.Count();
+}
+
+moVideoBufferPath* moVideoManager::GetVideoBufferPath( int vb_idx ) {
+  return m_VideoBufferPaths.Get(vb_idx);
+}
+
+int moVideoManager::GetVideoBufferPathCount() {
+  return m_VideoBufferPaths.Count();
 }
 
 
@@ -1043,7 +1104,9 @@ void moVideoManager::Update(moEventList * p_EventList)
                   if (pCircularVideoBuffer &&
                     pCircularVideoBuffer->GetVideoInput() == ts->GetName() ) {
 
-                    pCircularVideoBuffer->LoadSample( pSample );
+                    if (pCircularVideoBuffer->IsRecording()) {
+                      pCircularVideoBuffer->LoadSample( pSample );
+                    }
 
                   }
 

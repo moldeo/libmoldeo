@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -35,7 +35,9 @@ moScriptManager::moScriptManager()
 {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_SCRIPT );
+
 	SetName("Script Manager");
+	SetLabelName("Script Manager");
 }
 
 moScriptManager::~moScriptManager()
@@ -73,7 +75,25 @@ void moScriptManager::RegisterLunaClasses()
 {
 	lua_State *state = (lua_State *) m_vm;
 
+	REGISTER_CLASS(moLuaResourceManager, state);
 	REGISTER_CLASS(moLuaMath, state);
 	REGISTER_CLASS(moLuaParserFunction, state);
 	REGISTER_CLASS(moLuaP5, state);
+
+  m_pLuaResourceManager = new moLuaResourceManager( state );
+  m_pLuaResourceManager->Set( GetResourceManager() );
+}
+
+moLuaResourceManager* moScriptManager::PushLuaResourceManager( moResourceManager* p_pResourceManager ) {
+
+  lua_State *state = (lua_State *) m_vm;
+
+  if (p_pResourceManager) {
+    m_pLuaResourceManager->Set( p_pResourceManager );
+  }
+
+  if (m_pLuaResourceManager) {
+    moLuna<moLuaResourceManager>::createFromExisting( state, m_pLuaResourceManager );
+  }
+  return m_pLuaResourceManager;
 }

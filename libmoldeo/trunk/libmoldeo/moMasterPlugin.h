@@ -75,7 +75,7 @@ private:
 template class LIBMOLDEO_API moDynamicArray<moMasterPlugin*>;
 typedef moDynamicArray<moMasterPlugin*> moMasterPluginsArray;
 */
-moDeclareExportedDynamicArray( moMasterPlugin*, moMasterPluginsArray )
+moDeclareExportedDynamicArray( moMasterPlugin*, moMasterPluginsArray );
 
 LIBMOLDEO_API moMasterEffect* moNewMasterEffect(moText effect_name, moMasterPluginsArray &plugins);
 LIBMOLDEO_API bool moDeleteMasterEffect(moMasterEffect* effect, moMasterPluginsArray &plugins);

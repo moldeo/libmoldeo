@@ -40,7 +40,9 @@ moMathManager::moMathManager()
 {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_MATH );
+
 	SetName("Math Manager");
+	SetLabelName("Math Manager");
 }
 
 moMathManager::~moMathManager()

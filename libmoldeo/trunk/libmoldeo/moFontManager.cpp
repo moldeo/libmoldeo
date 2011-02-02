@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -49,7 +49,8 @@ moFontManager::moFontManager() {
 	SetType(MO_OBJECT_RESOURCE);
 	SetResourceType(MO_RESOURCETYPE_FONT);
 
-	SetName("Font Manager");
+	SetName("fontmanager");
+	SetLabelName("fontmanager");
 }
 
 moFontManager::~moFontManager() {

@@ -168,10 +168,8 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
                                       if (!m_Config.GetConfigDefinition()->SetParamIndex( (int)X, moParamIndex(pidx))) {\
                                         MODebug2->Error(moText(Y) + moText("  warning. Bad indexation could cause errors."));\
                                       }\
-                                    } else MODebug2->Error(moText(Y) + moText("  not found."));\
+                                    } else MODebug2->Error( "<"+m_Config.GetObjectName()+">::Init() > "+m_Config.GetObjectClass()+ " \"" + moText(Y) + moText("\" not found."));\
                                 }
-
-
 /// almacena la configuración de los parámetros de un objeto en un archivo XML
 /**
  *  Es una clase de manejo de archivo de configuración basado en XML
@@ -236,6 +234,16 @@ class LIBMOLDEO_API moConfig
         /// Lee la configuracion de un archivo.
         /**  @return MO_CONFIG_OK, MO_CONFIGFILE_NOT_FOUND, -1 si es otro error*/
         int						LoadConfig( moText p_filename );
+
+        /// Corrige el archivo de configuración
+        /**
+        * Corrige el archivo de configuración agregando aquellos parámetros faltantes
+        * TODO : 1) Que arregle problemas de formato de tipos de dato o
+        * 2) versionado (core creador, director creador, plugin creador, os creador)
+        * 3) convierta de ANSI a UTF
+        * @return MO_CONFIG_OK, MO_CONFIGFILE_NOT_FOUND, -1 si es otro error
+        */
+        void						FixConfig();
 
         /// Devuelve true si pudo crear el archivo de configuración junto con su archivo correspondiente
         /**
@@ -331,7 +339,7 @@ class LIBMOLDEO_API moConfig
         const moVector4i&             Vector4i( moParamReference p_paramreference );
         const moDataMessage&          Message(  moParamReference p_paramreference );
         const moDataMessages&         Messages( moParamReference p_paramreference );
-        const moSound&                Sound(  moParamReference p_paramreference );
+        moSound&                Sound(  moParamReference p_paramreference );
         const moTexture&              Texture(  moParamReference p_paramreference );
 
 
@@ -530,6 +538,7 @@ class LIBMOLDEO_API moConfig
 		static moTexture*              m_pTexture;
 
 
+    void CreateParam( moParamDefinition& p_ParamDef );
 
 };
 

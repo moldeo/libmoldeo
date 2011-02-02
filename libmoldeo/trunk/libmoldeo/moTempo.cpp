@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -74,7 +74,7 @@ MOboolean moTempo::Init(MOdouble sync) {
 
 MOdouble moTempo::getPrincipalAngle() {
 
-	MOdouble dx,dy;		
+	MOdouble dx,dy;
 	MOulong intv,modv,resv;
 
 	MOdouble t0;
@@ -89,14 +89,14 @@ MOdouble moTempo::getPrincipalAngle() {
 		modv =( modv == 0 ? 1 : modv );
 		dy  =(double) 2.0 * moMathf::PI *(factor + deltaprevious - 1.0);
 		dx  =(double) modv;
-		ang =(double) intv * dy / dx; 
-		
+		ang =(double) intv * dy / dx;
+
 		t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
-		
+
 		//corregimos el ticks_0(desfazaje que fuerza el desplazamiento de la funcion para su continuidad)
 		// Agregado conversion a int para evitar compiler warnings(by Andres)
 		ticks_0 =(int) t0;
-		ticks_1 =(int) t0 + modv;			
+		ticks_1 =(int) t0 + modv;
 		deltaprevious = delta;
 	}
 
@@ -114,7 +114,7 @@ MOdouble moTempo::getPrincipalAngle() {
     modv =( modv == 0 ? 1 : modv );
 	dy  =(double) 2.0 * pi *(factor + delta - 1.0);
     dx  =(double) modv;
-    ang =(double) intv * dy / dx; 
+    ang =(double) intv * dy / dx;
 	ang *= syncro;
 */
 	return (ang);
@@ -122,7 +122,7 @@ MOdouble moTempo::getPrincipalAngle() {
 
 MOdouble moTempo::getTempo() {
 
-	MOdouble dx,dy;		
+	MOdouble dx,dy;
 	MOulong intv,modv;
 
 	MOdouble t0;
@@ -143,14 +143,14 @@ MOdouble moTempo::getTempo() {
 		modv =( modv == 0 ? 1 : modv );
 		dy  =(double) 2.0 * moMathf::PI *(factor + deltaprevious - 1.0);
 		dx  =(double) modv;
-		ang =(double) intv * dy / dx; 
-		
+		ang =(double) intv * dy / dx;
+
 		t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
-		
+
 		//corregimos el ticks_0(desfazaje que fuerza el desplazamiento de la funcion para su continuidad)
 		// Agregado conversion a int para evitar compiler warnings(by Andres)
 		ticks_0 =(int) t0;
-		ticks_1 =(int) t0 + modv;			
+		ticks_1 =(int) t0 + modv;
 		deltaprevious = delta;
 	}
 
@@ -159,12 +159,12 @@ MOdouble moTempo::getTempo() {
     modv =( modv == 0 ? 1 : modv );
 	dy  =(double) 2.0 * moMathf::PI *(factor + delta - 1.0);
     dx  =(double) modv;
-    ang =(double) intv * dy / dx; 
+    ang =(double) intv * dy / dx;
 	ang *= syncro;
 	return (ang);
 }
 
-void moTempo::BeatPulse(MOulong tik) {		
+void moTempo::BeatPulse(MOulong tik) {
 	//beatpulsecount0-> contando tiempo
 	if(beatpulsecount==0 || tik-beat_0 > 10000) {      // si pasaron mas de 10' lo toma como el primer beat.
 		//entra el primero

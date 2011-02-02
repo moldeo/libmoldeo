@@ -42,7 +42,7 @@
 *
 *   \author     Fabricio Costa Alisedo
 *   \author     Gustavo Orrillo
-*   \author     Andrés Colubri
+*   \author
 *   \author     Cristian Rocha
 *   \author     Christian Parsons
 *   \author     Arturo Bianchetti

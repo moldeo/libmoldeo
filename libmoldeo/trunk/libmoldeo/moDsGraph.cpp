@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -61,7 +61,7 @@ moDsFramework::~moDsFramework() {
 
 }
 
-bool 
+bool
 moDsFramework::ShowError( HRESULT hr ) {
     if(FAILED(hr))
     {
@@ -85,7 +85,7 @@ moCaptureDevices* moDsFramework::LoadCaptureDevices() {
 	// Create the System Device Enumerator.
 	if(m_pDevEnum==NULL) {
 		HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, NULL,
-			CLSCTX_INPROC_SERVER, IID_ICreateDevEnum, 
+			CLSCTX_INPROC_SERVER, IID_ICreateDevEnum,
 			reinterpret_cast<void**>(&m_pDevEnum));
 
 		if(SUCCEEDED(hr) && m_pEnum==NULL)
@@ -99,7 +99,7 @@ moCaptureDevices* moDsFramework::LoadCaptureDevices() {
 			return &m_CaptureDevices;
 		}
 	}
-	
+
 	if( m_pEnum )
 	{
 		m_pEnum->Reset();
@@ -109,12 +109,12 @@ moCaptureDevices* moDsFramework::LoadCaptureDevices() {
 		while(m_pEnum->Next(1, &pMoniker, NULL) == S_OK)
 		{
 			IPropertyBag *pPropBag;
-			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag, 
+			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag,
 				(void**)(&pPropBag));
 			if(FAILED(hr)) {
 				pMoniker->Release();
 				continue;  // Skip this one, maybe the next one will work.
-			} 
+			}
 			// Find the description or friendly name.
 			moText FriendlyName = "";
 			moText Description = "";
@@ -128,7 +128,7 @@ moCaptureDevices* moDsFramework::LoadCaptureDevices() {
 			VariantInit(&varDescription);
 			VariantInit(&varDevicePath);
 
-			hr = pPropBag->Read(L"FriendlyName", &varFriendlyName, 0);			
+			hr = pPropBag->Read(L"FriendlyName", &varFriendlyName, 0);
 			if(SUCCEEDED(hr)) FriendlyName =(short*)varFriendlyName.bstrVal;
 
 			hr = pPropBag->Read(L"Description", &varDescription, 0);
@@ -136,15 +136,15 @@ moCaptureDevices* moDsFramework::LoadCaptureDevices() {
 
 			hr = pPropBag->Read(L"DevicePath", &varDevicePath, 0);
 			if(SUCCEEDED(hr)) DevicePath =(short*)varDevicePath.bstrVal;
-			
+
 			moCaptureDevice CapDev( FriendlyName, Description, DevicePath );
 			CapDev.Present(true);
 
-			m_CaptureDevices.Add( CapDev );			
+			m_CaptureDevices.Add( CapDev );
 
 			pPropBag->Release();
 			pMoniker->Release();
-		} 
+		}
 	} else {
 		printf("WARNING: No capture devices available...\n");
 		return &m_CaptureDevices;
@@ -157,7 +157,7 @@ moCaptureDevices* moDsFramework::LoadCaptureDevices() {
 
 
 moCaptureDevices* moDsFramework::UpdateCaptureDevices() {
-	
+
 	HRESULT hr;
 	MOuint K;
 	moCaptureDevice CapDev;
@@ -165,7 +165,7 @@ moCaptureDevices* moDsFramework::UpdateCaptureDevices() {
 	for( K=0; K < m_CaptureDevices.Count(); K++) {
 		CapDev = m_CaptureDevices.Get(K);
 		CapDev.Present( false );
-		m_CaptureDevices.Set( K , CapDev );		
+		m_CaptureDevices.Set( K , CapDev );
 	}
 
 	if (m_pEnum)  {
@@ -181,18 +181,18 @@ moCaptureDevices* moDsFramework::UpdateCaptureDevices() {
 
 	if( m_pEnum )
 	{
-		m_pEnum->Reset();		
+		m_pEnum->Reset();
 
 		IMoniker *pMoniker = NULL;
 		while(m_pEnum->Next(1, &pMoniker, NULL) == S_OK)
 		{
 			IPropertyBag *pPropBag;
-			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag, 
+			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag,
 				(void**)(&pPropBag));
 			if(FAILED(hr)) {
 				pMoniker->Release();
 				continue;  // Skip this one, maybe the next one will work.
-			} 
+			}
 			// Find the description or friendly name.
 			moText FriendlyName = "";
 			moText Description = "";
@@ -206,7 +206,7 @@ moCaptureDevices* moDsFramework::UpdateCaptureDevices() {
 			VariantInit(&varDescription);
 			VariantInit(&varDevicePath);
 
-			hr = pPropBag->Read(L"FriendlyName", &varFriendlyName, 0);			
+			hr = pPropBag->Read(L"FriendlyName", &varFriendlyName, 0);
 			if(SUCCEEDED(hr)) FriendlyName =(short*)varFriendlyName.bstrVal;
 
 			hr = pPropBag->Read(L"Description", &varDescription, 0);
@@ -221,19 +221,19 @@ moCaptureDevices* moDsFramework::UpdateCaptureDevices() {
 					//AN OLD ONE... :-D CONFIRMS HIS PRESENCE
 					CapDev = m_CaptureDevices.Get(K);
 					CapDev.Present( true );
-					m_CaptureDevices.Set( K , CapDev );					
+					m_CaptureDevices.Set( K , CapDev );
 					CapDevFounded = true;
 				}
 			}
 
-			if (!CapDevFounded) {				
+			if (!CapDevFounded) {
 				//A NEW ONE!!!!
 				m_CaptureDevices.Add( moCaptureDevice( FriendlyName, Description, DevicePath ) );
 			}
 
 			pPropBag->Release();
 			pMoniker->Release();
-		} 
+		}
 	} else {
 		//printf("WARNING: No capture devices available...\n");
 		return &m_CaptureDevices;
@@ -262,19 +262,19 @@ moDsFramework::CheckCaptureDevice( int i ) {
 	}
 
 	if( m_pEnum )
-	{	
+	{
 		m_pEnum->Reset();
 
 		IMoniker *pMoniker = NULL;
 		while(m_pEnum->Next(1, &pMoniker, NULL) == S_OK)
 		{
 			IPropertyBag *pPropBag;
-			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag, 
+			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag,
 				(void**)(&pPropBag));
 			if(FAILED(hr)) {
 				pMoniker->Release();
 				continue;  // Skip this one, maybe the next one will work.
-			} 
+			}
 			// Find the description or friendly name.
 			moText FriendlyName = "";
 			moText Description = "";
@@ -288,20 +288,20 @@ moDsFramework::CheckCaptureDevice( int i ) {
 			VariantInit(&varDescription);
 			VariantInit(&varDevicePath);
 
-			hr = pPropBag->Read(L"FriendlyName", &varFriendlyName, 0);			
+			hr = pPropBag->Read(L"FriendlyName", &varFriendlyName, 0);
 			if(SUCCEEDED(hr)) FriendlyName =(short*)varFriendlyName.bstrVal;
 
 			hr = pPropBag->Read(L"Description", &varDescription, 0);
 			if(SUCCEEDED(hr)) Description =(short*)varDescription.bstrVal;
 
 			hr = pPropBag->Read(L"DevicePath", &varDevicePath, 0);
-			if(SUCCEEDED(hr)) DevicePath =(short*)varDevicePath.bstrVal;			
+			if(SUCCEEDED(hr)) DevicePath =(short*)varDevicePath.bstrVal;
 
 			pPropBag->Release();
 			pMoniker->Release();
-			if ( DevicePath == m_CaptureDevices.Get(i).GetPath() ) 
+			if ( DevicePath == m_CaptureDevices.Get(i).GetPath() )
 				return true;
-		} 
+		}
 	} else {
 		return false;
 	}
@@ -317,7 +317,7 @@ moDsFramework::CheckCaptureDevice( int i ) {
 //===========================================
 
 moDsGraph::moDsGraph() {
-	
+
 	m_pFilterGraph = NULL;
 	m_pMediaControl = NULL;
 	m_pMediaSeeking = NULL;
@@ -330,7 +330,7 @@ moDsGraph::moDsGraph() {
 	m_pFileSourceFilter = NULL;
 	m_pAviSplitter =  NULL;
 	m_pSplitter = NULL;
-	
+
 	//QUICKTIME ALTERNATIVE
 	m_pQuicktimeDecoder = NULL;
 
@@ -366,7 +366,7 @@ moDsGraph::InitGraph() {
 
 		hr = CoCreateInstance(CLSID_FilterGraph, 0, CLSCTX_INPROC_SERVER,
             IID_IGraphBuilder,(void**)&m_pFilterGraph);
-		
+
 		if(SUCCEEDED(hr)) {
 			hr = m_pFilterGraph->QueryInterface(IID_IMediaControl,(void**)&m_pMediaControl);
 			if(SUCCEEDED(hr)) {
@@ -381,7 +381,7 @@ moDsGraph::InitGraph() {
 }
 
 
-bool 
+bool
 moDsGraph::FinishGraph() {
 
 	ULONG rc;
@@ -395,7 +395,7 @@ moDsGraph::FinishGraph() {
 			HRESULT hr;
 			//Cancel Callback
 			hr = m_pSampleGrabber->SetCallback( NULL , 1 );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 		}
 		rc = m_pSampleGrabberBase->Release();
@@ -416,7 +416,7 @@ moDsGraph::FinishGraph() {
 
 	if(m_pSourceFilter) {
 		rc = m_pSourceFilter->Release();
-		m_pSourceFilter = NULL;		
+		m_pSourceFilter = NULL;
 	}
 
 	if(m_pQuicktimeDecoder) {
@@ -458,7 +458,7 @@ moDsGraph::FinishGraph() {
 		rc = m_pMediaControl->Release();
 		m_pMediaControl = NULL;
 	}
-	
+
 	if(m_pMediaSeeking) {
 		rc = m_pMediaSeeking->Release();
 		m_pMediaSeeking = NULL;
@@ -485,7 +485,7 @@ moDsGraph::CreateCaptureDeviceByPath( moText p_Path, IBaseFilter **ppF ) {
 
 	// Create the System Device Enumerator.
 	HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, NULL,
-		CLSCTX_INPROC_SERVER, IID_ICreateDevEnum, 
+		CLSCTX_INPROC_SERVER, IID_ICreateDevEnum,
 		reinterpret_cast<void**>(&pDevEnum));
 
 	if(SUCCEEDED(hr))
@@ -495,7 +495,7 @@ moDsGraph::CreateCaptureDeviceByPath( moText p_Path, IBaseFilter **ppF ) {
 			CLSID_VideoInputDeviceCategory,
 			&pEnum, 0);
 	} else return ShowError(hr);
-	
+
 	if( pEnum )
 	{
 		printf("DirectShow filters: \n");
@@ -503,20 +503,20 @@ moDsGraph::CreateCaptureDeviceByPath( moText p_Path, IBaseFilter **ppF ) {
 		while(pEnum->Next(1, &pMoniker, NULL) == S_OK)
 		{
 			IPropertyBag *pPropBag;
-			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag, 
+			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag,
 				(void**)(&pPropBag));
 			if(FAILED(hr)) {
 				pMoniker->Release();
 				continue;  // Skip this one, maybe the next one will work.
-			} 
+			}
 			// Find the description or friendly name.
 			VARIANT varName;
 			VariantInit(&varName);
-			hr = pPropBag->Read(L"DevicePath", &varName, 0);					
+			hr = pPropBag->Read(L"DevicePath", &varName, 0);
 			if(SUCCEEDED(hr)) {
 				moText fname;
 				fname =(short*)varName.bstrVal;
-				// To create an instance of the filter, do the following:		
+				// To create an instance of the filter, do the following:
 				if( fname==p_Path ) {
 					hr = pMoniker->BindToObject(NULL, NULL, IID_IBaseFilter,(void**)ppF);
 					if(FAILED(hr)) {
@@ -531,16 +531,16 @@ moDsGraph::CreateCaptureDeviceByPath( moText p_Path, IBaseFilter **ppF ) {
 						pEnum->Release();
 						pDevEnum->Release();
 						return true;
-					}					
+					}
 				}
 			}
 			pPropBag->Release();
 			pMoniker->Release();
-		} 
+		}
 		pEnum->Release();
 		pDevEnum->Release();
 	} else {
-		printf("WARNING: No filter found with that path...\n");		
+		printf("WARNING: No filter found with that path...\n");
 		pDevEnum->Release();
 		return false;
 	}
@@ -561,7 +561,7 @@ moDsGraph::CreateFilterByName( moText p_Name, IBaseFilter **ppF )      // Receiv
 
 	// Create the System Device Enumerator.
 	HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, NULL,
-		CLSCTX_INPROC_SERVER, IID_ICreateDevEnum, 
+		CLSCTX_INPROC_SERVER, IID_ICreateDevEnum,
 		reinterpret_cast<void**>(&pDevEnum));
 
 	if(SUCCEEDED(hr))
@@ -571,7 +571,7 @@ moDsGraph::CreateFilterByName( moText p_Name, IBaseFilter **ppF )      // Receiv
 			CLSID_LegacyAmFilterCategory,
 			&pEnum, 0);
 	} else return ShowError(hr);
-	
+
 	if( pEnum )
 	{
 		printf("DirectShow filters: \n");
@@ -579,18 +579,18 @@ moDsGraph::CreateFilterByName( moText p_Name, IBaseFilter **ppF )      // Receiv
 		while(pEnum->Next(1, &pMoniker, NULL) == S_OK)
 		{
 			IPropertyBag *pPropBag;
-			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag, 
+			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag,
 				(void**)(&pPropBag));
 			if(FAILED(hr)) {
 				pMoniker->Release();
 				continue;  // Skip this one, maybe the next one will work.
-			} 
+			}
 			// Find the description or friendly name.
 			VARIANT varName;
 			VariantInit(&varName);
 			hr = pPropBag->Read(L"Description", &varName, 0);
 			if(FAILED(hr)) {
-				hr = pPropBag->Read(L"FriendlyName", &varName, 0);				
+				hr = pPropBag->Read(L"FriendlyName", &varName, 0);
 				printf( "FriendlyName: " );
 				//wprintf((const wchar_t *)varName.bstrVal);
 				printf( "\n" );
@@ -598,11 +598,11 @@ moDsGraph::CreateFilterByName( moText p_Name, IBaseFilter **ppF )      // Receiv
 				printf( "Description: " );
 				//wprintf((const wchar_t *)varName.bstrVal);
 				printf( "\n" );
-			}			
+			}
 			if(SUCCEEDED(hr)) {
 				moText fname;
 				fname =(short*)varName.bstrVal;
-				// To create an instance of the f.ilter, do the following:		
+				// To create an instance of the f.ilter, do the following:
 				if( fname==p_Name ) {
 					hr = pMoniker->BindToObject(NULL, NULL, IID_IBaseFilter,(void**)ppF);
 					if(FAILED(hr)) {
@@ -617,12 +617,12 @@ moDsGraph::CreateFilterByName( moText p_Name, IBaseFilter **ppF )      // Receiv
 						pEnum->Release();
 						pDevEnum->Release();
 						return true;
-					}					
+					}
 				}
 			}
 			pPropBag->Release();
 			pMoniker->Release();
-		} 
+		}
 		pEnum->Release();
 		pDevEnum->Release();
 	} else {
@@ -646,7 +646,7 @@ moDsGraph::SetCaptureDevice( moText deviceport, MOint idevice) {
 
 	// Create the System Device Enumerator.
 	HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, NULL,
-		CLSCTX_INPROC_SERVER, IID_ICreateDevEnum, 
+		CLSCTX_INPROC_SERVER, IID_ICreateDevEnum,
 		reinterpret_cast<void**>(&pDevEnum));
 
 	if(SUCCEEDED(hr))
@@ -656,7 +656,7 @@ moDsGraph::SetCaptureDevice( moText deviceport, MOint idevice) {
 			CLSID_VideoInputDeviceCategory,
 			&pEnum, 0);
 	} else return ShowError(hr);
-	
+
 	if( pEnum )
 	{
 		printf("Capture devices: \n");
@@ -664,18 +664,18 @@ moDsGraph::SetCaptureDevice( moText deviceport, MOint idevice) {
 		while(pEnum->Next(1, &pMoniker, NULL) == S_OK)
 		{
 			IPropertyBag *pPropBag;
-			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag, 
+			hr = pMoniker->BindToStorage(0, 0, IID_IPropertyBag,
 				(void**)(&pPropBag));
 			if(FAILED(hr)) {
 				pMoniker->Release();
 				continue;  // Skip this one, maybe the next one will work.
-			} 
+			}
 			// Find the description or friendly name.
 			VARIANT varName;
 			VariantInit(&varName);
 			hr = pPropBag->Read(L"Description", &varName, 0);
 			if(FAILED(hr)) {
-				hr = pPropBag->Read(L"FriendlyName", &varName, 0);				
+				hr = pPropBag->Read(L"FriendlyName", &varName, 0);
 				printf( "FriendlyName: " );
 				//wprintf_s((const wchar_t *)varName.bstrVal);
 				printf( "\n" );
@@ -683,11 +683,11 @@ moDsGraph::SetCaptureDevice( moText deviceport, MOint idevice) {
 				printf( "Description: " );
 				//wprintf_s((const wchar_t *)varName.bstrVal);
 				printf( "\n" );
-			}			
+			}
 			if(SUCCEEDED(hr)) {
 				moText fname;
 				fname =(short*)varName.bstrVal;
-				// To create an instance of the filter, do the following:		
+				// To create an instance of the filter, do the following:
 				hr = pMoniker->BindToObject(NULL, NULL, IID_IBaseFilter,(void**)&m_pCaptureFilter);
 				if(FAILED(hr)) {
 					pPropBag->Release();
@@ -735,7 +735,7 @@ moDsGraph::SetCaptureDevice( moText deviceport, MOint idevice) {
 			}
 			pPropBag->Release();
 			pMoniker->Release();
-		} 
+		}
 		pEnum->Release();
 		pDevEnum->Release();
 	} else {
@@ -754,15 +754,15 @@ moDsGraph::ShowConfigureDialog(IBaseFilter *pFilter) {
 	/* Obtain the filter's IBaseFilter interface. (Not shown) */
 	ISpecifyPropertyPages *pProp;
 	HRESULT hr = pFilter->QueryInterface(IID_ISpecifyPropertyPages, (void **)&pProp);
-	if (SUCCEEDED(hr)) 
+	if (SUCCEEDED(hr))
 	{
 		// Get the filter's name and IUnknown pointer.
 		FILTER_INFO FilterInfo;
-		hr = pFilter->QueryFilterInfo(&FilterInfo); 
+		hr = pFilter->QueryFilterInfo(&FilterInfo);
 		IUnknown *pFilterUnk;
 		pFilter->QueryInterface(IID_IUnknown, (void **)&pFilterUnk);
 
-		// Show the page. 
+		// Show the page.
 		CAUUID caGUID;
 		pProp->GetPages(&caGUID);
 		pProp->Release();
@@ -771,7 +771,7 @@ moDsGraph::ShowConfigureDialog(IBaseFilter *pFilter) {
 			0, 0,                   // Reserved
 			FilterInfo.achName,     // Caption for the dialog box
 			1,                      // Number of objects (just the filter)
-			&pFilterUnk,            // Array of object pointers. 
+			&pFilterUnk,            // Array of object pointers.
 			caGUID.cElems,          // Number of property pages
 			caGUID.pElems,          // Array of property page CLSIDs
 			0,                      // Locale identifier
@@ -780,7 +780,7 @@ moDsGraph::ShowConfigureDialog(IBaseFilter *pFilter) {
 
 		// Clean up.
 		pFilterUnk->Release();
-		FilterInfo.pGraph->Release(); 
+		FilterInfo.pGraph->Release();
 		CoTaskMemFree(caGUID.pElems);
 	}
 
@@ -809,14 +809,14 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 
 	//SOURCE
 	if ( p_capdev.GetPath() != "" ) {
-		
+
 		if(CreateCaptureDeviceByPath( p_capdev.GetPath(), &m_pCaptureFilter )) {
 			hr = m_pFilterGraph->AddFilter(m_pCaptureFilter, L"Capture Device");
 
 			//ShowConfigureDialog(m_pCaptureFilter);
-			
+
 			if(SUCCEEDED(hr)) {
-			
+
 				pPinSource = GetOutPin( m_pCaptureFilter ,0 );
 
 			} else return ShowError(hr);
@@ -825,9 +825,9 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 	} else return false;
 
 	//CHEQUEAMOS EL FORMATO DEL PIN
-	bool isdv = false;	
+	bool isdv = false;
 
-	AM_MEDIA_TYPE MTPreferredResolution;	
+	AM_MEDIA_TYPE MTPreferredResolution;
 	AM_MEDIA_TYPE MTDefaultResolution;
 
 	MTDefaultResolution.majortype = GUID_NULL;
@@ -844,32 +844,32 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 
 				if ( pMediaTypes->subtype == MEDIASUBTYPE_dvsl ||
 				     pMediaTypes->subtype == MEDIASUBTYPE_dvsd ||
-					 pMediaTypes->subtype == MEDIASUBTYPE_dvhd ) {					
+					 pMediaTypes->subtype == MEDIASUBTYPE_dvhd ) {
 
 					isdv = true;
-					
+
 					SetVideoFormat( pMediaTypes );
 
 					if (MTDefaultResolution.majortype == GUID_NULL)
 						MTDefaultResolution = (*pMediaTypes);
-					
+
 					if (p_capdev.GetVideoFormat().m_Width > 0) {
 						if ( p_capdev.GetVideoFormat().m_Width == m_VideoFormat.m_Width &&
 							p_capdev.GetVideoFormat().m_Height == m_VideoFormat.m_Height &&
 							p_capdev.GetVideoFormat().m_BitCount == m_VideoFormat.m_BitCount ) {
 
 							MTPreferredResolution = (*pMediaTypes);
-							
+
 						}
 					}
 
-					LastFormat = m_VideoFormat;				
+					LastFormat = m_VideoFormat;
 					//continuamos hasta terminar...
 				} else {//EVERYTHING ELSE MAY BE UNCOMPRESSED
-					if ( pMediaTypes->formattype == FORMAT_VideoInfo ) {					
-						
+					if ( pMediaTypes->formattype == FORMAT_VideoInfo ) {
+
 						SetVideoFormat( pMediaTypes );
-						
+
 						if (MTDefaultResolution.majortype == GUID_NULL)
 							MTDefaultResolution = (*pMediaTypes);
 
@@ -879,17 +879,17 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 								p_capdev.GetVideoFormat().m_BitCount == m_VideoFormat.m_BitCount ) {
 
 								MTPreferredResolution = (*pMediaTypes);
-								
+
 							}
 						}
 
 						LastFormat = m_VideoFormat;
-					}				
+					}
 				}
 			}
 		}
 	}
-	ppEnum->Release();	
+	ppEnum->Release();
 
 	//FORMATO DV
 	if ( isdv ) {
@@ -902,20 +902,20 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 				hr = m_pFilterGraph->AddFilter(m_pDVDecoderFilter, L"DV Decoder");
 				if(SUCCEEDED(hr)) {
 					//mostrar la pagina de configuracion del fitro
-					//sacar pines				
+					//sacar pines
 					pPinDecoderIn = GetInPin( m_pDVDecoderFilter ,0 );
 					pPinDecoderOut = GetOutPin( m_pDVDecoderFilter ,0 );
 
 					hr = m_pFilterGraph->Connect( pPinSource , pPinDecoderIn );
 
-					if(FAILED(hr)) 
+					if(FAILED(hr))
 						return ShowError(hr);
-				} else return ShowError(hr);			
+				} else return ShowError(hr);
 			} else return ShowError(hr);
 		} else return ShowError(hr);
 
 	} else {
-	
+
 		//AVI DECOMPRESSOR
 		if(!m_pAVIDecompressorFilter) {
 			hr = CoCreateInstance(CLSID_AVIDec, NULL, CLSCTX_INPROC_SERVER,
@@ -924,7 +924,7 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 				hr = m_pFilterGraph->AddFilter(m_pAVIDecompressorFilter, L"AVI Decompressor");
 				if(SUCCEEDED(hr)) {
 					//mostrar la pagina de configuracion del fitro
-					//sacar pines				
+					//sacar pines
 					pPinDecoderIn = GetInPin( m_pAVIDecompressorFilter ,0 );
 					pPinDecoderOut = GetOutPin( m_pAVIDecompressorFilter ,0 );
 
@@ -942,8 +942,8 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 								hr = m_pFilterGraph->Connect( pPinSource, pPinDecoderIn );
 								if (SUCCEEDED(hr)) {
 									AM_MEDIA_TYPE mt;
-									if ( pPinDecoderIn->ConnectionMediaType(&mt) == S_OK ) {		
-										SetVideoFormat( &mt );			
+									if ( pPinDecoderIn->ConnectionMediaType(&mt) == S_OK ) {
+										SetVideoFormat( &mt );
 									}
 								}
 							}
@@ -954,13 +954,13 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 						//SetVideoFormat( &MTDefaultResolution );
 					}
 
-					if(FAILED(hr))	
+					if(FAILED(hr))
 						return ShowError(hr);
-				} else return ShowError(hr);			
+				} else return ShowError(hr);
 			} else return ShowError(hr);
 		} else return ShowError(hr);
 	}
-		
+
 	//FRAME GRABBER
 	if(!m_pSampleGrabberBase) {
 		hr = CoCreateInstance(CLSID_SampleGrabber, NULL, CLSCTX_INPROC_SERVER,
@@ -972,28 +972,28 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 				pGrabPinIn = GetInPin( m_pSampleGrabberBase ,0 );
 				pGrabPinOut = GetOutPin( m_pSampleGrabberBase ,0 );
 				m_pSampleGrabberBase->QueryInterface(IID_ISampleGrabber,(void**)&m_pSampleGrabber);
-				
+
 				//SET RGB24 BEFORE CONNECTING SampleGrabber
 				CMediaType GrabType;
 				GrabType.SetType( &MEDIATYPE_Video );
 				GrabType.SetSubtype( &MEDIASUBTYPE_RGB24 );
 				hr = m_pSampleGrabber->SetMediaType( &GrabType );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pSampleGrabber->SetBufferSamples(FALSE);
-				if(FAILED(hr)) 
-					return ShowError(hr);	
-				
+				if(FAILED(hr))
+					return ShowError(hr);
+
 				//set the pool receiving the samples
 				m_CB.SetBucketsPool( pBucketsPool );
-				
+
 				hr = m_pSampleGrabber->SetCallback( &m_CB, 1 );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pFilterGraph->Connect( pPinDecoderOut , pGrabPinIn );
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1005,18 +1005,18 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 			hr = m_pFilterGraph->AddFilter(m_pNullRenderer, L"Null Renderer");
 			if(SUCCEEDED(hr)) {
 				pRendererPin = GetInPin(  m_pNullRenderer, 0);
-				
+
 				hr = m_pFilterGraph->Connect( pGrabPinOut, pRendererPin);
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
 				else {
 					AM_MEDIA_TYPE mt;
-					if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {		
-						SetVideoFormat( &mt );			
+					if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {
+						SetVideoFormat( &mt );
 					}
 					return true;
 				}
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1026,7 +1026,7 @@ moDsGraph::BuildLiveGraph( moBucketsPool *pBucketsPool, moCaptureDevice p_capdev
 
 bool
 moDsGraph::BuildLiveDVGraph( moBucketsPool *pBucketsPool, MOint idevice) {
-	
+
 	HRESULT hr;
 
 	IPin* pPinSource;
@@ -1053,15 +1053,15 @@ moDsGraph::BuildLiveDVGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 			hr = m_pFilterGraph->AddFilter(m_pDVDecoderFilter, L"DV Decoder");
 			if(SUCCEEDED(hr)) {
 				//mostrar la pagina de configuracion del fitro
-				//sacar pines				
+				//sacar pines
 				pPinDecoderIn = GetInPin( m_pDVDecoderFilter ,0 );
 				pPinDecoderOut = GetOutPin( m_pDVDecoderFilter ,0 );
 
 				hr = m_pFilterGraph->Connect( pPinSource , pPinDecoderIn );
 
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1077,7 +1077,7 @@ moDsGraph::BuildLiveDVGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 				pGrabPinIn = GetInPin( m_pSampleGrabberBase ,0 );
 				pGrabPinOut = GetOutPin( m_pSampleGrabberBase ,0 );
 				m_pSampleGrabberBase->QueryInterface(IID_ISampleGrabber,(void**)&m_pSampleGrabber);
-				
+
 				//SET RGB24 BEFORE CONNECTING SampleGrabber
 				CMediaType GrabType;
 				GrabType.SetType( &MEDIATYPE_Video );
@@ -1085,17 +1085,17 @@ moDsGraph::BuildLiveDVGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 				hr = m_pSampleGrabber->SetMediaType( &GrabType );
 				if(FAILED(hr)) ShowError(hr);
 				hr = m_pSampleGrabber->SetBufferSamples(FALSE);
-				if(FAILED(hr)) ShowError(hr);	
-				
+				if(FAILED(hr)) ShowError(hr);
+
 				//set the pool receiving the samples
 				m_CB.SetBucketsPool( pBucketsPool );
-				
+
 				hr = m_pSampleGrabber->SetCallback( &m_CB, 1 );
 				if(FAILED(hr)) ShowError(hr);
 				hr = m_pFilterGraph->Connect( pPinDecoderOut , pGrabPinIn );
-				if(FAILED(hr)) 
-					return ShowError(hr);			
-			} else return ShowError(hr);			
+				if(FAILED(hr))
+					return ShowError(hr);
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1107,17 +1107,17 @@ moDsGraph::BuildLiveDVGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 			hr = m_pFilterGraph->AddFilter(m_pNullRenderer, L"Null Renderer");
 			if(SUCCEEDED(hr)) {
 				pRendererPin = GetInPin(  m_pNullRenderer, 0);
-				
+
 				hr = m_pFilterGraph->Connect( pGrabPinOut, pRendererPin);
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
 	AM_MEDIA_TYPE mt;
-	if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {		
-			SetVideoFormat( &mt );			
+	if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {
+			SetVideoFormat( &mt );
 	}
 
 	return true;
@@ -1127,7 +1127,7 @@ moDsGraph::BuildLiveDVGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 
 bool
 moDsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, MOint idevice) {
-	
+
 	HRESULT hr;
 
 	IPin* pPinSource;
@@ -1137,7 +1137,7 @@ moDsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 	IPin* pGrabPinOut;
 	IPin* pRendererPin;
 
-	//SOURCE	
+	//SOURCE
 	if( SetCaptureDevice("WEBCAM", idevice) ) {
 		hr = m_pFilterGraph->AddFilter(m_pCaptureFilter, L"Web Cam");
 		if(SUCCEEDED(hr)) {
@@ -1154,15 +1154,15 @@ moDsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 			hr = m_pFilterGraph->AddFilter(m_pAVIDecompressorFilter, L"AVI Decompressor");
 			if(SUCCEEDED(hr)) {
 				//mostrar la pagina de configuracion del fitro
-				//sacar pines				
+				//sacar pines
 				pPinDecoderIn = GetInPin( m_pAVIDecompressorFilter ,0 );
 				pPinDecoderOut = GetOutPin( m_pAVIDecompressorFilter ,0 );
 
 				hr = m_pFilterGraph->Connect( pPinSource , pPinDecoderIn );
 
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1178,28 +1178,28 @@ moDsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 				pGrabPinIn = GetInPin( m_pSampleGrabberBase ,0 );
 				pGrabPinOut = GetOutPin( m_pSampleGrabberBase ,0 );
 				m_pSampleGrabberBase->QueryInterface(IID_ISampleGrabber,(void**)&m_pSampleGrabber);
-				
+
 				//SET RGB24 BEFORE CONNECTING SampleGrabber
 				CMediaType GrabType;
 				GrabType.SetType( &MEDIATYPE_Video );
 				GrabType.SetSubtype( &MEDIASUBTYPE_RGB24 );
 				hr = m_pSampleGrabber->SetMediaType( &GrabType );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pSampleGrabber->SetBufferSamples(FALSE);
-				if(FAILED(hr)) 
-					return ShowError(hr);	
-				
+				if(FAILED(hr))
+					return ShowError(hr);
+
 				//set the pool receiving the samples
 				m_CB.SetBucketsPool( pBucketsPool );
-				
+
 				hr = m_pSampleGrabber->SetCallback( &m_CB, 1 );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pFilterGraph->Connect( pPinDecoderOut , pGrabPinIn );
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1211,11 +1211,11 @@ moDsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, MOint idevice) {
 			hr = m_pFilterGraph->AddFilter(m_pNullRenderer, L"Null Renderer");
 			if(SUCCEEDED(hr)) {
 				pRendererPin = GetInPin(  m_pNullRenderer, 0);
-				
+
 				hr = m_pFilterGraph->Connect( pGrabPinOut, pRendererPin);
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1242,7 +1242,7 @@ bool moDsGraph::BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBuckets
 		//QT ALTERNATIVE 1.3 QT 6
 		QTFilter = "CyberLink QuickTime Source Filter";
 		bQTAlternative = CreateFilterByName( QTFilter, &m_pQuicktimeFilter );
-		
+
 		//QT ALTERNATIVE 1.7 QT 7
 		/*
 		if (!bQTAlternative) {
@@ -1250,10 +1250,10 @@ bool moDsGraph::BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBuckets
 			bQTAlternative = CreateFilterByName( QTFilter, &m_pQuicktimeFilter );
 		}
 		*/
-		
+
 		if ( bQTAlternative ) {
 			hr = m_pQuicktimeFilter->QueryInterface(IID_IFileSourceFilter,(void**)&m_pFileSourceFilter);
-			if(SUCCEEDED(hr)) {	
+			if(SUCCEEDED(hr)) {
 				WCHAR wFileName[MAX_PATH];
 				MultiByteToWideChar(CP_ACP, 0, filename, -1, wFileName, MAX_PATH);
 				//(LPCOLESTR)filename
@@ -1263,7 +1263,7 @@ bool moDsGraph::BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBuckets
 					if(SUCCEEDED(hr)) {
 						pPinSource = GetOutPin( m_pQuicktimeFilter ,0 );
 					} else return ShowError(hr);
-				} else return ShowError(hr);			
+				} else return ShowError(hr);
 			}
 		} else return false;
 	}
@@ -1280,37 +1280,37 @@ bool moDsGraph::BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBuckets
 				hr = m_pFilterGraph->AddFilter( m_pColorSpaceConverter, L"Color Space Converter");
 				if( SUCCEEDED(hr) ) {
 					//mostrar la pagina de configuracion del fitro
-					//sacar pines				
+					//sacar pines
 					pPinDecoderIn = GetInPin( m_pColorSpaceConverter ,0 );
 					pPinDecoderOut = GetOutPin( m_pColorSpaceConverter ,0 );
 
 					hr = m_pFilterGraph->Connect( pPinSource , pPinDecoderIn );
 
-					if( FAILED(hr) ) 
+					if( FAILED(hr) )
 						return ShowError(hr);
 
-				} else return ShowError(hr);			
+				} else return ShowError(hr);
 			} else return ShowError(hr);
 		} else return ShowError(hr);
-	} else {		
+	} else {
 		if (!m_pQuicktimeDecoder) {
 			if ( CreateFilterByName( moText("Nero QuickTime(tm) Video Decoder"), &m_pQuicktimeDecoder ) ) {
 				hr = m_pFilterGraph->AddFilter( m_pQuicktimeDecoder, L"Nero QuickTime(tm) Video Decoder");
 				if( SUCCEEDED(hr) ) {
 					//mostrar la pagina de configuracion del fitro
-					//sacar pines				
+					//sacar pines
 					pPinDecoderIn = GetInPin( m_pQuicktimeDecoder ,0 );
 					pPinDecoderOut = GetOutPin( m_pQuicktimeDecoder ,0 );
 
 					hr = m_pFilterGraph->Connect( pPinSource , pPinDecoderIn );
 
-					if( FAILED(hr) ) 
+					if( FAILED(hr) )
 						return ShowError(hr);
 
-				} else return ShowError(hr);			
-			} else return false;		
+				} else return ShowError(hr);
+			} else return false;
 		}
-	
+
 	}
 
 	//FRAME GRABBER
@@ -1324,28 +1324,28 @@ bool moDsGraph::BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBuckets
 				pGrabPinIn = GetInPin( m_pSampleGrabberBase ,0 );
 				pGrabPinOut = GetOutPin( m_pSampleGrabberBase ,0 );
 				m_pSampleGrabberBase->QueryInterface(IID_ISampleGrabber,(void**)&m_pSampleGrabber);
-				
+
 				//SET RGB24 BEFORE CONNECTING SampleGrabber
 				CMediaType GrabType;
 				GrabType.SetType( &MEDIATYPE_Video );
 				GrabType.SetSubtype( &MEDIASUBTYPE_RGB24 );
 				hr = m_pSampleGrabber->SetMediaType( &GrabType );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pSampleGrabber->SetBufferSamples(FALSE);
-				if(FAILED(hr)) 
-					return ShowError(hr);	
-				
+				if(FAILED(hr))
+					return ShowError(hr);
+
 				//set the pool receiving the samples
 				m_CB.SetBucketsPool( pBucketsPool );
-				
+
 				hr = m_pSampleGrabber->SetCallback( &m_CB, 1 );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pFilterGraph->Connect( pPinDecoderOut , pGrabPinIn );
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1356,17 +1356,17 @@ bool moDsGraph::BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBuckets
 		if(SUCCEEDED(hr)) {
 			hr = m_pFilterGraph->AddFilter(m_pNullRenderer, L"Null Renderer");
 			if(SUCCEEDED(hr)) {
-				pRendererPin = GetInPin(  m_pNullRenderer, 0);				
+				pRendererPin = GetInPin(  m_pNullRenderer, 0);
 				hr = m_pFilterGraph->Connect( pGrabPinOut, pRendererPin);
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
 	AM_MEDIA_TYPE mt;
-	if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {		
-			SetVideoFormat( &mt );			
+	if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {
+			SetVideoFormat( &mt );
 	}
 
 	return true;
@@ -1391,13 +1391,13 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 	IEnumMediaTypes* ppEnum;
 	AM_MEDIA_TYPE* pMediaTypes;
 
-	//AVI OR MPEG 
+	//AVI OR MPEG
 	if( !m_pSourceFilter ) {
 		hr = CoCreateInstance(CLSID_AsyncReader, NULL, CLSCTX_INPROC_SERVER,
 		IID_IBaseFilter,(void**)&m_pSourceFilter );
 		if(SUCCEEDED(hr)) {
 			hr = m_pSourceFilter->QueryInterface(IID_IFileSourceFilter,(void**)&m_pFileSourceFilter);
-			if(SUCCEEDED(hr)) {								
+			if(SUCCEEDED(hr)) {
 				WCHAR wFileName[MAX_PATH];
 				MultiByteToWideChar(CP_ACP, 0, filename, -1, wFileName, MAX_PATH);
 				//(LPCOLESTR)filename
@@ -1409,7 +1409,7 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 					} else return ShowError(hr);
 				} else return ShowError(hr);
 			} else return ShowError(hr);
-		} else return ShowError(hr);		
+		} else return ShowError(hr);
 	} else return false;
 
 
@@ -1418,7 +1418,7 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 	if(SUCCEEDED(hr)) {
 		while( ppEnum->Next( 1, &pMediaTypes, NULL) == S_OK ) {
 			if ( pMediaTypes->majortype == MEDIATYPE_Stream ) { //ALL STREAMS
-				
+
 				bool passed = false;
 
 				if ( pMediaTypes->subtype == MEDIASUBTYPE_Avi ) {
@@ -1427,7 +1427,7 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 						hr = CoCreateInstance( CLSID_AviSplitter, NULL, CLSCTX_INPROC_SERVER,
 						IID_IBaseFilter,(void**)&m_pSplitter);
 						if (SUCCEEDED(hr)) passed = true;
-					} else return ShowError(hr);							
+					} else return ShowError(hr);
 				} else if ( pMediaTypes->subtype == MEDIASUBTYPE_MPEG1Video ||
 							pMediaTypes->subtype == MEDIASUBTYPE_MPEG1System ||
 							pMediaTypes->subtype == MEDIASUBTYPE_MPEG1VideoCD) {
@@ -1444,18 +1444,18 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 					if (m_pSplitter) {
 						if( SUCCEEDED(hr) ) {
 							hr = m_pFilterGraph->AddFilter( m_pSplitter, L"Splitter");
-							if( SUCCEEDED(hr) ) {									
-								//sacar pines				
-								pPinSplitterIn = GetInPin( m_pSplitter ,0 );								
+							if( SUCCEEDED(hr) ) {
+								//sacar pines
+								pPinSplitterIn = GetInPin( m_pSplitter ,0 );
 
 								hr = m_pFilterGraph->Connect( pPinSource , pPinSplitterIn );
 
-								if( FAILED(hr) ) 
+								if( FAILED(hr) )
 									return ShowError(hr);
 								else
-									pPinSplitterOut = GetOutPin( m_pSplitter ,0 );								
+									pPinSplitterOut = GetOutPin( m_pSplitter ,0 );
 
-							} else return ShowError(hr);			
+							} else return ShowError(hr);
 						} else return ShowError(hr);
 					}
 					break;
@@ -1487,8 +1487,8 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 								pMediaTypes->formattype == FORMAT_VideoInfo2 ) {
 						SetVideoFormat( pMediaTypes );
 						break;
-					}				
-				}			
+					}
+				}
 			}
 		}
 		ppEnum->Release();
@@ -1513,30 +1513,30 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 				hr = m_pFilterGraph->AddFilter( m_pDVDecoderFilter, L"DV Decoder");
 				if( SUCCEEDED(hr) ) {
 					//mostrar la pagina de configuracion del fitro
-					//sacar pines				
+					//sacar pines
 					pPinDecoderIn = GetInPin( m_pDVDecoderFilter ,0 );
 					pPinDecoderOut = GetOutPin( m_pDVDecoderFilter ,0 );
 
 					hr = m_pFilterGraph->Connect( pPinSplitterOut , pPinDecoderIn );
 
-					if( FAILED(hr) ) 
+					if( FAILED(hr) )
 						return ShowError(hr);
 
-				} else return ShowError(hr);			
+				} else return ShowError(hr);
 			} else return ShowError(hr);
-		} else return ShowError(hr);		
+		} else return ShowError(hr);
 
 	} else {
-		//ALL OTHERS TRY TO OPEN WITH FFDSHOW		
+		//ALL OTHERS TRY TO OPEN WITH FFDSHOW
 		//if ( CreateFilterByName(moText("ffdshow MPEG-4 Video Decoder"), &m_pFfdshowFilter) ) {
 		hr = CoCreateInstance(CLSID_AVIDec, NULL, CLSCTX_INPROC_SERVER, IID_IBaseFilter,(void**)&m_pFfdshowFilter);
 		if (SUCCEEDED(hr)) {
-			
+
 			hr = m_pFilterGraph->AddFilter( m_pFfdshowFilter, L"ffdshow MPEG-4 Video Decoder");
-			
+
 			if( SUCCEEDED(hr) ) {
 				//mostrar la pagina de configuracion del fitro
-				//sacar pines				
+				//sacar pines
 				pPinDecoderIn = GetInPin( m_pFfdshowFilter ,0 );
 				pPinDecoderOut = GetOutPin( m_pFfdshowFilter ,0 );
 
@@ -1545,7 +1545,7 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 				if( FAILED(hr) ) {
 
 					hr = m_pFilterGraph->RemoveFilter( m_pFfdshowFilter );
-					
+
 					m_pFfdshowFilter->Release();
 					m_pFfdshowFilter = NULL;
 
@@ -1553,7 +1553,7 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 					pPinDecoderIn = NULL;
 
 					pPinDecoderOut->Release();
-					pPinDecoderOut = NULL;					
+					pPinDecoderOut = NULL;
 
 					if (CreateFilterByName(moText("ffdshow MPEG-4 Video Decoder"), &m_pFfdshowFilter)) {
 						hr = m_pFilterGraph->AddFilter( m_pFfdshowFilter, L"ffdshow MPEG-4 Video Decoder");
@@ -1561,17 +1561,17 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 						printf("ffdshow Filter not found\n");
 						_flushall();
 						return false;
-					}	
-					if( FAILED(hr) ) 
+					}
+					if( FAILED(hr) )
 						return ShowError(hr);
 				}
 
-			} else return ShowError(hr);	
+			} else return ShowError(hr);
 
 		} else {
 			printf("Filter not found\n");
 			return false;
-		}		
+		}
 	}
 
 	//FRAME GRABBER
@@ -1585,28 +1585,28 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 				pGrabPinIn = GetInPin( m_pSampleGrabberBase ,0 );
 				pGrabPinOut = GetOutPin( m_pSampleGrabberBase ,0 );
 				m_pSampleGrabberBase->QueryInterface(IID_ISampleGrabber,(void**)&m_pSampleGrabber);
-				
+
 				//SET RGB24 BEFORE CONNECTING SampleGrabber
 				CMediaType GrabType;
 				GrabType.SetType( &MEDIATYPE_Video );
 				GrabType.SetSubtype( &MEDIASUBTYPE_RGB24 );
 				hr = m_pSampleGrabber->SetMediaType( &GrabType );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pSampleGrabber->SetBufferSamples(FALSE);
-				if(FAILED(hr)) 
-					return ShowError(hr);	
-				
+				if(FAILED(hr))
+					return ShowError(hr);
+
 				//set the pool receiving the samples
 				m_CB.SetBucketsPool( pBucketsPool );
-				
+
 				hr = m_pSampleGrabber->SetCallback( &m_CB, 1 );
-				if(FAILED(hr)) 
+				if(FAILED(hr))
 					return ShowError(hr);
 				hr = m_pFilterGraph->Connect( pPinDecoderOut , pGrabPinIn );
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
@@ -1617,17 +1617,17 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 		if(SUCCEEDED(hr)) {
 			hr = m_pFilterGraph->AddFilter(m_pNullRenderer, L"Null Renderer");
 			if(SUCCEEDED(hr)) {
-				pRendererPin = GetInPin(  m_pNullRenderer, 0);				
+				pRendererPin = GetInPin(  m_pNullRenderer, 0);
 				hr = m_pFilterGraph->Connect( pGrabPinOut, pRendererPin);
-				if(FAILED(hr))	
+				if(FAILED(hr))
 					return ShowError(hr);
-			} else return ShowError(hr);			
+			} else return ShowError(hr);
 		} else return ShowError(hr);
 	} else return ShowError(hr);
 
 	AM_MEDIA_TYPE mt;
-	if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {		
-			SetVideoFormat( &mt );			
+	if ( pRendererPin->ConnectionMediaType(&mt) == S_OK ) {
+			SetVideoFormat( &mt );
 	}
 
 	return true;
@@ -1639,11 +1639,11 @@ bool moDsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 void
 moDsGraph::Play() {
 	HRESULT hr;
-	
+
 	if(m_pFilterGraph) {
 		if(m_pMediaControl) {
 			hr = m_pMediaControl->Run();
-			if(FAILED(hr)) 
+			if(FAILED(hr))
 				ShowError(hr);
 		}
 	}
@@ -1655,7 +1655,7 @@ moDsGraph::Stop() {
 	if(m_pFilterGraph) {
 		if(m_pMediaControl) {
 			hr = m_pMediaControl->Stop();
-			if(FAILED(hr)) 
+			if(FAILED(hr))
 				ShowError(hr);
 		}
 	}
@@ -1667,7 +1667,7 @@ moDsGraph::Pause() {
 	if(m_pFilterGraph) {
 		if(m_pMediaControl) {
 			hr = m_pMediaControl->Pause();
-			if(FAILED(hr)) 
+			if(FAILED(hr))
 				ShowError(hr);
 		}
 	}
@@ -1687,25 +1687,25 @@ moDsGraph::Seek( MOuint frame ) {
 						// Seek to frame number 20.
 						LONGLONG rtNow = frame;
 						hr = m_pMediaSeeking->SetPositions(
-							&rtNow, AM_SEEKING_AbsolutePositioning, 
+							&rtNow, AM_SEEKING_AbsolutePositioning,
 							NULL, AM_SEEKING_NoPositioning);
 					}
-					if(FAILED(hr)) 
+					if(FAILED(hr))
 						ShowError(hr);
 				} else if ( hr == S_FALSE ) {
 					if (frame>10) {
 						//skip
 						hr = S_OK;
-						
+
 					}
 					hr = m_pMediaSeeking->IsFormatSupported(&TIME_FORMAT_MEDIA_TIME);
 					if ( hr == S_OK ) {
-						hr = m_pMediaSeeking->SetTimeFormat(&TIME_FORMAT_MEDIA_TIME);						
+						hr = m_pMediaSeeking->SetTimeFormat(&TIME_FORMAT_MEDIA_TIME);
 						if(SUCCEEDED(hr))
 						{
 							// Seek to frame number 20.
 							LONGLONG rtNow = frame;
-							
+
 							rtNow = rtNow * m_VideoFormat.m_TimePerFrame;
 							/*
 							if ( m_VideoFormat.m_VideoMode == PAL ) {
@@ -1715,10 +1715,10 @@ moDsGraph::Seek( MOuint frame ) {
 							}
 							*/
 							hr = m_pMediaSeeking->SetPositions(
-								&rtNow, AM_SEEKING_AbsolutePositioning, 
+								&rtNow, AM_SEEKING_AbsolutePositioning,
 								NULL, AM_SEEKING_NoPositioning);
 						}
-						if(FAILED(hr)) 
+						if(FAILED(hr))
 							ShowError(hr);
 					} else ShowError(hr);
 				} else ShowError(hr);
@@ -1765,8 +1765,8 @@ moDsGraph::GetFramesLength() {
 									return dur;
 								} else ShowError(hr);
 							}
-						} else ShowError(hr);											
-					} else ShowError(hr);	
+						} else ShowError(hr);
+					} else ShowError(hr);
 				} else ShowError(hr);
 			}
 	}
@@ -1789,7 +1789,7 @@ moDsGraph::IsRunning() {
 					return(filterstate == State_Running);
 				} return false;
 			} else ShowError(hr);
-		}		
+		}
 	}
 	return false;
 }
@@ -1809,14 +1809,14 @@ moDsGraph::GetFrameBuffer( MOlong *size ) {
 				hr = m_pSampleGrabber->GetCurrentBuffer( size, pbuf);
 				if(FAILED(hr)) ShowError(hr);
 				return pbuf;
-			}		
+			}
 		} else ShowError(hr);
 	}
 	*/
 	return NULL;
 }
 
-bool 
+bool
 moDsGraph::ShowError( HRESULT hr ) {
     if(FAILED(hr))
     {
@@ -1839,7 +1839,7 @@ moDsGraph::SetVideoFormat( AM_MEDIA_TYPE * pmt ) {
 		if ( pmt->formattype == FORMAT_VideoInfo ) {
 
 			VIDEOINFOHEADER *pVih = reinterpret_cast<VIDEOINFOHEADER*>(pmt->pbFormat);
-			
+
 			m_VideoFormat.m_Width = pVih->bmiHeader.biWidth;
 			m_VideoFormat.m_Height = pVih->bmiHeader.biHeight;
 			m_VideoFormat.m_BitCount = pVih->bmiHeader.biBitCount;
@@ -1851,7 +1851,7 @@ moDsGraph::SetVideoFormat( AM_MEDIA_TYPE * pmt ) {
 		} else if (pmt->formattype == FORMAT_MPEGVideo) {
 			MPEG1VIDEOINFO *pMh = reinterpret_cast<MPEG1VIDEOINFO*>(pmt->pbFormat);
 			VIDEOINFOHEADER *pVih = &(pMh->hdr);
-		
+
 			m_VideoFormat.m_Width = pVih->bmiHeader.biWidth;
 			m_VideoFormat.m_Height = pVih->bmiHeader.biHeight;
 			m_VideoFormat.m_BitCount = pVih->bmiHeader.biBitCount;
@@ -1864,7 +1864,7 @@ moDsGraph::SetVideoFormat( AM_MEDIA_TYPE * pmt ) {
 
 			MPEG2VIDEOINFO *pMh = reinterpret_cast<MPEG2VIDEOINFO*>(pmt->pbFormat);
 			VIDEOINFOHEADER2 *pVih = &(pMh->hdr);
-		
+
 			m_VideoFormat.m_Width = pVih->bmiHeader.biWidth;
 			m_VideoFormat.m_Height = pVih->bmiHeader.biHeight;
 			m_VideoFormat.m_BitCount = pVih->bmiHeader.biBitCount;
@@ -1874,7 +1874,7 @@ moDsGraph::SetVideoFormat( AM_MEDIA_TYPE * pmt ) {
 			m_VideoFormat.SetVideoMode();
 
 		}
-			
+
 	}
 
 }
@@ -1901,7 +1901,7 @@ moDsGraph::GetPin( IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, I
     *ppPin = NULL;
 
     HRESULT hr = pFilter->EnumPins(&pEnum);
-    if(FAILED(hr)) 
+    if(FAILED(hr))
         return hr;
 
     ULONG ulFound;
@@ -1922,10 +1922,10 @@ moDsGraph::GetPin( IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, I
                 break;
             }
             iNum--;
-        } 
+        }
 
         pPin->Release();
-    } 
+    }
 
     return hr;
 }
@@ -1959,7 +1959,7 @@ moDsGraph::CheckMediaType( IPin* p_Pin ) {
 			}
 		}
 	}
-	ppEnum->Release();	
+	ppEnum->Release();
 }
 
 #endif

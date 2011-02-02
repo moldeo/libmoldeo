@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
   Gustavo Lado?(donde mas?)
 
 *******************************************************************************/

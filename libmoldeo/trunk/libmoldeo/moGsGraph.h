@@ -188,6 +188,17 @@ public:
 //================================================
 //	MISC METHODS
 //================================================
+    /**
+      Funciones de Audio
+    */
+    void SetVolume( float volume );
+    void SetBalance( float balance );
+
+    void SetPitch( float pitch );
+    void SetEchoDelay( float delay );
+    void SetEchoIntensity( float intensity );
+    void SetEchoFeedback( float feedback );
+
     void    SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer = NULL );
 	/*
 	bool ShowError( HRESULT hr );
@@ -276,6 +287,20 @@ private:
 
     /**audio elements*/
     moGstElement          *m_pAudioConverter;
+    moGstElement          *m_pAudioConverter2;
+    moGstElement          *m_pAudioConverter3;
+    moGstElement          *m_pAudioConverter4;
+    ///stereo balance-1 a 1: panorama
+    moGstElement          *m_pAudioPanorama;
+    ///echo effect : audioecho > delay [ nanoseconds 10E-9, intensity, feedback ]
+    moGstElement          *m_pAudioEcho;
+    ///speed:pitch speed 0.1 - 40.0
+    moGstElement          *m_pAudioSpeed;
+    ///volume: volume, 0 - 10 [1]
+    moGstElement          *m_pAudioVolume;
+    ///audioamplify: amplification: -inf +inf (dangerous)
+    moGstElement          *m_pAudioAmplify;
+
     //GstElement  *m_pAudioConverter;
 
     /**Pad's o Pines para el DecoderBin*/

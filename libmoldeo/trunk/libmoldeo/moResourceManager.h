@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -37,7 +37,6 @@
 #include "moArray.h"
 #include "moMoldeoObject.h"
 
-#define MAX_RESOURCES	20
 #define MO_CFG_RESOURCE 0
 #define MO_CFG_RESOURCE_CONFIG 1
 #define MO_CFG_RESOURCE_LABEL 2
@@ -144,11 +143,6 @@ class LIBMOLDEO_API moResource : public moMoldeoObject {
          */
 		moResourceType			GetResourceType();
 
-		/**
-         * devuelve el nombre del recurso
-         */
-		moText					GetResourceName();
-
 	protected:
 		void					SetResourceType( moResourceType p_restype );
 
@@ -226,7 +220,7 @@ class LIBMOLDEO_API moResourceManager : public moAbstract {
          *
          *
          */
-		MOboolean				NewResource( moText p_resname, int paramindex = -1, int valueindex = -1 );
+		moResource*				NewResource( moText p_resname, int paramindex = -1, int valueindex = -1 );
 
         /**
          * crea un nuevo recurso
@@ -240,35 +234,40 @@ class LIBMOLDEO_API moResourceManager : public moAbstract {
          *
          *
          */
-		MOboolean				RemoveResource( MOint p_ID );
+		MOboolean				RemoveResource( MOint p_index );
 
         /**
          * crea un nuevo recurso
          *
          *
          */
-		MOint					GetResourceId( moText p_resname );
+		MOint					GetResourceIndex( moText p_labelname );
+
+        /**
+         * Devuelve el nombre del recurso de indice p_ID
+         *
+         *
+         */
+		moText					GetResourceName( MOint p_index );
+
+        /**
+         * Devuelve la etiqueta del recurso de indice p_ID
+         */
+		moText					GetResourceLabelName( MOint p_index );
+
+        /**
+         * Devuelve el puntero al recruso de indice p_ID
+         *
+         *
+         */
+		moResource*				GetResource( MOint p_index );
 
         /**
          * crea un nuevo recurso
          *
          *
          */
-		moText					GetResourceName( MOint p_ID );
-
-        /**
-         * crea un nuevo recurso
-         *
-         *
-         */
-		moResource*				GetResource( MOint p_ID );
-
-        /**
-         * crea un nuevo recurso
-         *
-         *
-         */
-		moResourceType			GetResourceType( MOint p_ID );
+		moResourceType			GetResourceType( MOint p_index );
 
         /**
          * crea un nuevo recurso
@@ -448,27 +447,6 @@ class LIBMOLDEO_API moResourceManager : public moAbstract {
 		moResourcePluginsArray	m_Plugins;
 
 };
-/*
-#include "moDebugManager.h"
-#include "moNetManager.h"
-#include "moFileManager.h"
-#include "moFontManager.h"
-#include "moGUIManager.h"
-#include "moScriptManager.h"
-#include "mo3dModelManager.h"
 
-#include "moShaderManager.h"
-#include "moFilterManager.h"
-#include "moTimeManager.h"
-#include "moDataManager.h"
-#include "moTextureManager.h"
-#include "moVideoManager.h"
-#include "moFBManager.h"
-#include "moGLManager.h"
-#include "moRenderManager.h"
-#include "moMathManager.h"
-#include "moSoundManager.h"
-#include "moDecoderManager.h"
-*/
 
 #endif

@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
   Description:
   Class for Cg shaders.
@@ -152,7 +152,7 @@ void moShaderCG::compileVertShader(moText vert_source)
     m_cgVertexProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
     if (m_cgVertexProfile == CG_PROFILE_UNKNOWN)
     {
-		if (MODebug != NULL) MODebug->Push(moText("Vertex profile not found"));
+		if (MODebug != NULL) MODebug2->Push(moText("Vertex profile not found"));
         m_VertErrorCode = -1;
         return;
     }
@@ -163,10 +163,10 @@ void moShaderCG::compileVertShader(moText vert_source)
         CGerror Error = cgGetError();
 		if (MODebug != NULL)
 		{
-			MODebug->Push(moText("Cg error!"));
-			MODebug->Push(moText("Vertex shader could not be created")+Error);
-//			MODebug->Push(moText(cgGetErrorString(Error)));
-//			MODebug->Push(moText(cgGetLastListing(m_cgContext)));
+			MODebug2->Push(moText("Cg error!"));
+			MODebug2->Push(moText("Vertex shader could not be created")+Error);
+//			MODebug2->Push(moText(cgGetErrorString(Error)));
+//			MODebug2->Push(moText(cgGetLastListing(m_cgContext)));
 		}
         m_VertErrorCode = 1;
     }
@@ -182,7 +182,7 @@ void moShaderCG::compileFragShader(moText frag_source)
     m_cgFragmentProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
     if (m_cgFragmentProfile == CG_PROFILE_UNKNOWN)
     {
-		MODebug->Push(moText("Fragment profile not found"));
+		MODebug2->Push(moText("Fragment profile not found"));
         m_FragErrorCode = -1;
         return;
     }
@@ -193,10 +193,10 @@ void moShaderCG::compileFragShader(moText frag_source)
         CGerror Error = cgGetError();
 		if (MODebug != NULL)
 		{
-			MODebug->Push(moText("Cg error!"));
-			MODebug->Push(moText("Fragmemt shader could not be created")+Error);
-//			MODebug->Push(moText(cgGetErrorString(Error)));
-//			MODebug->Push(moText(cgGetLastListing(m_cgContext)));
+			MODebug2->Push(moText("Cg error!"));
+			MODebug2->Push(moText("Fragmemt shader could not be created")+Error);
+//			MODebug2->Push(moText(cgGetErrorString(Error)));
+//			MODebug2->Push(moText(cgGetLastListing(m_cgContext)));
 
 		}
         m_FragErrorCode = 1;

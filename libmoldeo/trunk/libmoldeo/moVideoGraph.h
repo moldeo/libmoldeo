@@ -560,17 +560,17 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     */
 	virtual bool IsRunning() = 0;
 
-    /// Está corriendo
+    /// La cantidad de frames, el largo del stream
     /**
-    *   indicador que señala si el grafo se está reproduciendo
-    *   @return verdadero o falso
+    *   devuelve el largo del stream convertido a frames
+    *   @return largo en frames
     */
 	virtual MOulong	GetFramesLength() = 0;
 
-    /// Está corriendo
+    /// Puntero al frame buffer
     /**
-    *   indicador que señala si el grafo se está reproduciendo
-    *   @return verdadero o falso
+    *   devuelve el puntero al frame buffer
+    *   @return un puntero
     */
 	virtual MObyte* GetFrameBuffer(MOlong *size) = 0;
 
@@ -581,6 +581,22 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     */
     moVideoMode		GetVideoMode();
 
+    /// Fija el nivel de volumen
+    /**
+    *   permite fijar el volumen con un valor entre 0 y 10,  1.0 = 100%
+    *   @param volume nivel de volumen entre 0 y 10, 1.0 = 100%
+    */
+    virtual void SetVolume( float volume ) = 0;
+
+    /// Fija el balance entre canal izquierdo y derecho en caso de haberlos
+    /**
+    *   Permite modificar el balance estereo entre -1 y 1, siendo
+    *   -1 todo a la izquierda y 1 todo a la derecha, 0 corresponde
+    *   al equilibrio entre los dos canales.
+    *   @param balance nivel balance entre los dos canales, entre -1 y 1
+    */
+    virtual void SetBalance( float balance ) = 0;
+
     /// Devuelve el formato de video
     /**
     *   indicador que señala el formato de video utilizado por esta entrada de video
@@ -588,8 +604,25 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     */
     moVideoFormat	GetVideoFormat();
 
+    /// Estado de la reproducción
+    /**
+    *   Devuelve el estado en que se encuentra el grafo, un valor entre
+    *     MO_STREAMSTATE_UNKNOWN=-1,
+    *     MO_STREAMSTATE_PAUSED,
+    *     MO_STREAMSTATE_PLAYING,
+    *     MO_STREAMSTATE_WAITING,
+    *     MO_STREAMSTATE_READY,
+    *     MO_STREAMSTATE_STOPPED
+    *   @return moStreamState estado del stream del grafo
+    */
     virtual moStreamState    GetState();
 
+    /// Estado de la reproducción (version texto)
+    /**
+    *   Esta función indica lo mismo que la moVideoGraph::GetState()
+    *   pero convertida a texto.
+    *   @return moText estado del stream del grafo en formato texto
+    */
     static moText          StateToText( moStreamState state );
 
 	protected:

@@ -380,36 +380,64 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int luaStop( moLuaVirtualMachine& vm );
         int luaState( moLuaVirtualMachine& vm );
 
-        int luaGetObjectId( moLuaVirtualMachine& vm );
         int luaGetPreset(moLuaVirtualMachine& vm);
         int luaSetPreset(moLuaVirtualMachine& vm);
+
         int luaGetTicks(moLuaVirtualMachine& vm);
         int luaSetTicks(moLuaVirtualMachine& vm);
 
+        /**
+        * Obtener y fijar parámetros de un cierto moMoldeoObject
+        * Todos necesitan un parametro, id o texto para devolver un valor
+        */
+        int luaGetObjectId( moLuaVirtualMachine& vm );
         int luaGetObjectPreconf(moLuaVirtualMachine& vm);
         int luaSetObjectPreconf(moLuaVirtualMachine& vm);
-
         int luaGetObjectParamIndex(moLuaVirtualMachine& vm);
         int luaSetObjectCurrentValue(moLuaVirtualMachine& vm);
         int luaGetObjectCurrentValue(moLuaVirtualMachine& vm);
-
+        ///especificos de datos
         int luaGetObjectDataIndex(moLuaVirtualMachine& vm);
         int luaGetObjectData(moLuaVirtualMachine& vm);
         int luaSetObjectData(moLuaVirtualMachine& vm);
-
+        ///habilita deshabilita
         int luaObjectDisable(moLuaVirtualMachine& vm);
         int luaObjectEnable(moLuaVirtualMachine& vm);
-
-
+        ///cambia el estado de un efecto (sus valores)
+        ///tinta, velocidad, alpha, etc...
         int luaSetEffectState(moLuaVirtualMachine& vm);
         int luaGetEffectState(moLuaVirtualMachine& vm);
 
+        /**
+        *  Funciones específicas del moIODeviceManager
+        *  y la lista de eventos.
+        */
         int luaGetDeviceCode(moLuaVirtualMachine& vm);
         int luaGetDeviceCodeId(moLuaVirtualMachine& vm);
         int luaAddEvent(moLuaVirtualMachine& vm);
 
-
+        /**
+        *   Funciones específicas de acceso a los recursos:
+        *   moTextureManager: ABM de texturas
+        *   moTexture -> moTextureAnimated  -> moMovie
+        *                                   -> moTextureMultiple
+        *
+        *   moVideoManager: ABM de recursos de cámara
+        *   moVideoBuffer
+        *
+        */
         int luaGetDirectoryFileCount(moLuaVirtualMachine& vm);
+
+        ///
+        int luaGetTextureId(moLuaVirtualMachine& vm);
+
+        int luaAddTexture(moLuaVirtualMachine& vm);
+        int luaGetTexture(moLuaVirtualMachine& vm); ///devuelve un objeto textura?
+        int luaDeleteTexture(moLuaVirtualMachine& vm);
+
+        int luaGet(moLuaVirtualMachine& vm);
+
+
         //@}
 
         /** @} */
@@ -437,6 +465,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         long m_ScriptTimecodeOffset;
 
+        void UpdateMoldeoIds();
         void LoadConnections();
 
         void LoadResources();
