@@ -377,12 +377,16 @@ class LIBMOLDEO_API moTrackerFeature { //de GpuKLT_Feature
 	float					v_x, v_y;                //!< Speed in the actual frame.
 	float					vp_x, vp_y;              //!< Speed in the previous frame.
 	float					a_x, a_y;                //!< Acceleration in the actual frame.
+	float					ap_x, ap_y;                //!< Acceleration in the previous frame.
+	float         t_x, t_y;                 //!< Torque in the actual frame.
 	bool				    valid;					 //!< True for a valid feature point.
 	int                     val;                     //!<Other states for valid feature point
 	moVector2fArray         track;					 //!< list of feature positions in the past frames. Forms the feature tracks in video.
 
 	//! Constructor
 	moTrackerFeature();
+
+	moTrackerFeature & operator = (const moTrackerFeature &src);
 
 	//! Destructor
 	virtual ~moTrackerFeature();
@@ -579,6 +583,11 @@ class LIBMOLDEO_API moTrackerSystemData {
 		virtual void SetBoundingRectangle( float r_x, float r_y, float s_x, float s_y ) { m_ActualRecord.m_BoundingRectangle = moVector4f(r_x,r_y,s_x,s_y); }
 
 		virtual void SetValidFeatures( int validfeatures) { m_ActualRecord.m_ValidFeatures = validfeatures; }
+
+		virtual void SetAbsoluteSpeedAverage( float speedaverage ) { m_ActualRecord.m_AbsoluteSpeedAverage = speedaverage; }
+		virtual void SetAbsoluteAccelerationAverage( float accaverage ) { m_ActualRecord.m_AbsoluteAccelerationAverage = accaverage; }
+		virtual void SetAbsoluteTorqueAverage( float toraverage ) { m_ActualRecord.m_AbsoluteTorqueAverage = toraverage; }
+
 
     ///Transforma el vector de posicion (0..1) al indice de zona de la matriz cuadrada
     virtual int PositionToZone( float x, float y );

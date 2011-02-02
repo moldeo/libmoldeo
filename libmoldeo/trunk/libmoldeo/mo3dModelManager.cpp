@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -255,6 +255,7 @@ mo3dModelManager::mo3dModelManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_MODEL );
 	SetName("3dModel Manager");
+	SetLabelName("3dModel Manager");
 
 	nMaxModels = MO_MAX_MODELOS;
 	Models = new mo3dModel* [nMaxModels];

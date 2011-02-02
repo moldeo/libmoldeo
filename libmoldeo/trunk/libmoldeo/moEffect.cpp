@@ -57,9 +57,7 @@ moEffect::~moEffect() {
 // 3) Inicializa el efecto en la primera preconfiguración.
 MOboolean
 moEffect::PreInit() {
-    moText texto;
 
-	moText confignamecompleto;
 	moText debug;
 
 	devicecode = NULL;
@@ -91,29 +89,13 @@ moEffect::PreInit() {
 
 	if (!m_pResourceManager) return false;
 
-	confignamecompleto = m_pResourceManager->GetDataMan()->GetDataPath();
-	confignamecompleto +=  moSlash + moText( GetConfigName() );
-    confignamecompleto +=  moText(".cfg");
+  ///Carga el config (definicion y archivo, corrige, etc)
+  ///Asigna al config y resuelve variables como texturas, sonidos, etc...
+  if (moMoldeoObject::Init()) {
+    moMoldeoObject::CreateConnectors();
+  } else return false;
 
-	//MODebug2->Push("*****Inicializando efecto*****");//debug
-        texto = moText("*****Initializing  ");
-        texto += GetName();
-        texto += moText("******");
-
-	MODebug2->Push(texto);//debug
-	if(state.fulldebug==MO_ACTIVATED) {
-            texto = moText("Loading config:");
-            MODebug2->Push(texto);//debug
-        }
-	if(state.fulldebug==MO_ACTIVATED) MODebug2->Push(confignamecompleto);//debug
-
-	if(m_Config.LoadConfig(confignamecompleto) != MO_CONFIG_OK ) {
-        MODebug2->Push(moText("Config file not found."));
-		MODebug2->Error(moText("Config file invalid or not found: ")+ (moText)confignamecompleto);
-		return false;//bad
-	}
-
-    isyncro = m_Config.GetParamIndex("syncro");
+  isyncro = m_Config.GetParamIndex("syncro");
 	iphase = m_Config.GetParamIndex("phase");
 	if(isyncro==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("syncro parameter missing."));
 	if(iphase==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("phase parameter missing."));
@@ -128,7 +110,7 @@ moEffect::PreInit() {
 	//se tratará de mantener valuees como: MOACCIONES_ALPHA... para poder hacer un FADE
 	//la idea es que sea completamente reconfigurable la interfaz del teclado
 
-	moMoldeoObject::Init();
+
 
 	return true;
 }

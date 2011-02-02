@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -37,7 +37,9 @@ moShaderManager::moShaderManager()
 {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_SHADER );
-	SetName("Shader Manager");
+
+	SetName("shadermanager");
+	SetLabelName("shadermanager");
 
 	m_glmanager = NULL;
 	m_fbmanager = NULL;
@@ -55,16 +57,14 @@ MOboolean moShaderManager::Init()
 
 	m_shaders_array.Init(0, NULL);
 
-	moText confignamecompleto = m_pResourceManager->GetDataMan()->GetDataPath();
-	confignamecompleto +=  moText("/") + (const moText)GetConfigName();
-    confignamecompleto +=  moText(".cfg");
+  ///check moResourceInit
+  moResource::Init();
 
-	if(m_Config.LoadConfig(confignamecompleto) == MO_CONFIG_OK ) {
-        //carga los filtros que se ejecutaran sistematicamente
-        m_pTextureFilterIndex->Init( &m_Config, 0, m_glmanager, m_fbmanager, this, m_pResourceManager->GetTextureMan(), m_pResourceManager->GetRenderMan());
-    } else {
-        m_pTextureFilterIndex->Init( m_glmanager, m_fbmanager, this, m_pResourceManager->GetTextureMan(), m_pResourceManager->GetRenderMan());
-    }
+  if (m_Config.IsConfigLoaded()) {
+    m_pTextureFilterIndex->Init( &m_Config, 0, m_glmanager, m_fbmanager, this, m_pResourceManager->GetTextureMan(), m_pResourceManager->GetRenderMan());
+  } else {
+    m_pTextureFilterIndex->Init( m_glmanager, m_fbmanager, this, m_pResourceManager->GetTextureMan(), m_pResourceManager->GetRenderMan());
+  }
 
 	return (m_glmanager && m_fbmanager);
 }

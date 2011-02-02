@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri#include "moTextureManager.h"
+  #include "moTextureManager.h"
 
 *******************************************************************************/
 

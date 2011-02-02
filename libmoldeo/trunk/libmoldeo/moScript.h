@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
   Description:
   Base class for Lua-scriptable classes. Based in the Lua article and
@@ -39,7 +39,6 @@
 
 #include "moLuaBase.h"
 
-
 /**
  * Esta clase implementa la funcionalidad necesaria para crear clases scripteables con LUA.
  * Una clase que descienda de moScript puede ser asociada a un script de LUA, y desde el mismo
@@ -49,6 +48,11 @@
 class LIBMOLDEO_API moScript
 {
 public:
+
+    typedef int (*Function)(moLuaVirtualMachine& vm);
+
+    Function Functions[255];
+
     /**
      * El constructor por defecto.
      */
@@ -90,8 +94,8 @@ public:
 	 * @param strFuncName nombre de la función.
 	 * @return regresa el índice de la función den la tabla de LUA, -1 si la operación no es exitosa.
      */
+    int RegisterFunction(const char *strFuncName, moScript::Function& fun );
     int RegisterFunction(const char *strFuncName);
-
     /**
      * Registra la primera función (método) de la clase en la máquina virtual de LUA.
      * Se debe llamar primero esta función para registrar los métodos dentro e la instancia de una clase

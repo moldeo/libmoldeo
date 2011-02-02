@@ -27,40 +27,430 @@
   Fabricio Costa
   Andrés Colubri
 
+  referencias codigo:  http://dev.alt.textdrive.com/browser/lu/
+  benchmarks: http://shootout.alioth.debian.org/gp4/benchmark.php?test=all&lang=luajit&lang2=lua
+
+
 *******************************************************************************/
 
 #include "moLunaClasses.h"
+
+
+/**
+
+
+        moLuaSoundManager
+
+
+*/
+
+IMPLEMENT_SCRIPT_CLASS(moLuaSoundManager)
+
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaSoundManager)
+
+    {0}
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaSoundManager)
+{0}
+END_SCRIPT_CLASS_PROPERTIES
+
+SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaSoundManager)
+{
+  m_pSoundMan = NULL;
+}
+
+void moLuaSoundManager::Set( moSoundManager* p_pSoundManager) {
+  m_pSoundMan = p_pSoundManager;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaSoundManager, GetSoundCount )
+{
+  //MOdouble fValue = (MOdouble) lua_tonumber (L, 1);
+  //MOdouble res = moMathd::ACos(fValue);
+  //lua_pushnumber(L, (lua_Number)res);
+  int count = 0;
+  if (m_pSoundMan)
+    count = m_pSoundMan->GetSoundCount();
+  lua_pushnumber(L, (lua_Number)count);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaSoundManager, GetSound )
+{
+  int id = (int) lua_tonumber (L, 1);
+  moSound* pSound = NULL;
+  if (m_pSoundMan)
+     pSound = m_pSoundMan->GetSound(id);
+  //if (pCirc)
+  return 1;
+}
+
+/**
+
+
+        moLuaCircularVideoBuffer
+
+
+*/
+
+IMPLEMENT_SCRIPT_CLASS(moLuaCircularVideoBuffer)
+
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaCircularVideoBuffer)
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, StartRecording),
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, PauseRecording),
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, ContinueRecording),
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, StopRecording),
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, GetRecordPosition),
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, GetFrameCount),
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, IsRecording),
+    {0}
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaCircularVideoBuffer)
+{0}
+END_SCRIPT_CLASS_PROPERTIES
+
+SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaCircularVideoBuffer)
+{
+  m_pCircularVideoBuffer = NULL;
+}
+
+void moLuaCircularVideoBuffer::Set( moCircularVideoBuffer* p_pCircularVideoBuffer) {
+  m_pCircularVideoBuffer = p_pCircularVideoBuffer;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, StartRecording )
+{
+  int at_position = (int) lua_tonumber (L, 1);
+  if (m_pCircularVideoBuffer)
+    m_pCircularVideoBuffer->StartRecording(at_position);
+  return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, PauseRecording )
+{
+  if (m_pCircularVideoBuffer)
+    m_pCircularVideoBuffer->PauseRecording();
+  return 0;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, ContinueRecording )
+{
+  if (m_pCircularVideoBuffer)
+    m_pCircularVideoBuffer->ContinueRecording();
+  return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, StopRecording )
+{
+  if (m_pCircularVideoBuffer)
+    m_pCircularVideoBuffer->StopRecording();
+  return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, GetRecordPosition )
+{
+  int recp = -1;
+  if (m_pCircularVideoBuffer)
+    recp = m_pCircularVideoBuffer->GetRecordPosition();
+  lua_pushnumber(L, (lua_Number)recp);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, GetFrameCount )
+{
+  int fcount = 0;
+  if (m_pCircularVideoBuffer)
+    fcount = m_pCircularVideoBuffer->GetFrameCount();
+  lua_pushnumber(L, (lua_Number)fcount);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, IsRecording )
+{
+  bool res = false;
+  if (m_pCircularVideoBuffer)
+    res = m_pCircularVideoBuffer->IsRecording();
+  lua_pushboolean(L, res);
+  return 1;
+}
+/**
+
+
+        moLuaVideoManager
+
+
+*/
+
+IMPLEMENT_SCRIPT_CLASS(moLuaVideoManager)
+
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoManager)
+    SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBufferCount ),
+    SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBuffer ),
+    {0}
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoManager)
+{0}
+END_SCRIPT_CLASS_PROPERTIES
+
+SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaVideoManager)
+{
+  m_pVideoMan = NULL;
+}
+
+void moLuaVideoManager::Set( moVideoManager* p_pVideoManager) {
+  m_pVideoMan = p_pVideoManager;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetCircularVideoBufferCount )
+{
+  //MOdouble fValue = (MOdouble) lua_tonumber (L, 1);
+  //MOdouble res = moMathd::ACos(fValue);
+  //lua_pushnumber(L, (lua_Number)res);
+  int count = m_pVideoMan->GetCircularVideoBufferCount();
+  lua_pushnumber(L, (lua_Number)count);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetCircularVideoBuffer )
+{
+  int id = (int) lua_tonumber (L, 1);
+
+  moCircularVideoBuffer* pCirc = NULL;
+  moLuaCircularVideoBuffer* pLuaCirc = NULL;
+
+  if (m_pVideoMan) {
+     pCirc = m_pVideoMan->GetCircularVideoBuffer(id);
+     if (pCirc) {
+        pLuaCirc = new moLuaCircularVideoBuffer(L);
+        pLuaCirc->Set( pCirc );
+        moLuna <moLuaCircularVideoBuffer>::createFromExisting( L, pLuaCirc);
+     }
+  }
+  return 1;
+}
+
+/**
+
+
+        moLuaResourceManager
+
+
+*/
+
+IMPLEMENT_SCRIPT_CLASS(moLuaResourceManager)
+
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaResourceManager)
+    SCRIPT_FUNCTION( moLuaResourceManager, GetResourceCount),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetResource),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetResourceIndex),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetResourceByType),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetResourceName),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetResourceLabelName),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetResourceType),
+
+    SCRIPT_FUNCTION( moLuaResourceManager, GetTextureMan),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetVideoMan),
+    SCRIPT_FUNCTION( moLuaResourceManager, GetSoundMan),
+    {0}
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaResourceManager)
+{0}
+END_SCRIPT_CLASS_PROPERTIES
+
+SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaResourceManager)
+{
+  m_pResourceManager = NULL;
+}
+
+void moLuaResourceManager::Set( moResourceManager* p_pResourceManager) {
+  m_pResourceManager = p_pResourceManager;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceCount)
+{
+  //MOdouble fValue = (MOdouble) lua_tonumber (L, 1);
+  //MOdouble res = moMathd::ACos(fValue);
+  //lua_pushnumber(L, (lua_Number)res);
+  int count = m_pResourceManager->Resources().Count();
+  lua_pushnumber(L, (lua_Number)count);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResource)
+{
+  int id = (int) lua_tonumber (L, 1);
+  moResource* pResource = m_pResourceManager->GetResource(id);
+  if (pResource)
+    id = pResource->GetId();
+  else
+    id = -1;
+  lua_pushnumber(L, (lua_Number)id);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceIndex)
+{
+   	moText labelname = (moText) lua_tostring (L, 1);
+   	int id = -1;
+
+    if (m_pResourceManager) {
+      id = m_pResourceManager->GetResourceIndex(labelname);
+    }
+
+    lua_pushnumber(L, (lua_Number)id);
+    return 1;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceByType)
+{
+    int id;
+
+    if (lua_isnumber(L,1)) {
+      int typei = (int) lua_tonumber(L, 1);
+      ///chequear validez del indice...
+    } else if (lua_isstring(L,1)) {
+      moText typestr = (moText) lua_tostring (L, 1);
+      ///transformar de str a moResourceType
+    }
+
+/*
+    if (m_pResourceManager) {
+      moResourceType  rtype;
+      moResource* pResource;
+      rtype = MO_RESOURCETYPE_DATA;
+
+      if (pResource)
+        id = pResource->GetId();
+    }
+
+   	int id = -1;
+     (m_pResourceManager && typei<MO_RESOURCETYPE_) ?
+      pResource = m_pResourceManager->GetResourceByType((moResourceType)typei) : pResource=NULL;
+
+  */
+
+    lua_pushnumber(L, (lua_Number)id);
+    return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceName)
+{
+    moText rname;
+    int id = (int) lua_tonumber (L, 1);
+
+    moResource* pResource = m_pResourceManager->GetResource(id);
+
+    if (pResource)
+      rname = pResource->GetName();
+    else
+      rname = "";
+
+    lua_pushstring(L, rname);
+    return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceLabelName)
+{
+    moText rlname;
+    int id = (int) lua_tonumber (L, 1);
+
+    moResource* pResource = m_pResourceManager->GetResource(id);
+
+    if (pResource)
+      rlname = pResource->GetLabelName();
+    else
+      rlname = "";
+
+    lua_pushstring(L, rlname);
+    return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceType)
+{
+    int id = (int) lua_tonumber (L, 1);
+    moResourceType  rtype;
+
+    moResource* pResource = m_pResourceManager->GetResource(id);
+
+    if (pResource)
+      rtype = pResource->GetResourceType();
+    else
+      rtype = MO_RESOURCETYPE_UNDEFINED;
+
+    lua_pushnumber(L, (lua_Number)(int)rtype);
+    return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetTextureMan)
+{
+    return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetVideoMan)
+{
+    moLuaVideoManager* pLuaVideoMan = new moLuaVideoManager( L );
+    if (pLuaVideoMan && m_pResourceManager) {
+      pLuaVideoMan->Set( m_pResourceManager->GetVideoMan());
+      moLuna<moLuaVideoManager>::createFromExisting( L, pLuaVideoMan );
+    }
+    return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetSoundMan)
+{
+    moLuaSoundManager* pLuaSoundMan = new moLuaSoundManager( L );
+    if (pLuaSoundMan && m_pResourceManager) {
+      pLuaSoundMan->Set( m_pResourceManager->GetSoundMan());
+      moLuna<moLuaSoundManager>::createFromExisting( L, pLuaSoundMan );
+    }
+    return 1;
+}
+
 
 // moLuaMath implementation ***************************************************
 
 IMPLEMENT_SCRIPT_CLASS(moLuaMath)
 
 // Bind member functions to LUA
-DEFINE_SCRIPT_CLASS(moLuaMath)
-SCRIPT_METHOD(moLuaMath, ACos),
-SCRIPT_METHOD(moLuaMath, ASin),
-SCRIPT_METHOD(moLuaMath, ATan),
-SCRIPT_METHOD(moLuaMath, ATan2),
-SCRIPT_METHOD(moLuaMath, Ceil),
-SCRIPT_METHOD(moLuaMath, Cos),
-SCRIPT_METHOD(moLuaMath, Exp),
-SCRIPT_METHOD(moLuaMath, FAbs),
-SCRIPT_METHOD(moLuaMath, Floor),
-SCRIPT_METHOD(moLuaMath, FMod),
-SCRIPT_METHOD(moLuaMath, InvSqrt),
-SCRIPT_METHOD(moLuaMath, Log),
-SCRIPT_METHOD(moLuaMath, Log2),
-SCRIPT_METHOD(moLuaMath, Log10),
-SCRIPT_METHOD(moLuaMath, Pow),
-SCRIPT_METHOD(moLuaMath, Sin),
-SCRIPT_METHOD(moLuaMath, Sqr),
-SCRIPT_METHOD(moLuaMath, Sqrt),
-SCRIPT_METHOD(moLuaMath, Tan),
-SCRIPT_METHOD(moLuaMath, UnitRandom),
-SCRIPT_METHOD(moLuaMath, SymmetricRandom),
-SCRIPT_METHOD(moLuaMath, IntervalRandom),
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaMath)
+SCRIPT_FUNCTION(moLuaMath, ACos),
+SCRIPT_FUNCTION(moLuaMath, ASin),
+SCRIPT_FUNCTION(moLuaMath, ATan),
+SCRIPT_FUNCTION(moLuaMath, ATan2),
+SCRIPT_FUNCTION(moLuaMath, Ceil),
+SCRIPT_FUNCTION(moLuaMath, Cos),
+SCRIPT_FUNCTION(moLuaMath, Exp),
+SCRIPT_FUNCTION(moLuaMath, FAbs),
+SCRIPT_FUNCTION(moLuaMath, Floor),
+SCRIPT_FUNCTION(moLuaMath, FMod),
+SCRIPT_FUNCTION(moLuaMath, InvSqrt),
+SCRIPT_FUNCTION(moLuaMath, Log),
+SCRIPT_FUNCTION(moLuaMath, Log2),
+SCRIPT_FUNCTION(moLuaMath, Log10),
+SCRIPT_FUNCTION(moLuaMath, Pow),
+SCRIPT_FUNCTION(moLuaMath, Sin),
+SCRIPT_FUNCTION(moLuaMath, Sqr),
+SCRIPT_FUNCTION(moLuaMath, Sqrt),
+SCRIPT_FUNCTION(moLuaMath, Tan),
+SCRIPT_FUNCTION(moLuaMath, UnitRandom),
+SCRIPT_FUNCTION(moLuaMath, SymmetricRandom),
+SCRIPT_FUNCTION(moLuaMath, IntervalRandom),
 { 0, 0 }
-END_SCRIPT_CLASS
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaMath)
+{0}
+END_SCRIPT_CLASS_PROPERTIES
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaMath)
 {
@@ -252,18 +642,22 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, IntervalRandom)
 IMPLEMENT_SCRIPT_CLASS(moLuaParserFunction)
 
 // Bind member functions to LUA
-DEFINE_SCRIPT_CLASS(moLuaParserFunction)
-SCRIPT_METHOD(moLuaParserFunction, SetExpression),
-SCRIPT_METHOD(moLuaParserFunction, SetParameters1),
-SCRIPT_METHOD(moLuaParserFunction, SetParameters2),
-SCRIPT_METHOD(moLuaParserFunction, SetParameters3),
-SCRIPT_METHOD(moLuaParserFunction, Eval1),
-SCRIPT_METHOD(moLuaParserFunction, Eval2),
-SCRIPT_METHOD(moLuaParserFunction, Eval3),
-SCRIPT_METHOD(moLuaParserFunction, GetParameterCount),
-SCRIPT_METHOD(moLuaParserFunction, GetVariableCount),
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaParserFunction)
+SCRIPT_FUNCTION(moLuaParserFunction, SetExpression),
+SCRIPT_FUNCTION(moLuaParserFunction, SetParameters1),
+SCRIPT_FUNCTION(moLuaParserFunction, SetParameters2),
+SCRIPT_FUNCTION(moLuaParserFunction, SetParameters3),
+SCRIPT_FUNCTION(moLuaParserFunction, Eval1),
+SCRIPT_FUNCTION(moLuaParserFunction, Eval2),
+SCRIPT_FUNCTION(moLuaParserFunction, Eval3),
+SCRIPT_FUNCTION(moLuaParserFunction, GetParameterCount),
+SCRIPT_FUNCTION(moLuaParserFunction, GetVariableCount),
 { 0, 0 }
-END_SCRIPT_CLASS
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaParserFunction)
+{0}
+END_SCRIPT_CLASS_PROPERTIES
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaParserFunction) : moParserFunction()
 {
@@ -347,42 +741,46 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaParserFunction, GetVariableCount)
 IMPLEMENT_SCRIPT_CLASS(moLuaP5)
 
 // Bind member functions to LUA
-DEFINE_SCRIPT_CLASS(moLuaP5)
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaP5)
 
-SCRIPT_METHOD(moLuaP5, triangle),
-SCRIPT_METHOD(moLuaP5, line),
-SCRIPT_METHOD(moLuaP5, arc),
-SCRIPT_METHOD(moLuaP5, point),
-SCRIPT_METHOD(moLuaP5, quad),
-SCRIPT_METHOD(moLuaP5, ellipse),
-SCRIPT_METHOD(moLuaP5, rect),
+SCRIPT_FUNCTION(moLuaP5, triangle),
+SCRIPT_FUNCTION(moLuaP5, line),
+SCRIPT_FUNCTION(moLuaP5, arc),
+SCRIPT_FUNCTION(moLuaP5, point),
+SCRIPT_FUNCTION(moLuaP5, quad),
+SCRIPT_FUNCTION(moLuaP5, ellipse),
+SCRIPT_FUNCTION(moLuaP5, rect),
 
-SCRIPT_METHOD(moLuaP5, strokeWeight),
-SCRIPT_METHOD(moLuaP5, background),
-SCRIPT_METHOD(moLuaP5, colorMode),
+SCRIPT_FUNCTION(moLuaP5, strokeWeight),
+SCRIPT_FUNCTION(moLuaP5, background),
+SCRIPT_FUNCTION(moLuaP5, colorMode),
 
-SCRIPT_METHOD(moLuaP5, stroke),
-SCRIPT_METHOD(moLuaP5, noFill),
-SCRIPT_METHOD(moLuaP5, noStroke),
-SCRIPT_METHOD(moLuaP5, fill),
+SCRIPT_FUNCTION(moLuaP5, stroke),
+SCRIPT_FUNCTION(moLuaP5, noFill),
+SCRIPT_FUNCTION(moLuaP5, noStroke),
+SCRIPT_FUNCTION(moLuaP5, fill),
 
-SCRIPT_METHOD(moLuaP5, pushMatrix),
-SCRIPT_METHOD(moLuaP5, popMatrix),
-SCRIPT_METHOD(moLuaP5, resetMatrix),
+SCRIPT_FUNCTION(moLuaP5, pushMatrix),
+SCRIPT_FUNCTION(moLuaP5, popMatrix),
+SCRIPT_FUNCTION(moLuaP5, resetMatrix),
 
-SCRIPT_METHOD(moLuaP5, scale),
-SCRIPT_METHOD(moLuaP5, translate),
-SCRIPT_METHOD(moLuaP5, rotate),
+SCRIPT_FUNCTION(moLuaP5, scale),
+SCRIPT_FUNCTION(moLuaP5, translate),
+SCRIPT_FUNCTION(moLuaP5, rotate),
 
-SCRIPT_METHOD(moLuaP5, PRGB),
-SCRIPT_METHOD(moLuaP5, PHSB),
+SCRIPT_FUNCTION(moLuaP5, PRGB),
+SCRIPT_FUNCTION(moLuaP5, PHSB),
 
-SCRIPT_METHOD(moLuaP5, PHALF_PI),
-SCRIPT_METHOD(moLuaP5, PTWO_PI),
-SCRIPT_METHOD(moLuaP5, PPI),
+SCRIPT_FUNCTION(moLuaP5, PHALF_PI),
+SCRIPT_FUNCTION(moLuaP5, PTWO_PI),
+SCRIPT_FUNCTION(moLuaP5, PPI),
 
 { 0, 0 }
-END_SCRIPT_CLASS
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaP5)
+{0}
+END_SCRIPT_CLASS_PROPERTIES
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaP5) : moP5()
 {

@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -63,7 +63,21 @@ moResource::~moResource() {
 
 MOboolean moResource::Init() {
 
-	return true;
+  if (!(GetConfigName()==moText(""))) {
+    if (moMoldeoObject::Init()) {
+      if (moMoldeoObject::CreateConnectors()) {
+        return true;
+      } else {
+        MODebug2->Error("Errors creating connectors or loading param values for " + GetConfigName() + " configuration file");
+        return false;
+      }
+    }
+  }
+
+  MODebug2->Message("No " + GetName() + " configuration file defined. Continue.");
+
+  return true;
+
 }
 
 MOboolean moResource::Finish() {
@@ -76,11 +90,6 @@ moResource::GetResourceType() {
 
 	return m_ResourceType;
 
-}
-
-moText
-moResource::GetResourceName() {
-	return m_ResourceName;
 }
 
 void
@@ -100,7 +109,8 @@ moResource::SetResourceType( moResourceType p_restype ) {
 
 
 moResourceManager::moResourceManager() {
-        m_Resources.Init( 0, NULL );
+
+    m_Resources.Init( 0, NULL );
 
 		//predefined managers
 		MOFileMan = NULL;
@@ -126,16 +136,19 @@ moResourceManager::moResourceManager() {
 moResourceManager::~moResourceManager() {
 }
 
-MOboolean
+moResource*
 moResourceManager::NewResource( moText p_resname, int paramindex, int valueindex  ) {
 
     moResource* pResource = moNewResource( p_resname, m_Plugins );
     if (pResource) {
         pResource->GetMobDefinition().GetMobIndex().SetParamIndex( paramindex );
         pResource->GetMobDefinition().GetMobIndex().SetValueIndex( valueindex );
-    } else return false;
+        AddResource( pResource  );
+    } else {
+        MODebug2->Error("moResourceManager::NewResource Error creating resource "+p_resname);
+    }
 
-	return AddResource( pResource  );
+    return pResource;
 
 }
 
@@ -174,19 +187,19 @@ moResourceManager::Resources() {
 }
 
 moResource*
-moResourceManager::GetResource( MOint p_ID ) {
+moResourceManager::GetResource( MOint p_index ) {
 
-	return m_Resources.Get(p_ID);
+	return m_Resources.Get(p_index);
 
 }
 
 
 MOint
-moResourceManager::GetResourceId( moText p_resname ) {
+moResourceManager::GetResourceIndex( moText p_labelname ) {
 
 	for(MOuint i=0;i<m_Resources.Count();i++) {
 		if ( m_Resources.Get(i) != NULL ) {
-			if ( m_Resources.Get(i)->GetName() == p_resname) {
+			if ( m_Resources.Get(i)->GetLabelName() == p_labelname) {
 				return i;
 			}
 		}
@@ -195,20 +208,32 @@ moResourceManager::GetResourceId( moText p_resname ) {
 }
 
 moText
-moResourceManager::GetResourceName( MOint p_ID ) {
+moResourceManager::GetResourceName( MOint p_index ) {
 
-	if ( m_Resources.Get(p_ID) != NULL ) {
-		return m_Resources.Get(p_ID)->GetResourceName();
+	if ( m_Resources.Get(p_index) != NULL ) {
+		return m_Resources.Get(p_index)->GetName();
 	}
 
 	return moText("");//not found
 
 }
 
+moText
+moResourceManager::GetResourceLabelName( MOint p_index ) {
+
+	if ( m_Resources.Get(p_index) != NULL ) {
+		return m_Resources.Get(p_index)->GetLabelName();
+	}
+
+	return moText("");//not found
+
+}
+
+
 moResourceType
-moResourceManager::GetResourceType( MOint p_ID ) {
-	if ( m_Resources.Get(p_ID) != NULL ) {
-		return m_Resources.Get(p_ID)->GetResourceType();
+moResourceManager::GetResourceType( MOint p_index ) {
+	if ( m_Resources.Get(p_index) != NULL ) {
+		return m_Resources.Get(p_index)->GetResourceType();
 	} else return MO_RESOURCETYPE_UNDEFINED;
 }
 
@@ -299,30 +324,33 @@ moResourceManager::Init(
 	if ( GetResourceByType( MO_RESOURCETYPE_SCRIPT )==NULL )
 		AddResource( new moScriptManager() );
 
-	///Asigna configname, y labelname a los recursos en caso de encontrarse en el config
+	///Asigna configname, y labelname a los recursos PREDETERMINADOS en caso de encontrarse en el config
 	moText resname;
 	moText cfname;
 	moText lblname;
 
+  ///TODO: chequear errores...
 	moParam& presources(p_consoleconfig.GetParam(moText("resources")));
 
 	presources.FirstValue();
 
 	for(MOuint r=0; r<presources.GetValuesCount(); r++) {
 
-		moResource* presource = NULL;
+		moResource* pResource = NULL;
 
 		resname = presources[MO_SELECTED][MO_CFG_RESOURCE].Text();
 		cfname = presources[MO_SELECTED][MO_CFG_RESOURCE_CONFIG].Text();
 		lblname = presources[MO_SELECTED][MO_CFG_RESOURCE_LABEL].Text();
 
-		MOint rid = GetResourceId( resname );
+		MOint rid = GetResourceIndex( lblname );
 
-		if(rid>-1) presource = GetResource(rid);
+		if(rid>-1) pResource = GetResource(rid);
 
-		if (presource) {
-			presource->SetConfigName(cfname);
-			presource->SetLabelName(lblname);
+		if (pResource) {
+			pResource->SetConfigName(cfname);
+			pResource->SetLabelName(lblname);
+      pResource->GetMobDefinition().GetMobIndex().SetParamIndex( presources.GetParamDefinition().GetIndex() );
+      pResource->GetMobDefinition().GetMobIndex().SetValueIndex( r );
 		}
 		presources.NextValue();
 	}
@@ -477,8 +505,9 @@ moResourceManager::Init(
 	MOVideoMan = (moVideoManager*)  GetResourceByType( MO_RESOURCETYPE_VIDEO );
 	if (MOVideoMan)  {
         if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Video Man Resource."));
-	    if (!MOVideoMan->Init())
+	    if (!MOVideoMan->Init()) {
             MODebug2->Error(moText("moResourceManager:: Video Man Initialization Error."));
+	    }
 	} else {
 	    MODebug2->Error(moText("moResourceManager:: Video Man Creation Error."));
     }
@@ -495,8 +524,9 @@ moResourceManager::Init(
 	MOScriptMan = (moScriptManager*)  GetResourceByType( MO_RESOURCETYPE_SCRIPT );
 	if (MOScriptMan)  {
         if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Script Man Resource."));
-	    if (!MOScriptMan->Init())
+	    if (!MOScriptMan->Init()) {
             MODebug2->Error(moText("moResourceManager:: Script Man Initialization Error."));
+	    }
 	} else {
 	    MODebug2->Error(moText("moResourceManager:: Script Man Creation Error."));
     }

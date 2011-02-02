@@ -45,7 +45,8 @@ moGUIManager::moGUIManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_GUI );
 
-	SetName("GUI Manager");
+	SetName("guimanager");
+	SetLabelName("guimanager");
 /*
 	hOpWnd = NULL;
 	hVisWnd = NULL;
@@ -82,8 +83,8 @@ moGUIManager::Init(/*HWND p_hOpWnd, HWND p_hVisWnd*/) {
 	{
 	}
 
-	MODebug->Push("Handle of Operation Window = " + IntToStr((int)hOpWnd));
-	MODebug->Push("Handle of Visualization Window = " + IntToStr((int)hVisWnd));
+	MODebug2->Push("Handle of Operation Window = " + IntToStr((int)hOpWnd));
+	MODebug2->Push("Handle of Visualization Window = " + IntToStr((int)hVisWnd));
 */
 	return true;
 }

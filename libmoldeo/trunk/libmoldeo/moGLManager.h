@@ -102,7 +102,7 @@ class LIBMOLDEO_API moGLManager : public moResource
          * @param p_width ancho de la ventana.
          * @param p_height alto de la ventana.
          */
-		void SetOrthographicView(MOint p_width, MOint p_height);
+		void SetOrthographicView(MOint p_width=0, MOint p_height=0);
 
         /**
          * Devuelve el modo de render actual (GL_RENDER, GL_SELECT o GL_FEEDBACK).

@@ -92,9 +92,8 @@
 			<Add directory="..\..\..\..\externlibs\tinyxml" />
 			<Add directory="..\..\..\..\externlibs\FTGL\include" />
 			<Add directory="..\..\..\..\externlibs\TUIO_CPP" />
-			<Add directory="C:\gstreamer\include\gstreamer-0.10" />
-			<Add directory="C:\gstreamer\include\glib-2.0" />
-			<Add directory="C:\gstreamer\lib\glib-2.0\include" />
+			<Add directory="C:\Archivos de programa\OSSBuild\GStreamer\v0.10.6\sdk\include\gstreamer-0.10" />
+			<Add directory="C:\Archivos de programa\OSSBuild\GStreamer\v0.10.6\sdk\include\glib-2.0" />
 		</Compiler>
 		<Linker>
 			<Add library="libSDL" />
@@ -106,7 +105,7 @@
 			<Add library="OpenAL32" />
 			<Add library="EFX-Util" />
 			<Add library="FreeImage" />
-			<Add library="gstreamer" />
+			<Add library="gstreamer-0.10" />
 			<Add library="glib-2.0" />
 			<Add library="gobject-2.0" />
 			<Add library="boost_system-mt" />
@@ -142,13 +141,11 @@
 			<Add directory="..\..\..\..\externlibs\boost\lib\1_36_0" />
 			<Add directory="..\..\..\..\externlibs\TUIO_CPP" />
 			<Add directory="..\..\..\..\externlibs\freealut-1.1.0-bin\lib" />
-			<Add directory="C:\gstreamer\lib" />
-			<Add directory="C:\gstreamer\lib\gstreamer-0.10" />
+			<Add directory="C:\Archivos de programa\OSSBuild\GStreamer\v0.10.6\sdk\lib" />
 		</Linker>
 		<ExtraCommands>
 			<Add after="cp.exe -u ../../libmoldeo/*.h ../../../../binaries/include/" />
 			<Add after='svn export &quot;../../data&quot; &quot;../../../../binaries/data&quot; --force' />
-			<Mode after="always" />
 		</ExtraCommands>
 		<Unit filename="..\..\libmoldeo\mo3dModelManager.cpp" />
 		<Unit filename="..\..\libmoldeo\mo3dModelManager.h" />

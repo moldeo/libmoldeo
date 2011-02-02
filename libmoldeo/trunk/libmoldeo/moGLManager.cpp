@@ -25,11 +25,12 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
 #include "moGLManager.h"
+#include "moRenderManager.h"
 
 moGLManager::moGLManager()
 {
@@ -37,7 +38,8 @@ moGLManager::moGLManager()
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_GL );
 
-	SetName("GL Manager");
+	SetName("glmanager");
+	SetLabelName("glmanager");
 
 	m_gpu_vendor_code = 0;
 	m_gpu_ventor_string = moText("");
@@ -85,7 +87,7 @@ MOboolean moGLManager::CheckErrors(moText p_location)
 		error = true;
 		errstr = (char *)gluErrorString(errnum);
 		if (p_location != moText("")) errstr += moText(" at ") + moText(p_location);
-		//if (MODebug != NULL) MODebug->Push(errstr);
+		//if (MODebug != NULL) MODebug2->Push(errstr);
 	}
 	return error;
 }
@@ -123,16 +125,31 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 
 void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
 {
-	glViewport(0, 0, p_width, p_height);
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluOrtho2D(0.0, p_width, 0.0, p_height);
+    if (p_width!=0 || p_height!=0) {
+      glViewport(0, 0, p_width, p_height);
+      gluOrtho2D(0.0, p_width, 0.0, p_height);
+    } else {
+      float prop;
+
+      int w = m_pResourceManager->GetRenderMan()->ScreenWidth();
+      int h = m_pResourceManager->GetRenderMan()->ScreenHeight();
+      if ( w == 0 || h == 0 ) { w  = 1; h = 1; prop = 1.0; }
+      else {
+        prop = (float) h / (float) w;
+      }
+      glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
+      // Set Up An Ortho Screen
+    }
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
 }
+
+
 
 MOint moGLManager::GetRenderMode()
 {

@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -38,6 +38,7 @@
 #include <moVideoGraph.h>
 #include <moDebugManager.h>
 #include <moDataManager.h>
+#include <moTimeManager.h>
 
 //RESOLUTION
 //NTSC - PAL
@@ -120,7 +121,7 @@
 #define MO_VIDEO_CIRCULARSOURCEHEIGHT	9
 
 enum moLiveSystemType {
-	LST_VIDEOCAMERA,
+	LST_VIDEOCAMERA=0,
 	LST_UNKNOWN
 };
 
@@ -261,7 +262,7 @@ class LIBMOLDEO_API moVideoFrame : public moAbstract {
 
 typedef moVideoFrame* moVideoFramePtr;
 
-moDeclareExportedDynamicArray(moVideoFramePtr,moVideoFrames)
+moDeclareExportedDynamicArray(moVideoFramePtr,moVideoFrames);
 
 /// Buffer de imágenes para video
 /**
@@ -308,7 +309,7 @@ class LIBMOLDEO_API moVideoBuffer : public moTextureAnimated {
 
 typedef moVideoBuffer* moVideoBufferPtr;
 
-moDeclareExportedDynamicArray(moVideoBufferPtr,moVideoBuffers)
+moDeclareExportedDynamicArray(moVideoBufferPtr,moVideoBuffers);
 
 
 /// Buffer Circular de imágenes para video
@@ -331,19 +332,29 @@ class LIBMOLDEO_API moCircularVideoBuffer : public moTextureAnimated {
 		virtual MOboolean  Init( moText videoinput, moText bufferformat, moResourceManager* p_pResourceManager, MOint frames,  MOint width, MOint height, MOint xsource, MOint ysource, MOint sourcewidth, MOint sourceheight );
 		virtual MOboolean  Finish();
 
+		virtual void  StartRecording( long at_position = -1 );
+		virtual void  PauseRecording();
+		virtual void  ContinueRecording();
+		virtual void  JumpRecording( long at_position );
+		virtual void  StopRecording();
+		virtual long  GetRecordPosition();
+		virtual bool  IsRecording();
+
 		virtual void GetFrame( MOuint p_i );
 
-		MOboolean LoadSample( moVideoSample* pvideosample );
+		virtual MOboolean LoadSample( moVideoSample* pvideosample );
 		//MOboolean LoadImage( FIBITMAP* pImage , MOuint indeximage );
 
-		MOint GetXSource() { return m_XSource; }
-		MOint GetYSource() { return m_YSource; }
-		MOint GetSourceWidth() { return m_SourceWidth; }
-		MOint GetSourceHeight() { return m_SourceHeight; }
-		moText GetVideoInput() { return m_VideoInput; }
-		moText	GetBufferFormat() { return m_BufferFormat; }
+		virtual MOint GetXSource() { return m_XSource; }
+		virtual MOint GetYSource() { return m_YSource; }
+		virtual MOint GetSourceWidth() { return m_SourceWidth; }
+		virtual MOint GetSourceHeight() { return m_SourceHeight; }
+		virtual moText GetVideoInput() { return m_VideoInput; }
+		virtual moText	GetBufferFormat() { return m_BufferFormat; }
 
 	private:
+
+    moTimer m_RecTimer;
 
 		MOint	m_WriteIndex;
 		MOint	m_ReadIndex;
@@ -365,7 +376,7 @@ class LIBMOLDEO_API moCircularVideoBuffer : public moTextureAnimated {
 
 typedef moCircularVideoBuffer* moCircularVideoBufferPtr;
 
-moDeclareExportedDynamicArray(moCircularVideoBufferPtr,moCircularVideoBuffers)
+moDeclareExportedDynamicArray(moCircularVideoBufferPtr,moCircularVideoBuffers);
 
 class moDirectory;
 
@@ -399,7 +410,7 @@ class LIBMOLDEO_API moVideoBufferPath : public moAbstract {
 
 typedef moVideoBufferPath* moVideoBufferPathPtr;
 
-moDeclareExportedDynamicArray(moVideoBufferPathPtr,moVideoBufferPaths)
+moDeclareExportedDynamicArray(moVideoBufferPathPtr,moVideoBufferPaths);
 
 //could be: Video, Camera, or VideoLoop...
 class LIBMOLDEO_API moVideoIn : public moAbstract {
@@ -425,10 +436,10 @@ class LIBMOLDEO_API moVideoOut : public moAbstract {
 		virtual MOboolean Init();
 		virtual MOboolean Finish();
 
-	private:
 
 };
 
+typedef moLiveSystem moCamera;
 
 class LIBMOLDEO_API moVideoManager : public moResource
 {
@@ -440,13 +451,44 @@ class LIBMOLDEO_API moVideoManager : public moResource
 		virtual MOboolean Init();
 		virtual MOboolean Finish();
 
-	    virtual void Update(moEventList* p_EventList);
+    virtual void Update(moEventList* p_EventList);
 
 		MOswitch GetStatus(MOdevcode);
 		MOswitch SetStatus( MOdevcode,MOswitch);
 		MOint GetValue(MOdevcode);
 		MOpointer GetPointer( MOdevcode devcode );
 		MOdevcode GetCode( moText);
+
+    /**
+    * Devuelve el objeto moCircularVideoBuffer de cb_idx
+    */
+		moCamera* GetCamera( int cam_idx );
+
+    /**
+    * Devuelve la cantidad de objetos de moCircularVideoBuffer disponibles
+    */
+		int GetCameraCount();
+
+    /**
+    * Devuelve el objeto moCircularVideoBuffer de cb_idx
+    */
+		moCircularVideoBuffer* GetCircularVideoBuffer( int cb_idx );
+
+    /**
+    * Devuelve la cantidad de objetos de moCircularVideoBuffer disponibles
+    */
+		int GetCircularVideoBufferCount();
+
+    /**
+    * Devuelve el objeto moVideoBufferPaths del indice vb_idx
+    */
+		moVideoBufferPath* GetVideoBufferPath( int vb_idx );
+
+    /**
+    * Devuelve la cantidad de objetos de moVideoBufferPath disponibles
+    */
+		int GetVideoBufferPathCount();
+
 
 	protected:
 

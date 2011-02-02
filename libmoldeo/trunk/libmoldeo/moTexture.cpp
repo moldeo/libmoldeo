@@ -1111,7 +1111,7 @@ MOboolean
 moTextureAnimated::NeedsInterpolation() {
 	// pasamos la barrera del m_FrameJump
 	// !!!chequear que el next y el previous esten correctamente fijados
-	//MODebug->Push( moText("Pr:")+IntToStr(m_FramePrevious)+moText("Nxt:")+IntToStr(m_FrameNext) );
+	//MODebug2->Push( moText("Pr:")+IntToStr(m_FramePrevious)+moText("Nxt:")+IntToStr(m_FrameNext) );
 
 	if (!m_bInterpolation)
 		return false;
@@ -1154,7 +1154,7 @@ moTextureAnimated::Interpolate() {
 			if ( m_InterpolationPosition <= 0.0) m_InterpolationPosition = 0.0;
 			filterparam.par_flt1 = m_InterpolationPosition;
 			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, &filterparam );
-			//MODebug->Push( moText("IP:")+FloatToStr(m_InterpolationPosition) );
+			//MODebug2->Push( moText("IP:")+FloatToStr(m_InterpolationPosition) );
 			return 1;
 		}
 	}
@@ -1309,7 +1309,7 @@ MOboolean moTextureMultiple::Load(moValue * p_value)
 			}
 		}
 	}
-	SetNumberFrames(m_textures_array.Count());
+	SetFrameCount(m_textures_array.Count());
 
 	m_bBuildedFromFile = (0 < m_textures_array.Count());
 
@@ -1320,14 +1320,14 @@ MOboolean moTextureMultiple::Load(moText p_name, moTextureArray &p_textures, MOu
 {
 	SetName(p_name);
 	m_textures_array.Copy(p_textures, p_id0, p_id1);
-	SetNumberFrames(m_textures_array.Count());
+	SetFrameCount(m_textures_array.Count());
 	return 0 < m_textures_array.Count();
 }
 
 void moTextureMultiple::SetTextureCount(MOuint p_tex_count)
 {
 	m_textures_array.Init(p_tex_count, NULL);
-	SetNumberFrames(p_tex_count);
+	SetFrameCount(p_tex_count);
 }
 
 void moTextureMultiple::GetFrame(MOuint p_i)
@@ -1447,7 +1447,7 @@ MOboolean moMovie::LoadMovieFile(moText p_filename)
 			if (result)
 			{
 				lastframe = frames;
-				SetNumberFrames( frames );
+				SetFrameCount( frames );
 			}
 		}
 	}

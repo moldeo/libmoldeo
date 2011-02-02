@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -40,7 +40,8 @@ moRenderManager::moRenderManager() {
 
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_RENDER );
-	SetName("Render Manager");
+	SetName("rendermanager");
+	SetLabelName("rendermanager");
 
 	m_pGLManager = NULL;
 	m_pFBManager = NULL;

@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -433,7 +433,7 @@ MOdouble moMotion::movGan( char e, int c, double ang, double a, double v, double
 {
 	MOdouble mov = 0.0f;
 	MOdouble gang = long(v*(ang-d)*togra) % 360;
-	
+
 	mov =(gang/360.0f)	* a;
 
     return mov;

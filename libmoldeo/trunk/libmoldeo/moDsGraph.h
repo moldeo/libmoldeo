@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 *******************************************************************************/
 
@@ -36,9 +36,9 @@ Class:   moDsGraph
 
 Description: DirectShow Device.
 
-Todo:	
+Todo:
 
-Example: 
+Example:
 
 
 ==============================================*/
@@ -64,13 +64,13 @@ class LIBMOLDEO_API moDsFramework : public moVideoFramework {
 
 		moDsFramework();
 		virtual ~moDsFramework();
-		
+
 		virtual moCaptureDevices* LoadCaptureDevices();
 		virtual moCaptureDevices* UpdateCaptureDevices();
-		
+
 		virtual bool	CheckCaptureDevice( int i );
-		
-		//DirectX		
+
+		//DirectX
 		bool ShowError( HRESULT hr );
 
 	private:
@@ -79,7 +79,7 @@ class LIBMOLDEO_API moDsFramework : public moVideoFramework {
 
 };
 
-class LIBMOLDEO_API moDsSampleGrabberCB : public ISampleGrabberCB 
+class LIBMOLDEO_API moDsSampleGrabberCB : public ISampleGrabberCB
 {
 private:
 	moBucketsPool *m_pBucketsPool;
@@ -99,7 +99,7 @@ public:
 	STDMETHODIMP SetBucketsPool( moBucketsPool *pBucketsPool ) {
 
 		m_pBucketsPool = pBucketsPool;
-		
+
 		return 0;
 	}
 
@@ -108,12 +108,12 @@ public:
     STDMETHODIMP QueryInterface(REFIID riid, void ** ppv)
     {
         CheckPointer(ppv,E_POINTER);
-        
-        if( riid == IID_ISampleGrabberCB || riid == IID_IUnknown ) 
+
+        if( riid == IID_ISampleGrabberCB || riid == IID_IUnknown )
         {
             *ppv =(void *) static_cast<ISampleGrabberCB*>( this );
             return NOERROR;
-        }    
+        }
 
         return E_NOINTERFACE;
     }
@@ -135,33 +135,33 @@ public:
         //
         // Convert the buffer into a bitmap
         //
-		
+
 		//Add el bucket!!!
-		
+
 		moBucket *pbucket=NULL;
-		
+
 		if(!m_pBucketsPool->IsFull()) {
 			pbucket = new moBucket();
 			if(pbucket!=NULL) {
-				
+
 				pbucket->SetBuffer( BufferSize,(MOubyte*)pBuffer );
 
-				if(m_pBucketsPool->AddBucket( pbucket )) {				
+				if(m_pBucketsPool->AddBucket( pbucket )) {
 
 					//Width = 720;
 					//Height = 480;
 				}
 			}
 		}
-       
+
 		return 0;
     }
 };
 
 
-class LIBMOLDEO_API moDsGraph : public moVideoGraph {	
+class LIBMOLDEO_API moDsGraph : public moVideoGraph {
 
-public:	
+public:
 
 	moDsGraph();
 	virtual ~moDsGraph();
@@ -178,24 +178,24 @@ public:
 //================================================
 	bool CreateFilterByName( moText p_name, IBaseFilter **ppF);
 	bool CreateCaptureDeviceByPath( moText p_Path, IBaseFilter **ppF );
-	bool SetCaptureDevice( moText deviceport , MOint idevice /**/= 0);	
+	bool SetCaptureDevice( moText deviceport , MOint idevice /**/= 0);
 	bool BuildLiveDVGraph( moBucketsPool *pBucketsPool, MOint idevice = 0);
 	bool BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, MOint idevice = 0);
 	bool BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPool );
 	bool BuildLiveQTVideoGraph( moText filename , moBucketsPool *pBucketsPool );
-	
+
 
 
 //================================================
 //	CONTROL METHODS
 //================================================
-	void Play();	
+	void Play();
 	void Stop();
 	void Pause();
 	void Seek( MOuint frame );
 	bool IsRunning();
 	MOulong	GetFramesLength();
-	MObyte* GetFrameBuffer(MOlong *size);	
+	MObyte* GetFrameBuffer(MOlong *size);
 
 //================================================
 //	MISC METHODS
@@ -209,7 +209,7 @@ public:
 	void ShowConfigureDialog(IBaseFilter *pFilter);
 
 
-private:	
+private:
 
 	IGraphBuilder *m_pFilterGraph;
 	IMediaControl *m_pMediaControl;
@@ -221,7 +221,7 @@ private:
 	IBaseFilter	*m_pQuicktimeFilter;
 	IBaseFilter	*m_pQuicktimeDecoder;
 	IBaseFilter	*m_pColorSpaceConverter;
-	IBaseFilter	*m_pCaptureFilter;	
+	IBaseFilter	*m_pCaptureFilter;
 	IBaseFilter	*m_pSourceFilter;
 	IBaseFilter	*m_pDVDecoderFilter;
 	IBaseFilter	*m_pAVIDecompressorFilter;
@@ -234,7 +234,7 @@ private:
 //========================
 //	INTERFACES TO FILTERS:
 //========================
-	ISampleGrabber  *m_pSampleGrabber;	
+	ISampleGrabber  *m_pSampleGrabber;
 	moDsSampleGrabberCB	m_CB;
 	IFileSourceFilter	*m_pFileSourceFilter;
 

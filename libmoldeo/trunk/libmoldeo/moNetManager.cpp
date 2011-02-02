@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+
 
 ******************************************************************************/
 
@@ -513,7 +513,9 @@ moNetServer::HandleStop() {
 moNetManager::moNetManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_NET );
-	SetName("Net Manager");
+
+	SetName("netmanager");
+	SetLabelName("netmanager");
 }
 
 moNetManager::~moNetManager() {
