@@ -178,12 +178,15 @@ public:
 	void Play();
 	void Stop();
 	void Pause();
-	void Seek( MOuint frame );
+	void Seek( MOuint frame, float rate = 1.0 );
 	bool IsRunning();
 	MOulong	GetFramesLength(); /** cantidad de cuadros */
+	MOulong	GetSamplesLength(); /** cantidad de muestras de sonido */
+
 	MObyte* GetFrameBuffer(MOlong *size);
-    MOulong GetDuration();  /** en nanosegundos para gstreamer!!! 1E-9  1 s = 1E9 ns = 1 billion ns */
-    MOulong GetPosition();  /** en cuadros */
+   virtual MOulong GetDuration();  /** en nanosegundos para gstreamer!!! 1E-9  1 s = 1E9 ns = 1 billion ns */
+   virtual MOulong GetPosition();  /** en cuadros */
+   virtual MOulong GetPositionMS(); /** en millisegundos */
 
 //================================================
 //	MISC METHODS
@@ -199,7 +202,15 @@ public:
     void SetEchoIntensity( float intensity );
     void SetEchoFeedback( float feedback );
 
+    /**funciones de video*/
+    void SetBrightness( float brightness );
+    void SetContrast( float contrast );
+    void SetSaturation( float saturation );
+    void SetHue( float hue );
+
+
     void    SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer = NULL );
+    void    SetAudioFormat( moGstCaps* caps, moGstBuffer* buffer = NULL );
 	/*
 	bool ShowError( HRESULT hr );
 	void SetVideoFormat( AM_MEDIA_TYPE* mt );
@@ -247,6 +258,8 @@ public:
     void WaitForFormatDefinition( MOulong timeout );
 
     void CopyVideoFrame( void* bufferdst, int size );
+    virtual bool IsEOS();
+    virtual void SetEOS(bool iseos);
 
 private:
 
@@ -272,6 +285,7 @@ private:
 
     moGstElement          *m_pVideoScale;
     moGstElement          *m_pVideoDeinterlace;
+    moGstElement          *m_pVideoBalance;
     moGstElement          *m_pColorSpaceInterlace;/** "ffmpegcolorspace for deinterlace" */
 
     moGstElement          *m_pDecoderBin;/** "decodebin" */
@@ -320,6 +334,9 @@ private:
 
     MOulong             m_Duration;
     MOulong             m_FramesLength;
+    MOulong             m_SamplesLength;
+
+    bool                m_bEOS;
 
 
 };

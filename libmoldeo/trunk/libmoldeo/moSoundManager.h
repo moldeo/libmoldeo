@@ -162,7 +162,13 @@ class LIBMOLDEO_API moSound : public  moAbstract {
 		virtual void Pause();
 		virtual void Rewind();
 		virtual moStreamState State();
+		virtual bool  IsPlaying();
 		virtual void Update();
+		virtual MOulong GetPosition();
+		virtual MOulong GetDuration();
+		virtual MOulong GetSampleCount();
+		virtual void Seek( int position, float rate = 1.0);
+		virtual bool  IsEOS();
 
 		virtual void SetVolume( float gain );
 		virtual float GetVolume();
@@ -178,6 +184,8 @@ class LIBMOLDEO_API moSound : public  moAbstract {
     virtual void SetEchoFeedback( float feedback );
 		virtual float GetEchoFeedback();
 
+		moAudioFormat&   GetAudioFormat() { return m_AudioFormat; }
+
     protected:
 
       moText          m_SoundName;
@@ -187,6 +195,7 @@ class LIBMOLDEO_API moSound : public  moAbstract {
       moSoundParam	  m_SoundParam;
 
       moGsGraph*      m_pAudioGraph;
+      moAudioFormat   m_AudioFormat;
 
       float           m_Position;
       float           m_Volume;
@@ -196,6 +205,8 @@ class LIBMOLDEO_API moSound : public  moAbstract {
       float           m_EchoDelay;
       float           m_EchoIntensity;
       float           m_EchoFeedback;
+
+      bool            m_bIsPlaying;
 
 
     private:

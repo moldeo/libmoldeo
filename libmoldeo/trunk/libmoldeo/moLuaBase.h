@@ -157,9 +157,9 @@ public:
 
     /**
      * Inicializador.
-	 * @param moTextHeap heap de texto para almacenar los mensajes de error/debug.
+     *
      */
-    void InitaliseDBG(moTextHeap *pDebug);
+    void InitaliseDBG();
     /**
      * Finalizador.
      */
@@ -184,7 +184,6 @@ public:
 protected:
    int m_iCountMask;
    moLuaVirtualMachine& m_vm;
-   moTextHeap *MODebug;
 };
 
 /**

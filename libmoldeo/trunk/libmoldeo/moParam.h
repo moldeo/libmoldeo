@@ -165,12 +165,23 @@ class LIBMOLDEO_API moParamDefinition
         moValue& GetDefaultValue() {
             return m_DefaultValue;
         }
+
+
+        void SetOptions( const moTextArray& p_options ) {
+            m_Options = p_options;
+        }
+
+        moTextArray&    GetOptions() {
+                return m_Options;
+        }
+
 	private:
 		moText			m_Name;
 		moParamType		m_Type;//type of parameter ()
 		MOint			m_Index;//index of this parameter on moConfig parameters array
 
 		moValue         m_DefaultValue;
+		moTextArray     m_Options;
 
 };
 

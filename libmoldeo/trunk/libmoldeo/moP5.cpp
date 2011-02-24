@@ -41,14 +41,14 @@ moP5::moP5()
 		colorHSBCoeff[i] = defCoeff;
 	}
 
-	strokeColor[0] = 0.0;
-	strokeColor[1] = 0.0;
-	strokeColor[2] = 0.0;
+	strokeColor[0] = 0.7;
+	strokeColor[1] = 0.7;
+	strokeColor[2] = 0.7;
 	strokeColor[3] = 1.0;
 
-	fillColor[0] = 0.5;
-	fillColor[1] = 0.5;
-	fillColor[2] = 0.5;
+	fillColor[0] = 0.2;
+	fillColor[1] = 0.2;
+	fillColor[2] = 0.2;
 	fillColor[3] = 1.0;
 }
 
@@ -64,6 +64,8 @@ void moP5::triangle(float x1, float y1, float x2, float y2, float x3, float y3)
 
 void moP5::line(float x1, float y1, float x2, float y2)
 {
+
+  glBindTexture(GL_TEXTURE_2D,0);
 	glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
 	glBegin(GL_LINES);
 		glVertex2f(x1, y1);
@@ -73,6 +75,7 @@ void moP5::line(float x1, float y1, float x2, float y2)
 
 void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
 {
+	glBindTexture(GL_TEXTURE_2D,0);
 	glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
 	glBegin(GL_LINES);
 		glVertex3f(x1, y1, z1);
@@ -111,6 +114,7 @@ void moP5::ellipse(float x, float y, float width, float height)
 {
 	// Implement display list with precomputed circle coordinates...
 	// and scale it to the right size.
+  glBindTexture(GL_TEXTURE_2D,0);
 
 	int N;
 
@@ -133,12 +137,30 @@ void moP5::ellipse(float x, float y, float width, float height)
             break;
 	}
 
-
-
 }
 
 void moP5::rect(float x, float y, float width, float height)
 {
+
+	int N;
+
+	N = 12;
+
+	switch(fillMode) {
+
+        case MO_P5_NOFILL:
+            glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+            glBindTexture(GL_TEXTURE_2D,0);
+            glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
+            break;
+
+        case MO_P5_FILL:
+            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+            glBindTexture(GL_TEXTURE_2D,0);
+            glColor4f(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            break;
+	}
+
 	glRectf(x, y, x + width, y + height);
 }
 
@@ -279,18 +301,32 @@ void moP5::colorMode(int mode, float range1, float range2, float range3, float r
 
 void moP5::stroke(float gray)
 {
+    strokeColor[0] = gray;
+    strokeColor[1] = gray;
+    strokeColor[2] = gray;
+    strokeColor[3] = 1.0;
 }
 
 void moP5::stroke(float gray, float alpha)
 {
+    stroke(gray);
+    strokeColor[3] = alpha;
 }
 
 void moP5::stroke(float value1, float value2, float value3)
 {
+    strokeColor[0] = value1;
+    strokeColor[1] = value2;
+    strokeColor[2] = value3;
+    strokeColor[3] = 1.0;
 }
 
 void moP5::stroke(float value1, float value2, float value3, float alpha)
 {
+    strokeColor[0] = value1;
+    strokeColor[1] = value2;
+    strokeColor[2] = value3;
+    strokeColor[3] = alpha;
 }
 
 void moP5::noFill()
@@ -300,6 +336,10 @@ void moP5::noFill()
 
 void moP5::noStroke()
 {
+    strokeColor[0] = 0.0;
+    strokeColor[1] = 0.0;
+    strokeColor[2] = 0.0;
+    strokeColor[3] = 0.0;
 }
 
 void moP5::fill(float gray)

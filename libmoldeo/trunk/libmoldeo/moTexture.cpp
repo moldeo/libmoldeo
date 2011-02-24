@@ -962,7 +962,7 @@ moTextureAnimated::moTextureAnimated() : moTexture()
 {
 	m_FrameJump = 0;
 	m_FrameNext = 0;
-	m_FramePrevious = 0;
+	m_FramePrevious = -1;
 	m_FrameStart = 0;
 	m_FrameEnd = 0;
 	m_nFrames = 0;
@@ -981,7 +981,7 @@ MOboolean moTextureAnimated::Init(moText p_name, MOuint p_moid, moResourceManage
 {
 	m_FrameJump = 0;
 	m_FrameNext = 0;
-	m_FramePrevious = 0;
+	m_FramePrevious = -1;
 	m_FrameStart = 0;
 	m_FrameEnd = 0;
 	m_nFrames = 0;
@@ -993,6 +993,7 @@ MOboolean moTextureAnimated::Init(moText p_name, MOuint p_moid, moResourceManage
 	m_pCopyStart = NULL;
 	m_pCopyEnd = NULL;
 	m_pInterpolator = NULL;
+	m_PlayMode = MO_PLAYMODE_FRAMEBASE;
 
 	return moTexture::Init(p_name, p_moid, p_res, p_param);
 }
@@ -1012,6 +1013,21 @@ MOboolean moTextureAnimated::Finish()
         m_pCopyEnd = NULL;
     }
 	return moTexture::Finish();
+}
+
+
+void moTextureAnimated::Play() {
+  m_bIsPlaying = true;
+}
+
+
+void moTextureAnimated::Stop() {
+  m_bIsPlaying = false;
+}
+
+
+bool moTextureAnimated::IsPlaying() {
+  m_bIsPlaying = true;
 }
 
 void
@@ -1242,6 +1258,15 @@ moTextureAnimated::GetFrame( MOuint p_i) {
 	return;
 }
 
+void moTextureAnimated::SetPlayMode( moTextureAnimated::moPlayMode playmode ) {
+  m_PlayMode = playmode;
+}
+
+moTextureAnimated::moPlayMode moTextureAnimated::GetPlayMode() {
+  return m_PlayMode;
+}
+
+
 //===========================================
 //
 //				moTextureMultiple
@@ -1364,6 +1389,7 @@ moMovie::moMovie() : moTextureAnimated()
 {
 	m_type = MO_TYPE_MOVIE;
 	m_pGraph = NULL;
+	m_PlayMode = MO_PLAYMODE_TIMEBASE;
 }
 
 moMovie::~moMovie()
@@ -1384,6 +1410,9 @@ MOboolean moMovie::Init(moText p_name, MOuint p_moid, moResourceManager* p_res, 
             m_pGraph = (moVideoGraph*) new moGsGraph();
         #endif
     }
+
+  m_PlayMode = MO_PLAYMODE_TIMEBASE;
+
 	return true;
 }
 
@@ -1399,10 +1428,165 @@ MOboolean moMovie::Finish()
 	return true;
 }
 
+void moMovie::Play() {
+  if (m_pGraph) {
+    m_pGraph->Play();
+    m_bIsPlaying = true;
+  }
+}
+
+void moMovie::Pause() {
+  if (m_pGraph) {
+    m_pGraph->Pause();
+    m_bIsPlaying = false;
+  }
+}
+
+void moMovie::Continue() {
+  if (m_pGraph) {
+    m_pGraph->Play();
+    m_bIsPlaying = true;
+  }
+}
+
+void BackToBlack( moTexture* pTex ) {
+  if (pTex) {
+    long size = pTex->GetWidth() * pTex->GetHeight() * 4;
+    MOubyte* allblack = new MOubyte [size];
+    memset( allblack, 0 , size);
+    pTex->SetBuffer( allblack );
+  }
+}
+
+void moMovie::Stop() {
+  if (m_pGraph) {
+    //if (GetPosition()==0 && m_pGraph->GetState()!=MO_STREAMSTATE_STOPPED) {
+      m_pGraph->Stop();
+      m_bIsPlaying = false;
+    //} else if ( GetPosition()!=0) {
+     // m_pGraph->Pause();
+     // m_pGraph->Seek(0);
+     // m_bIsPlaying = true;
+    //}
+  }
+}
+
+void moMovie::Seek( long frame, float rate ) {
+  if (m_pGraph) {
+    m_pGraph->Seek( frame, rate );
+  }
+}
+
+MOulong moMovie::GetPosition() {
+  if (m_pGraph) {
+    return m_pGraph->GetPosition();
+  }
+}
+
+moStreamState moMovie::State()  {
+
+  moStreamState stream_state = MO_STREAMSTATE_UNKNOWN;
+
+  if (m_pGraph) {
+
+    stream_state = m_pGraph->GetState();
+
+    switch(stream_state) {
+      case MO_STREAMSTATE_PLAYING:
+        m_bIsPlaying = true;
+        break;
+      default:
+        m_bIsPlaying = false;
+        break;
+    }
+
+  }
+
+  return stream_state;
+}
+
+bool moMovie::IsPlaying() {
+
+  if (m_pGraph) {
+    m_pGraph->GetState();
+  }
+  return m_bIsPlaying;
+}
+
+
+
+
+void  moMovie::SetBrightness( float brightness ) {
+  if (m_pGraph) {
+    m_pGraph->SetContrast( brightness );
+  }
+}
+
+
+
+void  moMovie::SetContrast( float contrast ) {
+  if (m_pGraph) {
+    m_pGraph->SetContrast( contrast );
+  }
+}
+
+
+
+void  moMovie::SetHue( float hue ) {
+  if (m_pGraph) {
+    m_pGraph->SetHue( hue );
+  }
+}
+
+
+
+void  moMovie::SetSaturation( float saturation ) {
+  if (m_pGraph) {
+    m_pGraph->SetSaturation( saturation);
+  }
+}
+
+void  moMovie::SetVolume( float volume ) {
+
+  if ( HasAudio() && m_pGraph) {
+    m_pGraph->SetVolume( volume);
+  }
+}
+
+void  moMovie::SetBalance( float balance ) {
+  if ( HasAudio() && m_pGraph) {
+    m_pGraph->SetBalance( balance);
+  }
+}
+
+bool moMovie::HasVideo() {
+  return true;
+}
+
+bool moMovie::HasAudio() {
+  return true;
+}
+
+bool  moMovie::IsEOS() {
+
+  if (m_pGraph) {
+      return m_pGraph->IsEOS();
+  }
+  return false;
+
+}
+
 MOboolean moMovie::SupportedFile(moText p_filename)
 {
 	moText extension = p_filename.Right(3);
-	return (!stricmp(extension,"avi") || !stricmp(extension,"mov") || !stricmp(extension,"mpg") || !stricmp(extension,"mp4")|| !stricmp(extension,"ogg") || !stricmp(extension,"mpv") || !stricmp(extension,"mkv") || !stricmp(extension,"m2v"));
+	return (!stricmp(extension,"avi") ||
+         !stricmp(extension,"mov") ||
+         !stricmp(extension,"mpg") ||
+         !stricmp(extension,"mp4")||
+         !stricmp(extension,"ogg") ||
+         !stricmp(extension,"mpv") ||
+         !stricmp(extension,"mkv") ||
+         !stricmp(extension,"m2v"));
 }
 
 MOboolean moMovie::LoadMovieFile(moText p_filename)
@@ -1484,8 +1668,26 @@ void moMovie::GetFrame( MOuint p_i )
 	{
     moStreamState state = m_pGraph->GetState();
 
-		m_pGraph->Seek( p_i );
-		m_pGraph->Pause();
+		if (m_PlayMode == MO_PLAYMODE_TIMEBASE) {
+		  ///no ponemos play dos veces, logico....
+      if (state==MO_STREAMSTATE_PAUSED || state==MO_STREAMSTATE_STOPPED) {
+        /*
+
+        if (state==MO_STREAMSTATE_STOPPED)
+          m_pGraph->Play();
+
+        if (state==MO_STREAMSTATE_PAUSED)
+          m_pGraph->Play();
+          */
+
+        //m_pGraph->Pause();
+        MODebug2->Push( "moMovie::GetFrame > Going to p_i:"+IntToStr(p_i)+" Actual real timebase position:" + IntToStr(m_pGraph->GetPosition()) );
+      }
+		} else {
+      m_pGraph->Seek( p_i );
+      m_pGraph->Pause();
+		}
+
 
 		if (!m_BucketsPool.IsEmpty()) {
 

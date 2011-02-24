@@ -62,6 +62,7 @@ public:
 	 * @return el resultado de la operación: true o false.
      */
 	virtual MOboolean Init();
+
     /**
      * Finalizador del administrador.
 	 * @return el resultado de la operación: true o false.
@@ -73,6 +74,7 @@ public:
 	 * @return referencia a la máquina virtual.
      */
     static moLuaVirtualMachine& GetVM(void);
+    static void InitVM();
     /**
      * Devuelve una referencia al debugger.
 	 * @return referencia al debugger.

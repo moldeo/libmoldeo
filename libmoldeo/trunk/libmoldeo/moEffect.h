@@ -123,6 +123,8 @@ public:
 		* b) Sincroniza el beat
 		*/
         virtual void PreDraw( moTempo*,moEffectState* parentstate=NULL);
+        virtual void BeginDraw( moTempo*,moEffectState* parentstate=NULL);
+        virtual void EndDraw();
 
     virtual MOboolean PreFinish();
 
@@ -133,6 +135,7 @@ public:
     //virtual void SetNombreConfig(moText texto);
 
     static void SetColor( moValue& color, moValue& alpha, moEffectState& pstate  );
+    static void SetColor( moParam& color, moParam& alpha, moEffectState& pstate );
     static void SetBlending( moBlendingModes blending );
     static void SetPolygonMode( moPolygonModes polygonmode );
 
@@ -158,6 +161,11 @@ public:
 		// Agregado para poder asignar efectos a teclas arbitrarias de las 4 filas del teclado.
 		// Luego hay que discutirlo/implementarlo mejor...
 		MOint				keyidx;
+
+  protected:
+
+    void ScriptExeDraw();
+    void ScriptExeInteraction();
 
 };
 

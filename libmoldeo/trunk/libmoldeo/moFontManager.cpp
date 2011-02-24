@@ -289,6 +289,13 @@ moFont::Init( moFontType p_Type, moText p_fontname, MOint p_size, MOuint glid ) 
 
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
+  moFile file(p_fontname);
+
+  if (!file.Exists()) {
+    MODebug2->Error("moFont:Init filename "+p_fontname+" not found.");
+    return false;
+  }
+
 	switch( (int)p_Type ) {
 		case MO_FONT_OUTLINE://3d
 			m_pFace = (FTFont*)new FTGLOutlineFont( p_fontname );
@@ -370,8 +377,7 @@ moFont::SetSize( MOfloat size ) {
 
 void
 moFont::SetForegroundColor( MOfloat p_r, MOfloat p_g, MOfloat p_b) {
-
-
+  glColor3f( p_r, p_g, p_b );
 }
 
 void

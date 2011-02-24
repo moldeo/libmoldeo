@@ -521,6 +521,9 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 
 
 void  moCircularVideoBuffer::StartRecording( long at_position  ) {
+  if (at_position!=-1 && at_position>=0 && at_position<(long)m_Frames.Count()) {
+    m_WriteIndex = at_position;
+  }
   if (!m_RecTimer.Started()) {
     m_RecTimer.Start();
   } else {
@@ -663,6 +666,7 @@ MOboolean moVideoBufferPath::UpdateImages( MOint maxfiles ) {
 					FreeImage_Unload(pImage);
 					pImage = NULL;
 					m_ImagesProcessed++;
+					MODebug2->Message( "image processed: "+pFile->GetCompletePath());
 				}
 			}
 		}
@@ -1008,6 +1012,94 @@ moVideoBufferPath* moVideoManager::GetVideoBufferPath( int vb_idx ) {
 
 int moVideoManager::GetVideoBufferPathCount() {
   return m_VideoBufferPaths.Count();
+}
+
+#include <gst/gst.h>
+
+moText moVideoManager::NanosecondsToTimecode( MOulonglong duration ) {
+
+  moText timecodestr;
+  MOulonglong years,oneyear;
+  MOulonglong days,oneday;
+  MOulonglong hours,onehour;
+  MOulonglong minutes,oneminute;
+  MOulonglong seconds,onesecond;
+  MOulonglong miliseconds,onemilisecond;
+  MOulonglong nanos;
+
+  onemilisecond = GST_MSECOND;
+  onesecond = GST_SECOND;
+  oneminute = 60 * onesecond;
+  onehour = 60 * oneminute;
+  oneday = 24 * onehour;
+  oneyear = 365 * oneday;
+
+  years = duration / oneyear; duration = duration - years * oneyear;
+  days = duration / oneday; duration = duration - days * oneday;
+  hours = duration / onehour; duration = duration - hours * onehour;
+  minutes = duration / oneminute; duration = duration - minutes * oneminute;
+  seconds = duration / onesecond; duration = duration - seconds * onesecond;
+  miliseconds = duration / onemilisecond;  duration = duration - miliseconds * onemilisecond;
+  //nanos = duration - seconds * onesecond;
+  timecodestr = "";
+  if (years>0) timecodestr = IntToStr(years) + " years ";
+  if (days>0) timecodestr+= IntToStr(days) + " days ";
+  if (hours>0) { timecodestr+= IntToStr(hours,2) + ":"; }
+  else  { timecodestr+= "00:"; }
+  if (minutes>0) { timecodestr+= IntToStr(minutes,2) + ":"; }
+  else { timecodestr+= "00:"; }
+  if (seconds>0) { timecodestr+= IntToStr(seconds,2) + "."; }
+  else { timecodestr+= "00."; }
+  if (miliseconds>0) { timecodestr+= IntToStr(miliseconds/10,2); }
+  else { timecodestr+= "00"; }
+  return timecodestr;
+}
+
+moText moVideoManager::FramesToTimecode( MOulonglong duration, double framespersecond ) {
+
+  moText timecodestr;
+  double years,oneyear;
+  double days,oneday;
+  double hours,onehour;
+  double minutes,oneminute;
+  double seconds,onesecond;
+  double miliseconds,onemilisecond;
+  double nanos;
+  double frames,durationF;
+
+  onemilisecond = framespersecond/1000.0f;
+  onesecond = framespersecond;
+  oneminute = 60 * onesecond;
+  onehour = 60 * oneminute;
+  oneday = 24 * onehour;
+  oneyear = 365 * oneday;
+  durationF = duration;
+
+  years = moMathd::Floor(durationF / oneyear); duration = duration - (long)(years * oneyear);durationF=duration;
+  days = moMathd::Floor(durationF / oneday); duration = duration - (long)(days * oneday);durationF=duration;
+  hours = moMathd::Floor(durationF / onehour); duration = duration - (long)(hours * onehour);durationF=duration;
+  minutes = moMathd::Floor(durationF / oneminute); duration = duration - (long)(minutes * oneminute);durationF=duration;
+  seconds = moMathd::Floor(durationF / onesecond); duration = duration - (long)(seconds * onesecond);durationF=duration;
+  frames = moMathd::Floor(durationF); duration = duration - (long)(frames*1.0);durationF=duration;
+  miliseconds = moMathd::Floor(durationF / onemilisecond);  duration = duration - (long)(miliseconds * onemilisecond);durationF=duration;
+
+  //nanos = duration - seconds * onesecond;
+  timecodestr =  "";
+  if (years>0) timecodestr = IntToStr((long)years) + " years ";
+  if (days>0) timecodestr+= IntToStr((long)days) + " days ";
+  if (hours>0) { timecodestr+= IntToStr((long)hours) + ":"; }
+  else { timecodestr+= "00:"; }
+  if (minutes>0) { timecodestr+= IntToStr((long)minutes,2) + ":"; }
+  else { timecodestr+= "00:"; }
+  if (seconds>0) {timecodestr+= IntToStr((long)seconds,2) + ":"; }
+  else { timecodestr+= "00:"; }
+  if (frames>0) { timecodestr+= IntToStr((long)frames,2) + "."; }
+  else { timecodestr+= "00."; }
+  if (miliseconds>0) { timecodestr+= IntToStr((int)miliseconds); }
+  else { timecodestr+= "000"; }
+
+  return timecodestr;
+
 }
 
 

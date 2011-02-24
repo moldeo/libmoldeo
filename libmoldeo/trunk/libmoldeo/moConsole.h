@@ -358,13 +358,9 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         ///============================
         ///SCRIPTED in LUA
         ///============================
-
+        void ScriptExeDraw();
         int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
         void RegisterFunctions();
-
-
-
-
 
     protected:
 

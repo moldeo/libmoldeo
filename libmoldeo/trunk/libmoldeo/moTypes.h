@@ -305,6 +305,8 @@ using namespace std;
 #define MOswitch        signed char
 #define MOuint          GLuint
 #define MOint           GLint
+#define MOint64         moint64
+#define MOuint64        unsigned moint64
 #define MOlong          long
 #define MOulong         unsigned long
 #define MOlonglong      moint64

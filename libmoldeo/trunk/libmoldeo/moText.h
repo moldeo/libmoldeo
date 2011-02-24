@@ -306,8 +306,15 @@ moDeclareExportedDynamicArray( moText, moTextArray );
 //===========================================
 
 LIBMOLDEO_API moText IntToStr(int a);
+LIBMOLDEO_API moText IntToStr( int a, int nzeros );
+LIBMOLDEO_API moText IntToStr(unsigned int a);
+LIBMOLDEO_API moText IntToStr(long a);
+LIBMOLDEO_API moText IntToStr(unsigned long a);
+LIBMOLDEO_API moText IntToStr(long long a);
+LIBMOLDEO_API moText IntToStr(unsigned long long a);
 LIBMOLDEO_API moText FloatToStr(double a);
 LIBMOLDEO_API moText FloatToStr(double a, int n);
+LIBMOLDEO_API moText FloatToStr(double a, int nzeros, int ndecimals );
 
 
 #endif

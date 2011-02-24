@@ -54,15 +54,17 @@ moMoldeoObject::moMoldeoObject() {
 	SetConfigName("");
 
 	m_Description = moText("");
+	m_Script = moText("");
 
 	m_pResourceManager = NULL;
 	m_Inlets.Init( 0 , NULL );
 	m_Outlets.Init( 0 , NULL );
 	m_bConnectorsLoaded = false;
+	__iscript = -1;
 }
 
 moMoldeoObject::~moMoldeoObject() {
-
+  moMoldeoObject::Finish();
 }
 
 
@@ -81,8 +83,14 @@ moMoldeoObject::Init() {
           confignamecompleto = m_pResourceManager->GetDataMan()->GetDataPath();
           confignamecompleto +=  moSlash + GetConfigName();
           confignamecompleto +=  moText(".cfg");
-        } else MODebug2->Error("moMoldeoObject::Init > DataManager undefined > config:"+GetConfigName()+" label:"+GetLabelName() );
-      } else MODebug2->Error("moMoldeoObject::Init > ResourceManager undefined > config:"+GetConfigName()+" label:"+GetLabelName() );
+        } else {
+            MODebug2->Error("moMoldeoObject::Init > DataManager undefined > config:"+GetConfigName()+" label:"+GetLabelName() );
+            return false;
+        }
+      } else {
+          MODebug2->Error("moMoldeoObject::Init > ResourceManager undefined > config:"+GetConfigName()+" label:"+GetLabelName() );
+          return false;
+      }
     }
 
     MODebug2->Message("*****Initializing " + GetName() + " *****");
@@ -91,7 +99,98 @@ moMoldeoObject::Init() {
       MODebug2->Error("moMoldeoObject::Init > Config file invalid or not found > object:" + GetName() + " config:" + confignamecompleto + " label: " + GetLabelName());
       return false;//bad
     }
+
+    __iscript = m_Config.GetParamIndex("script");
+    if(__iscript==MO_PARAM_NOT_FOUND)
+      MODebug2->Error(moText("moMoldeoObject::Init > config:"+GetConfigName()+" label:"+GetLabelName()+" script parameter missing"));
+
+
+    InitScript();
+    RegisterFunctions();
+
+    return true;
 }
+
+void moMoldeoObject::ScriptExeInit() {
+    if (moScript::IsInitialized()) {
+        if (ScriptHasFunction("Init")) {
+            SelectScriptFunction("Init");
+            RunSelectedFunction();
+        }
+    }
+}
+
+void moMoldeoObject::ScriptExeFinish() {
+    if (moScript::IsInitialized()) {
+        if (ScriptHasFunction("Finish")) {
+            SelectScriptFunction("Finish");
+            RunSelectedFunction();
+        }
+    }
+}
+
+void moMoldeoObject::ScriptExeUpdate() {
+    if (moScript::IsInitialized()) {
+        if (ScriptHasFunction("Update")) {
+            SelectScriptFunction("Update");
+            RunSelectedFunction();
+        }
+    }
+}
+
+
+void moMoldeoObject::ScriptExeRun() {
+
+
+  moText cs;
+  cs = m_Config.Text(__iscript);
+
+  //MODebug2->Push( moText("cs:") + (moText)cs );
+  //MODebug2->Push( moText("m_ConsoleScript:") +  (moText)m_ConsoleScript );
+  ///Reinicializamos el script en caso de haber cambiado
+	if ((moText)m_Script!=cs && IsInitialized()) {
+
+        m_Script = cs;
+        moText fullscript = m_pResourceManager->GetDataMan()->GetDataPath()+ moSlash + (moText)m_Script;
+
+        if (moFileManager::FileExists(fullscript)) {
+
+          MODebug2->Message( GetLabelName() +  moText(" script loading : ") + (moText)fullscript );
+
+          if ( CompileFile(fullscript) ) {
+
+              MODebug2->Message( GetLabelName() + moText(" script loaded : ") + (moText)fullscript );
+
+              ///Reinicializamos el script
+
+              SelectScriptFunction( "Init" );
+              /**TODO: revisar uso de offset, para multipantallas
+              moText toffset=moText("");
+
+              toffset = m_Config[moR(CONSOLE_SCRIPT)][MO_SELECTED][1].Text();
+              if (toffset!=moText("")) {
+                  m_ScriptTimecodeOffset = atoi( toffset );
+              } else {
+                  m_ScriptTimecodeOffset = 0;
+              }
+              AddFunctionParam( (int)m_ScriptTimecodeOffset );
+              */
+              RunSelectedFunction();
+
+          } else MODebug2->Error( moText("Couldn't compile lua script ") + (moText)fullscript + " config:"+GetConfigName()+" label:"+GetLabelName() );
+        } else MODebug2->Message("Script file not present. " + (moText)fullscript + " config:"+GetConfigName()+" label:"+GetLabelName() );
+	}
+
+
+  ///Si tenemos un script inicializado... corremos la funcion Run()
+    if (moScript::IsInitialized()) {
+        if (ScriptHasFunction("Run")) {
+            SelectScriptFunction("Run");
+            RunSelectedFunction();
+        }
+    }
+}
+
 
 MOboolean
 moMoldeoObject::CreateConnectors() {
@@ -345,6 +444,9 @@ moMoldeoObject::CreateConnectors() {
 
   m_bConnectorsLoaded = true;
 
+  ///Una vez establecidos los conectores, podemos inicializar el script a su vez....
+	moMoldeoObject::ScriptExeInit();
+
 	return m_bConnectorsLoaded;
 }
 
@@ -353,6 +455,32 @@ moMoldeoObject::Init( moResourceManager* p_pResources ) {
 	m_pResourceManager = p_pResources;
 
 	return moMoldeoObject::Init();
+}
+
+
+MOboolean
+moMoldeoObject::Finish() {
+
+  ScriptExeFinish();
+
+  for(int i=0; i<m_Inlets.Count(); i++ ) {
+    moInlet *pInlet = dynamic_cast<moInlet*>(m_Inlets[i]);
+    if (pInlet) {
+        delete pInlet;
+    }
+  }
+  m_Inlets.Empty();
+
+  for(int i=0; i<m_Outlets.Count(); i++ ) {
+    moOutlet *pOutlet = dynamic_cast<moOutlet*>(m_Outlets[i]);
+    if (pOutlet) {
+        delete pOutlet;
+    }
+  }
+  m_Outlets.Empty();
+
+  return true;
+
 }
 
 
@@ -411,6 +539,7 @@ moMoldeoObject::GetDefinition( moConfigDefinition *p_configdefinition ) {
   p_configdefinition->Set( GetName(), m_MobDefinition.GetTypeStr() );
 	p_configdefinition->Add( moText("inlet"), MO_PARAM_INLET );
 	p_configdefinition->Add( moText("outlet"), MO_PARAM_OUTLET );
+	p_configdefinition->Add( moText("script"), MO_PARAM_SCRIPT );
 	return p_configdefinition;
 }
 
@@ -534,6 +663,8 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 			}
 		}
 	}
+
+  moMoldeoObject::ScriptExeUpdate();
 
 }
 
@@ -904,8 +1035,10 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
                         lua_pushnumber( state, (lua_Number) pData->Long() );
                         return 1;
                 case    MO_DATA_NUMBER_DOUBLE:
-                        MO_DATA_NUMBER_FLOAT:
                         lua_pushnumber( state, (lua_Number) pData->Double() );
+                        return 1;
+                case    MO_DATA_NUMBER_FLOAT:
+                        lua_pushnumber( state, (lua_Number) pData->Float() );
                         return 1;
                 case    MO_DATA_TEXT:
                         lua_pushstring( state, (char*) pData->Text() );
@@ -1659,14 +1792,19 @@ int moMoldeoObject::luaGetHistoryRecord(moLuaVirtualMachine& vm) {
         pTracker = (moTrackerSystemData*)pInlet->GetData()->Pointer();
         if (pTracker && recordindex>=0 && recordindex<pTracker->GetHistory().CountRecords()) {
             IRecord = pTracker->GetHistory().Get( recordindex );
+        } else {
+          MODebug2->Error("luaGetHistoryRecord::out of bound recordindex:"+IntToStr(recordindex)+" histories:"+IntToStr( pTracker->GetHistory().CountRecords()) );
         }
+    } else {
+      MODebug2->Error("luaGetHistoryRecord:: no tracker index or inlet not updated");
     }
 
     lua_pushnumber( state, (lua_Number) IRecord.m_ValidFeatures);
+    lua_pushnumber( state, (lua_Number) IRecord.m_DeltaValidFeatures);
     lua_pushnumber( state, (lua_Number) IRecord.m_nFeatures);
     lua_pushnumber( state, (lua_Number) IRecord.m_SurfaceCovered);
     lua_pushnumber( state, (lua_Number) IRecord.m_Tick);
-    return 4;
+    return 5;
 }
 
 int moMoldeoObject::luaGetHistoryBarycenter(moLuaVirtualMachine& vm) {

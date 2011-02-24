@@ -252,9 +252,12 @@ moWindow::SetInfo( moTextArray &pTexts ) {
 
 void
 moWindow::Draw() {
-    glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
+  glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
 	glBindTexture( GL_TEXTURE_2D, 0 );
 	glColor4f( 0.3, 0.3, 0.3, 0.75 );
+
 	glBegin(GL_QUADS);
 		glTexCoord2f( 0, 0);
 		glVertex2f( m_X, m_Y);
@@ -273,11 +276,19 @@ moWindow::Draw() {
 	pFont = m_pResourceManager->GetFontMan()->GetFonts()->Get(0);
 
 	if (pFont) {
-		pFont->SetForegroundColor( 0.0, 1.0, 0.0 );
-		pFont->SetSize( 13.0 );
-		for( MOuint i=0; i<m_Texts.Count(); i++ ) {
-			pFont->Draw( m_X , m_Y + m_Height - (13.0+5.0)*(i+1)  ,  m_Texts[i]);
-		}
+		//pFont->SetForegroundColor( 0.0, 1.0, 0.0 );
+		///tamaño en proporcio al alto de la ventana... y la cantidad de lineas...
+		if (m_Texts.Count()>0 && m_Height>0) {
+      float size = (float)m_Height / (float)m_Texts.Count();
+      glColor4f( 1.0, 1.0, 1.0, 1.0 );
+      glScalef( size, size, size);
+      //MODebug2->Push("size:"+FloatToStr(size));
+      for( MOuint i=0; i<m_Texts.Count(); i++ ) {
+        //MODebug2->Push("text: i " +  m_Texts[i]+ "m_X:"+FloatToStr(m_X)+ "m_Y:"+FloatToStr(m_Y) );
+        //pFont->Draw( m_X , m_Y + m_Height - (size*1.5)*(i+1)  ,  m_Texts[i], size);
+        pFont->Draw( m_X/size , m_Y/size + i*1.2 ,  m_Texts[i], 1 );
+      }
+    }
 	}
 
 }

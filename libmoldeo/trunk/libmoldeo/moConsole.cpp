@@ -249,6 +249,10 @@ MOboolean moConsole::Init(
     return false;
   }
 
+  ///TODO: ahora todos los parametros script de moldeoobject se llaman "script"
+  /// en la consola se llaman: consolescript
+  __iscript = m_Config.GetParamIndex(moText("consolescript"));
+
   if (MODebug2) MODebug2->Message(moText("moConsole:: mol project opening....success "));
 
 
@@ -356,6 +360,8 @@ MOboolean moConsole::Init(
 	moDefineParamIndex( CONSOLE_CLIP2, moText("clip2") );
 	moDefineParamIndex( CONSOLE_CLIP3, moText("clip3") );
 
+
+
 	LoadResources();
 	LoadIODevices();
 	LoadPreEffects();
@@ -390,9 +396,6 @@ MOboolean moConsole::Init(
 
   ///CONECTAMOS Inlets con Outlets
   LoadConnections();
-
-  InitScript();
-  RegisterFunctions();
 
 	m_bInitialized = true;
 
@@ -462,6 +465,8 @@ moConsole::LoadConnections() {
 	///check for each outlet connector on MoldeoObject's connections to inlets...
 	MOuint i,j,k,l,m;
 
+	UpdateMoldeoIds();
+
 	///Connect outlets to inlets....
 	for( i=0; i<m_MoldeoObjects.Count(); i++) {
 
@@ -523,6 +528,7 @@ moConsole::LoadConnections() {
             }
 		}
 	}
+
 }
 
 
@@ -1090,6 +1096,21 @@ moConsole::GUIYield() {
   return;
 }
 
+void moConsole::ScriptExeDraw() {
+    if (moScript::IsInitialized()) {
+        if (ScriptHasFunction("Draw")) {
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glDisable(GL_DEPTH_TEST);
+            m_pResourceManager->GetGLMan()->SetOrthographicView();
+
+            SelectScriptFunction("Draw");
+            RunSelectedFunction();
+        }
+    }
+}
+
 void
 moConsole::Draw() {
 	MOuint i;
@@ -1099,47 +1120,9 @@ moConsole::Draw() {
 
   GUIYield();
 
+  ScriptExeRun();
+
 	if (RenderMan==NULL) return;
-
-    moText cs;
-    cs = m_Config[moR(CONSOLE_SCRIPT)][MO_SELECTED][0].Text();
-
-    //MODebug2->Push( moText("cs:") + (moText)cs );
-    //MODebug2->Push( moText("m_ConsoleScript:") +  (moText)m_ConsoleScript );
-
-	if ((moText)m_ConsoleScript!=cs && IsInitialized()) {
-
-        m_ConsoleScript = cs;
-        moText fullscript = m_pResourceManager->GetDataMan()->GetDataPath()+ moSlash + (moText)m_ConsoleScript;
-
-        MODebug2->Message(moText("Console script loading : ") + (moText)fullscript );
-
-        if ( CompileFile(fullscript) ) {
-
-            MODebug2->Message(moText("Console script loaded : ") + (moText)fullscript );
-
-            moText toffset=moText("");
-
-            toffset = m_Config[moR(CONSOLE_SCRIPT)][MO_SELECTED][1].Text();
-            if (toffset!=moText("")) {
-                m_ScriptTimecodeOffset = atoi( toffset );
-            } else {
-                m_ScriptTimecodeOffset = 0;
-            }
-
-            SelectScriptFunction( "Init" );
-            AddFunctionParam( (int)m_ScriptTimecodeOffset );
-            RunSelectedFunction();
-
-        } else MODebug2->Error(moText("couldnt compile lua script ") + (moText)fullscript );
-	}
-
-    if (moScript::IsInitialized()) {
-        if (ScriptHasFunction("Run")) {
-            SelectScriptFunction("Run");
-            RunSelectedFunction(1);
-        }
-    }
 
 	MOswitch borrar = MO_ACTIVATED;
     MOboolean pre_effect_on = false;
@@ -1267,6 +1250,10 @@ moConsole::Draw() {
 
 		RenderMan->CopyRenderToTexture(MO_FINAL_TEX);
 
+
+		ScriptExeDraw();
+
+
 		//aca controlamos los fps
 		if( state.setfps == MO_ACTIVATED ) {
 			state.fps1 = GetTicks();
@@ -1290,7 +1277,7 @@ moConsole::Draw() {
 MOboolean
 moConsole::Finish() {
 
-  moScript::FinishScript();
+  m_MoldeoObjects.Finish();
 
 	StopMasterEffects();
 
@@ -1320,8 +1307,6 @@ moConsole::Finish() {
 			m_pIODeviceManager = NULL;
 		}
 	}
-
-	m_MoldeoObjects.Finish();
 
 	//FINALIZAMOS LOS RECURSOS (liberando memoria)
 	state.Finish();
@@ -2208,9 +2193,11 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                         return 0;
 
                 }
+        } else {
+          MODebug2->Error( moText("in console script: SetObjectData : inlet id not founded : id:")+(moText)IntToStr(inletid) );
         }
     } else {
-        MODebug2->Error( moText("in console script: GetObjectData : object not founded : id:")+(moText)IntToStr(objectid) );
+        MODebug2->Error( moText("in console script: SetObjectData : object not founded : id:")+(moText)IntToStr(objectid) );
     }
 
     return 0;

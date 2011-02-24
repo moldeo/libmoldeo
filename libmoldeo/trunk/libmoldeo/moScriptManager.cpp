@@ -47,12 +47,19 @@ moScriptManager::~moScriptManager()
 
 MOboolean moScriptManager::Init()
 {
-	moScript::m_vm.InitialiseVM();
-	moScript::m_dbg.InitaliseDBG(MODebug);
 
-	RegisterLunaClasses();
+  moScriptManager::InitVM();
+  RegisterLunaClasses();
 	return true;
 }
+
+void moScriptManager::InitVM() {
+    if (!m_vm.Ok()) {
+      moScript::m_vm.InitialiseVM();
+      moScript::m_dbg.InitaliseDBG();
+    }
+}
+
 
 MOboolean moScriptManager::Finish()
 {

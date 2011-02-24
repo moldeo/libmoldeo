@@ -377,6 +377,12 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		virtual MOboolean Init( moResourceManager* p_pResources );
 
 		/**
+		* Finalizador genérico derivado de moAbstract.
+		*/
+		virtual MOboolean Finish();
+
+
+		/**
 		* Carga los parámetros con información del resourcemanager y resuelve la creación de los conectores
 		* correspondientes.
 		* Atención  :CreateCOnnectors siempre debe llamarse despues del Init() y asegurándose de
@@ -513,6 +519,14 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
         /// \if spanish Carga las definiciones de parámetros del archivo de configuración \endif \if english Loads parameter's config definitions \endif
 		virtual void LoadDefinition();
 
+    /// Corre la funcion de script Run o Compila el nuevo script
+    void ScriptExeInit();
+		void ScriptExeRun();
+		void ScriptExeUpdate();
+		void ScriptExeFinish();
+		moText  m_Script;
+
+
         /// \if spanish Definición del objeto \endif \if english Object definition \endif
         moMobDefinition         m_MobDefinition;
 
@@ -533,7 +547,10 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
 		MOboolean m_bConnectorsLoaded;
 
+    int __iscript;
+
     private:
+
 
         /** \defgroup luascript Funciones accesibles por scripting de LUA */
         /** @{ */

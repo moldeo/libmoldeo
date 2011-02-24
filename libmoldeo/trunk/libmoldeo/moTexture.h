@@ -559,6 +559,23 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
 		virtual MOboolean  Finish();
 
         /**
+         * Play de la animación, corre la animación según su velocidad propia
+         */
+    virtual void Play();
+
+        /**
+         * Para la animación, mostrando el cuadro del principio
+         */
+    virtual void Stop();
+
+        /**
+         * Pregunta si esta corriendo
+         *
+         */
+    virtual bool IsPlaying();
+
+
+        /**
          * Devuelve el OpenGL ID de textura que corresponde al tempo pasado como parámetro.
          * @param tempo puntero al objeto de tempo.
          * @return OpenGL ID.
@@ -599,6 +616,30 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
          * @param p_fps Nuevo número de cuadros por segundo de la animación.
          */
 		virtual void 		SetFramesPerSecond( MOfloat p_fps) { m_fFramesPerSecond = p_fps; }
+
+
+    enum moPlayMode {
+      MO_PLAYMODE_TIMEBASE, ///time base relative
+      MO_PLAYMODE_FRAMEBASE ///frame base relative
+    };
+        /**
+         * Fija el modo de reproducción :
+         * @see moPlayMode
+         * MO_PLAYMODE_TIMEBASE : reproducción segun timer interno de GStreamer
+         * MO_PLAYMODE_FRAMEBASE : reproducción arbitraria por manejo de frame
+         * @param p_i índice de textura a validar.
+         */
+    virtual void SetPlayMode( moPlayMode playmode );
+
+        /**
+         * Devuelve el modo de reproducción :
+         * @see moPlayMode
+         * MO_PLAYMODE_TIMEBASE : reproducción segun timer interno de GStreamer
+         * MO_PLAYMODE_FRAMEBASE : reproducción arbitraria por manejo de frame
+         * @return moPlayMode modo de reproducción de este video
+         */
+    virtual moPlayMode GetPlayMode();
+
         /**
          * Calcula el cuadro i-ésimo de la animación.
          * @param p_i índice del cuadro a cualcular.
@@ -631,9 +672,14 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
          * devuelve false.
          */
 		virtual MOboolean   ActivateInterpolation( MOboolean activate = true );
+
 	protected:
+
 		virtual MOboolean	NeedsInterpolation();
 		virtual MOint		Interpolate();
+
+    moPlayMode    m_PlayMode;
+    MOboolean     m_bIsPlaying;
 
 		MOuint				m_nFrames;
 		MOfloat				m_fFramesPerSecond;
@@ -680,6 +726,7 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
 class LIBMOLDEO_API moTextureMultiple : public moTextureAnimated
 {
 	public:
+
         /**
          * Constructor por defecto.
          */
@@ -773,8 +820,11 @@ class LIBMOLDEO_API moTextureMultiple : public moTextureAnimated
          * @return true si el índice es válido, false en caso contrario.
          */
 		MOboolean ValidTexture(MOuint p_i);
+
+
 	protected:
 		moTextureArray m_textures_array;
+
 };
 
 ///  una textura animada basada en una película
@@ -809,6 +859,26 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
 		virtual MOboolean  Finish();
 
         /**
+         * Funciones de control de la pelicula
+         */
+    virtual void Play();
+    virtual void Pause();
+    virtual void Continue();
+    virtual void Stop();
+    virtual void Seek( long frame, float rate = 1.0 );
+    virtual bool IsPlaying();
+    virtual MOulong GetPosition();
+    virtual moStreamState State();
+
+    virtual void SetBrightness( float brightness );
+    virtual void SetContrast( float contrast );
+    virtual void SetSaturation( float saturation );
+    virtual void SetHue( float hue );
+
+    virtual void SetVolume( float volume );
+    virtual void SetBalance( float balance );
+
+        /**
          * Revisa que el archivo especificado con p_filename sea un archivo de película soportado.
          * Tiene que ser de extensión avi, mpg o mov.
          * @return true si el archivo está soportado, false en caso contrario.
@@ -828,15 +898,22 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
 		MOboolean Load( moValue* p_value );
 
 		void EnableVideo(int);
+		bool HasVideo();
+
 		void EnableAudio(int);
+		bool HasAudio();
+
+    bool  IsEOS();
+
 	protected:
+
 		void GetFrame( MOuint p_i );
 
 		MOint frameprevious;
 		MOint lastframe;
 		moBucketsPool	m_BucketsPool;
 
-        moVideoGraph*	m_pGraph;
+    moVideoGraph*	m_pGraph;
 
 };
 

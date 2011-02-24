@@ -62,6 +62,7 @@ moTrackerInstanceRecord::moTrackerInstanceRecord() {
   m_SurfaceCovered = 0;
   m_Tick = -1;
   m_ValidFeatures = 0;
+  m_DeltaValidFeatures = 0;
 }
 
 moTrackerInstanceRecord & moTrackerInstanceRecord::operator = (const moTrackerInstanceRecord &src) {
@@ -90,6 +91,7 @@ moTrackerInstanceRecord & moTrackerInstanceRecord::operator = (const moTrackerIn
   m_SurfaceCovered = src.m_SurfaceCovered;
   m_Tick = src.m_Tick;
   m_ValidFeatures = src.m_ValidFeatures;
+  m_DeltaValidFeatures = src.m_DeltaValidFeatures;
 }
 
 moTrackerSystemHistory::moTrackerSystemHistory() {
@@ -113,6 +115,8 @@ moTrackerSystemHistory::StartRecording( long maxtime, long granularity ) {
 
     ///granularidad de la grabacion ( 30 ms [tiempo ] )
     m_Granularity = granularity;
+
+    m_nRecorded = 0;
 
     m_RecordFactor =  m_MaxTime / m_Granularity;
 
@@ -726,6 +730,10 @@ int moTrackerSystemData::GetValidFeatures() {
         return m_ActualRecord.m_ValidFeatures;
 }
 
+int moTrackerSystemData::GetDeltaValidFeatures() {
+        return m_ActualRecord.m_DeltaValidFeatures;
+}
+
 void moTrackerSystemData::ResetMatrix() {
     for(int i=0; i<m_Zones;i++) {
         m_PositionMatrix[i] = 0;
@@ -988,7 +996,8 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                 moTrackerFeature* pF = GetFeature(f);
 
                 ///solo dibujamos los que son validos...
-                if (pF && pF->valid) {
+                if (pF && pF->val>=MO_TRACKER_TRACKED) {
+              //if (pF) {
 
                 float x = (pF->x) - offsetx;
                 float y = (pF->y) - offsety;
@@ -1012,29 +1021,43 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                 else if (v == MO_TRACKER_OOB) glColor4f(1.0, 0.0, 1.0, 1.0);
                 else if (v == MO_TRACKER_LARGE_RESIDUE) glColor4f(1.0, 0.0, 1.0, 1.0);
 
-                if ( pF->valid ) {
+                if ( pF->val>=MO_TRACKER_TRACKED ) {
+                  /*
                     glBegin(GL_QUADS);
                         glVertex2f((tr_x - 0.008)*w, (tr_y - 0.008)*h);
                         glVertex2f((tr_x - 0.008)*w, (tr_y + 0.008)*h);
                         glVertex2f((tr_x + 0.008)*w, (tr_y + 0.008)*h);
                         glVertex2f((tr_x + 0.008)*w, (tr_y - 0.008)*h);
                     glEnd();
+                    */
 
+                    float d = 1.0;
+
+                    if (f==0) {
+                      d = 3.0;
+                      glColor4f(1.0, 0.0, 0.0, 1.0);
+                    }
                     glBegin(GL_QUADS);
-                        glVertex2f((x - 0.008)*w, (y - 0.008)*h);
-                        glVertex2f((x - 0.008)*w, (y + 0.008)*h);
-                        glVertex2f((x + 0.008)*w, (y + 0.008)*h);
-                        glVertex2f((x + 0.008)*w, (y - 0.008)*h);
+                        glVertex2f((x - 0.008*d)*w, (y - 0.008*d)*h);
+                        glVertex2f((x - 0.008*d)*w, (y + 0.008*d)*h);
+                        glVertex2f((x + 0.008*d)*w, (y + 0.008*d)*h);
+                        glVertex2f((x + 0.008*d)*w, (y - 0.008*d)*h);
                     glEnd();
 
-    /*
-                    glDisable(GL_TEXTURE_2D);
+
+
                     glColor4f(1.0, 1.0, 1.0, 1.0);
+                    if (f==0) {
+                      glColor4f(1.0, 0.0, 0.0, 1.0);
+                    }
+                    //glBindTexture(GL_TEXTURE_2D,0);
+                    glDisable(GL_TEXTURE_2D);
+                    glLineWidth((GLfloat)3.0);
                     glBegin(GL_LINES);
                         glVertex2f( x*w, y*h);
                         glVertex2f( tr_x*w, tr_y*h);
                     glEnd();
-                    */
+
 
                     /*if ( vel > 0.001 ) {
                         glDisable(GL_TEXTURE_2D);

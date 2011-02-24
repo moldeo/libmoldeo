@@ -232,6 +232,7 @@ class LIBMOLDEO_API moData {
 		moDataMessages*         Messages();
 		moSound*                Sound();
 		moTexture*              Texture();
+		moTexture*              TextureDestination();
 
 		moData*                 GetData();
 

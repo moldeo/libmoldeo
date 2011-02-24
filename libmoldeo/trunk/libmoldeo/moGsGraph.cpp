@@ -26,6 +26,9 @@
   Authors:
   Fabricio Costa
 
+  Gstreamer list of defined types:
+  http://gstreamer.freedesktop.org/data/doc/gstreamer/head/pwg/html/section-types-definitions.html
+
 *******************************************************************************/
 
 #include <gst/gst.h>
@@ -71,6 +74,7 @@ static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
       {
           //g_message ("End-of-stream");
           pGsGraph->MODebug2->Error(moText("moGsGraph:: EOS <End-of-stream> "));
+          pGsGraph->SetEOS(true);
           //g_main_loop_quit (loop);
           break;
       }
@@ -155,16 +159,32 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
     str = gst_caps_get_structure ( Gbuffer->caps, 0);
 
     const gchar *sstr;
+    const gchar *strname;
 
+    strname = gst_structure_get_name( str );
     sstr = gst_structure_to_string (str);
 
     //cout << "new data: timestamp: " << buffer->timestamp << " duration:" << buffer->duration << " size:" << buffer->size << " caps:" << sstr << endl;
     //moAbstract::MODebug2->Message( moText(" moGsGraph:: cb_have_data") );
 
+    gchar* isaudio =  NULL;
+    gchar* isvideo =  NULL;
+
+    isaudio = g_strrstr (strname, "audio");
+    isvideo =  g_strrstr (strname, "video");
+
     if (u_data!=0) {
       pGsGraph = (moGsGraph*)u_data;
-      if (pGsGraph->m_VideoFormat.m_WaitForFormat)
-        pGsGraph->SetVideoFormat( Gbuffer->caps, buffer );
+
+      if (isvideo) {
+        if (pGsGraph->m_VideoFormat.m_WaitForFormat)
+          pGsGraph->SetVideoFormat( Gbuffer->caps, buffer );
+      }
+
+      if (isaudio) {
+        if (pGsGraph->m_AudioFormat.m_WaitForFormat)
+          pGsGraph->SetAudioFormat( Gbuffer->caps, buffer );
+      }
     } else {
       //moAbstract::MODebug2->Error( moText(" moGsGraph:: cb_have_data error: no user data!!") );
       return true;//siga intentando
@@ -180,16 +200,23 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
     //cout << "w:" << w << "h:" << h << endl;
 
   if (Gbuffer ) {
+
+    if (isvideo)
     if ( Gbuffer->size>0 && (int)Gbuffer->size<=(h*w*4) ) {
       //g_passing buffer to bucketpool
       moBucket *pbucket=NULL;
 
+      if (pGsGraph->m_pBucketsPool)
       if(!pGsGraph->m_pBucketsPool->IsFull()) {
           pbucket = new moBucket();
           if(pbucket!=NULL) {
 
-              pGsGraph->m_VideoFormat.m_BufferSize = Gbuffer->size;
-              pGsGraph->m_VideoFormat.m_TimePerFrame = Gbuffer->duration;
+              //pGsGraph->m_VideoFormat.m_BufferSize = Gbuffer->size;
+              //pGsGraph->m_VideoFormat.m_TimePerFrame = Gbuffer->duration;
+              gint value_numerator, value_denominator;
+              gst_structure_get_fraction( str, "framerate", &value_numerator, &value_denominator );
+              MOuint frate = (value_numerator * 100) / value_denominator;
+              //MODebug2->Push( " frate: "+ IntToStr(frate) + " timeperframe: " + IntToStr(Gbuffer->duration));
               pbucket->SetBuffer( Gbuffer->size,(MOubyte*)Gbuffer->data );
 
               if(!pGsGraph->m_pBucketsPool->AddBucket( pbucket )) {
@@ -303,11 +330,19 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
 
             if (pGsGraph->m_pAudioConverter) {
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
-                gst_pad_link (Gpad, audiopadinconverter);
+                padlink = gst_pad_link (Gpad, audiopadinconverter);
+
+                GstPad* srcAudio = gst_element_get_pad ( (GstElement*)pGsGraph->m_pAudioConverter, "src");
+
+                if (padlink==GST_PAD_LINK_OK) {
+                    pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
+                }
+
             } else if (pGsGraph->m_pAudioSink) {
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioSink, "sink");
-                gst_pad_link (Gpad, audiopadinconverter);
+                padlink = gst_pad_link (Gpad, audiopadinconverter);
             }
+
 
           } else if (g_strrstr (strname, "video")) {
             pGsGraph->m_pVideoPad = Gpad;
@@ -722,6 +757,7 @@ moGsGraph::moGsGraph() {
 
     m_pBucketsPool = NULL;
     m_pVideoScale = NULL;
+    m_pVideoBalance = NULL;
 
     m_pVideoDeinterlace = NULL;
     m_pColorSpaceInterlace = NULL;
@@ -744,6 +780,7 @@ moGsGraph::moGsGraph() {
     signal_newpad_id = 0;
     signal_handoff_id = 0;
     cb_have_data_handler_id = 0;
+    m_bEOS = false;
 
 }
 
@@ -786,6 +823,7 @@ moGsGraph::InitGraph() {
     signal_handoff_id = 0;
     cb_have_data_handler_id = 0;
     m_BusWatchId = 0;
+    m_bEOS = false;
 
     //opner en el main de la consola...
     //inicialización de la libreria gstreamer
@@ -990,6 +1028,17 @@ moGsGraph::FinishGraph() {
 
 	return false;
 }
+
+bool
+moGsGraph::IsEOS() {
+  return m_bEOS;
+}
+
+void
+moGsGraph::SetEOS(bool iseos) {
+  m_bEOS = iseos;
+}
+
 
 
 //FILTER METHODS
@@ -1780,7 +1829,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
 
                 if (link_result) {
 
-                    CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PLAYING), false /*SYNCRUNASLI*/ );
+                    CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PAUSED), true /*SYNCRUNASLI*/ );
 
                     //WaitForFormatDefinition( 600 );
 
@@ -1830,6 +1879,17 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 
            res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pFileSource );
 
+
+           m_pColorSpaceInterlace = gst_element_factory_make ("ffmpegcolorspace", "color0");
+           if (m_pColorSpaceInterlace) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pColorSpaceInterlace );
+           }
+
+           m_pVideoBalance = gst_element_factory_make ("videobalance", "videobalance");
+           if (m_pVideoBalance) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pVideoBalance );
+           }
+
            m_pColorSpace = gst_element_factory_make ("ffmpegcolorspace", "color");
            if (m_pColorSpace) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pColorSpace );
@@ -1850,13 +1910,35 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            }
            //RetreivePads( m_pFileSource );
 
-           //m_pAudioConverter = gst_element_factory_make ("audioresample", "resample");
+          ///SOUND...
+          /**
 
-           /*
+           m_pAudioConverter = gst_element_factory_make ("audioconvert", "convert");
+
            if (m_pAudioConverter) {
-                res = gst_bin_add (GST_BIN (m_pGstPipeline), m_pAudioConverter );
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioConverter );
            }
-            */
+
+           m_pAudioVolume = gst_element_factory_make ("volume", "volume");
+
+           if (m_pAudioVolume) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioVolume );
+           }
+
+           m_pAudioPanorama = gst_element_factory_make ("audiopanorama", "balance");
+
+           if (m_pAudioPanorama) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioPanorama );
+           }
+
+           m_pAudioSink = gst_element_factory_make ("autoaudiosink", "audioout");
+
+           if (m_pAudioSink) {
+                res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioSink );
+           }
+           */
+
+           ///FIN SOUND
 
             m_pDecoderBin = gst_element_factory_make ("decodebin", "decoder");
             if (m_pDecoderBin) {
@@ -1866,17 +1948,21 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                 m_pFakeSink = gst_element_factory_make ("fakesink", "destout");
                 //RetreivePads( m_pFakeSink );
                 if (m_pFakeSink) {
+                     ///marcamos el sync a true para que reproduzca en sync.
+                     g_object_set (G_OBJECT (m_pFakeSink), "sync", (bool)true, NULL);
+
                      res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pFakeSink );
 
                     //link_result = gst_element_link_many ( m_pFileSource, m_pDecoderBin, m_pFakeSink, NULL );
                     link_result = gst_element_link_many( (GstElement*)m_pFileSource, (GstElement*)m_pDecoderBin, NULL );
                     if (link_result) {
 
-                        link_result = gst_element_link_many( (GstElement*)m_pColorSpace, (GstElement*)m_pCapsFilter, (GstElement*)m_pFakeSink, NULL );
+                        link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pVideoBalance, (GstElement*)m_pColorSpace, (GstElement*)m_pCapsFilter, (GstElement*)m_pFakeSink, NULL );
+                        //link_result = link_result && gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
 
                         if (link_result) {
 
-                            CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PAUSED), false /*SYNCRUNASLI*/ );
+                            CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PAUSED), true /*SYNCRUNASLI*/ );
 
                             WaitForFormatDefinition( 1600 );
 
@@ -2037,6 +2123,85 @@ framerate=(fraction)[ 0/1, 2147483647/1 ];
 */
 
 void
+moGsGraph::SetAudioFormat( moGstCaps* caps, moGstBuffer* buffer ) {
+
+    bool isfixed = false;
+    GstBuffer* Gbuffer =  (GstBuffer*)buffer;
+
+    isfixed = gst_caps_is_fixed((GstCaps*)caps);
+
+
+    if (!isfixed) {
+
+      return;
+    }
+
+    GstStructure* str;
+    str = gst_caps_get_structure ((GstCaps*)caps, 0);
+
+    const gchar *sstr;
+
+    sstr = gst_structure_to_string (str);
+
+    //cout << "SetVideoFormat: we have a format!!" << sstr << endl;
+
+    if (g_strrstr( sstr, "channels" )) {
+
+        //to calculate framerate
+        gint width, depth, value_numerator, value_denominator;
+        gint channels, rate;
+
+        gst_structure_get_int( str, "width", &width);
+        gst_structure_get_int( str, "depth", &depth);
+        gst_structure_get_int( str, "channels", &channels);
+        gst_structure_get_int( str, "rate", &rate);
+        //gst_structure_get_int( str, "height", &height);
+        //gst_structure_get_fraction( str, "framerate", &value_numerator, &value_denominator );
+
+        m_AudioFormat.m_Width = (MOuint)width;
+        m_AudioFormat.m_Depth = (MOuint)depth;
+        m_AudioFormat.m_Channels = (MOuint)channels;
+        m_AudioFormat.m_SampleRate = (MOuint)rate;
+        m_AudioFormat.m_SampleSize = (MOuint)depth;
+/*
+        m_AudioFormat.m_Width = (MOuint)width;
+        m_AudioFormat.m_Height = (MOuint)height;
+        m_AudioFormat.m_FrameRate = (value_numerator * 100) / value_denominator;
+        //cout << "Width:" << m_AudioFormat.m_Width << endl;
+        //cout << "Height:" << m_AudioFormat.m_Height << endl;
+        //cout << "Framerate:" << m_AudioFormat.m_FrameRate << endl;
+
+        //m_AudioFormat.m_BitCount = pVih->bmiHeader.biBitCount;
+        //m_AudioFormat.m_BitRate = pVih->dwBitRate;
+        */
+        if (Gbuffer!=NULL) {
+            m_AudioFormat.m_TimePerSample = Gbuffer->duration;
+            m_AudioFormat.m_BufferSize = Gbuffer->size;
+        }
+        //m_AudioFormat.SetVideoMode();
+        m_AudioFormat.m_WaitForFormat = false;
+
+    }
+
+    MODebug2->Message(
+                        "SetAudioFormat: we have a format!! "
+                      + IntToStr(m_AudioFormat.m_Channels)
+                      + " Channels, "
+                      + IntToStr(m_AudioFormat.m_SampleRate)
+                      + " Hz, "
+                      + IntToStr(m_AudioFormat.m_SampleSize)
+                      + " bits, "
+                      + IntToStr(m_AudioFormat.m_BufferSize)
+                      + " bytes per buffer, "
+                      + IntToStr(m_AudioFormat.m_TimePerSample)
+                      + " nanoseconds per sample "
+
+                      );
+
+
+}
+
+void
 moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
 
     bool isfixed = false;
@@ -2086,7 +2251,17 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
 
     }
 
-    MODebug2->Message(moText("SetVideoFormat: we have a format!!")+(moText)IntToStr(m_VideoFormat.m_Width)+(moText)IntToStr(m_VideoFormat.m_Height));
+    MODebug2->Message(
+                        "SetVideoFormat: we have a format!!"
+                      + IntToStr(m_VideoFormat.m_Width)
+                      + " X "
+                      + IntToStr(m_VideoFormat.m_Height)
+                      + " buffer duration: "
+                      + IntToStr(m_VideoFormat.m_TimePerFrame)
+                      + " m_FrameRate: "
+                      + IntToStr(m_VideoFormat.m_FrameRate)
+
+                      );
 
 
 }
@@ -2210,11 +2385,11 @@ moStreamState moGsGraph::GetState() {
       padblocking =  gst_pad_is_blocking( srcRGB );
     }
 
-    if (g_main_context_iteration( (GMainContext*)m_pGMainContext, false )) {
+   if (g_main_context_iteration( (GMainContext*)m_pGMainContext, false )) {
       //MODebug2->Message(  moText("moGsGraph ::GetState (events)") );
-    } else {
+   } else {
       //MODebug2->Message(  moText("moGsGraph ::GetState (no events!!)"));
-    }
+   }
 /*
       MODebug2->Message(  moText(" Position:")
                           + IntToStr( this->GetPosition())
@@ -2263,6 +2438,7 @@ moStreamState moGsGraph::GetState() {
 void
 moGsGraph::Play() {
   /* start the pipeline */
+  SetEOS(false);
   CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PLAYING), true );
 }
 
@@ -2275,13 +2451,19 @@ moGsGraph::Stop() {
 void
 moGsGraph::Pause() {
 /*set state to NULL*/
-  if (m_VideoFormat.m_TimePerFrame==0) CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PAUSED));
-  //else CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PAUSED));
+  ///TODO: for live-stream pause works ok...
+  if (m_VideoFormat.m_TimePerFrame==0 || GetState()==MO_STREAMSTATE_PLAYING ) {
+    CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PAUSED));
+  }
 }
 
 #define MO_INFINITE -1
+
+///TODO:
+/// TimeSeek()
+/// SampleSeek()
 void
-moGsGraph::Seek( MOuint frame ) {
+moGsGraph::Seek( MOuint frame, float rate ) {
 
   gint64     time_nanoseconds;
   bool        res;
@@ -2292,26 +2474,36 @@ moGsGraph::Seek( MOuint frame ) {
 
   if (m_VideoFormat.m_TimePerFrame!=0 && m_FramesLength>0 && m_FramesLength<(MOulong)MO_INFINITE) {
 
-    ///no leemos el ultimo cuadro para no generar un EOF
-    if ( frame > (m_FramesLength - 2) ) {
-        frame = m_FramesLength - 2;
+    ///no leemos el ultimo cuadro para no generar un EOS
+    ///esto depende del modo del play, si esta PLAYING o si esta en PAUSE
+    if ( (GetState()==MO_STREAMSTATE_PAUSED) && frame >= (m_FramesLength - 1) ) {
+        frame = m_FramesLength - 1;
     }
 
     time_nanoseconds = (gint64) frame * m_VideoFormat.m_TimePerFrame;
-
+    //MODebug2->Message(" Seeking frame: " + IntToStr(frame) + " time (ns): " + IntToStr(time_nanoseconds) + " timeperframe:" + IntToStr(m_VideoFormat.m_TimePerFrame) );
     //cout << "seeking frame:" << frame << " in " << time_nanoseconds << endl;
     /*res = gst_element_seek (m_pGstPipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
                          GST_SEEK_TYPE_SET, time_nanoseconds,
                          GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
                          */
-    res = gst_element_seek_simple( (GstElement*)m_pGstPipeline, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT), time_nanoseconds );
+    res = gst_element_seek_simple(
+                                  (GstElement*)m_pGstPipeline,
+                                  GST_FORMAT_TIME,
+                                  (GstSeekFlags)(
+                                                 GST_SEEK_FLAG_FLUSH
+                                                 | GST_SEEK_FLAG_KEY_UNIT
+                                                 //| GST_SEEK_FLAG_ACCURATE
+                                                 ),
+                                  time_nanoseconds );
     //cout << "success:" << res << endl;
     //this->Pause();
   } else {
-      time_nanoseconds = frame * 1000000;
-      res = gst_element_seek_simple( (GstElement*)m_pGstPipeline, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH ), time_nanoseconds );
+      ///TIME SEEK: frame as time in milliseconds
+      time_nanoseconds = frame * GST_MSECOND;
+      res = gst_element_seek_simple( (GstElement*)m_pGstPipeline, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT ), time_nanoseconds );
       if (res!=true) {
-            MODebug2->Error("moGsGraph :: Seek error");
+            MODebug2->Error("moGsGraph :: Seek (time) error");
       }
       ///res = gst_element_seek( (GstElement*)m_pGstPipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_NONE,
       ///      GST_SEEK_TYPE_SET, 10 * GST_SECOND,
@@ -2326,15 +2518,37 @@ moGsGraph::GetFramesLength() {
 
 	GstFormat fmt = GST_FORMAT_TIME;
 
-    gint64 len;
+    gint64 len,lenF;
 
     if (gst_element_query_duration ((GstElement*)m_pGstPipeline, &fmt, &len)) {
     /*g_print ("Time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT "\r",
          GST_TIME_ARGS (pos), GST_TIME_ARGS (len));*/
          if (m_VideoFormat.m_TimePerFrame)
-            m_FramesLength = ( len / ( m_VideoFormat.m_TimePerFrame ) ) - 5;
+            lenF = ( len / ( m_VideoFormat.m_TimePerFrame ) );
          //cout << "gsgraph: len: ns: " << len  << " frames:" << m_FramesLength << endl;
+         MODebug2->Message( "Total length (miliseconds):" + IntToStr(len/GST_MSECOND) + " (frames): " + IntToStr(lenF));
+         m_FramesLength = lenF;
          return m_FramesLength;
+    }
+
+	return 0;
+}
+
+MOulong
+moGsGraph::GetSamplesLength() {
+	GstFormat fmt = GST_FORMAT_TIME;
+
+    gint64 len,lenF;
+
+    if (gst_element_query_duration ((GstElement*)m_pGstPipeline, &fmt, &len)) {
+    /*g_print ("Time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT "\r",
+         GST_TIME_ARGS (pos), GST_TIME_ARGS (len));*/
+         if (m_AudioFormat.m_TimePerSample)
+            lenF = ( len / ( m_AudioFormat.m_TimePerSample ) );
+         //cout << "gsgraph: len: ns: " << len  << " frames:" << m_FramesLength << endl;
+         MODebug2->Message( "Total length (miliseconds):" + IntToStr(len/GST_MSECOND) + " (samples): " + IntToStr(lenF));
+         m_SamplesLength = lenF;
+         return m_SamplesLength;
     }
 
 	return 0;
@@ -2348,28 +2562,45 @@ moGsGraph::GetDuration() {
     gint64 dur;
 
     if (gst_element_query_duration ((GstElement*)m_pGstPipeline, &fmt, &dur)) {
-         m_Duration = dur / 1000000; //in milliseconds  1ms = 1 million ns
+         m_Duration = GST_TIME_AS_MSECONDS(dur); //in milliseconds  1ms = 1 million ns
          //cout << "gsgraph: dur: ns: " <<  dur  << endl;
-         return dur;
+         return m_Duration;
     }
 
 	return 0;
 }
 
+///TODO:GetFramePosition vs GetSamplePosition
+/// sample position = duration / samplerate
+
 MOulong
 moGsGraph::GetPosition() {
 
     GstFormat fmt = GST_FORMAT_TIME;
-    gint64 pos;
+    gint64 pos,frame;
 
     if (gst_element_query_position ((GstElement*)m_pGstPipeline, &fmt, &pos)) {
         if (m_VideoFormat.m_TimePerFrame==0) {
             return (pos / 1000000);
         }
-         return (MOulong)(pos / m_VideoFormat.m_TimePerFrame );
+        frame = pos / (gint64) m_VideoFormat.m_TimePerFrame;
+        return (MOulong)frame;
     }
     return 0;
 }
+
+MOulong
+moGsGraph::GetPositionMS() {
+
+    GstFormat fmt = GST_FORMAT_TIME;
+    gint64 pos;
+
+    if (gst_element_query_position ((GstElement*)m_pGstPipeline, &fmt, &pos)) {
+        return (MOulong)GST_TIME_AS_MSECONDS(pos);
+    }
+    return 0;
+}
+
 
 bool
 moGsGraph::IsRunning() {
@@ -2421,6 +2652,38 @@ moGsGraph::SetEchoFeedback( float feedback ) {
     g_object_set ( (GstElement*)m_pAudioEcho, "feedback", feedback, NULL);
   }
 }
+
+
+void  moGsGraph::SetBrightness( float brightness ) {
+  if (m_pVideoBalance && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pVideoBalance, "brightness", brightness, NULL);
+  }
+}
+
+
+
+void  moGsGraph::SetContrast( float contrast ) {
+  if (m_pVideoBalance && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pVideoBalance, "contrast", contrast, NULL);
+  }
+}
+
+
+
+void  moGsGraph::SetHue( float hue ) {
+  if (m_pVideoBalance && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pVideoBalance, "hue", hue, NULL);
+  }
+}
+
+
+
+void  moGsGraph::SetSaturation( float saturation ) {
+  if (m_pVideoBalance && m_bInitialized ) {
+    g_object_set ( (GstElement*)m_pVideoBalance, "saturation", saturation, NULL);
+  }
+}
+
 
 
 MObyte *

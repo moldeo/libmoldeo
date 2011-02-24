@@ -42,6 +42,7 @@
 #ifndef __MO_ARRAY_H__
 
 #include "moArrayH.h"
+#include <stdarg.h>
 
 // macro implements remaining (not inline) methods of template list
 // (it's private to this file)
@@ -85,6 +86,22 @@ name::~name() {\
 		n = 0;\
 	}\
 }\
+\
+\
+name::name( int N, const T& value, ... ) {\
+\
+	T val;\
+\
+		va_list arguments;                \
+		va_start(arguments, value);           \
+		for(int i=0; i<N; i++) {\
+            val = va_arg(arguments, T); \
+            Add(val);\
+		}\
+		va_end (arguments);      \
+	\
+}\
+\
 \
 MOboolean name::Init( int N, T initvalue ) {\
 		m_NULL = initvalue;\

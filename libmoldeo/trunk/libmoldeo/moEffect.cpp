@@ -100,8 +100,8 @@ moEffect::PreInit() {
 	if(isyncro==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("syncro parameter missing."));
 	if(iphase==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("phase parameter missing."));
 
-	if(state.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Initializing state"));//debug
 
+	if(state.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Initializing state"));//debug
 	if(state.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Setting preconfigs..."));//debug
 
 	//devicecode es llenado por la moConsole(por defecto)
@@ -115,6 +115,23 @@ moEffect::PreInit() {
 	return true;
 }
 
+void moEffect::ScriptExeDraw() {
+    if (moScript::IsInitialized()) {
+        if (ScriptHasFunction("Draw")) {
+            SelectScriptFunction("Draw");
+            RunSelectedFunction();
+        }
+    }
+}
+
+void moEffect::ScriptExeInteraction() {
+    if (moScript::IsInitialized()) {
+        if (ScriptHasFunction("Interaction")) {
+            SelectScriptFunction("Interaction");
+            RunSelectedFunction();
+        }
+    }
+}
 
 
 // Esta funcion debe ser llamada al comienzo en cada implementacion
@@ -122,6 +139,13 @@ moEffect::PreInit() {
 // 1) toma el nuevo Syncro del config
 // 2) fija el value del tempo dependiendo si esta o no syncronizado con el master
 void moEffect::PreDraw( moTempo *tempogral,moEffectState* parentstate) {
+
+  BeginDraw( tempogral, parentstate );
+
+}
+
+void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
+
 	MOdouble syncrotmp;
 
 	if(isyncro != MO_PARAM_NOT_FOUND) {
@@ -129,7 +153,8 @@ void moEffect::PreDraw( moTempo *tempogral,moEffectState* parentstate) {
 		if (sync) {
 		  moMathFunction* pFun = sync->Fun();
       if (sync->Type()==MO_DATA_FUNCTION && pFun) {
-        state.tempo.syncro = pFun->Eval(state.tempo.ang);
+        //state.tempo.syncro = pFun->Eval(state.tempo.ang);
+        state.tempo.syncro = pFun->Eval();
       }
       else state.tempo.syncro = sync->Double();
 		}
@@ -157,7 +182,8 @@ void moEffect::PreDraw( moTempo *tempogral,moEffectState* parentstate) {
 		if (phase) {
 		  moMathFunction* pFun = phase->Fun();
       if (phase->Type()==MO_DATA_FUNCTION && pFun) {
-        state.tempo.ang+= pFun->Eval(state.tempo.ang);
+        //state.tempo.ang+= pFun->Eval(state.tempo.ang);
+        state.tempo.ang+= pFun->Eval();
       }
       else state.tempo.ang+= phase->Double();
     }
@@ -183,7 +209,16 @@ void moEffect::PreDraw( moTempo *tempogral,moEffectState* parentstate) {
     }
   }
 
+  ScriptExeRun();
+
 }
+
+void moEffect::EndDraw() {
+
+  ScriptExeDraw();
+
+}
+
 
 // Esta funcion debe ser llamada al comienzo en cada implementacion
 // de la funcion virtual Finish().  Contiene el codigo obligatorio.
@@ -291,6 +326,18 @@ void moEffect::SetColor( moValue& color, moValue& alpha, moEffectState& pstate )
 				color[MO_ALPHA].Fun()->Eval() *
 				alpha[0].GetData()->Fun()->Eval() * pstate.alpha);
 
+}
+
+void moEffect::SetColor( moParam& color, moParam& alpha, moEffectState& pstate ) {
+      moVector4d vRGBA( color[MO_SELECTED][MO_RED].GetData()->Eval(),
+                        color[MO_SELECTED][MO_GREEN].GetData()->Eval(),
+                       color[MO_SELECTED][MO_BLUE].GetData()->Eval(),
+                       color[MO_SELECTED][MO_ALPHA].GetData()->Eval() );
+      MOfloat alphav = alpha.GetData()->Eval();
+      glColor4f(  vRGBA.X()*pstate.tintr,
+                  vRGBA.Y()*pstate.tintg,
+                  vRGBA.Z()*pstate.tintb,
+                  vRGBA.W()*pstate.alpha*alphav );
 }
 
 void moEffect::SetPolygonMode( moPolygonModes polygonmode ) {
