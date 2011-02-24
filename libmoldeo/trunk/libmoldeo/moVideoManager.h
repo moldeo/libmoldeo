@@ -489,6 +489,8 @@ class LIBMOLDEO_API moVideoManager : public moResource
     */
 		int GetVideoBufferPathCount();
 
+    static moText NanosecondsToTimecode( MOulonglong duration );
+    static moText FramesToTimecode( MOulonglong duration, double framespersecond );
 
 	protected:
 

@@ -92,6 +92,29 @@ enum moVideoMode {
 	MOVIDEOMODE_UNKNOWN
 };
 
+/// Resoluciones de audio
+/**
+*   enumeración de resoluciones de video
+*/
+enum moAudioMode {
+  MONO_44100_8 = 10844100,
+  MONO_44100_16 = 11644100,
+  MONO_44100_24 = 12444100,
+  MONO_44100_32 = 13244100,
+  MONO_48000_8 = 10848000,
+  MONO_48000_16 = 11648000,
+  MONO_48000_24 = 12448000,
+  MONO_48000_32 = 13248000,
+  ESTEREO_44100_8 = 20844100,
+  ESTEREO_44100_16 = 21644100,
+  ESTEREO_44100_24 = 22444100,
+  ESTEREO_44100_32 = 23244100,
+  ESTEREO_48000_8 = 2848000,
+  ESTEREO_48000_16 = 21648000,
+  ESTEREO_48000_24 = 22448000,
+  ESTEREO_48000_32 = 23248000,
+	MOAUDIOMODE_UNKNOWN
+};
 
 /// Formatos de codificacion de color
 /**
@@ -179,6 +202,74 @@ class LIBMOLDEO_API moVideoFormat {
 		MOuint m_BufferSize;/** tamaño en bytes del buffer de imagen*/
         MOuint m_FrameRate;/** cantidad de frames por cada 100 segundos, PAL: 2500 NTSC: 2997*/
         MOboolean m_WaitForFormat;/** bandera que marca la indefinición del formato, default: true*/
+
+};
+
+/// Formato de audio
+/**
+*   estructura que define la definición y la frecuencia de muestreo del sonido
+*   tamaño de buffer, etc... de 1 paquete de audio
+*/
+class LIBMOLDEO_API moAudioFormat {
+
+	public:
+		moAudioFormat() {
+			m_AudioMode = MOAUDIOMODE_UNKNOWN;
+			m_Width = 0;
+      m_Depth = 0;
+			m_BitRate = 0;
+			m_TimePerSample = 0;
+			m_BitCount = 0;
+			m_Channels = 0;
+			m_BufferSize = 0;
+			m_SampleRate = 0;
+			m_WaitForFormat = true;
+		}
+
+		void SetAudioMode() {
+			switch(m_BufferSize) {
+				case MONO_44100_8:
+				case MONO_44100_16:
+				case MONO_44100_24:
+				case MONO_44100_32:
+				case MONO_48000_8:
+				case MONO_48000_16:
+				case MONO_48000_24:
+				case MONO_48000_32:
+				case ESTEREO_44100_8:
+				case ESTEREO_44100_16:
+				case ESTEREO_44100_24:
+				case ESTEREO_44100_32:
+				case ESTEREO_48000_8:
+				case ESTEREO_48000_16:
+				case ESTEREO_48000_24:
+				case ESTEREO_48000_32:
+					m_AudioMode = (moAudioMode)m_BufferSize;
+					break;
+
+				default:
+					m_AudioMode = MOAUDIOMODE_UNKNOWN;
+					break;
+
+			}
+		}
+
+		moAudioMode	m_AudioMode;/** modo de audio, ver: moVideoMode */
+		//moColorMode m_ColorMode;
+		MOuint m_Width;/** ancho de la muestra */
+		MOuint m_Depth;/** profundidad de la muestra */
+		MOuint m_Channels;/** cantidad canales*/
+
+    MOuint m_BitRate; /** tasa en bits por segundos */
+    MOuint m_SampleSize; /** 8,16,24,32*/
+		MOuint m_SampleRate; /** cantidad de muestras por segundo : 41000 Hz, 48000 Hz*/
+		MOuint m_TimePerSample; /** duración de la muestra en unidades de 100 nanosegundos (DirectShow) o 1ns (GStreamer), 1 ns = 1e-9 100ns = 1e-7 */
+
+		MOuint m_BitCount;/** bits por cada pixel, 32, 24, 16, 8 */
+
+		MOuint m_BufferSize;/** tamaño en bytes del buffer de la muestra*/
+
+    MOboolean m_WaitForFormat;/** bandera que marca la indefinición del formato, default: true*/
 
 };
 
@@ -551,7 +642,7 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     *   comando de Seek, salta a la posición deseada y luego queda en pausa
     *   @param  frame   esto es un frame...
     */
-	virtual void Seek( MOuint frame ) = 0;
+	virtual void Seek( MOuint frame, float rate = 1.0 ) = 0;
 
     /// Está corriendo
     /**
@@ -566,6 +657,20 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     *   @return largo en frames
     */
 	virtual MOulong	GetFramesLength() = 0;
+
+    /// La posición del stream en cuadros
+    /**
+    *   devuelve la posicion o cuadro que se encuentra reproduciendo
+    *   @return posicion en cuadros
+    */
+  virtual MOulong GetPosition() = 0;
+
+    /// La duración total del stream en nanosegundos
+    /**
+    *   devuelve la duración total del stream que se encuentra reproduciendo en nanosegundos
+    *   @return duración total del stream en nanosegundos
+    */
+  virtual MOulong GetDuration() = 0;
 
     /// Puntero al frame buffer
     /**
@@ -597,12 +702,27 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     */
     virtual void SetBalance( float balance ) = 0;
 
+    virtual void SetBrightness( float brightness ) = 0;
+    virtual void SetContrast( float contrast ) = 0;
+    virtual void SetSaturation( float saturation ) = 0;
+    virtual void SetHue( float hue ) = 0;
+    virtual bool IsEOS() = 0;
+    virtual void SetEOS(bool iseos) = 0;
+
+
     /// Devuelve el formato de video
     /**
     *   indicador que señala el formato de video utilizado por esta entrada de video
     *   @return moVideoFormat el formato de video
     */
     moVideoFormat	GetVideoFormat();
+
+    /// Devuelve el formato de audio
+    /**
+    *   indicador que señala el formato de audio utilizado por esta entrada de video
+    *   @return moAudioFormat el formato de video
+    */
+    moAudioFormat	GetAudioFormat();
 
     /// Estado de la reproducción
     /**
@@ -628,7 +748,7 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
 	protected:
 
 	moVideoFormat		m_VideoFormat;///Formato de video
-
+  moAudioFormat		m_AudioFormat;
 
 };
 

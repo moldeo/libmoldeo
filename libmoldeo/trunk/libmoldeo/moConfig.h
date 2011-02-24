@@ -82,6 +82,7 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
         */
 		//void Add( moText p_name, moParamType p_type, MOint p_index, const moValue& p_defaultvalue );
 		void Add( moText p_name, moParamType p_type, MOint p_index, moValue p_defaultvalue );
+		void Add( moText p_name, moParamType p_type, MOint p_index, moValue p_defaultvalue, const moTextArray& p_Options );
 
 		/// Devuelve el puntero al arreglo de definciones de parámetros
         /**

@@ -957,6 +957,61 @@ LIBMOLDEO_API moText0 IntToStr(int a)
     return str;
 }
 
+LIBMOLDEO_API moText0 IntToStr( int a, int nzeros )
+{
+    char buffer[100];
+    nzeros = 2;
+    snprintf(buffer, 100, "%02d", a); // Memory-safe version of sprintf.
+
+    moText str = buffer;
+    return str;
+}
+
+LIBMOLDEO_API moText0 IntToStr(unsigned int a)
+{
+    char buffer[100];
+    snprintf(buffer, 100, "%i", a); // Memory-safe version of sprintf.
+
+    moText str = buffer;
+    return str;
+}
+
+LIBMOLDEO_API moText0 IntToStr(long a)
+{
+    char buffer[100];
+    snprintf(buffer, 100, "%ld", a); // Memory-safe version of sprintf.
+
+    moText str = buffer;
+    return str;
+}
+
+LIBMOLDEO_API moText0 IntToStr(unsigned  long a)
+{
+    char buffer[100];
+    snprintf(buffer, 100, "%lu", a); // Memory-safe version of sprintf.
+
+    moText str = buffer;
+    return str;
+}
+
+LIBMOLDEO_API moText0 IntToStr( long long a)
+{
+    char buffer[100];
+    snprintf(buffer, 100, "%lld", a); // Memory-safe version of sprintf.
+
+    moText str = buffer;
+    return str;
+}
+
+LIBMOLDEO_API moText0 IntToStr(unsigned long long a)
+{
+    char buffer[100];
+    snprintf(buffer, 100, "%llu", a); // Memory-safe version of sprintf.
+
+    moText str = buffer;
+    return str;
+}
+
 LIBMOLDEO_API moText0 FloatToStr(double a)
 {
     char buffer[100];
@@ -972,10 +1027,31 @@ LIBMOLDEO_API moText0 FloatToStr(double a)
 LIBMOLDEO_API moText0 FloatToStr(double a, int n)
 {
 	char *buffer;
-	buffer = new char[n];
+	buffer = new char[100];
+
     snprintf(buffer, n, "%f", a); // Memory-safe version of sprintf.
 
     moText str = buffer;
+
+	delete buffer;
+
+	str.ReplaceChar( ",",  "." );
+
+    return str;
+}
+
+LIBMOLDEO_API moText0 FloatToStr(double a, int nzeros, int ndecimals )
+{
+	char *buffer;
+	buffer = new char[100];
+
+	nzeros = 2;
+	ndecimals = 2;
+
+    snprintf(buffer, 100, "%02.3f", a); // Memory-safe version of sprintf.
+
+    moText str = buffer;
+
 	delete buffer;
 
 	str.ReplaceChar( ",",  "." );

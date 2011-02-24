@@ -374,7 +374,6 @@ static void LuaHook (lua_State *lua, lua_Debug *ar)
 
 moLuaDebugger::moLuaDebugger (moLuaVirtualMachine& vm) : m_iCountMask (10), m_vm (vm)
 {
-   MODebug = NULL;
 }
 
 moLuaDebugger::~moLuaDebugger (void)
@@ -382,9 +381,8 @@ moLuaDebugger::~moLuaDebugger (void)
 	FinaliseDBG();
 }
 
-void moLuaDebugger::InitaliseDBG(moTextHeap *pDebug)
+void moLuaDebugger::InitaliseDBG()
 {
-   MODebug = pDebug;
 
    // Clear all current hooks and attach debugger to vm.
    if (m_vm.Ok ())

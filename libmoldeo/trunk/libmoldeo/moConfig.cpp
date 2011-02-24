@@ -120,6 +120,21 @@ moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index, moVa
 
 }
 
+void
+moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index, moValue p_defaultvalue, const moTextArray& p_Options ) {
+
+	moParamDefinition pdef( p_name, p_type );
+
+	pdef.SetIndex( p_index );
+	pdef.SetDefault( p_defaultvalue );
+	pdef.SetOptions(p_Options);
+
+	m_ParamDefinitions.Add( pdef );
+
+	m_ParamIndexes.Add( p_index );
+
+}
+
 bool
 moConfigDefinition::SetParamIndex( int defined_array_index, moParamIndex paramindex  ) {
 

@@ -34,6 +34,7 @@
 
 #include <assert.h>
 #include "moScript.h"
+#include "moScriptManager.h"
 
 moLuaVirtualMachine moScript::m_vm;
 moLuaDebugger moScript::m_dbg (moScript::m_vm);
@@ -174,6 +175,10 @@ moScript::~moScript (void)
 //============================================================================
 void moScript::InitScript()
 {
+
+    ///Inicializamos el moLuaVirtualMachine con la funcion estatica del moScriptManager
+   if (!m_vm.Ok()) moScriptManager::InitVM();
+
    BEGIN_LUA_CHECK (m_vm)
       // Create a reference to the "this" table. Each reference is unique
       lua_newtable (state);
@@ -402,8 +407,9 @@ bool moScript::SelectScriptFunction (const char *strFuncName)
 //============================================================================
 bool moScript::ScriptHasFunction (const char *strScriptName)
 {
-   assert (strScriptName != NULL && "moScript::ScriptHasFunction -> strScriptName == NULL");
-   assert (m_vm.Ok () && "VM Not OK");
+   //assert (strScriptName != NULL && "moScript::ScriptHasFunction -> strScriptName == NULL");
+   //assert (m_vm.Ok () && "VM Not OK");
+   if ( !m_vm.Ok () ) return false;
 
    moLuaRestoreStack rs (m_vm);
 

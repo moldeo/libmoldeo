@@ -35,6 +35,8 @@
 
 #include "moLunaClasses.h"
 
+#define lua_pindexes( L ) ( lua_gettop(L) - 1 )
+#define lua_pindex( index ) (index + 1)
 
 /**
 
@@ -79,7 +81,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaSoundManager, GetSoundCount )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaSoundManager, GetSound )
 {
-  int id = (int) lua_tonumber (L, 1);
+  int id = (int) lua_tonumber (L, lua_pindex(1) );
   moSound* pSound = NULL;
   if (m_pSoundMan)
      pSound = m_pSoundMan->GetSound(id);
@@ -124,7 +126,8 @@ void moLuaCircularVideoBuffer::Set( moCircularVideoBuffer* p_pCircularVideoBuffe
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, StartRecording )
 {
-  int at_position = (int) lua_tonumber (L, 1);
+  int at_position = (int) lua_tonumber (L, lua_pindex(1) );
+  MODebug2->Push("at_position:"+IntToStr(at_position));
   if (m_pCircularVideoBuffer)
     m_pCircularVideoBuffer->StartRecording(at_position);
   return 0;
@@ -793,16 +796,26 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, triangle)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, line)
 {
-	//int res;
+  int n = lua_pindexes(L);
 
-	MOfloat x1 = (MOfloat) lua_tonumber (L, 1);
-	MOfloat y1 = (MOfloat) lua_tonumber (L, 2);
+  MOfloat x1,x2,y1,y2,z1,z2;
 
-	MOfloat x2 = (MOfloat) lua_tonumber (L, 3);
-	MOfloat y2 = (MOfloat) lua_tonumber (L, 4);
+  if (n==4) {
+    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+    x2 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+    y2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
+    moP5::line(x1, y1, x2, y2);
+  } else if (n==6) {
+    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+    z1 = (MOfloat) lua_tonumber (L, lua_pindex(3));
 
-	moP5::line(x1, y1, x2, y2);
-
+    x2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
+    y2 = (MOfloat) lua_tonumber (L, lua_pindex(5));
+    z2 = (MOfloat) lua_tonumber (L, lua_pindex(6));
+    moP5::line(x1, y1, x2, y2);
+  }
     return 0;
 }
 
@@ -818,6 +831,22 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, point)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, quad)
 {
+  int n = lua_pindexes(L);
+
+  MOfloat x1,x2,x3,x4,y1,y2,y3,y4;
+
+  if (n==4) {
+    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+    x2 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+    y2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
+    x3 = (MOfloat) lua_tonumber (L, lua_pindex(5));
+    y3 = (MOfloat) lua_tonumber (L, lua_pindex(6));
+    x4 = (MOfloat) lua_tonumber (L, lua_pindex(7));
+    y4 = (MOfloat) lua_tonumber (L, lua_pindex(8));
+    moP5::quad(x1, y1, x2, y2, x3, y3, x4, y4);
+  }
+
     return 0;
 }
 
@@ -826,35 +855,75 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, ellipse)
     return 0;
 }
 
-SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, rect)
+SCRIPT_FUNCTION_IMPLEMENTATION( moLuaP5, rect )
 {
+
+  int n = lua_pindexes(L);
+
+  MOfloat x1,y1,width,height;
+
+  if (n==4) {
+    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+    width = (MOfloat) lua_tonumber (L, lua_pindex(3));
+    height = (MOfloat) lua_tonumber (L, lua_pindex(4));
+    moP5::rect(x1, y1, width, height);
+  }
+
     return 0;
 }
 
+
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, strokeWeight)
 {
+    int n = lua_pindexes(L);
+    MOfloat width = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+
+    //MODebug2->Push( "strokeWeight > width:" + FloatToStr(width) );
+
+    moP5::strokeWeight( width );
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, background)
 {
-	MOfloat grey = (MOfloat) lua_tonumber (L, 1);
+  int n = lua_pindexes(L);
+  MOfloat r,g,b,grey;
+  MOfloat alpha = 1.0;
 
-	int type2 = (MOint) lua_type (L, 2);
-	if (type2 == 3)
-	{
-		MOfloat alpha = (MOfloat) lua_tonumber (L, 2);
-		moP5::background(grey, alpha);
-	}
-	else
-		moP5::background(grey);
-
-	return 0;
+  switch(n) {
+    case 1:
+      grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      alpha = (MOfloat) lua_tonumber (L, lua_pindex(2));
+      moP5::background(grey);
+      break;
+    case 2:
+      grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      moP5::background(grey, alpha);
+      break;
+    case 3:
+      r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
+      b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
+      moP5::background( r, g, b );
+      break;
+    case 4:
+      r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
+      b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
+      alpha = (MOfloat) lua_tonumber (L, lua_pindex(4));
+      moP5::background( r, g, b, alpha );
+      break;
+    default:
+      moP5::background( 0.2, 0.2, 0.2, 1.0 );
+      break;
+  }
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, colorMode)
 {
-	MOint mode = (MOint) lua_tonumber (L, 1);
+	MOint mode = (MOint) lua_tonumber (L, 2);
 	moP5::colorMode(mode);
 
 	return 0;
@@ -862,21 +931,92 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, colorMode)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, stroke)
 {
+  int n = lua_pindexes(L);
+  MOfloat r,g,b,grey;
+  MOfloat alpha = 1.0;
+
+  switch(n) {
+    case 1:
+      grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      alpha = (MOfloat) lua_tonumber (L, lua_pindex(2));
+      moP5::stroke(grey);
+      break;
+    case 2:
+      grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      moP5::stroke(grey, alpha);
+      break;
+    case 3:
+      r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
+      b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
+      moP5::stroke( r, g, b );
+      break;
+    case 4:
+      r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
+      b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
+      alpha = (MOfloat) lua_tonumber (L, lua_pindex(4));
+      moP5::stroke( r, g, b, alpha );
+      break;
+    default:
+      moP5::stroke( 0.8, 0.8, 0.8, 1.0 );
+      break;
+  }
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, noFill)
 {
+
+    moP5::noFill();
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, noStroke)
 {
+
+    moP5::noStroke();
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, fill)
 {
+
+  int n = lua_pindexes(L);
+  MOfloat r,g,b,grey;
+  MOfloat alpha = 1.0;
+
+  switch(n) {
+    case 1:
+      grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      alpha = (MOfloat) lua_tonumber (L, lua_pindex(2));
+      moP5::fill(grey);
+      break;
+    case 2:
+      grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      moP5::fill(grey, alpha);
+      break;
+    case 3:
+      r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
+      b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
+      moP5::fill( r, g, b );
+      break;
+    case 4:
+      r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
+      g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
+      b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
+      alpha = (MOfloat) lua_tonumber (L, lua_pindex(4));
+      moP5::fill( r, g, b, alpha );
+      break;
+    default:
+      moP5::fill( 0.8, 0.8, 0.8, 1.0 );
+      break;
+  }
+
     return 0;
 }
 

@@ -57,6 +57,7 @@ moSound::moSound() {
 	SetName("");
 	SetFileName("");
 	m_pAudioGraph = NULL;
+	m_bIsPlaying = false;
 	m_pAudioGraph = new moGsGraph();
 }
 
@@ -74,54 +75,54 @@ MOboolean moSound::Finish() {
 }
 
 MOboolean moSound::Init() {
-
   if (m_pAudioGraph) {
     moAbstract::m_bInitialized = m_pAudioGraph->InitGraph();
   }
   return m_bInitialized;
 }
 
-		moText moSound::GetName() {
-		  return m_SoundName;
-		}
+moText moSound::GetName() {
+  return m_SoundName;
+}
 
-		void moSound::SetName( moText name ) {
-      m_SoundName = name;
-		}
+void moSound::SetName( moText name ) {
+  m_SoundName = name;
+}
 
-		moText moSound::GetFileName() {
-		  return m_FileName;
-		}
+moText moSound::GetFileName() {
+  return m_FileName;
+}
 
-		void moSound::SetFileName( moText filename ) {
-        m_FileName = filename;
-		}
+void moSound::SetFileName( moText filename ) {
+    m_FileName = filename;
+}
 
-		moSoundType moSound::GetType() {
-		  return m_SoundType;
-    }
+moSoundType moSound::GetType() {
+  return m_SoundType;
+}
 
-    MOboolean moSound::LoadFromFile( moText filename ) {
-      if (m_pAudioGraph) {
-        if (m_pAudioGraph->Initialized()) {
-          if (m_pAudioGraph->BuildLiveSound( filename )) {
-            SetFileName(filename);
-            return true;
-          }
-        } else {
-            MODebug2->Error("moSound::LoadFromFile >  Error: AudioGraph not initialized.");
-        }
+MOboolean moSound::LoadFromFile( moText filename ) {
+  if (m_pAudioGraph) {
+    if (m_pAudioGraph->Initialized()) {
+      if (m_pAudioGraph->BuildLiveSound( filename )) {
+        SetFileName(filename);
+        return true;
       }
-      return false;
+    } else {
+        MODebug2->Error("moSound::LoadFromFile >  Error: AudioGraph not initialized.");
     }
+  }
+  return false;
+}
 
-    MOboolean moSound::SupportedFile(moText p_filename) {
-      return true;
-    }
+MOboolean moSound::SupportedFile(moText p_filename) {
+  return true;
+}
 
 void moSound::Play() {
-  if (m_pAudioGraph)
+  if (m_pAudioGraph) {
     m_pAudioGraph->Play();
+  }
 }
 
 void moSound::Pause() {
@@ -130,8 +131,9 @@ void moSound::Pause() {
 }
 
 void moSound::Stop() {
-  if (m_pAudioGraph)
+  if (m_pAudioGraph) {
     m_pAudioGraph->Stop();
+  }
 }
 
 
@@ -140,10 +142,34 @@ void moSound::Rewind()  {
     m_pAudioGraph->Stop();
 }
 
-
 moStreamState moSound::State()  {
-  if (m_pAudioGraph)
-    return m_pAudioGraph->GetState();
+
+  moStreamState stream_state = MO_STREAMSTATE_UNKNOWN;
+
+  if (m_pAudioGraph) {
+
+    stream_state = m_pAudioGraph->GetState();
+
+    switch(stream_state) {
+      case MO_STREAMSTATE_PLAYING:
+        m_bIsPlaying = true;
+        break;
+      default:
+        m_bIsPlaying = false;
+        break;
+    }
+
+  }
+
+  return stream_state;
+}
+
+bool moSound::IsPlaying() {
+
+  if (m_pAudioGraph) {
+    m_pAudioGraph->GetState();
+  }
+  return m_bIsPlaying;
 }
 
 
@@ -152,7 +178,31 @@ void moSound::Update()  {
  //   m_pAudioGraph->Stop();
 }
 
+MOulong moSound::GetPosition() {
+  if (m_pAudioGraph)
+    return m_pAudioGraph->GetPositionMS();
+}
 
+MOulong moSound::GetSampleCount() {
+  if (m_pAudioGraph)
+    return m_pAudioGraph->GetSamplesLength();
+}
+
+
+MOulong moSound::GetDuration() {
+  if (m_pAudioGraph)
+    return m_pAudioGraph->GetDuration();
+}
+void  moSound::Seek( int position, float rate ) {
+  if (m_pAudioGraph)
+    m_pAudioGraph->Seek( position, rate );
+}
+
+bool  moSound::IsEOS() {
+  if (m_pAudioGraph)
+    return m_pAudioGraph->IsEOS();
+  return false;
+}
 
 void moSound::SetVolume( float gain )  {
   if (m_pAudioGraph)

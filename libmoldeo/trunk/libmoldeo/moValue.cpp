@@ -445,12 +445,45 @@ moData::Sound() {
     return pSound;
 }
 
-
+///TODO: esta funcion llama la textura de fuente ( al aplicar un shader, es la primera de las  de fuente)
+///no confundir con la textura de destino...!!!
 moTexture*
 moData::Texture() {
-  moTexture* pTexture = static_cast<moTexture*>(m_Number.m_Pointer);
+  moTexture* pTexture = NULL;
+  if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
+      moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
+      if (pTF) {
+          moTextureIndex* PTI = pTF->GetSrcTex();
+          if (PTI) {
+              pTexture = PTI->GetTexture(0);
+          }
+      }
+  } else if (m_DataType==MO_DATA_IMAGESAMPLE || m_DataType==MO_DATA_IMAGESAMPLE_TEXTUREBUFFER  ) {
+    pTexture = static_cast<moTexture*>(m_Number.m_Pointer);
+  }
   return pTexture;
 }
+
+///if MO_DATA_IMAGESAMPLE source = destination
+moTexture*
+moData::TextureDestination() {
+
+  moTexture* pTexture = NULL;
+
+  if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
+      moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
+      if (pTF) {
+          moTextureIndex* PTI = pTF->GetDestTex();
+          if (PTI) {
+              pTexture = PTI->GetTexture(0);
+          }
+      }
+  } else if (m_DataType==MO_DATA_IMAGESAMPLE || m_DataType==MO_DATA_IMAGESAMPLE_TEXTUREBUFFER  ) {
+    pTexture = static_cast<moTexture*>(m_Number.m_Pointer);
+  }
+  return pTexture;
+}
+
 
 moText
 moData::Text() {

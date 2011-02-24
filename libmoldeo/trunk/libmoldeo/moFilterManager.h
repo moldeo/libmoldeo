@@ -450,6 +450,7 @@ class LIBMOLDEO_API moTrackerInstanceRecord {
 		double          m_SurfaceCovered;///0 nada, 1 todo...
 
 		int             m_ValidFeatures;
+		int             m_DeltaValidFeatures;
 		int             m_nFeatures;
 
 		moVector2f      m_Max;
@@ -526,6 +527,7 @@ class LIBMOLDEO_API moTrackerSystemData {
 		*   Devuelve las características válidas. Son aquellas reconocidas de un cuadro a otro.
 		*/
     virtual int GetValidFeatures();
+    virtual int GetDeltaValidFeatures();
 
 		/**
 		*   Devuelve el vector de posición del baricentro.
@@ -583,6 +585,7 @@ class LIBMOLDEO_API moTrackerSystemData {
 		virtual void SetBoundingRectangle( float r_x, float r_y, float s_x, float s_y ) { m_ActualRecord.m_BoundingRectangle = moVector4f(r_x,r_y,s_x,s_y); }
 
 		virtual void SetValidFeatures( int validfeatures) { m_ActualRecord.m_ValidFeatures = validfeatures; }
+		virtual void SetDeltaValidFeatures( int deltavalidfeatures) { m_ActualRecord.m_DeltaValidFeatures = deltavalidfeatures; }
 
 		virtual void SetAbsoluteSpeedAverage( float speedaverage ) { m_ActualRecord.m_AbsoluteSpeedAverage = speedaverage; }
 		virtual void SetAbsoluteAccelerationAverage( float accaverage ) { m_ActualRecord.m_AbsoluteAccelerationAverage = accaverage; }
