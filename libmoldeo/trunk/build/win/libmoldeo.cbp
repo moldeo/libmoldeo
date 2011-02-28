@@ -157,6 +157,8 @@
 		<Unit filename="..\..\libmoldeo\moActions.h" />
 		<Unit filename="..\..\libmoldeo\moArcBall.cpp" />
 		<Unit filename="..\..\libmoldeo\moArcBall.h" />
+		<Unit filename="..\..\libmoldeo\moArray.h" />
+		<Unit filename="..\..\libmoldeo\moArrayH.h" />
 		<Unit filename="..\..\libmoldeo\moBasePlugin.h" />
 		<Unit filename="..\..\libmoldeo\moBuckets.cpp" />
 		<Unit filename="..\..\libmoldeo\moBuckets.h" />
