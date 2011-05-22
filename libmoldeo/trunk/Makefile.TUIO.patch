@@ -1,0 +1,29 @@
+31a32,59
+> CFLAGS += -fPIC
+> install_root=/usr/local
+> install_libdir=${install_root}/lib
+> install_includedir=${install_root}/include/TUIO
+> 
+> INSTALL = /usr/bin/install -c
+> MKDIR_P = /bin/mkdir -p
+> 
+> TUIO_INCLUDES = TUIO/TuioClient.h \
+> 	       	TUIO/TuioContainer.h \
+> 	       	TUIO/TuioCursor.h \
+> 	       	TUIO/TuioListener.h \
+> 	       	TUIO/TuioObject.h \
+> 	       	TUIO/TuioPoint.h \
+> 		TUIO/TuioServer.h \
+> 	       	TUIO/TuioTime.h
+> 
+> install: all install_lib install_include
+> 	
+> install_lib: $(TUIO_SHARED)
+> 	test -z "$(install_libdir)" || $(MKDIR_P) "$(install_libdir)"
+> 	${INSTALL} $? ${install_libdir}
+> 	ldconfig
+> 
+> install_include: $(TUIO_INCLUDES)
+> 	test -z "$(install_includedir)" || $(MKDIR_P) "$(install_includedir)"
+> 	${INSTALL} $? ${install_includedir}
+> 
