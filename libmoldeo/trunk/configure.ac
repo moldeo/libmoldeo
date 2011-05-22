@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [0.7.9], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [0.7.9.2], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -32,10 +32,17 @@ AC_CHECK_HEADER(SDL/SDL_net.h, , AC_MSG_ERROR([SDL_net header not found.]))
 AC_CHECK_LIB(SDL_net, SDLNet_Init, AC_SUBST([SDL_NET_LIBS], [-lSDL_net]), AC_MSG_ERROR([SDL_net not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
 
 dnl check for sdl-image
-PKG_CHECK_MODULES([SDL_IMAGE], [SDL_image] ,has_sdl_image=yes)
+AC_CHECK_HEADER(SDL/SDL_image.h, , AC_MSG_ERROR([SDL_image header not found.]))
+AC_CHECK_LIB(SDL_image, IMG_Load, AC_SUBST([SDL_IMAGE_LIBS], [-lSDL_image]), AC_MSG_ERROR([SDL_image not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
 
 dnl check for opengl
 PKG_CHECK_MODULES([GL], [gl] ,has_gl=yes)
+
+dnl check for openal
+PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
+
+dnl check for opengl
+PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
 
 dnl check for glew
 AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
@@ -152,6 +159,7 @@ AX_BOOST_BASE
 AX_BOOST_ASIO
 AX_BOOST_THREAD
 AX_BOOST_FILESYSTEM
+AX_BOOST_SYSTEM
 
 dnl autoscan results
 AC_CHECK_FUNCS([floor])
@@ -201,6 +209,7 @@ AC_OUTPUT([
 Makefile
 data/Makefile
 libmoldeo/Makefile
+libmoldeo.pc
 test-suite/Makefile
 ])
 
