@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS=-I m4
 SUBDIRS = data libmoldeo test-suite
 
-EXTRA_DIST = AUTHORS ChangeLog NEWS README
+EXTRA_DIST = AUTHORS ChangeLog NEWS README Makefile.TUIO.patch tuio.sh buildpkg.sh control.amd64 libmoldeo-dev.install.amd64
 
 # pkg-config stuff, note that libpng.pc is always required in order
 # to get the correct library
