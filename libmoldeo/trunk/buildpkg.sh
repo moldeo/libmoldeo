@@ -57,8 +57,9 @@ echo "
 Now execute in deb folder:
  dh_make -l -e fabricio.costa@moldeointeractive.com.ar
  cp ../../control.amd64 debian/control
+ cp ../../rules.amd64 debian/rules
  cp ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install
- dpkg-buildpackage -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
+ dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
 "
 
 
