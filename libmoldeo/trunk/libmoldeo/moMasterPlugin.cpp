@@ -201,7 +201,7 @@ LIBMOLDEO_API moMasterEffect* moNewMasterEffect(moText effect_name, moMasterPlug
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText("plugins/mastereffects/lib") + (moText)effect_name;
+    complete_name = moText("plugins/mastereffects/libmoldeo_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -250,7 +250,7 @@ LIBMOLDEO_API bool moDeleteMasterEffect(moMasterEffect *mastereffect, moMasterPl
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/mastereffects/libmod_") + moText(mastereffect->GetName());
+    complete_name = moText(MODULESDIR "/mastereffects/libmoldeo_") + moText(mastereffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

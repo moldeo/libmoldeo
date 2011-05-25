@@ -244,7 +244,6 @@ public:                                                                  \
     name();																 \
     name(const name& src);                                               \
 	name(int N);														 \
-    name(int N, const T& value, ... );                                   \
     name& operator=(const name& src);                                    \
                                                                          \
     virtual ~name();                                                     \

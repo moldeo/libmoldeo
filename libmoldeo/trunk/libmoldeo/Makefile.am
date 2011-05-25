@@ -107,12 +107,28 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${SDL_CFLAGS} \
 	${LUA51_CFLAGS} 
 
-libmoldeo_la_LIBADD = ${FT2_LIBS} \
-	${GST_LIBS} \
+libmoldeo_la_LIBADD = -ldl\
+	${FT2_LIBS} \
+	${SDL_LIBS} \
+	${CG_LIBS} \
+	${CGGL_LIBS} \
+	${TINYXML_LIBS} \
+	${OPENAL_LIBS} \
+	${GL_LIBS} \
+	${GLE_LIBS} \
+	${GLEW_LIBS} \
+	${FTGL_LIBS} \
+	${GLUT_LIBS} \
+	${GLU_LIBS} \
+	${FREEALUT_LIBS} \
+	${FREEIMAGE_LIBS} \
+	${MUPARSER_LIBS} \
 	${BOOST_ASIO_LIB} \
 	${BOOST_THREAD_LIB} \
 	${BOOST_FILESYSTEM_LIB} \
+	${BOOST_SYSTEM_LIB} \
 	${LUA51_LIBS} \
+	${GST_LIBS} \
 	${TUIO_LIBS}
 
 libmoldeo_includedir = $(includedir)/libmoldeo

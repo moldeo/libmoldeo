@@ -83,10 +83,21 @@
 #define MO_SCREEN_DEPTH	32
 
 class LIBMOLDEO_API moPresetParamDefinition {
+
+    public:
+
+        moPresetParamDefinition();
+		moPresetParamDefinition(const moPresetParamDefinition &src);
+		virtual ~moPresetParamDefinition();
+
+		moPresetParamDefinition &operator = (const moPresetParamDefinition &src);
+
         MOint           m_ObjectId;
         MOint           m_ParamIndex;
         MOint           m_ValueIndex;
         moEffectState   m_State;
+
+
 };
 
 moDeclareExportedDynamicArray( moPresetParamDefinition, moPresetParams );

@@ -58,35 +58,35 @@ moData::moData() {
 }
 
 moData::moData( MOchar data ) {
-    moData::moData();
+    (*this) = moData();
 	m_Number.m_Char = data;
 	m_DataSize = 0;
 	m_DataType = MO_DATA_NUMBER_CHAR;
 }
 
 moData::moData( MOint data) {
-    moData::moData();
+    (*this) = moData();
 	m_Number.m_Int = data;
 	m_DataSize = 0;
 	m_DataType = MO_DATA_NUMBER_INT;
 }
 
 moData::moData( MOlonglong data) {
-    moData::moData();
+    (*this) = moData();
 	m_Number.m_Long = data;
 	m_DataSize = 0;
 	m_DataType = MO_DATA_NUMBER_LONG;
 }
 
 moData::moData( MOdouble data) {
-    moData::moData();
+    (*this) = moData();
 	m_Number.m_Double = data;
 	m_DataSize = 0;
 	m_DataType = MO_DATA_NUMBER_DOUBLE;
 }
 
 moData::moData( MOfloat data) {
-    moData::moData();
+    (*this) = moData();
 	m_Number.m_Float = data;
 	m_DataSize = 0;
 	m_DataType = MO_DATA_NUMBER_FLOAT;
@@ -100,14 +100,14 @@ moData::moData( MOfloat data) {
 	MO_DATA_VIDEOSAMPLE,//pointer to a videosample pointer
 */
 moData::moData( MOpointer data , MOulong size, moDataType type ) {
-    moData::moData();
+    (*this) = moData();
 	m_Number.m_Pointer = data;
 	m_DataSize = size;
 	m_DataType = type;
 }
 
 moData::moData( moText data ) {
-    moData::moData();
+    (*this) = moData();
 	m_Text = data;
 	m_DataSize = 0;
 	m_Number.m_Long = 0;
@@ -115,7 +115,7 @@ moData::moData( moText data ) {
 }
 
 moData::moData( moDataType datatype ) {
-    moData::moData();
+    (*this) = moData();
 	m_DataType = datatype;
 }
 
