@@ -88,21 +88,6 @@ name::~name() {\
 }\
 \
 \
-name::name( int N, const T& value, ... ) {\
-\
-	T val;\
-\
-		va_list arguments;                \
-		va_start(arguments, value);           \
-		for(int i=0; i<N; i++) {\
-            val = va_arg(arguments, T); \
-            Add(val);\
-		}\
-		va_end (arguments);      \
-	\
-}\
-\
-\
 MOboolean name::Init( int N, T initvalue ) {\
 		m_NULL = initvalue;\
 \

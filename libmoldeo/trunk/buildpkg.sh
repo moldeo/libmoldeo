@@ -1,13 +1,20 @@
 #!/bin/sh
 
 DIE=0
-echo "cleaning..."
-(rm -Rf deb/*) > /dev/null || {
-  echo
-  echo "**Error**: removing error ."
-  echo ""
-  exit 1
+
+echo "deb directory..."
+(mkdir deb ) > /dev/null || {
+	echo "cleaning..."
+
+	(rm -Rf deb/*) > /dev/null || {
+	  echo
+	  echo "**Error**: removing error ."
+	  echo ""
+	  exit 1
+	}
 }
+
+
 
 echo "making distribution source file..."
 (make dist) > /dev/null || {
@@ -55,10 +62,15 @@ echo "extracting..."
 
 echo " 
 Now execute in deb folder:
+ cd deb/libmoldeo-0.7.9.2
  dh_make -l -e fabricio.costa@moldeointeractive.com.ar
  cp ../../control.amd64 debian/control
  cp ../../rules.amd64 debian/rules
+ cp ../../libmoldeo1.install.amd64 debian/libmoldeo1.install
+ cp ../../libmoldeo1.dirs.amd64 debian/libmoldeo1.dirs
+ cp ../../libmoldeo-dev.dirs.amd64 debian/libmoldeo-dev.dirs
  cp ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install
+ vi debian/changelog
  dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
 "
 

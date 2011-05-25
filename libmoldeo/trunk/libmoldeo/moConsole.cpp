@@ -46,7 +46,28 @@
 #include <moFileManager.h>
 
 #include "moArray.h"
-moDefineDynamicArray( moPresetParams )
+moDefineDynamicArray( moPresetParams );
+
+
+moPresetParamDefinition::moPresetParamDefinition() {
+
+}
+
+moPresetParamDefinition::moPresetParamDefinition(const moPresetParamDefinition &src) {
+    (*this) = src;
+}
+
+moPresetParamDefinition::~moPresetParamDefinition() {
+
+}
+
+moPresetParamDefinition &moPresetParamDefinition:: operator = (const moPresetParamDefinition &src) {
+    m_ObjectId = src.m_ObjectId;
+    m_ParamIndex = src.m_ParamIndex;
+    m_ValueIndex = src.m_ValueIndex;
+    m_State = src.m_State;
+}
+
 
 
 moConsole::moConsole() {
