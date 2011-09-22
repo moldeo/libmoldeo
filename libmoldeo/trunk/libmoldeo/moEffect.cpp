@@ -373,7 +373,12 @@ void moEffect::SetBlending( moBlendingModes blending ) {
 			break;
 		case MO_BLENDING_ADDITIVEALPHA:
 			//ADDITIVE WITH TRANSPARENCY: Rs*As + Rd*Ad
-			glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+			/** DOESNT WORK NICELY BECAUSE DST_ALPHA DOESNT AFFECT FINAL FRAMEBUFFER */
+			//glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+
+            /** THIS WORKS LIKE A CHARM*/
+			//ADDITIVE WITH SRC TRANSPARENCY: Rs*As + Rd
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE);
 			break;
 
 		//NON ALPHA
