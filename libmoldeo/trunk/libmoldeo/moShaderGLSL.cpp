@@ -171,7 +171,7 @@ void moShaderGLSL::compileFragShader(moText frag_source)
     char *fragmentInfoLog;
 
     glGetShaderiv(m_FragmentShader, GL_COMPILE_STATUS, &IsCompiled_FS);
-	if(IsCompiled_FS == FALSE)
+	if(IsCompiled_FS == 0)
 	{
 		glGetShaderiv(m_FragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
 
