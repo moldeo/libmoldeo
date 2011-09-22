@@ -165,7 +165,33 @@ void moShaderGLSL::compileFragShader(moText frag_source)
 	const char **psource = &source;
     glShaderSourceARB(m_FragmentShader, 1, psource, NULL);
     glCompileShaderARB(m_FragmentShader);
+
+    int IsCompiled_FS;
+    int maxLength;
+    char *fragmentInfoLog;
+
+    glGetShaderiv(m_FragmentShader, GL_COMPILE_STATUS, &IsCompiled_FS);
+	if(IsCompiled_FS == FALSE)
+	{
+		glGetShaderiv(m_FragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
+
+		/* The maxLength includes the NULL character */
+		fragmentInfoLog = new char[maxLength];
+
+		glGetShaderInfoLog(m_FragmentShader, maxLength, &maxLength, fragmentInfoLog);
+
+        if (MODebug2 != NULL) MODebug2->Error(moText("Shader compile error:") + moText(fragmentInfoLog) );
+
+		/* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
+		/* In this simple program, we'll just leave */
+		delete [] fragmentInfoLog;
+		//return;
+	}
+
     glAttachObjectARB(m_ProgramObject, m_FragmentShader);
+
+
+
 }
 
 void moShaderGLSL::linkProgram()

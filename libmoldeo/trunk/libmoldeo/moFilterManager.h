@@ -516,6 +516,7 @@ class LIBMOLDEO_API moTrackerSystemData {
 
     moTrackerSystemData();
     moTrackerSystemData( int ZoneW, int ZoneH );
+    moTrackerSystemData( int ZoneW, int ZoneH, int ZoneCW, int ZoneCH );
     virtual ~moTrackerSystemData();
 
 		/**
@@ -641,7 +642,10 @@ class LIBMOLDEO_API moTrackerSystemData {
 
     int             m_ZoneW;
     int             m_ZoneH;
+    int             m_ZoneCW;
+    int             m_ZoneCH;
     int             m_Zones;
+    int             m_ZonesC;
     float**         m_Distancias;
     int**           m_Pares;
     int             nPares;
@@ -650,6 +654,8 @@ class LIBMOLDEO_API moTrackerSystemData {
 
     float           _zonewf;
     float           _zonehf;
+    float           _zonecwf;
+    float           _zonechf;
 
     moVideoFormat	m_VideoFormat;
 

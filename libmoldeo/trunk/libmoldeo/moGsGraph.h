@@ -208,6 +208,7 @@ public:
     void SetSaturation( float saturation );
     void SetHue( float hue );
 
+    void BuildAudioFilters();
 
     void    SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer = NULL );
     void    SetAudioFormat( moGstCaps* caps, moGstBuffer* buffer = NULL );
@@ -244,6 +245,11 @@ public:
                             moGstPad     *pad,
                             moGBoolean    last,
                             moGPointer    u_data);
+
+    static void cb_pad_added ( moGstElement *decodebin2,
+                            moGstPad     *pad,
+                            moGPointer    u_data);
+
     long signal_newpad_id;
     long m_BusWatchId;
 
