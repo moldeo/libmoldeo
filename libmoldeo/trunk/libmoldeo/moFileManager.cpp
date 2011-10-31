@@ -28,7 +28,7 @@
 
 
 *******************************************************************************/
-#include <boost/version.hpp>
+
 #include <boost/filesystem.hpp>
 
 #include "moFileManager.h"
@@ -97,10 +97,16 @@ moDirectory::~moDirectory() {
 
 */
 
+#include <set>
+
 MOboolean
 moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
 
 	char *path;
+    string stdFileName;
+    string stdCompleteFileName;
+    set<string> stdListOfFileNames;
+    set<string> stdListOfCompleteFileNames;
 
   m_CompletePath = p_CompletePath;
 	path = m_CompletePath;
@@ -155,21 +161,13 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
           {
             //cout << iter->native_directory_string() << " (directory)\n" ;
             //if( recurse_into_subdirs ) show_files(*iter) ;
-
-
-///check /usr/include/boost/version.hpp
-
             #if BOOST_VERSION > 103500
             moText pSubDirName( iter->path().filename().c_str() );
             #else
             moText pSubDirName( iter->path().leaf().c_str() );
             #endif
 
-			#if BOOST_FILESYSTEM_VERSION > 2
-            moText pCompletePathSubdirName( iter->path().c_str() );
-			#else
-			moText pCompletePathSubdirName( iter->path().file_string().c_str() );
-			#endif
+            moText pCompletePathSubdirName( iter->path().file_string().c_str() );
 
             if (pSubDirName.Left(1) != "." ) {
               moDirectory* pSubdir = new moDirectory( pCompletePathSubdirName );
@@ -181,28 +179,30 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
             //cout << iter->native_file_string() << " (file)\n" ;
             //ATENCION SEGUN LA VERSION DE BOOST hya que usar filename() o leaf()
             //moText pFileName( iter->path().leaf().c_str() );
+
+
             #if BOOST_VERSION > 103500
+
             moText pFileName( iter->path().filename().c_str() );
+
+            stdFileName = iter->path().filename().c_str();
+
             #else
+
             moText pFileName( iter->path().leaf().c_str() );
+
+            stdFileName = iter->path().leaf().c_str();
+
             #endif
 
-			#if BOOST_FILESYSTEM_VERSION > 2
-            moText pCompletePathFilename( iter->path().c_str() );
-			#else			
-			moText pCompletePathFilename( iter->path().file_string().c_str() );
-			#endif
+            moText pCompletePathFilename( iter->path().file_string().c_str() );
+            stdCompleteFileName = iter->path().file_string().c_str();
 
-            moFile*	pFile = NULL;
 
-            if (pFileName!=moText("Thumbs.db")) {
-                if (m_pFileManager)
-                    pFile = m_pFileManager->GetFile( pCompletePathFilename );
-                else
-                    pFile = new moFile( pCompletePathFilename );
-                if (pFile) {
-                    m_Files.Add(pFile);
-                }
+
+            if (stdFileName!="Thumbs.db") {
+                stdListOfFileNames.insert(stdFileName);
+                stdListOfCompleteFileNames.insert(stdCompleteFileName);
             }
 
             #ifdef _DEBUG
@@ -214,6 +214,24 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
           }
 
       }
+
+        /** Sorted for linux */
+        moText pCompletePathFilename;
+
+        for(std::set<string>::iterator Name = stdListOfCompleteFileNames.begin() ; Name != stdListOfCompleteFileNames.end() ; ++Name)
+        {
+            //cout << *Name << endl;
+            string comp = *Name;
+            pCompletePathFilename = moText((char*)comp.c_str());
+
+            moFile*	pFile = NULL;
+            if (m_pFileManager)
+                pFile = m_pFileManager->GetFile( pCompletePathFilename );
+            else
+                pFile = new moFile( pCompletePathFilename );
+
+            if (pFile) m_Files.Add(pFile);
+        }
 
       return m_bExists;
 //    }
@@ -475,18 +493,10 @@ moDirectory::Update() {
             //cout << iter->native_file_string() << " (file)\n" ;
 
             //ATENCION SEGUN LA VERSION DE BOOST hya que usar filename() o leaf()
-            #if BOOST_VERSION > 103500
-            moText pFileName( iter->path().filename().c_str() );
-            #else
             moText pFileName( iter->path().leaf().c_str() );
-            #endif
+            moText pCompletePathFilename( iter->path().file_string().c_str() );
 
-            
-			#if BOOST_FILESYSTEM_VERSION > 2
-            moText pCompletePathFilename( iter->path().c_str() );
-			#else			
-			moText pCompletePathFilename( iter->path().file_string().c_str() );
-			#endif
+
 
             moFile*	pFile = NULL;
 
