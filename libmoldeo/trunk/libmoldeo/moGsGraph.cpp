@@ -1474,7 +1474,11 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
             } else {
                 devicename.ToLower();
                 if ( devicename.Length() > 0 && ( devicename!=moText("default") ) ) {
-                    g_object_set (G_OBJECT (m_pFileSource), "device-name", (char*)devicename, NULL);
+                    if (devicename.Find( "/dev/" )==0 ) {
+                        g_object_set (G_OBJECT (m_pFileSource), "device", (char*)devicename, NULL);
+                    } else {
+                        g_object_set (G_OBJECT (m_pFileSource), "device-name", (char*)devicename, NULL);
+                    }
                 }
             }
            #endif
@@ -2057,7 +2061,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            //RetreivePads( m_pFileSource );
 
           ///SOUND...
-          //BuildAudioFilters();
+          BuildAudioFilters();
 
            ///FIN SOUND
 
@@ -2078,7 +2082,8 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                     if (link_result) {
 
                         link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pVideoBalance, (GstElement*)m_pColorSpace, (GstElement*)m_pCapsFilter, (GstElement*)m_pFakeSink, NULL );
-                        //if (m_pAudioConverter) link_result = link_result && gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
+                        ///agrega sonido en sincro
+                        if (m_pAudioConverter) link_result = link_result && gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
 
                         if (link_result) {
 
