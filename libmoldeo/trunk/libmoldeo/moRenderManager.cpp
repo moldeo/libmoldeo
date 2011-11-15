@@ -142,7 +142,6 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	m_render_width = p_render_width;
    	m_render_height = p_render_height;
 
-
     //if (m_render_tex_moid[0]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[0]);
     //if (m_render_tex_moid[1]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[1]);
     //if (m_render_tex_moid[2]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[2]);
@@ -241,12 +240,14 @@ void moRenderManager::BeginUpdate()
 void moRenderManager::BeginUpdateDevice()
 {
 	Lock();
-	m_pGLManager->SaveGLState();
+	if (m_pGLManager)
+        m_pGLManager->SaveGLState();
 }
 
 void moRenderManager::EndUpdateDevice()
 {
-    m_pGLManager->RestoreGLState();
+    if (m_pGLManager)
+        m_pGLManager->RestoreGLState();
     Unlock();
 }
 
@@ -371,6 +372,46 @@ void moRenderManager::SaveScreen()
 	}
 }
 
+bool moRenderManager::Screenshot( moText pathname ) {
+
+        if (m_render_tex_moid[1]) {
+
+            moTexture* TexScreen = m_pTextureManager->GetTexture(  m_render_tex_moid[1]  );
+
+            if (TexScreen) {
+                glBindTexture(GL_TEXTURE_2D, TexScreen->GetGLId()  );
+                glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, TexScreen->GetWidth(), TexScreen->GetHeight(), 0 );
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+
+                time_t rawtime;
+                char strbuffer[0x100];
+                struct tm * timeinfo;
+
+                srand(2);
+                int randcode = rand();
+
+                time(&rawtime);
+                timeinfo = localtime ( &rawtime );
+                strftime ( strbuffer, 80, "%Y-%m-%d-%H-%M-%S", timeinfo );
+                moText datetime = strbuffer;
+
+                moText screenshot_name;
+                screenshot_name = pathname + moSlash + moText("screenshot") + moText(datetime)+ moText(".png");
+
+                TexScreen->CreateThumbnail( "PNG", TexScreen->GetWidth(), TexScreen->GetHeight(), screenshot_name );
+
+            }
+
+        }
+
+
+        return true;
+
+}
+
+
+
 void moRenderManager::CopyRenderToTexture(MOint p_tex_num)
 {
 	if (ValidDestTexNum(p_tex_num))
@@ -383,9 +424,15 @@ void moRenderManager::CopyRenderToTexture(MOint p_tex_num)
 		}
 		else m_pFBManager->BindScreenFB();
 
-		glBindTexture(GL_TEXTURE_2D, m_pTextureManager->GetGLId(m_render_tex_moid[p_tex_num]));
-		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_render_width, m_render_height, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+        moTexture* pScreenText;
+
+        pScreenText = m_pTextureManager->GetTexture( m_render_tex_moid[p_tex_num] );
+
+        if (pScreenText) {
+            glBindTexture(GL_TEXTURE_2D, pScreenText->GetGLId() );
+            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_render_width, m_render_height, 0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
 
 		if (IsRenderToFBOEnabled()) m_pFBManager->UnbindFBO();
 		else m_pFBManager->UnbindScreenFB();
