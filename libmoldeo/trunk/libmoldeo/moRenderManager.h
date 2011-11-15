@@ -276,6 +276,10 @@ class LIBMOLDEO_API moRenderManager : public moResource
          * a la textura MO_SCREEN_TEX.
          */
 		void SaveScreen();
+
+		bool Screenshot( moText pathname );
+
+
         /**
          * Copia el contenido de la pantalla (o del búfer de dibujo si está haciendo off-screen rendering a un FBO)
          * a la textura especificada (MO_RENDER_TEX, MO_SCREEN_TEX, MO_EFFECTS_TEX o MO_FINAL_TEX).
