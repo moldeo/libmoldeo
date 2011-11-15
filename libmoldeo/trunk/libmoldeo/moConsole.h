@@ -434,6 +434,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         *
         */
         int luaGetDirectoryFileCount(moLuaVirtualMachine& vm);
+        int luaScreenshot(moLuaVirtualMachine& vm);
 
         ///
         int luaGetTextureId(moLuaVirtualMachine& vm);

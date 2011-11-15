@@ -272,7 +272,7 @@ MOboolean moConsole::Init(
 
   ///TODO: ahora todos los parametros script de moldeoobject se llaman "script"
   /// en la consola se llaman: consolescript
-  __iscript = m_Config.GetParamIndex(moText("consolescript"));
+  if (__iscript==MO_PARAM_NOT_FOUND) __iscript = m_Config.GetParamIndex(moText("consolescript"));
 
   if (MODebug2) MODebug2->Message(moText("moConsole:: mol project opening....success "));
 
@@ -382,9 +382,35 @@ MOboolean moConsole::Init(
 	moDefineParamIndex( CONSOLE_CLIP3, moText("clip3") );
 
 
+/** WARNING
 
-	LoadResources();
+    TODO:
+    */
+    /** the order of initialization is important:
+        some tweaks are needed for example:
+
+        if an IODevice create a texture and a Resource needs it, The resource must be loaded after the IODevice.
+
+        But if the IODevice needs a texture created by a Resource, the opposite is what we need.
+
+        Solutions:
+            1) BIG ONE
+                Each time a new texture is created:
+                    the texture manager seek in a buffer for any previous attempt to load this texture,
+                    so it could notify the object who was needing this texture.
+
+                TextureManager must register the unloaded textures ? YES
+                    If they no longer exists on any configuration param, it could forgot about them.
+            2) SIMPLE: creating the textures in console.
+            3) WEIRD: creating all the textures before we load it
+            4) IODevices were not supposed to create any texture ? so:
+                a) Always create and register additional texture in TextureManager (needs his own custom config)
+                b) Then make a Preload Texture method/function for all objects
+    */
+	//LoadResources();
 	LoadIODevices();
+	LoadResources();
+
 	LoadPreEffects();
 	LoadPostEffects();
 	LoadEffects();
@@ -405,22 +431,32 @@ MOboolean moConsole::Init(
 
 
   ///UPDATE VIDEOMANAGER FOR CAMERAS!!!! TO TEXTURE
-  if (m_pResourceManager->GetVideoMan()) {
-    if (MODebug2) MODebug2->Message(moText("moConsole:: VideoManager update function called."));
+  if (m_pResourceManager->GetVideoMan() && m_pResourceManager->GetRenderMan()) {
+
+    if (MODebug2) MODebug2->Message(moText("moConsole:: calling VideoManager update function."));
+    m_pResourceManager->GetRenderMan()->BeginUpdateObject();
     m_pResourceManager->GetVideoMan()->Update( m_pIODeviceManager->GetEvents() );
+    m_pResourceManager->GetRenderMan()->EndUpdateObject();
   }
 
 	///Finalmente inicializamos los efectos
 	///asigna Inlets y outlets...
+	if (MODebug2) MODebug2->Message(moText("moConsole:: InitializeAllEffects."));
 	this->InitializeAllEffects();
+	if (MODebug2) MODebug2->Message(moText("moConsole:: StartMasterEffects."));
 	this->StartMasterEffects();
 
   ///CONECTAMOS Inlets con Outlets
+  if (MODebug2) MODebug2->Message(moText("moConsole:: LoadConnections."));
   LoadConnections();
 
-	m_bInitialized = true;
+  ///rerun because of possible ids needed
+    if (MODebug2) MODebug2->Message(moText("moConsole:: ScriptExeInit."));
+    ScriptExeInit();
 
-	return Initialized();
+    m_bInitialized = true;
+
+    return Initialized();
 }
 
 void
@@ -510,6 +546,11 @@ moConsole::LoadConnections() {
 
                     moText DestinationMoldeoLabelName = p_connection->GetDestinationMoldeoLabelName();
                     moText DestinationConnectorLabelName = p_connection->GetDestinationConnectorLabelName();
+                    bool connector_found;
+                    bool object_found;
+
+                    connector_found = false;
+                    object_found = false;
 
                     ///search for moldeolabelname
                     ///search for connector labelname
@@ -519,11 +560,13 @@ moConsole::LoadConnections() {
 
                         if (pdstobject) {
                             if ( pdstobject->GetLabelName()==DestinationMoldeoLabelName ) {
+                                object_found = true;
                                 ///update destination id
                                 p_connection->SetDestinationMoldeoId(pdstobject->GetId());
                                 for( m = 0; m < pdstobject->GetInlets()->Count() ; m++) {
                                     moInlet* pinlet = pdstobject->GetInlets()->Get(m);
                                     if (pinlet->GetConnectorLabelName()==DestinationConnectorLabelName) {
+                                        connector_found = true;
                                         //update destination connector id
                                         p_connection->SetDestinationConnectorId( pinlet->GetConnectorId() );
                                         MODebug2->Message(
@@ -543,6 +586,26 @@ moConsole::LoadConnections() {
                                 }
                             }
                         }
+                    } //end search
+
+                    if (!object_found) {
+                        MODebug2->Error(
+                                            moText("From Object <") +
+                                            psrcobject->GetLabelName() +
+                                            moText("> to Object <") +
+                                            DestinationMoldeoLabelName +
+                                            moText("> object label not found")
+                                            );
+                    } else if (!connector_found) {
+                        MODebug2->Error(
+                                            moText("From Object <") +
+                                            psrcobject->GetLabelName() +
+                                            moText("> to Object <") +
+                                            DestinationMoldeoLabelName +
+                                            moText("> Outlet <") +
+                                            DestinationConnectorLabelName +
+                                            moText("> connector label not found")
+                                            );
                     }
 
                 }
@@ -1447,6 +1510,8 @@ moConsole::Update() {
 			RenderMan->EndUpdateObject();
 		}
 	RenderMan->EndUpdate();
+
+	moMoldeoObject::Update( m_pIODeviceManager->GetEvents() );
 }
 
 moConfigDefinition *
@@ -1464,6 +1529,7 @@ moConsole::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("mastereffects_on"), MO_PARAM_NUMERIC, CONSOLE_ON, moValue("0","NUM").Ref() );
 	p_configdefinition->Add( moText("fulldebug"), MO_PARAM_NUMERIC, CONSOLE_FULLDEBUG, moValue("0","NUM").Ref()  );
 
+	//obsoleto
 	p_configdefinition->Add( moText("consolescript"), MO_PARAM_SCRIPT, CONSOLE_SCRIPT );
 
 	p_configdefinition->Add( moText("outputmode"), MO_PARAM_TEXT, CONSOLE_OUTPUTMODE );
@@ -1647,6 +1713,7 @@ void moConsole::RegisterFunctions()
 
     ///GENERAL
     RegisterFunction("GetDirectoryFileCount");//24
+    RegisterFunction("Screenshot");//25
 
     ResetScriptCalling();
 
@@ -1748,6 +1815,11 @@ int moConsole::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
         case 24:
             ResetScriptCalling();
             return luaGetDirectoryFileCount(vm);
+
+        case 25:
+            ResetScriptCalling();
+            return luaScreenshot(vm);
+
 
         default:
             NextScriptCalling();
@@ -2396,3 +2468,29 @@ int moConsole::luaGetDirectoryFileCount(moLuaVirtualMachine& vm) {
     return 1;
 
 }
+
+int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
+    lua_State *state = (lua_State *) vm;
+
+    char *pathname = (char *) lua_tostring (state, 1);
+
+    int filecount = -1;
+
+    //filecount = this->GetDirectoryFileCount( pathname );
+
+    //lua_pushnumber(state, (lua_Number) filecount );
+/*
+    if (filecount==-1) {
+        MODebug2->Error( moText("console lua script: GetDirectoryFileCount > Directory doesn't exist") );
+    }
+*/
+    int res = this->m_pResourceManager->GetRenderMan()->Screenshot( moText(pathname) );
+
+    lua_pushnumber(state, (lua_Number) res );
+
+    return 1;
+
+}
+
+
+
