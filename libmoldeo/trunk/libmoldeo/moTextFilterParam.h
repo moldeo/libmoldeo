@@ -77,6 +77,7 @@ public:
     {
         moText uname;
         if (p_cg) {
+            /*
             uname = moText("par_flt1");
             m_par_flt1 = (int)p_cg->GetFragParameter(uname);
             uname = moText("par_flt2");
@@ -89,6 +90,7 @@ public:
             m_par_mat3 = (int)p_cg->GetFragParameter(uname);
             uname = moText("par_mat4");
             m_par_mat4 = (int)p_cg->GetFragParameter(uname);
+            */
         }
     }
 
