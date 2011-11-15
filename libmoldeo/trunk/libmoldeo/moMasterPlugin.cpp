@@ -195,13 +195,13 @@ LIBMOLDEO_API moMasterEffect* moNewMasterEffect(moText effect_name, moMasterPlug
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText("plugins/mastereffects/") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/mastereffects/") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText("plugins/mastereffects/libmoldeo_") + (moText)effect_name;
+    complete_name = moText(MODULESDIR "/mastereffects/libmoldeo_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

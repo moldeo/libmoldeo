@@ -142,6 +142,7 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
         *   @return verdadero si pudo asociarlo correctamente...
         */
         bool SetParamIndex( int defined_array_index, moParamIndex paramindex );
+        bool SetIndex( moText p_name, MOint p_index);
 
         /// Verifica si el parametro no existe ya
         /**
@@ -245,6 +246,14 @@ class LIBMOLDEO_API moConfig
         * @return MO_CONFIG_OK, MO_CONFIGFILE_NOT_FOUND, -1 si es otro error
         */
         void						FixConfig();
+
+        /// Indexa los parámetros
+        /**
+        *   Asocia indices de parametros a las definiciones.
+        *
+        *
+        */
+        void        Indexation();
 
         /// Devuelve true si pudo crear el archivo de configuración junto con su archivo correspondiente
         /**

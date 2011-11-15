@@ -509,32 +509,86 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
 	CheckDestTexAttachStatus();
 
 	m_shader = p_shader;
-	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
-	pglsl->PrintVertShaderLog();
-	pglsl->PrintFragShaderLog();
+	moShaderGLSL* pglsl = NULL;
+	moShaderCG* pcg = NULL;
+
+
+
+	if (m_shader->GetType()==MO_SHADER_CG) {
+        pcg = (moShaderCG*)m_shader;
+	} else {
+        pglsl = (moShaderGLSL*)m_shader;
+	}
+
+
+    if (pglsl) {
+        pglsl->PrintVertShaderLog();
+        pglsl->PrintFragShaderLog();
+    }
 
 	// Gettting uniform parameters.
 	for (i = 0; i < m_src_tex.Count(); i++)
 	{
 		uname = moText("src_tex_unit") + (moText)IntToStr(i);
-		m_src_tex_unit[i] = pglsl->GetUniformID(uname);
+
+		if (pglsl) m_src_tex_unit[i] = pglsl->GetUniformID(uname);
+		if (pcg) {
+            CGparameter pres =  pcg->GetFragParameter(uname);
+            if (pres==NULL) m_src_tex_unit[i]  = -1;
+            else m_src_tex_unit[i]  = (int)pres;
+            MODebug2->Push("pcg - m_src_tex_unit[i]:" + IntToStr( m_src_tex_unit[i] ) );
+		}
+		//if (pcg) m_src_tex_unit[i] = -1;
+
 		uname = moText("src_tex_offset") + IntToStr(i);
-		m_src_tex_offset[i] = pglsl->GetUniformID(uname);
+
+		if (pglsl) m_src_tex_offset[i] = pglsl->GetUniformID(uname);
+		if (pcg) {
+		    CGparameter pres = pcg->GetFragParameter(uname);
+            if (pres==NULL) m_src_tex_offset[i]  = -1;
+            else m_src_tex_offset[i] = (int)pres;
+            MODebug2->Push("pcg - m_src_tex_offset[i]:" + IntToStr( m_src_tex_offset[i] ) );
+		}
 	}
 
 	uname = moText("tempo_angle");
-	m_tempo_angle = pglsl->GetUniformID(uname);
+	if (pglsl) m_tempo_angle = pglsl->GetUniformID(uname);
+    //if (pcg) m_tempo_angle = (int)pcg->GetFragParameter(uname);
+    if (pcg) {
+        CGparameter pres = pcg->GetFragParameter(uname);
+        if (pres==NULL) m_tempo_angle  = -1;
+        else m_tempo_angle = (int)pres;
+        MODebug2->Push("pcg - m_tempo_angle:" + IntToStr( m_tempo_angle ) );
+    }
 
 	uname = moText("dest_tex_size");
-	m_dest_tex_size = pglsl->GetUniformID(uname);
-
+	if (pglsl) m_dest_tex_size = pglsl->GetUniformID(uname);
+    //if (pcg) m_dest_tex_size = (int)pcg->GetFragParameter(uname);
+    if (pcg) {
+        CGparameter pres = pcg->GetFragParameter(uname);
+        if (pres==NULL) m_dest_tex_size  = -1;
+        else m_dest_tex_size = (int)pres;
+        MODebug2->Push("pcg - m_dest_tex_size:" + IntToStr( m_dest_tex_size ) );
+    }
     uname = moText("fade_const");
-    m_fade_const = pglsl->GetUniformID(uname);
+	if (pglsl) m_fade_const  = pglsl->GetUniformID(uname);
+    if (pcg) {
+        CGparameter pres = pcg->GetFragParameter(uname);
+        if (pres==NULL) m_fade_const  = -1;
+        else m_fade_const = (int)pres;
+        MODebug2->Push("pcg - m_fade_const:" + IntToStr( m_fade_const ) );
+    }
+    //if (pcg)
+    //pcg->GetFragParameter(uname)==NULL )
 
     if (p_params == NULL) m_DefParams = new moTextFilterParam();
     else m_DefParams = p_params;
 
-    m_DefParams->getParamIDs(pglsl);
+    if (pglsl) {
+        m_DefParams->getParamIDs(pglsl);
+    } else if (pcg) {
+        m_DefParams->getParamIDs(pcg);
+    }
 
 	return true;
 }
@@ -560,14 +614,15 @@ void moTextureFilter::Apply(MOuint p_i, MOfloat p_fade, moTextFilterParam *p_par
 
 	BindDestFBO();
 
-	pglsl->StartShader();
+	m_shader->StartShader();
 	SetupShader(w, h, NULL, p_fade, p_params);
 
+
 	BindSrcTex(p_i);
-	pglsl->DrawGrid(w, h, m_src_tex.Count());
+	m_shader->DrawGrid(w, h, m_src_tex.Count());
 	UnbindSrcTex();
 
-	pglsl->StopShader();
+	m_shader->StopShader();
 
 	UnbindDestFBO();
 
@@ -581,18 +636,19 @@ void moTextureFilter::Apply(MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *
 	SetGLConf(w, h);
 	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
 
+
 	if (m_use_screen_tex) m_renderman->SaveScreen();
 
 	BindDestFBO();
 
-	pglsl->StartShader();
+	m_shader->StartShader();
 	SetupShader(w, h, NULL, p_fade, p_params);
 
 	BindSrcTex(p_cycle);
-	pglsl->DrawGrid(w, h, m_src_tex.Count());
+	m_shader->DrawGrid(w, h, m_src_tex.Count());
 	UnbindSrcTex();
 
-	pglsl->StopShader();
+	m_shader->StopShader();
 
 	UnbindDestFBO();
 
@@ -610,14 +666,14 @@ void moTextureFilter::Apply(moTempo *p_tempo, MOfloat p_fade, moTextFilterParam 
 
 	BindDestFBO();
 
-	pglsl->StartShader();
+	m_shader->StartShader();
 	SetupShader(w, h, p_tempo, p_fade, p_params);
 
 	BindSrcTex(p_tempo);
-	pglsl->DrawGrid(w, h, m_src_tex.Count());
+	m_shader->DrawGrid(w, h, m_src_tex.Count());
 	UnbindSrcTex();
 
-	pglsl->StopShader();
+	m_shader->StopShader();
 
 	UnbindDestFBO();
 
@@ -628,9 +684,15 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
 {
 	for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
-		if (-1 < m_src_tex_unit[i])
-			glUniform1iARB(m_src_tex_unit[i], i);
-
+		if (-1 < m_src_tex_unit[i]) {
+		    if ( m_shader && m_shader->GetType() == MO_SHADER_GLSL ) {
+                glUniform1iARB(m_src_tex_unit[i], i);
+		    } else if ( m_shader && m_shader->GetType() == MO_SHADER_CG ) {
+                //cgGLSetTextureParameter( (CGparameter)m_src_tex_unit[i], i );
+                cgGLSetTextureParameter( (CGparameter)m_src_tex_unit[i], m_src_tex.GetGLId(i, (GLint)i) );
+                cgGLEnableTextureParameter( (CGparameter)m_src_tex_unit[i] );
+		    }
+		}
 		if (-1 < m_src_tex_offset[i])
 			if (m_glman->RectTexture(m_src_tex[i]->GetTexTarget())) glUniform2fARB(m_src_tex_offset[i], 1.0, 1.0);
 			else glUniform2fARB(m_src_tex_offset[i], 1.0 / float(m_src_tex[i]->GetWidth()), 1.0 / float(m_src_tex[i]->GetHeight()));
@@ -641,13 +703,24 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
 		{
 			float a = p_tempo->ang;
 			float f = fmod(float(a), float(2.0 * moMathf::PI)) / (2.0 * moMathf::PI);
-			glUniform2fARB(m_tempo_angle, a, f);
+
+			//glUniform2fARB(m_tempo_angle, a, f);
+			(m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, a, f) : cgGLSetParameter2f( (CGparameter)m_tempo_angle, a, f);
 		}
-		else glUniform2fARB(m_tempo_angle, 0.0, 0.0);
+		else {
+		    //glUniform2fARB(m_tempo_angle, 0.0, 0.0);
+		    (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, 0.0, 0.0) : cgGLSetParameter2f( (CGparameter)m_tempo_angle, 0.0, 0.0 );
+		}
 
-	if (-1 < m_dest_tex_size) glUniform2fARB(m_dest_tex_size, w, h);
+	if (-1 < m_dest_tex_size) {
+	   // glUniform2fARB(m_dest_tex_size, w, h);
+	   (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_dest_tex_size, w, h) : cgGLSetParameter2f( (CGparameter)m_dest_tex_size, w, h );
+	}
 
-	if (-1 < m_fade_const) glUniform1fARB(m_fade_const, p_fade);
+	if (-1 < m_fade_const) {
+        //glUniform1fARB(m_fade_const, p_fade);
+	    (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform1fARB(m_fade_const, p_fade) : cgGLSetParameter1f( (CGparameter)m_fade_const, p_fade );
+	}
 
     if (p_params != NULL)
     {
@@ -718,6 +791,7 @@ void moTextureFilter::UnbindDestFBO()
 
 void moTextureFilter::BindSrcTex(MOuint p_i)
 {
+    //if (m_shader->GetType()==MO_SHADER_GLSL)
 	for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
 		glActiveTextureARB(GL_TEXTURE0_ARB + i);
@@ -727,6 +801,7 @@ void moTextureFilter::BindSrcTex(MOuint p_i)
 
 void moTextureFilter::BindSrcTex(MOfloat p_cycle)
 {
+    //if (m_shader->GetType()==MO_SHADER_GLSL)
 	for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
 		glActiveTextureARB(GL_TEXTURE0_ARB + i);
@@ -736,6 +811,7 @@ void moTextureFilter::BindSrcTex(MOfloat p_cycle)
 
 void moTextureFilter::BindSrcTex(moTempo *p_tempo)
 {
+	//if (m_shader->GetType()==MO_SHADER_GLSL)
 	for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
 		glActiveTextureARB(GL_TEXTURE0_ARB + i);

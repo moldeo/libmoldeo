@@ -76,13 +76,38 @@ moConfigDefinition::Exists( moText p_name ) {
   return false;
 }
 
+bool
+moConfigDefinition::SetIndex( moText p_name, MOint p_index) {
+
+    int i;
+    bool founded;
+    moParamDefinition pdef;
+
+    founded = false;
+
+    for( i = 0; i < m_ParamDefinitions.Count(); i++ ) {
+        pdef = m_ParamDefinitions[i];
+        if ( pdef.GetName() == p_name ) {
+            founded = true;
+            break;
+        }
+    }
+
+    if (founded) {
+        pdef.SetIndex( p_index );
+        m_ParamIndexes.Add( p_index );
+    }
+
+    return founded;
+}
+
 void
 moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index) {
 
-  if ( Exists(p_name) ) {
-    MODebug2->Error( p_name + " already defined in " + m_ObjectName );
-    return;
-  }
+    if ( Exists(p_name) ) {
+        MODebug2->Error( p_name + " already defined in " + m_ObjectName );
+        return;
+    }
 
 	moParamDefinition pdef( p_name, p_type );
 
@@ -180,6 +205,27 @@ MOboolean moConfig::IsConfigLoaded() {
 
 	return m_ConfigLoaded;
 
+}
+
+void
+moConfig::Indexation() {
+
+    int i;
+
+    if ( GetConfigDefinition()!=NULL) {
+
+        for( i = 0; i < GetConfigDefinition()->GetParamDefinitions()->Count(); i++ ) {
+
+            moParamDefinition pdef = GetConfigDefinition()->GetParamDefinitions()->Get(i);
+
+            int pidx = (MOint)GetParamIndex(  pdef.GetName() );
+            if (pidx>-1) {
+              if (!GetConfigDefinition()->SetParamIndex( (int)pdef.GetIndex(), moParamIndex(pidx))) {
+                moDebugManager::Error( moText(pdef.GetName()) + moText("  warning. Bad indexation could cause errors."));
+              }
+            } else moDebugManager::Error( "<"+GetObjectName()+">::Init() > "+GetObjectClass()+ " \"" + moText(pdef.GetName()) + moText("\" not found."));
+        }
+    }
 }
 
 void

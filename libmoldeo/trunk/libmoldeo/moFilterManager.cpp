@@ -1350,10 +1350,10 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                     p3 = moVector2f( p3.X()-offsetx, p3.Y()-offsety );
                     p4 = moVector2f( p4.X()-offsetx, p4.Y()-offsety );
                    if ( npz == 0 ) {
-                            glColor4f( 0.3+0.2*(float)cc/(m_ZonesC-1), 0.3+0.2*(float)cc/(m_ZonesC-1), 0.2, 0.015);
+                            glColor4f( 0.3+0.2*(float)cc/(m_ZonesC-1), 0.3+0.2*(float)cc/(m_ZonesC-1), 0.2, 0.0015);
                             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
                    } else {
-                       glColor4f( 0.0, 0.7+0.3*(float)cc/(m_ZonesC-1), 0.0, 0.075);
+                       glColor4f( 0.7+0.3*(float)cc/(m_ZonesC-1), 0.0, 0.0, 0.0025);
                        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
                     }
@@ -1373,7 +1373,7 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
 
                    //}
                     if ( nmz > 0 ) {
-                            glColor4f( 0.0, 0.0, 0.5+0.5*(float)cc/(m_ZonesC-1), 0.025);
+                            glColor4f( 0.0, 0.0, 0.5+0.5*(float)cc/(m_ZonesC-1), 0.0025);
 
                     }
             }

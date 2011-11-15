@@ -63,39 +63,39 @@ moEffect::PreInit() {
 	devicecode = NULL;
 	state.Init();
 
-  moInlet* Inlet = new moInlet();
-  if (Inlet) {
+    moInlet* Inlet = new moInlet();
+    if (Inlet) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
       Inlet->Init( moText("time"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(Inlet);
-  }
+    }
 
-  Inlet = new moInlet();
-  if (Inlet) {
+    Inlet = new moInlet();
+    if (Inlet) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
       Inlet->Init( moText("t"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(Inlet);
-  }
+    }
 
-  Inlet = new moInlet();
-  if (Inlet) {
+    Inlet = new moInlet();
+    if (Inlet) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
       Inlet->Init( moText("tempo"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(Inlet);
-  }
+    }
 
 	if (!m_pResourceManager) return false;
 
-  ///Carga el config (definicion y archivo, corrige, etc)
-  ///Asigna al config y resuelve variables como texturas, sonidos, etc...
-  if (moMoldeoObject::Init()) {
-    moMoldeoObject::CreateConnectors();
-  } else return false;
+    ///Carga el config (definicion y archivo, corrige, etc)
+    ///Asigna al config y resuelve variables como texturas, sonidos, etc...
+    if (moMoldeoObject::Init()) {
+        moMoldeoObject::CreateConnectors();
+    } else return false;
 
-  isyncro = m_Config.GetParamIndex("syncro");
+    isyncro = m_Config.GetParamIndex("syncro");
 	iphase = m_Config.GetParamIndex("phase");
 	if(isyncro==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("syncro parameter missing."));
 	if(iphase==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("phase parameter missing."));

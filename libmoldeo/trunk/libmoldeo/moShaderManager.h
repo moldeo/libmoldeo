@@ -39,6 +39,7 @@
 #include "moConfig.h"
 #include "moShader.h"
 #include "moShaderGLSL.h"
+#include "moShaderCG.h"
 
 #include "moResourceManager.h"
 #include "moGLManager.h"
@@ -144,6 +145,14 @@ private:
 	moGLManager* m_glmanager;
 	moFBManager* m_fbmanager;
 
+    /**
+    *  Objeto que referencia cada sombreador aplicadp
+    *  Cada sombreador aplicado a una textura tiene diferentes
+    *   texturas de entrada y
+    *   texturas de salida
+    *   parametros de aplicacion (!!!)
+    *   parametro de alpha (mezcla de este sombreador)
+    */
 	moTextureFilterIndex*    m_pTextureFilterIndex;
 
 	moShaderArray m_shaders_array;

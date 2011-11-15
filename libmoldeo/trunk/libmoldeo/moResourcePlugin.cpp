@@ -35,6 +35,9 @@
 #include <iostream>
 using namespace std;
 
+#include "moDebugManager.h"
+
+
 #include "moArray.h"
 moDefineDynamicArray( moResourcePluginsArray )
 
@@ -228,7 +231,10 @@ LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsA
 		moResourcePlugin *pplugin = new moResourcePlugin(complete_name);
 		if (pplugin)
 			plugins.Add( pplugin );
-		else return NULL;
+		else {
+		    moDebugManager::Error( moText("Resource plugin error: ") + complete_name );
+		    return NULL;
+		}
     }
 
     // El plugin crea al efecto!

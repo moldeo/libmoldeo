@@ -78,20 +78,32 @@ MOboolean moShaderCG::Finish()
 void moShaderCG::CreateVertShader(moText vert_source)
 {
     m_cgContext = cgCreateContext();
-    compileVertShader(vert_source);
+    if (m_cgContext) {
+        compileVertShader(vert_source);
+    } else {
+        MODebug2->Error( moText("moShaderCG:: Couldn't create CG Context") );
+    }
 }
 
 void moShaderCG::CreateFragShader(moText frag_source)
 {
     m_cgContext = cgCreateContext();
-    compileFragShader(frag_source);
+    if (m_cgContext) {
+        compileFragShader(frag_source);
+    } else {
+        MODebug2->Error( moText("moShaderCG:: Couldn't create CG Context") );
+    }
 }
 
 void moShaderCG::CreateShader(moText vert_source, moText frag_source)
 {
     m_cgContext = cgCreateContext();
-    compileVertShader(vert_source);
-    compileFragShader(frag_source);
+    if (m_cgContext) {
+        compileVertShader(vert_source);
+        compileFragShader(frag_source);
+    } else {
+        MODebug2->Error( moText("moShaderCG:: Couldn't create CG Context") );
+    }
 }
 
 void moShaderCG::LoadVertShader(moText vert_filename)
@@ -112,6 +124,24 @@ void moShaderCG::LoadShader(moText vert_filename, moText frag_filename)
     moText frag_source = LoadShaderSource(frag_filename);
     CreateShader(vert_source, frag_source);
 }
+#include "moDebugManager.h"
+
+static void checkForCgError( moText situation )
+{
+  CGerror error;
+  const char *string = cgGetLastErrorString(&error);
+
+  if (error != CG_NO_ERROR) {
+    moDebugManager::Error( situation
+                        + ("  ")
+                        + moText(string) );
+    if (error == CG_COMPILER_ERROR) {
+      //moDebugManager::Error( moText( cgGetLastListing(m_cgContext) ) );
+    }
+    //exit(1);
+  }
+}
+
 
 void moShaderCG::StartShader()
 {
@@ -120,13 +150,19 @@ void moShaderCG::StartShader()
     if (m_cgVertexShader != NULL)
     {
         cgGLBindProgram(m_cgVertexShader);
+        checkForCgError("Binding vertex program");
         cgGLEnableProfile(m_cgVertexProfile);
+        checkForCgError("enabling vertex profile");
     }
     if (m_cgFragmentShader != NULL)
     {
         cgGLBindProgram(m_cgFragmentShader);
+        checkForCgError("Binding fragment program");
         cgGLEnableProfile(m_cgFragmentProfile);
+        checkForCgError("enabling fragments profile");
     }
+
+
 }
 
 void moShaderCG::StopShader()
@@ -152,7 +188,7 @@ void moShaderCG::compileVertShader(moText vert_source)
     m_cgVertexProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
     if (m_cgVertexProfile == CG_PROFILE_UNKNOWN)
     {
-		if (MODebug != NULL) MODebug2->Push(moText("Vertex profile not found"));
+		if (MODebug != NULL) MODebug2->Error(moText("Vertex profile not found"));
         m_VertErrorCode = -1;
         return;
     }
@@ -161,12 +197,16 @@ void moShaderCG::compileVertShader(moText vert_source)
     if (m_cgVertexShader == NULL)
     {
         CGerror Error = cgGetError();
-		if (MODebug != NULL)
+        const char* errorString = cgGetErrorString(Error);
+		if (MODebug2 != NULL)
 		{
-			MODebug2->Push(moText("Cg error!"));
-			MODebug2->Push(moText("Vertex shader could not be created")+Error);
-//			MODebug2->Push(moText(cgGetErrorString(Error)));
-//			MODebug2->Push(moText(cgGetLastListing(m_cgContext)));
+            MODebug2->Error(moText("Cg error!"));
+			MODebug2->Error(
+                    moText("Vertex shader [")
+                   + vert_source
+                   + moText("] could not be created: ")
+                   + moText(errorString));
+            MODebug2->Error(moText(cgGetLastListing(m_cgContext)));
 		}
         m_VertErrorCode = 1;
     }
@@ -182,7 +222,7 @@ void moShaderCG::compileFragShader(moText frag_source)
     m_cgFragmentProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
     if (m_cgFragmentProfile == CG_PROFILE_UNKNOWN)
     {
-		MODebug2->Push(moText("Fragment profile not found"));
+		MODebug2->Error(moText("Fragment profile not found"));
         m_FragErrorCode = -1;
         return;
     }
@@ -191,12 +231,16 @@ void moShaderCG::compileFragShader(moText frag_source)
     if (m_cgFragmentShader == NULL)
     {
         CGerror Error = cgGetError();
+        const char* errorString = cgGetErrorString(Error);
 		if (MODebug != NULL)
 		{
-			MODebug2->Push(moText("Cg error!"));
-			MODebug2->Push(moText("Fragmemt shader could not be created")+Error);
-//			MODebug2->Push(moText(cgGetErrorString(Error)));
-//			MODebug2->Push(moText(cgGetLastListing(m_cgContext)));
+			MODebug2->Error(moText("Cg error!"));
+			MODebug2->Error(
+                    moText("Fragment shader [")
+                   + frag_source
+                   + moText("] could not be created: ")
+                   + moText(errorString));
+            MODebug2->Error(moText(cgGetLastListing(m_cgContext)));
 
 		}
         m_FragErrorCode = 1;

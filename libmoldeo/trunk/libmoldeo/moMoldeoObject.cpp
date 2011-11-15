@@ -100,6 +100,11 @@ moMoldeoObject::Init() {
       return false;//bad
     }
 
+    /**
+    DefineParamIndexes
+    */
+    m_Config.Indexation();
+
     __iscript = m_Config.GetParamIndex("script");
     if(__iscript==MO_PARAM_NOT_FOUND)
       MODebug2->Error(moText("moMoldeoObject::Init > config:"+GetConfigName()+" label:"+GetLabelName()+" script parameter missing"));
@@ -143,10 +148,8 @@ void moMoldeoObject::ScriptExeRun() {
 
 
   moText cs;
-  cs = m_Config.Text(__iscript);
+  cs = m_Config.GetParam((MOint)__iscript).GetValue().GetSubValue().Text();
 
-  //MODebug2->Push( moText("cs:") + (moText)cs );
-  //MODebug2->Push( moText("m_ConsoleScript:") +  (moText)m_ConsoleScript );
   ///Reinicializamos el script en caso de haber cambiado
 	if ((moText)m_Script!=cs && IsInitialized()) {
 
@@ -536,10 +539,12 @@ moMoldeoObject::GetDefinition( moConfigDefinition *p_configdefinition ) {
     p_configdefinition->GetParamDefinitions()->Empty();
     p_configdefinition->ParamIndexes().Empty();
 
-  p_configdefinition->Set( GetName(), m_MobDefinition.GetTypeStr() );
+    p_configdefinition->Set( GetName(), m_MobDefinition.GetTypeStr() );
+
 	p_configdefinition->Add( moText("inlet"), MO_PARAM_INLET );
 	p_configdefinition->Add( moText("outlet"), MO_PARAM_OUTLET );
 	p_configdefinition->Add( moText("script"), MO_PARAM_SCRIPT );
+
 	return p_configdefinition;
 }
 
@@ -1026,14 +1031,24 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
         if ( pInlet ) {
             moData* pData = pInlet->GetData();
             moDataType pType = pData->Type();
-            lua_pushnumber( state, (lua_Number) (int)pType );
-            switch(pType) {
+            //lua_pushnumber( state, (lua_Number) (int)pType );
+            switch((int)pType) {
                 case 	MO_DATA_NUMBER:
-                        MO_DATA_NUMBER_CHAR:
-                        MO_DATA_NUMBER_INT:
-                        MO_DATA_NUMBER_LONG:
                         lua_pushnumber( state, (lua_Number) pData->Long() );
                         return 1;
+                        break;
+                case    MO_DATA_NUMBER_CHAR:
+                        lua_pushnumber( state, (lua_Number) pData->Long() );
+                        return 1;
+                        break;
+                case    MO_DATA_NUMBER_INT:
+                        lua_pushnumber( state, (lua_Number) pData->Long() );
+                        return 1;
+                        break;
+                case    MO_DATA_NUMBER_LONG:
+                        lua_pushnumber( state, (lua_Number) pData->Long() );
+                        return 1;
+                        break;
                 case    MO_DATA_NUMBER_DOUBLE:
                         lua_pushnumber( state, (lua_Number) pData->Double() );
                         return 1;
@@ -1087,6 +1102,10 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
                 default:
                     moText ttype = pData->TypeToText();
                     lua_pushstring( state, ttype );
+                    if (pData->Type()==MO_DATA_NUMBER_LONG) {
+                        lua_pushnumber( state, (lua_Number) pData->Long() );
+                        return 2;
+                    }
                     return 1;
 
 
