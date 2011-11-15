@@ -689,8 +689,8 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
                 glUniform1iARB(m_src_tex_unit[i], i);
 		    } else if ( m_shader && m_shader->GetType() == MO_SHADER_CG ) {
                 //cgGLSetTextureParameter( (CGparameter)m_src_tex_unit[i], i );
-                cgGLSetTextureParameter( (CGparameter)m_src_tex_unit[i], m_src_tex.GetGLId(i, (GLint)i) );
-                cgGLEnableTextureParameter( (CGparameter)m_src_tex_unit[i] );
+                //cgGLSetTextureParameter( (CGparameter)m_src_tex_unit[i], m_src_tex.GetGLId(i, (GLint)i) );
+                //cgGLEnableTextureParameter( (CGparameter)m_src_tex_unit[i] );
 		    }
 		}
 		if (-1 < m_src_tex_offset[i])
@@ -705,21 +705,21 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
 			float f = fmod(float(a), float(2.0 * moMathf::PI)) / (2.0 * moMathf::PI);
 
 			//glUniform2fARB(m_tempo_angle, a, f);
-			(m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, a, f) : cgGLSetParameter2f( (CGparameter)m_tempo_angle, a, f);
+			(m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, a, f) : /*cgGLSetParameter2f( (CGparameter)m_tempo_angle, a, f)*/;
 		}
 		else {
 		    //glUniform2fARB(m_tempo_angle, 0.0, 0.0);
-		    (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, 0.0, 0.0) : cgGLSetParameter2f( (CGparameter)m_tempo_angle, 0.0, 0.0 );
+		    (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, 0.0, 0.0) : /*cgGLSetParameter2f( (CGparameter)m_tempo_angle, 0.0, 0.0 )*/;
 		}
 
 	if (-1 < m_dest_tex_size) {
 	   // glUniform2fARB(m_dest_tex_size, w, h);
-	   (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_dest_tex_size, w, h) : cgGLSetParameter2f( (CGparameter)m_dest_tex_size, w, h );
+	   (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform2fARB(m_dest_tex_size, w, h) : /*cgGLSetParameter2f( (CGparameter)m_dest_tex_size, w, h )*/;
 	}
 
 	if (-1 < m_fade_const) {
         //glUniform1fARB(m_fade_const, p_fade);
-	    (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform1fARB(m_fade_const, p_fade) : cgGLSetParameter1f( (CGparameter)m_fade_const, p_fade );
+	    (m_shader->GetType() == MO_SHADER_GLSL) ? glUniform1fARB(m_fade_const, p_fade) : /*cgGLSetParameter1f( (CGparameter)m_fade_const, p_fade )*/;
 	}
 
     if (p_params != NULL)
