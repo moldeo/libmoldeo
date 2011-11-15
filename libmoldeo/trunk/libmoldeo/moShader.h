@@ -220,11 +220,11 @@ public:
     /**
      * Activa el shader.
      */
-    void StartShader();
+    virtual void StartShader();
     /**
      * Desactiva el shader.
      */
-    void StopShader();
+    virtual void StopShader();
     /**
      * Devuelve el estado del shader.
      * @return true si el shader está activo, false en caso contrario.

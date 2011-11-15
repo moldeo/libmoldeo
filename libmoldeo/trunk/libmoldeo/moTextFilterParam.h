@@ -2,6 +2,7 @@
 #define _TEXTFILTERPARAM_H
 
 #include "moShader.h"
+#include "moShaderCG.h"
 #include "moShaderGLSL.h"
 
 /**
@@ -56,19 +57,39 @@ public:
 	void getParamIDs(moShaderGLSL* p_glsl)
     {
         moText uname;
+        if (p_glsl) {
+            uname = moText("par_flt1");
+            m_par_flt1 = p_glsl->GetUniformID(uname);
+            uname = moText("par_flt2");
+            m_par_flt2 = p_glsl->GetUniformID(uname);
+            uname = moText("par_flt3");
+            m_par_flt3 = p_glsl->GetUniformID(uname);
+            uname = moText("par_mat2");
+            m_par_mat2 = p_glsl->GetUniformID(uname);
+            uname = moText("par_mat3");
+            m_par_mat3 = p_glsl->GetUniformID(uname);
+            uname = moText("par_mat4");
+            m_par_mat4 = p_glsl->GetUniformID(uname);
+        }
+    }
 
-        uname = moText("par_flt1");
-        m_par_flt1 = p_glsl->GetUniformID(uname);
-        uname = moText("par_flt2");
-        m_par_flt2 = p_glsl->GetUniformID(uname);
-        uname = moText("par_flt3");
-        m_par_flt3 = p_glsl->GetUniformID(uname);
-        uname = moText("par_mat2");
-        m_par_mat2 = p_glsl->GetUniformID(uname);
-        uname = moText("par_mat3");
-        m_par_mat3 = p_glsl->GetUniformID(uname);
-        uname = moText("par_mat4");
-        m_par_mat4 = p_glsl->GetUniformID(uname);
+	void getParamIDs(moShaderCG* p_cg)
+    {
+        moText uname;
+        if (p_cg) {
+            uname = moText("par_flt1");
+            m_par_flt1 = (int)p_cg->GetFragParameter(uname);
+            uname = moText("par_flt2");
+            m_par_flt2 = (int)p_cg->GetFragParameter(uname);
+            uname = moText("par_flt3");
+            m_par_flt3 = (int)p_cg->GetFragParameter(uname);
+            uname = moText("par_mat2");
+            m_par_mat2 = (int)p_cg->GetFragParameter(uname);
+            uname = moText("par_mat3");
+            m_par_mat3 = (int)p_cg->GetFragParameter(uname);
+            uname = moText("par_mat4");
+            m_par_mat4 = (int)p_cg->GetFragParameter(uname);
+        }
     }
 
     /**

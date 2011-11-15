@@ -100,12 +100,22 @@ MOint moShaderManager::AddShader(MOuint p_type, moText p_name)
 {
 	moShader* pshader;
 	moShaderGLSL* pshader_glsl;
+	moShaderCG* pshader_cg;
 	if (p_type == MO_SHADER_GLSL)
 	{
 		pshader_glsl = new moShaderGLSL();
 		pshader_glsl->Init();
 		pshader_glsl->SetName(p_name);
 		pshader = (moShader*)pshader_glsl;
+		m_shaders_array.Add(pshader);
+		return m_shaders_array.Count() - 1;
+	}
+    else if (p_type == MO_SHADER_CG)
+	{
+		pshader_cg = new moShaderCG();
+		pshader_cg->Init();
+		pshader_cg->SetName(p_name);
+		pshader = (moShader*)pshader_cg;
 		m_shaders_array.Add(pshader);
 		return m_shaders_array.Count() - 1;
 	}
@@ -118,15 +128,36 @@ MOint moShaderManager::AddShader(moText p_filename)
 	moText complete_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
 	complete_fn +=  p_filename;
 
-	if (config.LoadConfig(complete_fn) != MO_CONFIG_OK) return -1;
+	if (config.LoadConfig(complete_fn) != MO_CONFIG_OK) {
+        moDebugManager::Error( moText("Couldn´t load shader config :") + complete_fn );
+	    return -1;
+	}
 
 	MOint type_idx = config.GetParamIndex("type");
-	if (type_idx == MO_PARAM_NOT_FOUND) return -1;
+	if (type_idx == MO_PARAM_NOT_FOUND) {
+	    moDebugManager::Error( moText("In shader config :")
+                                + complete_fn
+                                + moText(" type parameter not founded.")
+                                 );
+	    return -1;
+	}
 
 	MOint vertex_idx = config.GetParamIndex("vertex");
 	MOint fragment_idx = config.GetParamIndex("fragment");
 
-	if ((vertex_idx == MO_PARAM_NOT_FOUND) && (fragment_idx == MO_PARAM_NOT_FOUND)) return -1;
+	if ((vertex_idx == MO_PARAM_NOT_FOUND) && (fragment_idx == MO_PARAM_NOT_FOUND)) {
+	    if ((fragment_idx == MO_PARAM_NOT_FOUND))
+            moDebugManager::Error( moText("In shader config :")
+                                + complete_fn
+                                + moText(" fragment(pixel) shader parameter not founded.")
+                                 );
+	    if ((vertex_idx == MO_PARAM_NOT_FOUND))
+            moDebugManager::Error( moText("In shader config :")
+                                + complete_fn
+                                + moText(" vertex shader parameter not founded.")
+                                 );
+	    return -1;
+	}
 
 	moText vertex_fn;
 	moText fragment_fn;

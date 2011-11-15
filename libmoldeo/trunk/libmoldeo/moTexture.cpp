@@ -587,7 +587,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
     if (tempbuffer==NULL)
         return moText("");
 
-    if (!GetBuffer( tempbuffer, GL_RGB, GL_UNSIGNED_BYTE ) )
+    if (!GetBuffer( tempbuffer, GL_BGR, GL_UNSIGNED_BYTE ) )
         return moText("");
 
     FILE* fp;
@@ -604,7 +604,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
     int pitch = 3 * GetWidth();
 
 
-    fbitmap = FreeImage_ConvertFromRawBits( (BYTE*)tempbuffer, GetWidth(), GetHeight(), pitch, bpp, 0x0000FF, 0x00FF00, 0xFF0000, false );
+    fbitmap = FreeImage_ConvertFromRawBits( (BYTE*)tempbuffer, GetWidth(), GetHeight(), pitch, bpp, 0xFF0000, 0x00FF00, 0x0000FF, false );
 
     //unsigned width = FreeImage_GetWidth(fbitmap);
     //unsigned height = FreeImage_GetHeight(fbitmap);
