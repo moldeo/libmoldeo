@@ -103,7 +103,7 @@ moMoldeoObject::Init() {
     /**
     DefineParamIndexes
     */
-    m_Config.Indexation();
+    //m_Config.Indexation();
 
     __iscript = m_Config.GetParamIndex("script");
     if(__iscript==MO_PARAM_NOT_FOUND)
