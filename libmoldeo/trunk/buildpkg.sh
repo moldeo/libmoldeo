@@ -61,8 +61,8 @@ echo "extracting..."
 
 
 echo " 
-Now execute in deb folder:
- cd deb/libmoldeo-0.7.9.2
+Now execute in deb folder for Ubuntu 10.10:
+ cd deb/libmoldeo-*
  dh_make -l -e fabricio.costa@moldeointeractive.com.ar
  cp ../../control.amd64 debian/control
  cp ../../rules.amd64 debian/rules
@@ -72,6 +72,20 @@ Now execute in deb folder:
  cp ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install
  vi debian/changelog
  dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
+
+Now execute in deb folder for Ubuntu 11.10:
+ cd deb/libmoldeo-*
+ dh_make -l -e fabricio.costa@moldeointeractive.com.ar
+ cp ../../control.amd64.11.10 debian/control
+ cp ../../rules.amd64.11.10 debian/rules
+ cp ../../libmoldeo1.install.amd64.11.10 debian/libmoldeo1.install
+ cp ../../libmoldeo1.dirs.amd64.11.10 debian/libmoldeo1.dirs
+ cp ../../libmoldeo-dev.dirs.amd64.11.10 debian/libmoldeo-dev.dirs
+ cp ../../libmoldeo-dev.install.amd64.11.10 debian/libmoldeo-dev.install
+ vi debian/changelog
+ dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
+
+
 "
 
 
