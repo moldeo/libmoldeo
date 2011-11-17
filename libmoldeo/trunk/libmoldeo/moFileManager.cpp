@@ -167,7 +167,7 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
             moText pSubDirName( iter->path().leaf().c_str() );
             #endif
 
-            moText pCompletePathSubdirName( iter->path().file_string().c_str() );
+            moText pCompletePathSubdirName( iter->path().c_str() );
 
             if (pSubDirName.Left(1) != "." ) {
               moDirectory* pSubdir = new moDirectory( pCompletePathSubdirName );
@@ -195,8 +195,8 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
 
             #endif
 
-            moText pCompletePathFilename( iter->path().file_string().c_str() );
-            stdCompleteFileName = iter->path().file_string().c_str();
+            moText pCompletePathFilename( iter->path().c_str() );
+            stdCompleteFileName = iter->path().c_str();
 
 
 
@@ -494,7 +494,7 @@ moDirectory::Update() {
 
             //ATENCION SEGUN LA VERSION DE BOOST hya que usar filename() o leaf()
             moText pFileName( iter->path().leaf().c_str() );
-            moText pCompletePathFilename( iter->path().file_string().c_str() );
+            moText pCompletePathFilename( iter->path().c_str() );
 
 
 
