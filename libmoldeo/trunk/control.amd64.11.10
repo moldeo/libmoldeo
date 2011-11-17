@@ -1,0 +1,22 @@
+Source: libmoldeo
+Priority: extra
+Maintainer: patala <fabricio.costa@moldeointeractive.com.ar>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.2
+Section: libs
+Homepage: http:\\www.moldeo.org
+
+Package: libmoldeo-dev
+Section: libdevel
+Architecture: amd64
+Depends: libmoldeo1 (= ${binary:Version})
+Description: Moldeo Core Library Development Package
+ Moldeo is a multimedia interactive framework based on C++, OpenGL, Gstreamer and wxWidgets.
+
+Package: libmoldeo1
+Section: libs
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Moldeo Core Library
+ Moldeo is a multimedia interactive framework based on C++, OpenGL, Gstreamer and wxWidgets.
+
