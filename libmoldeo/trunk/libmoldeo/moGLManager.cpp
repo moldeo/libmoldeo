@@ -117,7 +117,7 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(60.0f, screen_ratio, 0.1f, 1024.0f);
+	gluPerspective(60.0f, screen_ratio, 0.1f, 4096.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

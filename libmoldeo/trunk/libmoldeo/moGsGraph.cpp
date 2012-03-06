@@ -73,7 +73,7 @@ static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
       case GST_MESSAGE_EOS:
       {
           //g_message ("End-of-stream");
-          pGsGraph->MODebug2->Error(moText("moGsGraph:: EOS <End-of-stream> "));
+          //pGsGraph->MODebug2->Error(moText("moGsGraph:: EOS <End-of-stream> "));
           pGsGraph->SetEOS(true);
           //g_main_loop_quit (loop);
           break;
@@ -1902,8 +1902,8 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
             res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioEcho );
             unsigned long long max_delay,delay;
             max_delay = 2000000000;
-            delay = 500000000;
-            float intensity = 0.9;
+            delay = 0;
+            float intensity = 0.0;
 
             g_object_set ( (GstElement*)m_pAudioEcho, "max-delay", max_delay, NULL);
             g_object_set ( (GstElement*)m_pAudioEcho, "delay", delay, NULL);

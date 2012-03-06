@@ -29,6 +29,7 @@
 
 *******************************************************************************/
 
+#include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 
 #include "moFileManager.h"
@@ -162,12 +163,17 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
             //cout << iter->native_directory_string() << " (directory)\n" ;
             //if( recurse_into_subdirs ) show_files(*iter) ;
             #if BOOST_VERSION > 103500
-            moText pSubDirName( iter->path().filename().c_str() );
+
+                #if BOOST_VERSION < 104800
+                    moText pSubDirName( iter->path().filename().c_str() );
+                #else
+                    moText pSubDirName( iter->path().filename().string().c_str() );
+                #endif
             #else
             moText pSubDirName( iter->path().leaf().c_str() );
             #endif
 
-            moText pCompletePathSubdirName( iter->path().c_str() );
+            moText pCompletePathSubdirName( iter->path().string().c_str() );
 
             if (pSubDirName.Left(1) != "." ) {
               moDirectory* pSubdir = new moDirectory( pCompletePathSubdirName );
@@ -183,9 +189,14 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
 
             #if BOOST_VERSION > 103500
 
-            moText pFileName( iter->path().filename().c_str() );
 
-            stdFileName = iter->path().filename().c_str();
+                #if BOOST_VERSION < 104800
+                    moText pFileName( iter->path().filename().c_str() );
+                    stdFileName = iter->path().filename().c_str();
+                #else
+                    moText pFileName( iter->path().filename().string().c_str() );
+                    stdFileName = iter->path().filename().string().c_str();
+                #endif
 
             #else
 
@@ -195,8 +206,8 @@ moDirectory::Open( moText p_CompletePath, moText p_Search  ) {
 
             #endif
 
-            moText pCompletePathFilename( iter->path().c_str() );
-            stdCompleteFileName = iter->path().c_str();
+            moText pCompletePathFilename( iter->path().string().c_str() );
+            stdCompleteFileName = iter->path().string().c_str();
 
 
 
@@ -493,8 +504,15 @@ moDirectory::Update() {
             //cout << iter->native_file_string() << " (file)\n" ;
 
             //ATENCION SEGUN LA VERSION DE BOOST hya que usar filename() o leaf()
-            moText pFileName( iter->path().leaf().c_str() );
-            moText pCompletePathFilename( iter->path().c_str() );
+
+                #if BOOST_VERSION < 104300
+                    moText pFileName( iter->path().leaf().c_str() );
+                    moText pCompletePathFilename( iter->path().string().c_str() );
+                #else
+                    moText pFileName( iter->path().filename().string().c_str() );
+                    moText pCompletePathFilename( iter->path().string().c_str() );
+                #endif
+
 
 
 
