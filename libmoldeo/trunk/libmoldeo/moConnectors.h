@@ -100,7 +100,7 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         * @param ConnectorId id único del objeto al que pertenece este conector
         * @param p_param parámetro al que estará vinculado este conector
         */
-		virtual	MOboolean Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_param );
+		virtual MOboolean Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_param );
 
         /**
         * Inicializador
@@ -173,6 +173,7 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         * @return el puntero al parámetro al que está vinculado este conector
         */
 		moData*		GetData();
+		moData*		GetInternalData();
 
         /**
         * crea un objeto nuevo de datos
@@ -345,6 +346,8 @@ class LIBMOLDEO_API moInlet : public moConnector {
         * Destructor
         */
 		virtual ~moInlet();
+
+		MOboolean Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_param );
 
 };
 
