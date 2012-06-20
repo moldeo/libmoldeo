@@ -148,22 +148,48 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
     //if (m_render_tex_moid[3]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[3]);
 	if (m_render_tex_moid[0]==-1) {
 	    m_render_tex_moid[0] = m_pTextureManager->AddTexture("render_texture", m_render_width, m_render_height);
+	} else {
+	    //resize textures
+	    m_pTextureManager->GetTexture( m_render_tex_moid[0])->BuildEmpty(m_render_width, m_render_height);
 	}
+
+
 	if (m_render_tex_moid[1]==-1) {
 	    m_render_tex_moid[1] = m_pTextureManager->AddTexture("screen_texture", m_render_width, m_render_height);
+	} else {
+	    //resize textures
+	    m_pTextureManager->GetTexture( m_render_tex_moid[1])->BuildEmpty(m_render_width, m_render_height);
 	}
+
+
 	if (m_render_tex_moid[2]==-1) {
 	    m_render_tex_moid[2] = m_pTextureManager->AddTexture("effects_texture", m_render_width, m_render_height);
+	} else {
+	    //resize textures
+	    m_pTextureManager->GetTexture( m_render_tex_moid[2])->BuildEmpty(m_render_width, m_render_height);
 	}
+
+
 	if (m_render_tex_moid[3]==-1) {
 	    m_render_tex_moid[3] = m_pTextureManager->AddTexture("final_texture", m_render_width, m_render_height);
+	} else {
+	    //resize textures
+	    m_pTextureManager->GetTexture( m_render_tex_moid[3])->BuildEmpty(m_render_width, m_render_height);
 	}
+
+
 
 	if (m_render_tex_moid[4]==-1) {
 	    m_render_tex_moid[4] = m_pTextureManager->AddTexture("left_texture", m_render_width/2, m_render_height);
+	} else {
+	    //resize textures
+	    m_pTextureManager->GetTexture( m_render_tex_moid[4])->BuildEmpty(m_render_width, m_render_height);
 	}
 	if (m_render_tex_moid[5]==-1) {
 	    m_render_tex_moid[5] = m_pTextureManager->AddTexture("right_texture", m_render_width/2, m_render_height);
+	} else {
+	    //resize textures
+	    m_pTextureManager->GetTexture( m_render_tex_moid[5])->BuildEmpty(m_render_width, m_render_height);
 	}
 
 
@@ -337,12 +363,15 @@ void moRenderManager::DrawTexture(MOint p_width, MOint p_height, MOint p_tex_num
 	if (ValidSourceTexNum(p_tex_num))
 	{
         Lock();
+
 	    m_pGLManager->SaveGLState();
 
         m_pGLManager->SetOrthographicView(p_width, p_height);
 
-		moTexture* ptex = m_pTextureManager->GetTexture(m_render_tex_moid[p_tex_num]);
+		moTexture* ptex = m_pTextureManager->GetTexture( m_render_tex_moid[p_tex_num] );
+
         glBindTexture(GL_TEXTURE_2D, ptex->GetGLId());
+
         glBegin(GL_QUADS);
             glTexCoord2f(0, 0.0);
             glVertex2f(0, 0);
@@ -356,9 +385,11 @@ void moRenderManager::DrawTexture(MOint p_width, MOint p_height, MOint p_tex_num
             glTexCoord2f(0, ptex->GetMaxCoordT());
             glVertex2f(0, p_height);
         glEnd();
+
         glBindTexture(GL_TEXTURE_2D, 0);
 
 	    m_pGLManager->RestoreGLState();
+
         Unlock();
 	}
 }
@@ -374,12 +405,16 @@ void moRenderManager::SaveScreen()
 
 bool moRenderManager::Screenshot( moText pathname ) {
 
-        if (m_render_tex_moid[1]) {
+        if (m_render_tex_moid[MO_SCREEN_TEX]) {
 
-            moTexture* TexScreen = m_pTextureManager->GetTexture(  m_render_tex_moid[1]  );
+            moTexture* TexScreen = m_pTextureManager->GetTexture(  m_render_tex_moid[MO_SCREEN_TEX]  );
 
             if (TexScreen) {
+                /** Atamos la textura de TexScreen : SCREEN_TEXTURE*/
                 glBindTexture(GL_TEXTURE_2D, TexScreen->GetGLId()  );
+                /** Copia los pixeles de la pantalla a la textura atada
+                    aqui podriamos usar el glCopyTexSubImage....(para mantener potencias de dos)
+                */
                 glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, TexScreen->GetWidth(), TexScreen->GetHeight(), 0 );
                 glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -397,9 +432,26 @@ bool moRenderManager::Screenshot( moText pathname ) {
                 moText datetime = strbuffer;
 
                 moText screenshot_name;
-                screenshot_name = pathname + moSlash + moText("screenshot") + moText(datetime)+ moText(".png");
+                moText screenshot_path;
+                if (pathname=="") {
+                    screenshot_path = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + moText("moldeo_screenshots");
+                    /** crear directorio si no existe*/
+                    if ( !moDirectory( screenshot_path ).Exists() ) {
+                        if (!moFileManager::CreateDirectory(screenshot_path) ) {
+                            MODebug2->Error("could not create directory: "+ screenshot_path);
+                            return false;
+                        }
+                    }
 
-                TexScreen->CreateThumbnail( "PNG", TexScreen->GetWidth(), TexScreen->GetHeight(), screenshot_name );
+                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText(".png");
+                } else {
+                    screenshot_path = pathname;
+                    /** crear directorio ?? */
+                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText(".png");
+                }
+
+                /** Generamos un archivo de imagen a partir de la textura TexScreen actualizada*/
+                TexScreen->CreateThumbnail( "PNG", m_pResourceManager->GetRenderMan()->ScreenWidth(), m_pResourceManager->GetRenderMan()->ScreenHeight(), screenshot_name );
 
             }
 

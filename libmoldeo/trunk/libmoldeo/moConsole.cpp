@@ -380,6 +380,7 @@ MOboolean moConsole::Init(
 	moDefineParamIndex( CONSOLE_CLIP1, moText("clip1") );
 	moDefineParamIndex( CONSOLE_CLIP2, moText("clip2") );
 	moDefineParamIndex( CONSOLE_CLIP3, moText("clip3") );
+	moDefineParamIndex( CONSOLE_SCREENSHOTS, moText("screenshots") );
 
 
 /** WARNING
@@ -602,7 +603,7 @@ moConsole::LoadConnections() {
                                             psrcobject->GetLabelName() +
                                             moText("> to Object <") +
                                             DestinationMoldeoLabelName +
-                                            moText("> Outlet <") +
+                                            moText("> Inlet <") +
                                             DestinationConnectorLabelName +
                                             moText("> connector label not found")
                                             );
@@ -1204,9 +1205,10 @@ moConsole::Draw() {
 
   GUIYield();
 
-  ScriptExeRun();
 
 	if (RenderMan==NULL) return;
+
+    ScriptExeRun();
 
 	MOswitch borrar = MO_ACTIVATED;
     MOboolean pre_effect_on = false;
@@ -1498,6 +1500,22 @@ void
 moConsole::Update() {
 	moRenderManager* RenderMan = m_pResourceManager->GetRenderMan();
 
+    m_ScreenshotInterval = m_Config.Int(moR(CONSOLE_SCREENSHOTS));
+
+    if (m_ScreenshotInterval>0) {
+        if (!m_ScreenshotTimer.Started()) {
+            m_ScreenshotTimer.Start();
+        } else {
+
+            if ( m_ScreenshotTimer.Duration()>m_ScreenshotInterval ) {
+                m_pResourceManager->GetRenderMan()->Screenshot(moText(""));
+                m_ScreenshotTimer.Stop();
+                m_ScreenshotTimer.Start();
+            }
+
+        }
+    }
+
 	RenderMan->BeginUpdate();
 	if (m_pIODeviceManager)
 		for(MOuint i = 0; i<m_MoldeoObjects.Count(); i++) {
@@ -1541,6 +1559,8 @@ moConsole::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("clip1"), MO_PARAM_TEXT, CONSOLE_CLIP1 );
 	p_configdefinition->Add( moText("clip2"), MO_PARAM_TEXT, CONSOLE_CLIP2 );
 	p_configdefinition->Add( moText("clip3"), MO_PARAM_TEXT, CONSOLE_CLIP3 );
+
+	p_configdefinition->Add( moText("screenshots"), MO_PARAM_NUMERIC, CONSOLE_SCREENSHOTS, moValue("0","NUM").Ref() );
 
 	return p_configdefinition;
 }
@@ -1691,29 +1711,30 @@ void moConsole::RegisterFunctions()
     RegisterFunction("ObjectDisable");//12
 
     RegisterFunction("GetObjectParamIndex");//13
-    RegisterFunction("GetObjectCurrentValue");//14
-    RegisterFunction("SetObjectCurrentValue");//15
+    RegisterFunction("GetObjectParamValues");//14
+    RegisterFunction("GetObjectCurrentValue");//15
+    RegisterFunction("SetObjectCurrentValue");//16
 
 
-    RegisterFunction("GetObjectDataIndex");//16
-    RegisterFunction("GetObjectData");//17
-    RegisterFunction("SetObjectData");//18
+    RegisterFunction("GetObjectDataIndex");//17
+    RegisterFunction("GetObjectData");//18
+    RegisterFunction("SetObjectData");//19
 
     ///Specific for effects
 
-    RegisterFunction("GetEffectState");//19
-    RegisterFunction("SetEffectState");//20
+    RegisterFunction("GetEffectState");//20
+    RegisterFunction("SetEffectState");//21
 
 
     ///Specific for devices
 
-    RegisterFunction("GetDeviceCode");//21
-    RegisterFunction("GetDeviceCodeId");//22
-    RegisterFunction("AddEvent");//23
+    RegisterFunction("GetDeviceCode");//22
+    RegisterFunction("GetDeviceCodeId");//23
+    RegisterFunction("AddEvent");//24
 
     ///GENERAL
-    RegisterFunction("GetDirectoryFileCount");//24
-    RegisterFunction("Screenshot");//25
+    RegisterFunction("GetDirectoryFileCount");//25
+    RegisterFunction("Screenshot");//26
 
     ResetScriptCalling();
 
@@ -1774,49 +1795,52 @@ int moConsole::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
             return luaGetObjectParamIndex(vm);
         case 14:
             ResetScriptCalling();
-            return luaGetObjectCurrentValue(vm);
+            return luaGetObjectParamValues(vm);
         case 15:
+            ResetScriptCalling();
+            return luaGetObjectCurrentValue(vm);
+        case 16:
             ResetScriptCalling();
             return luaSetObjectCurrentValue(vm);
 
-        case 16:
-            ResetScriptCalling();
-            return luaGetObjectDataIndex(vm);
         case 17:
             ResetScriptCalling();
-            return luaGetObjectData(vm);
+            return luaGetObjectDataIndex(vm);
         case 18:
+            ResetScriptCalling();
+            return luaGetObjectData(vm);
+        case 19:
             ResetScriptCalling();
             return luaSetObjectData(vm);
 
 
         ///for Effects
-        case 19:
+        case 20:
             ResetScriptCalling();
             return luaGetEffectState(vm);
-        case 20:
+        case 21:
             ResetScriptCalling();
             return luaSetEffectState(vm);
 
 
         ///for IODevices
-        case 21:
+        case 22:
             ResetScriptCalling();
             return luaGetDeviceCode(vm);
-        case 22:
+        case 23:
             ResetScriptCalling();
             return luaGetDeviceCodeId(vm);
 
-        case 23:
+        case 24:
             ResetScriptCalling();
             return luaAddEvent(vm);
 
         ///special case FileManager
-        case 24:
+        case 25:
             ResetScriptCalling();
             return luaGetDirectoryFileCount(vm);
 
-        case 25:
+        case 26:
             ResetScriptCalling();
             return luaScreenshot(vm);
 
@@ -2038,12 +2062,40 @@ int moConsole::luaGetObjectParamIndex(moLuaVirtualMachine& vm) {
     moMoldeoObject* Object = m_MoldeoObjects[objectid];
 
     if (Object && Object->GetConfig()) {
+        if (Object->GetConfig()->GetParamIndex(text)<0) {
+         MODebug2->Error( moText("moConsole::luaGetObjectParamIndex > param not found: ") + text );
+        }
         lua_pushnumber(state, (lua_Number) Object->GetConfig()->GetParamIndex(text) );
     }
 
     return 1;
 
 }
+
+
+int moConsole::luaGetObjectParamValues(moLuaVirtualMachine& vm) {
+
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    char *text = (char *) lua_tostring (state, 2);
+
+    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+
+    if ( Object && Object->GetConfig() ) {
+
+        if (Object->GetConfig()->GetParamIndex(text)<0) {
+         MODebug2->Error( moText("moConsole::luaGetObjectParamValues > param not found: ") + text );
+         lua_pushnumber(state, (lua_Number) 0 );
+         return 1;
+        }
+        lua_pushnumber(state, (lua_Number) Object->GetConfig()->GetParam(text).GetValuesCount() );
+
+    }
+
+    return 1;
+}
+
 
 int moConsole::luaSetObjectCurrentValue(moLuaVirtualMachine& vm) {
 
@@ -2128,6 +2180,7 @@ int moConsole::luaGetObjectData(moLuaVirtualMachine& vm) {
                     case MO_DATA_NUMBER_LONG:
                     case MO_DATA_NUMBER_MIDI:
                         lua_pushnumber(state, (lua_Number) pData->Long() );
+                        MODebug2->Push( "Inlet Number:" + IntToStr(pData->Long() ) );
                         return 1;
 
                     case MO_DATA_3DMODELPOINTER:
@@ -2188,12 +2241,16 @@ int moConsole::luaGetObjectData(moLuaVirtualMachine& vm) {
                         return 1;
 
                 }
+        } else {
+            MODebug2->Error( moText("in console script: GetObjectData : inlet not found : id:")+(moText)IntToStr(inletid) );
         }
     } else {
-        MODebug2->Error( moText("in console script: GetObjectData : object not founded : id:")+(moText)IntToStr(objectid) );
+        MODebug2->Error( moText("in console script: GetObjectData : object not found : id:")+(moText)IntToStr(objectid) );
     }
 
-    return 0;
+    moText tres("invalid");
+    lua_pushstring( state, tres );
+    return 1;
 }
 
 int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
@@ -2207,7 +2264,7 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
     if (Object) {
         moInlet* pInlet = Object->GetInlets()->Get(inletid);
         if (pInlet) {
-            moData* pData = pInlet->GetData();
+            moData* pData = pInlet->GetInternalData();
             if (pData)
                 switch(pData->Type()) {
                     case MO_DATA_NUMBER:
@@ -2287,10 +2344,10 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
 
                 }
         } else {
-          MODebug2->Error( moText("in console script: SetObjectData : inlet id not founded : id:")+(moText)IntToStr(inletid) );
+          MODebug2->Error( moText("in console script: SetObjectData : inlet id not found : id:")+(moText)IntToStr(inletid) );
         }
     } else {
-        MODebug2->Error( moText("in console script: SetObjectData : object not founded : id:")+(moText)IntToStr(objectid) );
+        MODebug2->Error( moText("in console script: SetObjectData : object not found : id:")+(moText)IntToStr(objectid) );
     }
 
     return 0;

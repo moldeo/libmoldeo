@@ -361,7 +361,9 @@ moSound3D::BuildFromFile( moText p_filename ) {
 			break;
 		case MO_SOUNDTYPE_MP3:
 			break;
-		case MO_SOUNDTYPE_OGG:
+		case MO_SOUNDTYPE_M4A:
+			break;
+        case MO_SOUNDTYPE_OGG:
 			break;
 		case MO_SOUNDTYPE_UNDEFINED:
 			break;
@@ -621,6 +623,11 @@ moSound* moSoundManager::GetSound( moText p_name) {
 
   moText text;
 
+    if (p_name=="") {
+        return NULL;
+    }
+
+
 	id = GetSoundId( p_name);
 
 	if(id == MO_SOUNDERROR) {
@@ -678,6 +685,8 @@ moSoundManager::GetTypeForFile( moText p_name ) {
 
 		if(!stricmp(extension,"mp3") || !stricmp(extension,"mpg") || !stricmp(extension,"peg")) {
 			return MO_SOUNDTYPE_MP3;
+        } else if(!stricmp(extension,"m4a")) {
+			return MO_SOUNDTYPE_M4A;
 		} else if(!stricmp(extension,"wav")) {
 			return MO_SOUNDTYPE_WAV;
 		} else if(!stricmp(extension,"ogg")) {

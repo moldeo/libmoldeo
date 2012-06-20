@@ -1,4 +1,5 @@
 usr/lib/lib*.so.*
 usr/lib/lib*.so
+usr/share/moldeo/*
 usr/share/moldeo/icons/*
 usr/share/moldeo/fonts/*

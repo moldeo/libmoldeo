@@ -286,7 +286,9 @@ MOboolean moTexture::SetBuffer(MOuint p_width, MOuint p_height, GLvoid* p_buffer
 
 MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
 {
-	glBindTexture(m_param.target, m_glid);
+    /** Atamos la textura (propia) retenida por this->m_glid*/
+	glBindTexture(m_param.target, this->m_glid);
+	/**  Copiamos los bytes de la textura al buffer*/
 	glGetTexImage(m_param.target, 0, p_format, p_type, p_buffer);
 	glBindTexture(m_param.target, 0);
 
@@ -618,7 +620,22 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
     */
 
     //FIBITMAP* fbitmap2 = NULL;
-    fbitmap = FreeImage_Rescale( fbitmap, w, h, FILTER_BICUBIC );
+
+
+    if (!GLEW_ARB_texture_non_power_of_two) {
+        //crop image...to  match resolution
+        if (    m_pResourceManager->GetRenderMan()->ScreenWidth() == w && w <= GetWidth()
+                && m_pResourceManager->GetRenderMan()->ScreenHeight() == h && h <= GetHeight()  ) {
+
+                    fbitmap = FreeImage_Copy( fbitmap, 0, 0, w, h);
+
+                }
+    } else {
+        fbitmap = FreeImage_Rescale( fbitmap, w, h, FILTER_BICUBIC );
+    }
+
+
+    FreeImage_FlipVertical( fbitmap );
 
     if ( p_bufferformat == moText("PNG")) {
         fif = FIF_PNG;
@@ -1420,7 +1437,6 @@ MOboolean moMovie::Finish()
 {
 	if (m_pGraph!=NULL)
 	{
-		m_pGraph->FinishGraph();
 		delete m_pGraph;
 		m_pGraph = NULL;
 	}

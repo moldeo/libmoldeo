@@ -34,6 +34,8 @@
 #include <gst/gst.h>
 #include "moGsGraph.h"
 
+#include "moFileManager.h"
+
 #ifdef MO_GSTREAMER
 
 static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
@@ -325,8 +327,7 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
           if (g_strrstr (strname, "audio")) {
             pGsGraph->m_pAudioPad = Gpad;
 
-            MODebug2->Push(moText("moGsGraph::cb_newpad: audio pad created"));
-
+            //MODebug2->Push(moText("moGsGraph::cb_newpad: audio pad created"));
 
             if (pGsGraph->m_pAudioConverter) {
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
@@ -434,7 +435,7 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
           if (g_strrstr (strname, "audio")) {
             pGsGraph->m_pAudioPad = Gpad;
 
-            MODebug2->Push(moText("moGsGraph::cb_newpad: audio pad created"));
+            //MODebug2->Push(moText("moGsGraph::cb_pad_added: audio pad created"));
 
             //pGsGraph->BuildAudioFilters();
 
@@ -457,7 +458,7 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
           } else if (g_strrstr (strname, "video")) {
             pGsGraph->m_pVideoPad = Gpad;
 
-            MODebug2->Push(moText("moGsGraph::cb_newpad: video pad created"));
+            //MODebug2->Push(moText("moGsGraph::cb_pad_added: video pad created"));
             if (pGsGraph->m_pVideoScale==NULL) {
                 //version directa a videoscale
                 if (!(GstElement*)pGsGraph->m_pColorSpaceInterlace) {
@@ -1696,24 +1697,24 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                             return true;
 
                         } else {
-                            MODebug2->Error(moText("moGsGraph::error: m_pColorSpace m_pCapsFilter m_pFakeSink linking failed"));
+                            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pColorSpace m_pCapsFilter m_pFakeSink linking failed"));
                             event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {
-                        MODebug2->Error(moText("moGsGraph::error: filesrc and decodebin linkage failed"));
+                        MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > src and decodebin linkage failed: ") + devicename );
                         event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                     }
 
                 } else {
-                    MODebug2->Error(moText("moGsGraph::error: fakesink construction failed"));
+                    MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > fakesink construction failed"));
                     event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-                MODebug2->Error(moText("moGsGraph::error: decodebin construction failed"));
+                MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > decodebin construction failed"));
                 event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
             }
         } else {
-            MODebug2->Error(moText("moGsGraph::error: file source failed"));
+            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > file source failed"));
             event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
         }
         return false;
@@ -1815,6 +1816,7 @@ moGsGraph::WaitForFormatDefinition( MOulong timeout ) {
 
 }
 
+
 bool moGsGraph::BuildLiveSound( moText filename  ) {
 
     bool link_result = false;
@@ -1822,6 +1824,10 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
     bool res = false;
 
     MODebug2->Push( moText("Building live sound:") + (moText)filename);
+
+    moFile SoundFile( filename );
+
+    if ( !SoundFile.Exists() ) return false;
 
     if (filename.Length()>0)
     {
@@ -2013,6 +2019,9 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 //    gchar* checkval;
     bool res = false;
 
+    moFile VideoFile( filename );
+
+    if ( !VideoFile.Exists() ) return false;
 
     if (filename.Length()>0)
     {
@@ -2098,24 +2107,24 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                             return true;
 
                         } else {
-                            MODebug2->Error( moText("moGsGraph::error: m_pColorSpace m_pCapsFilter m_pFakeSink linking failed"));
+                            MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > m_pColorSpace m_pCapsFilter m_pFakeSink linking failed"));
                             event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {
-                        MODebug2->Error( moText("moGsGraph::error: filesrc and decodebin linkage failed"));
+                        MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > filesrc and decodebin linkage failed: ") + filename );
                         event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                     }
 
                 } else {
-                    MODebug2->Error( moText("moGsGraph::error: fakesink construction failed"));
+                    MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > fakesink construction failed"));
                     event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-                MODebug2->Error( moText("moGsGraph::error: decodebin construction failed"));
+                MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > decodebin construction failed"));
                 event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
             }
         } else {
-            MODebug2->Error( moText("moGsGraph::error: file source failed"));
+            MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > file source failed: ") + filename);
             event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
         }
         return false;
@@ -2576,7 +2585,7 @@ moGsGraph::Stop() {
 void
 moGsGraph::Pause() {
 /*set state to NULL*/
-  ///TODO: for live-stream pause works ok...
+  ///TODO: for live-stream pause works ok... not for others
   if (m_VideoFormat.m_TimePerFrame==0 || GetState()==MO_STREAMSTATE_PLAYING ) {
     CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PAUSED));
   }

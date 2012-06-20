@@ -66,8 +66,8 @@ Now execute in deb folder for Ubuntu 10.10:
  dh_make -l -e fabricio.costa@moldeointeractive.com.ar
  cp ../../control.amd64 debian/control
  cp ../../rules.amd64 debian/rules
- cp ../../libmoldeo1.install.amd64 debian/libmoldeo1.install
- cp ../../libmoldeo1.dirs.amd64 debian/libmoldeo1.dirs
+ cp ../../libmoldeo1.install.amd64 debian/libmoldeo.install
+ cp ../../libmoldeo1.dirs.amd64 debian/libmoldeo.dirs
  cp ../../libmoldeo-dev.dirs.amd64 debian/libmoldeo-dev.dirs
  cp ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install
  vi debian/changelog
