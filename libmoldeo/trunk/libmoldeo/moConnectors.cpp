@@ -210,7 +210,8 @@ moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_pa
 	m_ConnectorId = ConnectorId;
 	//m_pData = NULL;
 	///Fija un dato interno para manejar este valor....
-	Init( p_ConnectorLabelName, ConnectorId, p_param->GetParamDefinition().GetType());
+	moConnector::Init( p_ConnectorLabelName, ConnectorId, p_param->GetParamDefinition().GetType());
+
 	///y asociamos a su vez el parametro del config
 	m_pParam = p_param;
 
@@ -232,11 +233,13 @@ moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_pa
                 m_pData->SetInt( firstvalue.Int() );
                 break;
 	        case MO_DATA_NUMBER_LONG:
+	        case MO_DATA_NUMBER:
                 m_pData->SetLong( firstvalue.Long() );
                 break;
         }
 
     }
+
 	return true;
 }
 
@@ -294,14 +297,30 @@ moConnector::SetData( moData*	p_data ) {
 moData*
 moConnector::GetData() {
 
-	if (m_pData)
-		return m_pData;
-
-	if (m_pParam)
+	if (m_pParam) {
+	    /** Si es un inlet asociado a un parametro devuelve el m_pData interno que fue asociado por el SetExternalData*/
 		return m_pParam->GetData();
+	}
+
+    /** Unicamente para inlets o outlets independientes...*/
+	if (m_pData) {
+		return m_pData;
+	}
 
   return NULL;
 }
+
+moData*
+moConnector::GetInternalData() {
+
+    /** Unicamente para inlets o outlets independientes...*/
+	if (m_pData) {
+		return m_pData;
+	}
+
+  return NULL;
+}
+
 
 void
 moConnector::NewData() {
@@ -422,6 +441,25 @@ moConnection::SetDestinationConnectorLabelName( moText p_DestinationConnectorLab
 moInlet::moInlet() {
 }
 moInlet::~moInlet() {
+}
+
+MOboolean
+moInlet::Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_param ) {
+
+    MOboolean res = moConnector::Init( p_ConnectorLabelName, ConnectorId, p_param );
+
+    /** Se fija al parámetro el m_pData como Dato Externo del Parámetro,
+
+     Al llamar al moParam::GetData se evalua asi:
+
+    a) DATO DINAMICO: el dato interno del inlet (m_pData) segun si fue Actualizado (m_bUpdated)
+    b) DATO ESTATICO: el valor del valor de la configuracion
+
+    */
+    if (m_pParam) {
+        m_pParam->SetExternData( m_pData );
+    }
+    return res;
 }
 
 

@@ -80,7 +80,7 @@ void moPostPlugin::Load(moText plugin_file)
 
 void moPostPlugin::Unload()
 {
-	this->DestroyPostEffectFactory();
+	if (DestroyPostEffectFactory) this->DestroyPostEffectFactory();
 
     CreatePostEffectFactory = NULL;
 	DestroyPostEffectFactory = NULL;

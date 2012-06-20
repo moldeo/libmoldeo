@@ -286,6 +286,27 @@ moTextureBuffer::LoadImage( moText p_ImageName, moBitmap* pImage, int indeximage
 	}
 
 
+
+    if (!GLEW_ARB_texture_non_power_of_two) {
+        w = FreeImage_GetWidth(pImageResult);
+        h = FreeImage_GetHeight(pImageResult);
+
+        MOuint i;
+        for (i = 1; i < w; i *= 2);
+        w = i;
+        for (i = 1; i < h; i *= 2);
+        h = i;
+
+        w = momin(512,w);
+        h = momin(512,h);
+
+      pImageScaled =   FreeImage_Rescale( pImageResult, w, h, FILTER_BICUBIC );
+    if (pImageScaled) {
+			//FreeImage_Unload(pImageResult);
+			pImageResult = pImageScaled;
+		}
+    }
+
 	FreeImage_AdjustContrast( pImageResult, 0 );
 	FreeImage_AdjustBrightness( pImageResult, 0 );
 

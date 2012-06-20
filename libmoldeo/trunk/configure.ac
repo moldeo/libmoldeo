@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [0.7.9.4c], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [0.7.9.5], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -41,7 +41,7 @@ PKG_CHECK_MODULES([GL], [gl] ,has_gl=yes)
 dnl check for openal
 PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
 
-dnl check for opengl
+dnl check for glu
 PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
 
 dnl check for glew
@@ -67,20 +67,21 @@ dnl check for alut
 PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
 dnl check for TUIO
-AC_LANG_PUSH(C++)dnl
-AC_CHECK_HEADER(TUIO/TuioObject.h, , AC_MSG_ERROR([TUIO header not found. Please read README.]))
+#AC_LANG_PUSH(C++)dnl
+#AC_CHECK_HEADER(TUIO/TuioObject.h, , AC_MSG_ERROR([TUIO header not found. Please read README.]))
+PKG_CHECK_MODULES([TUIO], [libTUIO] ,has_tuio=yes)
 
-SAVED_LDFLAGS=$LDFLAGS
-LDFLAGS="$LDFLAGS -lTUIO"
-AC_LINK_IFELSE(
-  [AC_LANG_PROGRAM([#include <TUIO/TuioTime.h>],
-    [using namespace TUIO],
-    [TUIO::TuioTime::getSessionTime()])],
-    AC_SUBST([TUIO_LIBS],[-lTUIO]),
-    AC_MSG_ERROR([TUIO not found. Please read README.])
-)
-LDFLAGS=$SAVED_LDFLAGS
-AC_LANG_POP(C++)
+#SAVED_LDFLAGS=$LDFLAGS
+#LDFLAGS="$LDFLAGS -lTUIO"
+#AC_LINK_IFELSE(
+#  [AC_LANG_PROGRAM([#include <TUIO/TuioTime.h>],
+#    [using namespace TUIO],
+#    [TUIO::TuioTime::getSessionTime()])],
+#    AC_SUBST([TUIO_LIBS],[-lTUIO]),
+#    AC_MSG_ERROR([TUIO not found. Please read README.])
+#)
+#LDFLAGS=$SAVED_LDFLAGS
+#AC_LANG_POP(C++)
 
 dnl nvidia-cG-toolkit requires pthread
 AC_CHECK_LIB(pthread, pthread_attr_init, LIBS="$LIBS -lpthread")

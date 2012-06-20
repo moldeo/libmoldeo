@@ -67,7 +67,7 @@ moEffect::PreInit() {
     if (Inlet) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      Inlet->Init( moText("time"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      ((moConnector*)Inlet)->Init( moText("time"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(Inlet);
     }
 
@@ -75,7 +75,7 @@ moEffect::PreInit() {
     if (Inlet) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      Inlet->Init( moText("t"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      ((moConnector*)Inlet)->Init( moText("t"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(Inlet);
     }
 
@@ -83,7 +83,7 @@ moEffect::PreInit() {
     if (Inlet) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      Inlet->Init( moText("tempo"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      ((moConnector*)Inlet)->Init( moText("tempo"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(Inlet);
     }
 
@@ -374,11 +374,11 @@ void moEffect::SetBlending( moBlendingModes blending ) {
 		case MO_BLENDING_ADDITIVEALPHA:
 			//ADDITIVE WITH TRANSPARENCY: Rs*As + Rd*Ad
 			/** DOESNT WORK NICELY BECAUSE DST_ALPHA DOESNT AFFECT FINAL FRAMEBUFFER */
-			//glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+			glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 
             /** THIS WORKS LIKE A CHARM*/
 			//ADDITIVE WITH SRC TRANSPARENCY: Rs*As + Rd
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+			//glBlendFunc(GL_SRC_ALPHA,GL_ONE);
 			break;
 
 		//NON ALPHA

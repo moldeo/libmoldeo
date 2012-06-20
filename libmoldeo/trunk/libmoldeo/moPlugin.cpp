@@ -81,7 +81,7 @@ void moPlugin::Load(moText plugin_file)
 
 void moPlugin::Unload()
 {
-	this->DestroyEffectFactory();
+	if (DestroyEffectFactory) this->DestroyEffectFactory();
 
     CreateEffectFactory = NULL;
 	DestroyEffectFactory = NULL;

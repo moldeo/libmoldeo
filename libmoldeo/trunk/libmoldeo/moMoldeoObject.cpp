@@ -226,7 +226,6 @@ moMoldeoObject::CreateConnectors() {
           moInlet* Inlet = new moInlet();
           if (Inlet) {
             Inlet->Init( param.GetParamDefinition().GetName(), m_Inlets.Count(), param.GetPtr() );
-            param.SetExternData( Inlet->GetData() );
             m_Inlets.Add(Inlet);
           }
         }
@@ -380,9 +379,11 @@ moMoldeoObject::CreateConnectors() {
                     case MO_PARAM_SOUND:
                         if (value.GetSubValueCount()>0) {
                           moValueBase& valuebase(value.GetSubValue(0));
-                          moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( valuebase.Text() );
-                          if (pSound) {
-                              valuebase.SetSound( pSound );
+                          if (valuebase.Text()!="") {
+                            moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( valuebase.Text() );
+                            if (pSound) {
+                                valuebase.SetSound( pSound );
+                            }
                           }
                         }
                         break;
@@ -403,7 +404,7 @@ moMoldeoObject::CreateConnectors() {
 			moText InletName = pinlets[i][MO_INLET_NAME].Text();
 			///lo creamos si y solo si no existe como parametro....
 			if ( m_Config.GetParamIndex(InletName)==-1 ) {
-				Inlet->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
+				((moConnector*)Inlet)->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
 				m_Inlets.Add( Inlet );
 			}
 		}

@@ -119,7 +119,8 @@ enum moConsoleParamIndex {
 	CONSOLE_RENDERRESOLUTION,
 	CONSOLE_CLIP1,
 	CONSOLE_CLIP2,
-	CONSOLE_CLIP3
+	CONSOLE_CLIP3,
+	CONSOLE_SCREENSHOTS
 };
 
 /// Objeto Consola
@@ -401,6 +402,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int luaGetObjectPreconf(moLuaVirtualMachine& vm);
         int luaSetObjectPreconf(moLuaVirtualMachine& vm);
         int luaGetObjectParamIndex(moLuaVirtualMachine& vm);
+        int luaGetObjectParamValues(moLuaVirtualMachine& vm);
         int luaSetObjectCurrentValue(moLuaVirtualMachine& vm);
         int luaGetObjectCurrentValue(moLuaVirtualMachine& vm);
         ///especificos de datos
@@ -470,6 +472,12 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         MOfloat fps_current;
         MOfloat fps_mean;
         MOint fps_count;
+
+        moText      m_ScreenshotPath;
+        moTimer     m_ScreenshotTimer;
+        long        m_ScreenshotInterval;
+        moText      m_ScreenshotFormat;
+        moText      m_ScreenshotResolution;
 
         long m_ScriptTimecodeOffset;
 
