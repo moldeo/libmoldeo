@@ -75,8 +75,8 @@
 			<Add option='-DMODULESDIR=\&quot;../../plugins\&quot;' />
 			<Add directory="..\..\" />
 			<Add directory="..\..\libmoldeo" />
-			<Add directory="..\..\..\..\externlibs\boost\include\1_36_0" />
-			<Add directory="..\..\..\..\externlibs\boost\include\1_36_0\boost" />
+			<Add directory="..\..\..\..\externlibs\boost\include\1_48_0" />
+			<Add directory="..\..\..\..\externlibs\boost\include\1_48_0\boost" />
 			<Add directory="..\..\..\..\externlibs\cg\include" />
 			<Add directory="..\..\..\..\externlibs\glew\include" />
 			<Add directory="..\..\..\..\externlibs\opengl\include" />
@@ -108,15 +108,12 @@
 			<Add library="gstreamer-0.10" />
 			<Add library="glib-2.0" />
 			<Add library="gobject-2.0" />
-			<Add library="boost_system-mt" />
-			<Add library="boost_filesystem-mt" />
 			<Add library="wsock32" />
 			<Add library="winmm" />
 			<Add library="ws2_32" />
 			<Add library="wst" />
 			<Add library="wtsapi32" />
 			<Add library="wininet" />
-			<Add library="stdc++" />
 			<Add library="strmiids" />
 			<Add library="mswsock" />
 			<Add library="netapi32" />
@@ -124,9 +121,11 @@
 			<Add library="user32" />
 			<Add library="uuid" />
 			<Add library="muparser" />
-			<Add library="boost_thread-mt" />
 			<Add library="TUIO" />
 			<Add library="libalut" />
+			<Add library="boost_system-mt" />
+			<Add library="boost_filesystem-mt" />
+			<Add library="boost_thread-mt" />
 			<Add directory="..\..\..\..\externlibs\SDL\lib" />
 			<Add directory="..\..\..\..\externlibs\glew\lib" />
 			<Add directory="..\..\..\..\externlibs\lua\lib" />
@@ -138,7 +137,7 @@
 			<Add directory="..\..\..\..\externlibs\opengl\lib" />
 			<Add directory="..\..\..\..\externlibs\freeimage\lib" />
 			<Add directory="..\..\..\..\externlibs\tinyxml" />
-			<Add directory="..\..\..\..\externlibs\boost\lib\1_36_0" />
+			<Add directory="..\..\..\..\externlibs\boost\lib\1_48_0" />
 			<Add directory="..\..\..\..\externlibs\TUIO_CPP" />
 			<Add directory="..\..\..\..\externlibs\freealut-1.1.0-bin\lib" />
 			<Add directory="C:\Archivos de programa\OSSBuild\GStreamer\v0.10.6\sdk\lib" />
@@ -147,6 +146,7 @@
 			<Add after="cp.exe -u ../../libmoldeo/*.h ../../../../binaries/include/" />
 			<Add after='svn export &quot;../../data&quot; &quot;../../../../binaries/data&quot; --force' />
 		</ExtraCommands>
+		<Unit filename="..\..\config.h" />
 		<Unit filename="..\..\libmoldeo\mo3dModelManager.cpp" />
 		<Unit filename="..\..\libmoldeo\mo3dModelManager.h" />
 		<Unit filename="..\..\libmoldeo\mo3ds.cpp" />
@@ -476,7 +476,9 @@
 		</Unit>
 		<Unit filename="..\..\libmoldeo\moldeo.h" />
 		<Extensions>
-			<code_completion />
+			<code_completion>
+				<search_path add="..\..\..\..\externlibs\cg\include" />
+			</code_completion>
 			<debugger />
 		</Extensions>
 	</Project>
