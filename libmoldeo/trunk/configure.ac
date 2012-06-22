@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [0.7.9.5], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [0.7.9.6], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
