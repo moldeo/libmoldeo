@@ -33,6 +33,7 @@
 
 #include "moTypes.h"
 #include "moAbstract.h"
+#include "moTempo.h"
 
 /**
  * moEffectState
@@ -44,7 +45,11 @@ class LIBMOLDEO_API moEffectState : public moAbstract
 
 	public:
 		moEffectState();
+		moEffectState(const moEffectState& src);
 		virtual ~moEffectState();
+
+		moEffectState& operator=(const moEffectState& src);
+
 		MOboolean Init();
 		MOboolean Init(MOswitch);
 
@@ -145,6 +150,8 @@ class LIBMOLDEO_API moEffectState : public moAbstract
 		MOswitch stereo;
 		moStereoSides stereoside;
 
+        void SetColorRGB( MOfloat r, MOfloat g, MOfloat b);
+        void SetColorCSV( MOfloat c, MOfloat s, MOfloat t);
 		void CSV2RGB();
 };
 

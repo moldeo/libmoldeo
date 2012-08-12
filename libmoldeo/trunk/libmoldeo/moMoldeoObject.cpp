@@ -1096,10 +1096,10 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
                         lua_pushnumber( state, (lua_Number) pv4i->Z() );
                         lua_pushnumber( state, (lua_Number) pv4i->W() );
                         return 4;
-                        /*
+
                 case MO_DATA_FUNCTION:
-                        //lua_pushnumber( state, (lua_Number) pData->Fun()->Eval() );
-                        return 1;*/
+                        lua_pushnumber( state, (lua_Number) pData->Eval() );
+                        return 1;
                 default:
                     moText ttype = pData->TypeToText();
                     lua_pushstring( state, ttype );

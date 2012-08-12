@@ -32,64 +32,92 @@
 #include "moEffectState.h"
 
 moEffectState::moEffectState() {
-        on = MO_DEACTIVATED;
-        synchronized = MO_ACTIVATED;
-        enabled = MO_ACTIVATED;
-        magnitude = 1.0;
-        amplitude = 1.0;
-		alpha = 1.0;
-		tint = 1.0;
-		tintr = 1.0;
-		tintg = 1.0;
-		tintb = 1.0;
-		tintc = 0.0;
-		tints = 0.0;
-		stereo = MO_DEACTIVATED;
-		stereoside = MO_STEREO_NONE;
-		fulldebug = MO_DEACTIVATED;
+    Init();
 }
 
 moEffectState::~moEffectState() {
 }
 
+
+moEffectState::moEffectState(const moEffectState& src) {
+    (*this) = src;
+}
+
+moEffectState&
+moEffectState::operator=(const moEffectState& src) {
+        on = src.on;
+        synchronized = src.synchronized;
+        enabled = src.enabled;
+        magnitude = src.magnitude;
+        amplitude = src.amplitude;
+		alpha = src.alpha;
+
+        tintr = src.tintr;
+		tintg = src.tintg;
+		tintb = src.tintb;
+
+		tint = src.tint;
+		tintc = src.tintc;
+		tints = src.tints;
+
+		stereo = src.stereo;
+		stereoside = src.stereoside;
+		fulldebug = src.fulldebug;
+
+		tempo = src.tempo;
+
+		return (*this);
+}
+
 MOboolean
 moEffectState::Init() {
+
         on = MO_DEACTIVATED;
         synchronized = MO_ACTIVATED;
         enabled = MO_ACTIVATED;
         magnitude = 1.0;
         amplitude = 1.0;
 		alpha = 1.0;
-		tint = 1.0;
-		tintr = 1.0;
+
+        tintr = 1.0;
 		tintg = 1.0;
 		tintb = 1.0;
+
+		tint = 1.0;
 		tintc = 0.0;
 		tints = 0.0;
-		//fulldebug = MO_DEACTIVATED;
+
+		stereo = MO_DEACTIVATED;
+		stereoside = MO_STEREO_NONE;
+		fulldebug = MO_DEACTIVATED;
+
+		tempo.Init();
 
 		return true;
 }
 
 MOboolean
 moEffectState::Init(MOswitch D) {
-        on = MO_DEACTIVATED;
-        synchronized = MO_ACTIVATED;
-        enabled = MO_ACTIVATED;
-        magnitude = 1.0;
-        amplitude = 1.0;
-		alpha = 1.0;
-		tint = 1.0;
-		tintr = 1.0;
-		tintg = 1.0;
-		tintb = 1.0;
-		tintc = 0.0;
-		tints = 0.0;
+
+        Init();
 		fulldebug = D;
 
 		return true;
 }
 
+
+void moEffectState::SetColorRGB( MOfloat r, MOfloat g, MOfloat b)  {
+    tintr = r;
+    tintr = g;
+    tintr = b;
+}
+
+void moEffectState::SetColorCSV( MOfloat c, MOfloat s, MOfloat t)  {
+    tintc = c;
+    tints = s;
+    tint = t;
+    CSV2RGB();
+}
 
 void
 moEffectState::CSV2RGB() {

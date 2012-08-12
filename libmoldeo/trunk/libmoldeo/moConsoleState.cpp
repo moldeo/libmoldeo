@@ -74,6 +74,7 @@ moConsoleState::Init() {
 	m_nPostEffects = 0;
 	m_nMasterEffects = 0;
 	m_nAllEffects = 0;
+
 	return true;
 }
 
@@ -94,5 +95,6 @@ moConsoleState::Finish() {
 	m_nPostEffects = 0;
 	m_nMasterEffects = 0;
 	m_nAllEffects = 0;
+
 	return true;
 }

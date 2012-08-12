@@ -237,7 +237,7 @@ moEffectManager::GetEffectByLabel( moText p_label_name, moMoldeoObjectType p_mob
   moEffect* peffect = NULL;
   moText label_name;
 
-  for(int a=0; a<m_AllEffects.Count(); a++ ) {
+  for(unsigned int a=0; a<m_AllEffects.Count(); a++ ) {
 
     peffect =  m_AllEffects.Get( a );
     if (peffect) {

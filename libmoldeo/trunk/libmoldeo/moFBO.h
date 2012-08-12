@@ -33,6 +33,7 @@
 #define __MO_FBO_H__
 
 #include "moTypes.h"
+#include "moAbstract.h"
 
 #define MO_FRAMEBUFFER_FULL 0
 #define MO_FRAMEBUFFER_INVALID_TEX 1

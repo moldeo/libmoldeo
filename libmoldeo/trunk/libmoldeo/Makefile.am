@@ -87,6 +87,7 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moTextureIndex.cpp \
 	moTextureManager.cpp \
 	moThread.cpp \
+	moTimer.cpp \
 	moTimeManager.cpp \
 	moTypes.cpp \
 	moValue.cpp \
@@ -227,6 +228,7 @@ libmoldeo_include_HEADERS = \
 	moTextureManager.h \
 	moThread.h \
 	moTimeManager.h \
+	moTimer.h \
 	moTypes.h \
 	moValue.h \
 	moVdpauGraph.h \

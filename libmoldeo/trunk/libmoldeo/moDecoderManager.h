@@ -32,6 +32,7 @@
 #define __MO_DECODERMANAGER_H__
 
 #include <moTypes.h>
+#include <moTempo.h>
 #include <moText.h>
 #include <moLock.h>
 #include <moFBO.h>

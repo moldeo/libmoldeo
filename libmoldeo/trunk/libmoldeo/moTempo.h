@@ -29,8 +29,7 @@
 
 *******************************************************************************/
 
-#include "moTypes.h"
-#include "moMath.h"
+#include "moTimer.h"
 
 #ifndef __MO_TEMPO_H
 #define __MO_TEMPO_H
@@ -42,27 +41,44 @@
 *   @see moConsole
 *   @see moEffect
 */
-class LIBMOLDEO_API moTempo {
+class LIBMOLDEO_API moTempo : public moTimer {
+
+public:
+    moTempo();
+    moTempo( const moTempo &src);
+
+    virtual ~moTempo();
+	moTempo &operator = (const moTempo &src);
+
+    virtual long Duration();
 
 private:
 	moTempo* m_pFromTempo;
 
 public:
+    ///tiempo en milisegundos (obsoleto) se usa moTimer ahora.
 	MOulong ticks;      //getticks() milisegundos del clock
+
+	///Primer tick del beat
 	MOulong ticks_0;    //primer beat
+
+	///Segundo tick del beat
 	MOulong ticks_1;    //segundo beat
 
-	MOdouble delta;     //ticks
+    ///variacion de frecuencia entre 0X y 2X, delta es real
+	MOdouble delta;
 	MOdouble deltaprevious;
-	MOdouble factor;    //grados(radianes)
 
-	MOdouble syncro;    //factor de sincronizacion
+	///Multiplicador a partir de 2X hasta KX, donde K en principio es entero
+	MOdouble factor;
+
+    ///Syncronización o factor fraccionario, 1.0 predeterminado, sino KX donde K puede ser fraccional (un número real)
+	MOdouble syncro;
 
 	MOdouble ang;  //angulo en radianes entre 0 y 2*pi
 
+    ///Temporales del beat
 	MOulong beat_0,beat_1, beatpulsecount;
-
-	moTempo();
 
 	MOboolean Init();
 
@@ -70,6 +86,12 @@ public:
 
 	MOdouble getPrincipalAngle();
 
+
+    /**
+    *   getTempo
+    *   función que corrige y devuelve
+    *   @return valor entre 0 y 2PI del ciclo del reloj
+    */
 	MOdouble getTempo();
 
 	void BeatPulse(MOulong tik);

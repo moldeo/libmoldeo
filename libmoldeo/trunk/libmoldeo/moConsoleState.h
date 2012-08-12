@@ -33,6 +33,8 @@
 
 #include "moTypes.h"
 #include "moAbstract.h"
+#include "moTempo.h"
+
 
 /// Estado de la consola
 /**

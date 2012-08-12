@@ -163,6 +163,11 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
 
 };
 
+/**
+*
+*   moDefineParamIndex >
+*   Asocia el #DEFINE a su parametro correspondiente en el indice.
+*/
 
 #define moDefineParamIndex(X,Y) if ( m_Config.GetConfigDefinition()!=NULL) {\
                                     int pidx = (MOint)m_Config.GetParamIndex(Y);\

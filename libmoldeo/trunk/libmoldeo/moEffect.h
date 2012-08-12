@@ -33,6 +33,7 @@
 
 
 #include "moAbstract.h"
+#include "moTempo.h"
 #include "moArray.h"
 #include "moMathFunctionIndex.h"
 #include "moIODeviceManager.h"
@@ -139,13 +140,18 @@ public:
     static void SetBlending( moBlendingModes blending );
     static void SetPolygonMode( moPolygonModes polygonmode );
 
+	virtual void TurnOn();
+    virtual void TurnOff();
+    virtual void Enable();
+    virtual void Disable();
+    virtual void SwitchOn();
+    virtual void SwitchEnabled();
 
-	void TurnOn();
-    void TurnOff();
-    void Enable();
-    void Disable();
-    void SwitchOn();
-    void SwitchEnabled();
+    virtual void Play();
+    virtual void Stop();
+    virtual void Pause();
+
+    virtual moTimerState State();
 
 	public:
 
@@ -163,6 +169,27 @@ public:
 		MOint				keyidx;
 
   protected:
+
+        int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
+        void RegisterFunctions();
+
+
+        int luaPlay( moLuaVirtualMachine& vm );
+        int luaPause( moLuaVirtualMachine& vm );
+        int luaStop( moLuaVirtualMachine& vm );
+        int luaState( moLuaVirtualMachine& vm );
+
+        int luaGetTicks(moLuaVirtualMachine& vm);
+        int luaSetTicks(moLuaVirtualMachine& vm);
+
+        ///habilita deshabilita
+        int luaDisable(moLuaVirtualMachine& vm);
+        int luaEnable(moLuaVirtualMachine& vm);
+        ///cambia el estado de un efecto (sus valores)
+        ///tinta, velocidad, alpha, etc...
+        int luaSetEffectState(moLuaVirtualMachine& vm);
+        int luaGetEffectState(moLuaVirtualMachine& vm);
+
 
     void ScriptExeDraw();
     void ScriptExeInteraction();

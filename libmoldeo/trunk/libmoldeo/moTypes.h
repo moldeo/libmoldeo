@@ -502,25 +502,6 @@ const moTexParam MOUndefinedTex =
 	MO_UNDEFINED
 };
 
-///Devuelve en milisegundos el valor del reloj de Moldeo
-/**
-*   Función global que devuelve en milisegundos el valor del reloj de Moldeo
-*   Esta función devuelve un valor relativo al inicio de la línea de tiempo de Moldeo
-*   Si se detiene este reloj, el valor devuelto será 0
-*   Si se pausa el reloj el valor siempre será el mismo
-*   El valor siempre es en milisegundos
-*/
-LIBMOLDEO_API MOulong moGetTicks();
-
-///Devuelve en milisegundos el valor del reloj de Moldeo
-/**
-*   Función global que devuelve en milisegundos el valor del reloj absoluto
-*   Esta función devuelve un valor absoluto del reloj de la máquina
-*   Este valor dependerá de la implementación según el sistema operativo y la librería utilizada,
-*   y afectará el comportamiento de los otros temporizadores
-*/
-LIBMOLDEO_API MOulong moGetTicksAbsolute();
-
 
 ///Devuelve la versión de libmoldeo
 /**
@@ -537,7 +518,5 @@ LIBMOLDEO_API moText moGetVersionStr();
 #define momax(a,b) (((a) > (b)) ? (a) : (b))
 #define momin(a,b) (((a) < (b)) ? (a) : (b))
 #endif
-
-#include "moTempo.h"
 
 #endif
