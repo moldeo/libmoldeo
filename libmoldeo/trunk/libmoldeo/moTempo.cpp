@@ -30,18 +30,41 @@
 *******************************************************************************/
 
 #include "moTempo.h"
+#include "moMath.h"
 
-moTempo::moTempo() {
-	ticks = 0;
-	ticks_0 = 0;
-	ticks_1 = 10000;
 
-	syncro = 1.0;
-	delta = 1.0;
-	deltaprevious = 1.0;
-	factor = 1.0;
+moTempo::moTempo()  : moTimer() {
+    Init();
+}
 
-	beatpulsecount = 0;
+moTempo::~moTempo() {
+    Stop();
+}
+
+moTempo::moTempo( const moTempo &src) : moTimer() {
+    (*this) = src;
+}
+
+moTempo&
+moTempo::operator = (const moTempo &src) {
+
+    (moTimer&)(*this)=(moTimer&)src;
+
+    m_pFromTempo = src.m_pFromTempo;
+
+    //version vieja
+    ticks = src.ticks;
+	ticks_0 = src.ticks_0;
+	ticks_1 = src.ticks_1;
+
+    //propio de moTempo
+	syncro = src.syncro;
+	delta = src.delta;
+	deltaprevious = src.deltaprevious;
+	factor = src.factor;
+
+	beatpulsecount = src.beatpulsecount;
+	return (*this);
 }
 
 MOboolean moTempo::Init() {
@@ -55,20 +78,19 @@ MOboolean moTempo::Init() {
 	factor = 1.0;
 
 	beatpulsecount = 0;
+
+    ///TODO: siempre iniciamos encendiendo el timer
+	Start();
+
 	return true;
 }
 
 MOboolean moTempo::Init(MOdouble sync) {
-	ticks = 0;
-	ticks_0 = 0;
-	ticks_1 = 10000;
+
+	Init();
 
 	syncro = sync;
-	delta = 1.0;
-	deltaprevious = 1.0;
-	factor = 1.0;
 
-	beatpulsecount = 0;
 	return true;
 }
 
@@ -78,14 +100,13 @@ MOdouble moTempo::getPrincipalAngle() {
 	MOulong intv,modv,resv;
 
 	MOdouble t0;
-/*
-
-*/
 
 	//correcion para continuidad
 	if(deltaprevious!=delta) {
+
 		intv = ticks - ticks_0;
 		modv = ticks_1 - ticks_0;
+
 		modv =( modv == 0 ? 1 : modv );
 		dy  =(double) 2.0 * moMathf::PI *(factor + deltaprevious - 1.0);
 		dx  =(double) modv;
@@ -94,7 +115,6 @@ MOdouble moTempo::getPrincipalAngle() {
 		t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
 
 		//corregimos el ticks_0(desfazaje que fuerza el desplazamiento de la funcion para su continuidad)
-		// Agregado conversion a int para evitar compiler warnings(by Andres)
 		ticks_0 =(int) t0;
 		ticks_1 =(int) t0 + modv;
 		deltaprevious = delta;
@@ -120,6 +140,11 @@ MOdouble moTempo::getPrincipalAngle() {
 	return (ang);
 }
 
+long moTempo::Duration() {
+    return moTimer::Duration();
+}
+
+
 MOdouble moTempo::getTempo() {
 
 	MOdouble dx,dy;
@@ -138,23 +163,32 @@ MOdouble moTempo::getTempo() {
 
 	//correcion para continuidad
 	if(deltaprevious!=delta) {
+
+        /// nuevo usamos el tick del moTimer,
+		ticks = duration;
 		intv = ticks - ticks_0;
 		modv = ticks_1 - ticks_0;
+
+
+
 		modv =( modv == 0 ? 1 : modv );
 		dy  =(double) 2.0 * moMathf::PI *(factor + deltaprevious - 1.0);
 		dx  =(double) modv;
 		ang =(double) intv * dy / dx;
 
+		//t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
 		t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
 
 		//corregimos el ticks_0(desfazaje que fuerza el desplazamiento de la funcion para su continuidad)
-		// Agregado conversion a int para evitar compiler warnings(by Andres)
 		ticks_0 =(int) t0;
 		ticks_1 =(int) t0 + modv;
 		deltaprevious = delta;
 	}
 
+    ///nuevo usamos el tick del moTimer,
+    ticks = duration;
     intv = ticks - ticks_0;
+
 	modv = ticks_1 - ticks_0;
     modv =( modv == 0 ? 1 : modv );
 	dy  =(double) 2.0 * moMathf::PI *(factor + delta - 1.0);

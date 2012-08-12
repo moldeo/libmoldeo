@@ -38,6 +38,7 @@
 #define __MO_LUA_BASE_H__
 
 #include "moTypes.h"
+#include "moAbstract.h"
 #include "moText.h"
 
 // LUA includes.

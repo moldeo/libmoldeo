@@ -165,7 +165,9 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 
     if(state.synchronized==MO_DEACTIVATED)
     {
-        state.tempo.ticks = moGetTicks();
+        //state.tempo.ticks = moGetTicks();
+        ///Clock independiente
+        state.tempo.Duration();
         state.tempo.getTempo();
     }
     else
@@ -454,6 +456,24 @@ void moEffect::SwitchOn() {
 void moEffect::SwitchEnabled() {
     this->state.enabled*= -1;
 }
+
+
+void moEffect::Play() {
+    return this->state.tempo.Start();
+}
+
+void moEffect::Stop(){
+    return this->state.tempo.Stop();
+}
+
+void moEffect::Pause(){
+    return this->state.tempo.Pause();
+}
+
+moTimerState moEffect::State() {
+    return this->state.tempo.State();
+}
+
 /*
 MO_PARAM_ALPHA,			//value type: NUM or FUNCTION
 MO_PARAM_COLOR,			//value type: NUM[4] or FUNCTION[4] or
@@ -478,3 +498,183 @@ moEffect::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("phase"), MO_PARAM_PHASE );
 	return p_configdefinition;
 }
+
+void moEffect::RegisterFunctions()
+{
+    ///first inherit methods from MoldeoObjects
+    moMoldeoObject::RegisterFunctions();
+
+    ///register our own methods starting with RegisterBaseFunction
+    RegisterBaseFunction("Play");//0
+    RegisterFunction("Pause");//1
+    RegisterFunction("Stop");//2
+    RegisterFunction("State");//3
+    RegisterFunction("Enable");//4
+    RegisterFunction("Disable");//5
+
+    RegisterFunction("SetTicks");//6
+    RegisterFunction("GetTicks");//7
+
+    RegisterFunction("GetEffectState");//8
+    RegisterFunction("SetEffectState");//9
+
+    ResetScriptCalling();
+
+}
+
+int moEffect::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
+{
+
+    switch ( iFunctionNumber - m_iMethodBase )
+    {
+        case 0:
+            ResetScriptCalling();
+            return luaPlay(vm);
+        case 1:
+            ResetScriptCalling();
+            return luaPause(vm);
+        case 2:
+            ResetScriptCalling();
+            return luaStop(vm);
+        case 3:
+            ResetScriptCalling();
+            return luaState(vm);
+
+        case 4:
+            ResetScriptCalling();
+            return luaEnable(vm);
+        case 5:
+            ResetScriptCalling();
+            return luaDisable(vm);
+
+
+
+        case 6:
+            ResetScriptCalling();
+            return luaSetTicks(vm);
+        case 7:
+            ResetScriptCalling();
+            return luaGetTicks(vm);
+
+        ///for this Effect
+        case 8:
+            ResetScriptCalling();
+            return luaGetEffectState(vm);
+        case 9:
+            ResetScriptCalling();
+            return luaSetEffectState(vm);
+
+        default:
+            NextScriptCalling();
+            return moMoldeoObject::ScriptCalling( vm, iFunctionNumber );
+	}
+}
+
+
+int moEffect::luaPlay( moLuaVirtualMachine& vm ) {
+
+    lua_State *state = (lua_State *) vm;
+
+    Play();
+
+    return 0;
+}
+
+int moEffect::luaPause( moLuaVirtualMachine& vm ) {
+
+    lua_State *state = (lua_State *) vm;
+
+    Pause();
+
+    return 0;
+}
+
+int moEffect::luaStop( moLuaVirtualMachine& vm ) {
+
+    lua_State *state = (lua_State *) vm;
+
+    Stop();
+
+    return 0;
+}
+
+int moEffect::luaState( moLuaVirtualMachine& vm ) {
+
+    lua_State *state = (lua_State *) vm;
+
+    moTimerState elstate = State();
+    int retstate = (int) elstate;
+    lua_pushnumber( state, (lua_Number) retstate);
+
+    return 1;
+}
+
+int moEffect::luaSetTicks(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint ticksint = (MOint) lua_tonumber (state, 1);
+
+    //this->SetTicks(ticksint);
+
+    return 0;
+}
+
+int moEffect::luaGetTicks(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    lua_pushnumber(state, (lua_Number) moGetTicks() );
+
+    return 1;
+}
+
+int moEffect::luaEnable(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    TurnOn();
+
+    return 0;
+}
+
+int moEffect::luaDisable(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    TurnOff();
+
+    return 0;
+}
+
+
+
+int moEffect::luaSetEffectState(moLuaVirtualMachine& vm) {
+
+    lua_State *luastate = (lua_State *) vm;
+
+
+    state.alpha = (MOfloat) lua_tonumber (luastate, 1);
+    state.tint = (MOfloat) lua_tonumber (luastate, 2);
+    state.tintr = (MOfloat) lua_tonumber (luastate, 3);
+    state.tintg = (MOfloat) lua_tonumber (luastate, 4);
+    state.tintb = (MOfloat) lua_tonumber (luastate, 5);
+    state.tempo.ang = (MOfloat) lua_tonumber (luastate, 7);
+
+    return 0;
+
+}
+
+int moEffect::luaGetEffectState(moLuaVirtualMachine& vm) {
+    lua_State *luastate = (lua_State *) vm;
+
+    lua_pushnumber(luastate, (lua_Number) state.alpha );
+    lua_pushnumber(luastate, (lua_Number) state.tint );
+    lua_pushnumber(luastate, (lua_Number) state.tintr );
+    lua_pushnumber(luastate, (lua_Number) state.tintg );
+    lua_pushnumber(luastate, (lua_Number) state.tintb );
+    lua_pushnumber(luastate, (lua_Number) state.tempo.ang );
+
+    return 0;
+}
+

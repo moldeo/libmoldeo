@@ -61,6 +61,7 @@ NOTES:
 #define __MO_VALUE_H__
 
 #include "moTypes.h"
+#include "moTempo.h"
 #include "moText.h"
 #include "moArray.h"
 #include "moMathFunction.h"

@@ -458,6 +458,8 @@
 		<Unit filename="..\..\libmoldeo\moTimeManager.h">
 			<Option target="debug" />
 		</Unit>
+		<Unit filename="..\..\libmoldeo\moTimer.cpp" />
+		<Unit filename="..\..\libmoldeo\moTimer.h" />
 		<Unit filename="..\..\libmoldeo\moTypes.cpp" />
 		<Unit filename="..\..\libmoldeo\moTypes.h">
 			<Option target="debug" />

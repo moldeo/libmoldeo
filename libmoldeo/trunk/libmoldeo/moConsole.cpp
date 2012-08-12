@@ -372,7 +372,7 @@ MOboolean moConsole::Init(
 	moDefineParamIndex( CONSOLE_RESOURCES, moText("resources") );
 	moDefineParamIndex( CONSOLE_ON, moText("mastereffects_on") );
 	moDefineParamIndex( CONSOLE_FULLDEBUG, moText("fulldebug") );
-	moDefineParamIndex( CONSOLE_SCRIPT, moText("consolescript") );
+	//moDefineParamIndex( CONSOLE_SCRIPT, moText("consolescript") );
 	moDefineParamIndex( CONSOLE_OUTPUTMODE, moText("outputmode") );
 	moDefineParamIndex( CONSOLE_OUTPUTRESOLUTION, moText("outputresolution") );
 	moDefineParamIndex( CONSOLE_RENDERMODE, moText("rendermode") );
@@ -381,6 +381,7 @@ MOboolean moConsole::Init(
 	moDefineParamIndex( CONSOLE_CLIP2, moText("clip2") );
 	moDefineParamIndex( CONSOLE_CLIP3, moText("clip3") );
 	moDefineParamIndex( CONSOLE_SCREENSHOTS, moText("screenshots") );
+	moDefineParamIndex( CONSOLE_VIDEOSHOTS, moText("videoshots") );
 
 
 /** WARNING
@@ -1215,9 +1216,15 @@ moConsole::Draw() {
 
 	if(state.pause==MO_DEACTIVATED) {
 
-		state.tempo.ticks = GetTicks();
+		//state.tempo.ticks = GetTicks();
+		state.tempo.Duration();
 		state.tempo.getTempo();
-
+		/*
+        MODebug2->Push( "Console: tempo.on: " + IntToStr( (int)state.tempo.Started() )
+                    + " tempo.pause_on: " + IntToStr( (int)state.tempo.Paused())
+                    + " tempo.ticks: " + IntToStr( state.tempo.ticks )
+                    + " tempo.ang: " + FloatToStr( state.tempo.ang ) );
+*/
 		RenderMan->BeginDraw();
 
 		//Se dibujan los m_PreEffects
@@ -1548,7 +1555,7 @@ moConsole::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("fulldebug"), MO_PARAM_NUMERIC, CONSOLE_FULLDEBUG, moValue("0","NUM").Ref()  );
 
 	//obsoleto
-	p_configdefinition->Add( moText("consolescript"), MO_PARAM_SCRIPT, CONSOLE_SCRIPT );
+	//p_configdefinition->Add( moText("consolescript"), MO_PARAM_SCRIPT, CONSOLE_SCRIPT );
 
 	p_configdefinition->Add( moText("outputmode"), MO_PARAM_TEXT, CONSOLE_OUTPUTMODE );
 	p_configdefinition->Add( moText("outputresolution"), MO_PARAM_TEXT, CONSOLE_OUTPUTRESOLUTION );
@@ -1561,6 +1568,7 @@ moConsole::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("clip3"), MO_PARAM_TEXT, CONSOLE_CLIP3 );
 
 	p_configdefinition->Add( moText("screenshots"), MO_PARAM_NUMERIC, CONSOLE_SCREENSHOTS, moValue("0","NUM").Ref() );
+	p_configdefinition->Add( moText("videoshots"), MO_PARAM_NUMERIC, CONSOLE_VIDEOSHOTS, moValue("0","NUM").Ref() );
 
 	return p_configdefinition;
 }
@@ -1612,7 +1620,7 @@ moConsole::ConvertKeyNameToIdx(moText& name) {
 }
 
 void moConsole::ConsolePlay() {
-    if (moTimeManager::MoldeoTimer->Paused())
+    if (moIsTimerPaused())
         moContinueTimer();
     else
         moStartTimer();
@@ -1627,12 +1635,8 @@ void moConsole::ConsoleStop() {
 }
 
 moTimerState moConsole::ConsoleState() {
-    if ( moTimeManager::MoldeoTimer->Paused() ) {
-        return MO_TIMERSTATE_PAUSED;
-    } else if ( moTimeManager::MoldeoTimer->Started() ) {
-        return MO_TIMERSTATE_PLAYING;
-    }
-    return MO_TIMERSTATE_STOPPED;
+
+    return moGetTimerState();
 }
 
 
