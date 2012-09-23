@@ -149,7 +149,7 @@ void
 moTrackerSystemHistory::Record( moTrackerInstanceRecord& p_InstanceRecord, long p_Tick ) {
 
   double rec_pos = 0;
-  long rec_posl = 0;
+  MOulong rec_posl = 0;
 
   if (m_Timer.Started()) {
 
@@ -167,7 +167,7 @@ moTrackerSystemHistory::Record( moTrackerInstanceRecord& p_InstanceRecord, long 
 
         rec_pos = (double) ( p_InstanceRecord.m_Tick / m_Granularity );
 
-        rec_posl = (long)rec_pos;
+        rec_posl = (MOulong)rec_pos;
 
         if ( rec_posl < m_History.Count() ) {
           m_History.Set( rec_posl, p_InstanceRecord );
@@ -215,6 +215,10 @@ moTrackerSystemHistory::SaveToXML( moText filename ) {
   return false;
 }
 
+moTrackerInstanceRecord&
+moTrackerSystemHistory::Get( int index ) {
+    return m_History[index];
+}
 
 moTUIOSystemData::moTUIOSystemData() {
 
@@ -731,7 +735,7 @@ int moTrackerSystemData::GetFeaturesCount() {
 }
 
 moTrackerFeature* moTrackerSystemData::GetFeature(int i) {
-    return m_Features.Get(i);
+    return m_Features.GetRef(i);
 }
 
 moTrackerFeatureArray& moTrackerSystemData::GetFeatures() {

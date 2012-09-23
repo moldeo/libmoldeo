@@ -119,16 +119,16 @@ moVideoFramework::SetPreferredDevices( moCaptureDevices* p_pPreferredDevices ) {
 	//m_PreferredDevices.Copy( (*p_pPreferredDevices) );
 	m_PreferredDevices.Empty();
 	for( i=0; i < p_pPreferredDevices->Count(); i++ ) {
-		m_PreferredDevices.Add( p_pPreferredDevices->Get(i) );
+		m_PreferredDevices.Add( p_pPreferredDevices->GetRef(i) );
 	}
 
 
 
 	//update all CaptureDevices availables, with preferred formats...
 	for( j=0; j< m_PreferredDevices.Count(); j++) {
-		PreferredDevice = m_PreferredDevices.Get(j);
+		PreferredDevice = m_PreferredDevices.GetRef(j);
 		for( i=0; i< m_CaptureDevices.Count(); i++) {
-			CapDev = m_CaptureDevices.Get(i);
+			CapDev = m_CaptureDevices.GetRef(i);
 			if ( CapDev.GetName() == PreferredDevice.GetName()) { //capdev founded and maybe present
 				//set preferred videoformat...and codename
 				CapDev.SetVideoFormat( PreferredDevice.GetVideoFormat() );
@@ -142,7 +142,7 @@ moVideoFramework::SetPreferredDevices( moCaptureDevices* p_pPreferredDevices ) {
 }
 
 void
-moVideoFramework::SetPreferredFormat( moCaptureDevice &m_CaptureDevice ) {
+moVideoFramework::SetPreferredFormat( const moCaptureDevice &m_CaptureDevice ) {
 
 	moCaptureDevice PreferredDevice;
 	moCaptureDevice CapDev;
@@ -150,14 +150,14 @@ moVideoFramework::SetPreferredFormat( moCaptureDevice &m_CaptureDevice ) {
 
 	//search for preferred configurations for the specified CaptureDevice
 	for( i=0; i< m_PreferredDevices.Count(); i++) {
-		PreferredDevice = m_PreferredDevices.Get(i);
+		PreferredDevice = m_PreferredDevices.GetRef(i);
 		//search by friendly name
 		if ( PreferredDevice.GetName() == m_CaptureDevice.GetName())
 			break;
 	}
 
 	for( i=0; i< m_CaptureDevices.Count(); i++) {
-		CapDev = m_CaptureDevices.Get(i);
+		CapDev = m_CaptureDevices.GetRef(i);
 		if ( CapDev.GetPath() == m_CaptureDevice.GetPath()) { //capdev founded and maybe present
 			//set preferred videoformat...and codename
 			CapDev.SetVideoFormat( PreferredDevice.GetVideoFormat() );

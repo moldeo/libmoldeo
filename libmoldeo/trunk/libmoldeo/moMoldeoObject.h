@@ -86,9 +86,9 @@ class LIBMOLDEO_API moMobIndex : public moAbstract {
          */
 		moMobIndex() { m_paramindex = -1; m_valueindex = -1; }
 
-    moMobIndex( const moMobIndex &src) {
-      (*this) = src;
-    }
+        moMobIndex( const moMobIndex &src) {
+          (*this) = src;
+        }
 
         /**
          * constructor con los dos parámetros necesarios
@@ -97,11 +97,11 @@ class LIBMOLDEO_API moMobIndex : public moAbstract {
          */
 		moMobIndex( MOint p_paramindex, MOint p_valueindex ) { m_paramindex = p_paramindex; m_valueindex = p_valueindex; }
 
-    moMobIndex& operator = ( const moMobIndex &src) {
-       m_paramindex = src.m_paramindex;
-       m_valueindex = src.m_valueindex;
-       return(*this);
-    }
+        moMobIndex& operator = ( const moMobIndex &src) {
+           m_paramindex = src.m_paramindex;
+           m_valueindex = src.m_valueindex;
+           return(*this);
+        }
 
         void SetParamIndex( MOint p_paramindex) { m_paramindex = p_paramindex;}
 
@@ -112,12 +112,12 @@ class LIBMOLDEO_API moMobIndex : public moAbstract {
         /**
          * observador, devuelve el índice del parámetro
          */
-		MOint GetParamIndex() { return m_paramindex; }
+		MOint GetParamIndex() const { return m_paramindex; }
 
         /**
          * observador, devuelve el índice del valor
          */
-		MOint GetValueIndex() { return m_valueindex; }
+		MOint GetValueIndex() const { return m_valueindex; }
 
 	private:
 		MOint	m_paramindex;
@@ -189,12 +189,12 @@ class LIBMOLDEO_API moMobDefinition
         }
 
         /// Objeto válido
-        bool    IsValid() {
+        bool    IsValid() const {
             return ( m_Type != MO_OBJECT_UNDEFINED && m_MoldeoId!=-1 && m_MobIndex.GetParamIndex()!=-1 && m_MobIndex.GetValueIndex()!=-1 );
         }
 
         /// Nombre del objeto
-        moText GetName() {
+        const moText& GetName() const {
             return m_Name;
         }
 
@@ -204,7 +204,7 @@ class LIBMOLDEO_API moMobDefinition
         }
 
         /// Nombre del archivo de configuración
-        moText GetConfigName() {
+        const moText& GetConfigName() const {
             return m_ConfigName;
         }
 
@@ -214,12 +214,12 @@ class LIBMOLDEO_API moMobDefinition
         }
 
         /// Nombre del archivo de configuración
-        moMoldeoObjectType GetType() {
+        moMoldeoObjectType GetType() const {
             return m_Type;
         }
 
         /// Transforma una cadena de caracteres en su correspondiente moMoldeoObjectType
-        static moMoldeoObjectType GetStrType( moText p_Str = moText("default") ) {
+        moMoldeoObjectType GetStrType( const moText& p_Str = moText("default") ) const {
 
             if (p_Str == moText("effect") || p_Str == moText("moEffect")) {
                 return MO_OBJECT_EFFECT;
@@ -242,7 +242,7 @@ class LIBMOLDEO_API moMobDefinition
         }
 
         /// Transforma un moMoldeoObjectType en el nombre de su correspondiente clase base
-        moText GetTypeStr( moMoldeoObjectType p_Type = MO_OBJECT_UNDEFINED ) {
+        moText GetTypeStr( moMoldeoObjectType p_Type = MO_OBJECT_UNDEFINED ) const {
             if ( ! ( p_Type == MO_OBJECT_UNDEFINED ) ) {
                 return moText("MOB class undefined");
             }
@@ -283,7 +283,7 @@ class LIBMOLDEO_API moMobDefinition
         }
 
         /// Devuelve la dupla de índices para el archivo de configuración
-        moMobIndex& GetMobIndex() {
+        const moMobIndex& GetMobIndex() const {
             return m_MobIndex;
         }
 
@@ -294,7 +294,7 @@ class LIBMOLDEO_API moMobDefinition
         }
 
         /// Devuelve la etiqueta de este objeto
-        moText GetLabelName() {
+        const moText& GetLabelName() const {
             return m_MoldeoLabelName;
         }
 
@@ -310,9 +310,36 @@ class LIBMOLDEO_API moMobDefinition
         /**
         *   Este identificador debe ser único
         */
-        MOint GetMoldeoId() {
+        MOint GetMoldeoId() const {
             return m_MoldeoId;
         }
+
+        /// Devuelve al descripción del objeto
+        /**
+        *   La descripción describe la funcionalidad de este objeto
+        */
+        const moText& GetDescription() const {
+            return m_Description;
+        }
+
+
+        /// Fija la descripción de este objeto
+        /**
+        *  La descripción describe la funcionalidad de este objeto
+        */
+        void SetDescription( const moText& p_Description ) {
+            m_Description  = p_Description;
+        }
+
+        void SetConsoleParamIndex( MOint p_paramindex ) {
+            m_MobIndex.SetParamIndex(p_paramindex);
+
+        }
+
+        void SetConsoleValueIndex(MOint p_valueindex) {
+            m_MobIndex.SetValueIndex(p_valueindex);
+        }
+
 
     protected:
 
@@ -322,8 +349,58 @@ class LIBMOLDEO_API moMobDefinition
 		moMoldeoObjectType		m_Type; /// Tipo de Objeto
 		moText					m_Name; /// Nombre del objeto (relativo a la clase)
 		moText					m_ConfigName; /// Nombre del archivo de configuración
+        moText                  m_Description;/// Descripción del objeto
 
         moMobIndex              m_MobIndex; /// Índice referente al archivo de configuración que describe a este objeto
+};
+
+
+static moMoldeoObjectType moGetStrType( const moText& p_Str = moText("default") ) {
+
+            if (p_Str == moText("effect") || p_Str == moText("moEffect")) {
+                return MO_OBJECT_EFFECT;
+            } else if (p_Str == moText("mastereffect") || p_Str == moText("moMasterEffect")) {
+                return MO_OBJECT_MASTEREFFECT;
+            } else if (p_Str == moText("posteffect") || p_Str == moText("moPostEffect")) {
+                return MO_OBJECT_POSTEFFECT;
+            } else if (p_Str == moText("preeffect") || p_Str == moText("moPreEffect")) {
+                return MO_OBJECT_PREEFFECT;
+            } else if (p_Str == moText("iodevice") || p_Str == moText("moIODevice")) {
+                return MO_OBJECT_IODEVICE;
+            } else if (p_Str == moText("resource") || p_Str == moText("moResource")) {
+                return MO_OBJECT_RESOURCE;
+            } else if (p_Str == moText("console") || p_Str == moText("moConsole")) {
+                return MO_OBJECT_CONSOLE;
+            }
+
+            return MO_OBJECT_UNDEFINED;
+
+        }
+
+
+class LIBMOLDEO_API moMobState : public moAbstract {
+
+    public:
+
+        moMobState();
+        virtual ~moMobState();
+        moMobState( const moMobState& p_MobState );
+        moMobState& operator = ( const moMobState& src);
+
+        void Activate();
+        void Deactivate();
+
+        bool Activated() const;
+
+        void Select();
+        void Unselect();
+
+        bool Selected()  const;
+
+    protected:
+        MOswitch m_Activated;
+        MOswitch m_Selected;
+
 };
 
 
@@ -410,7 +487,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/**
 		 * función que devuelve el Identificador del objeto.
 		 */
-		MOint	GetId();
+		MOint	GetId() const;
 
 		/**
 		 * función que especifica el Identificador del objeto.
@@ -420,7 +497,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/**
 		 * función que devuelve el tipo del objeto.
 		 */
-		moMoldeoObjectType	GetType();
+		moMoldeoObjectType	GetType() const;
 
 		/**
 		 * función que especifica el tipo del objeto.
@@ -440,12 +517,12 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/**
 		 * función que especifica el nombre del objeto.
 		 */
-		moText	GetName() { return m_MobDefinition.GetName(); }
+		const moText&	GetName() const { return m_MobDefinition.GetName(); }
 
 		/**
 		 * función que devuelve el nombre identificatorio del objeto.
 		 */
-		moText	GetLabelName() { return m_MobDefinition.GetLabelName(); }
+		const moText&	GetLabelName() const { return m_MobDefinition.GetLabelName(); }
 
 		/**
 		 * función que devuelve el puntero a la clase de configuración del objeto.
@@ -460,16 +537,34 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/**
 		 * función que devuelve el nombre del archivo de configuración del objeto.
 		 */
-		moText	GetConfigName() { return m_MobDefinition.GetConfigName(); }
+		const moText&	GetConfigName() const { return m_MobDefinition.GetConfigName(); }
 
-		/**
-		 * función que devuelve la descripción del objeto.
-		 */
-		moText	GetDescription() { return m_Description; }
+       /// Devuelve al descripción del objeto
+        /**
+        *   La descripción describe la funcionalidad de este objeto
+        */
+        const moText& GetDescription() const {
+            return m_MobDefinition.GetDescription();
+        }
 
-		moMobDefinition&     GetMobDefinition() {
+
+        /// Fija la descripción de este objeto
+        /**
+        *  La descripción describe la funcionalidad de este objeto
+        */
+        void SetDescription( const moText& p_Description ) {
+            m_MobDefinition.SetDescription(p_Description);
+
+        }
+
+		const moMobDefinition&     GetMobDefinition() const {
             return m_MobDefinition;
         }
+
+        void     SetMobDefinition( const moMobDefinition& p_MobDef ) {
+            m_MobDefinition = p_MobDef;
+        }
+
 
 		/**
 		 * función que devuelve la definición del archivo de configuración del objeto.
@@ -491,13 +586,13 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		 * función que devuelve el indice del conector Inlet del correspondiente nombre
 		 * @param p_connector_name nombre del conector (generalmente el mismo del parametro  u otro arbitrario definido por el usuario)
 		 */
-		MOint GetInletIndex( moText p_connector_name );
+		MOint GetInletIndex( moText p_connector_name ) const;
 
 		/**
 		 * función que devuelve el indice del conector Outlet del correspondiente nombre
 		 * @param p_connector_name nombre del conector (generalmente el mismo del parametro u otro arbitrario definido por el usuario)
 		 */
-		MOint GetOutletIndex( moText p_connector_name );
+		MOint GetOutletIndex( moText p_connector_name ) const;
 
 		/**
 		 * función que registra las funciones para lua en particular para esta clase y las derivadas
@@ -514,24 +609,62 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		 */
 		virtual void HandleReturns(moLuaVirtualMachine& vm, const char *strFunc);
 
+
+        /**
+        * Devuelve el estado del objeto
+        */
+        virtual const moMobState& GetState() const;
+
+        /**
+        * Fija el estado del objeto
+        */
+        virtual bool SetState( const moMobState& p_MobState );
+
+
+        virtual void Activate();
+
+        virtual void Deactivate();
+
+        virtual bool Activated() const;
+
+        virtual void Select();
+
+        virtual void Unselect();
+
+        virtual bool Selected() const;
+
+        virtual void SetConsoleParamIndex( MOint p_paramindex ) {
+            m_MobDefinition.SetConsoleParamIndex(p_paramindex);
+
+        }
+
+        virtual void SetConsoleValueIndex(MOint p_valueindex) {
+            m_MobDefinition.SetConsoleValueIndex(p_valueindex);
+        }
+
+
 	protected:
 
         /// \if spanish Carga las definiciones de parámetros del archivo de configuración \endif \if english Loads parameter's config definitions \endif
 		virtual void LoadDefinition();
 
-    /// Corre la funcion de script Run o Compila el nuevo script
-    void ScriptExeInit();
+        /// Corre la funcion de script Run o Compila el nuevo script
+        void ScriptExeInit();
 		void ScriptExeRun();
 		void ScriptExeUpdate();
 		void ScriptExeFinish();
+
+		void SetScript( const moText& p_script );
+
+
 		moText  m_Script;
 
 
         /// \if spanish Definición del objeto \endif \if english Object definition \endif
         moMobDefinition         m_MobDefinition;
 
-        /// Descripción
-		moText					m_Description;
+        /// Moldeo Object State
+        moMobState              m_MobState;
 
         /// Configuración de parámetros del objeto
 		moConfig				m_Config;

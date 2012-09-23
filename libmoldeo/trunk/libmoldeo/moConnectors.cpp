@@ -244,7 +244,7 @@ moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_pa
 }
 
 MOint
-moConnector::GetMoldeoId() {
+moConnector::GetMoldeoId() const {
 	return m_MoldeoId;
 }
 
@@ -256,7 +256,7 @@ moConnector::SetMoldeoId( MOint p_moldeoid ) {
 }
 
 moText
-moConnector::GetMoldeoLabelName() {
+moConnector::GetMoldeoLabelName() const {
 	return m_MoldeoLabelName;
 }
 
@@ -266,12 +266,12 @@ moConnector::SetMoldeoLabelName( moText p_MoldeoLabelName ) {
 }
 
 MOint
-moConnector::GetConnectorId() {
+moConnector::GetConnectorId() const {
 	return m_ConnectorId;
 }
 
-moText
-moConnector::GetConnectorLabelName() {
+const moText&
+moConnector::GetConnectorLabelName() const {
 	return m_ConnectorLabelName;
 }
 
@@ -284,7 +284,7 @@ moConnector::SetType( moDataType p_datatype ) {
 }
 
 moDataType
-moConnector::GetType() {
+moConnector::GetType() const {
 	if (m_pData) return m_pData->Type();
 	else return MO_DATA_UNDEFINED;
 }
@@ -341,8 +341,9 @@ moConnector::AddData( const moData& data ) {
     if ( m_DataMessages.Count() == 0 ) {
         message.Empty();
         message.Add( data );
+        AddMessage(message);
     } else {
-        moDataMessage& LastMessage( m_DataMessages.Get( m_DataMessages.Count() - 1 ) );
+        moDataMessage& LastMessage( m_DataMessages[ m_DataMessages.Count() - 1] );
         LastMessage.Add( data );
     }
 
@@ -361,7 +362,7 @@ moConnector::GetMessages() {
 }
 
 MOboolean
-moConnector::Updated() {
+moConnector::Updated()  const {
 	return m_bUpdated;
 }
 

@@ -108,7 +108,7 @@ public:
     //char operator [](MOuint pos)            { return text[pos]; }
 
     // operadores de conversion para poder usar c-strings //
-    virtual operator char*()                { return text; }
+    virtual operator char*() const                { return text; }
 
     // metodos comunes en una clase string//
     moText0& Left( MOuint);            // devuelve el comienzo de un text.

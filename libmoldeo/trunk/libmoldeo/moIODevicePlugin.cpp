@@ -201,7 +201,7 @@ LIBMOLDEO_API bool moDeleteIODevice(moIODevice *IODevice, moIODevicePluginsArray
     // a partir del nombre del efecto.
     moText complete_name;
 
-    if(!stricmp(IODevice->GetName(), "")) return false;
+    if( IODevice->GetName() == "") return false;
 
     #if defined(_WIN32)
     complete_name = moText("plugins/iodevices/") + moText(IODevice->GetName());

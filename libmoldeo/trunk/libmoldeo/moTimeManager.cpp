@@ -76,7 +76,7 @@ void moTimeManager::AddTimer( moTimer* pTimer ) { ///agrega un temporizador para
 
 void    moTimeManager::FixTimers() { /// modifica los temporizadores para adecuarse al cambio ocurrido en el temporizador absoluto...
 
-    for( int i=0; i<m_Timers.Count(); i++ ) {
+    for( MOuint i=0; i<m_Timers.Count(); i++ ) {
         ///aaaa
         moTimer* pTimer = m_Timers[i];
 

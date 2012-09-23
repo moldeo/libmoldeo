@@ -144,7 +144,7 @@ moData::Copy( const moData& data ) {
 
 
 bool
-moData::IsValid() {
+moData::IsValid() const {
     return (m_DataType!=MO_DATA_UNDEFINED);
 }
 
@@ -846,13 +846,13 @@ moData::Pointer() {
 }
 
 MOulong
-moData::Size() {
+moData::Size() const {
 	return m_DataSize;
 }
 
 
 moDataType
-moData::Type() {
+moData::Type() const {
 	return m_DataType;
 }
 
@@ -884,9 +884,9 @@ moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterpar
                 Texture = PTI->GetTexture(0);
             }
         }
-    } else Texture = (moTexture*) m_Number.m_Pointer;
+    } else Texture = this->Texture();
 
-    if (Texture!=NULL) {
+    if (Texture) {
         if ((p_cycle >= 0.0) && ((Texture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
 								(Texture->GetType() == MO_TYPE_MOVIE) ||
 								(Texture->GetType() == MO_TYPE_VIDEOBUFFER)))
@@ -923,9 +923,9 @@ moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterpa
                 Texture = PTI->GetTexture(0);
             }
         }
-    } else Texture = (moTexture*) m_Number.m_Pointer;
+    } else Texture = this->Texture();
 
-    if (Texture!=NULL) {
+    if (Texture) {
         if ( (p_tempo != NULL) && ((Texture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
 								(Texture->GetType() == MO_TYPE_MOVIE) ||
 								(Texture->GetType() == MO_TYPE_VIDEOBUFFER)))
@@ -963,10 +963,10 @@ moData::GetGLId( MOuint p_i , MOfloat p_fade, moTextFilterParam *p_filterparam )
                 Texture = PTI->GetTexture(0);
             }
         }
-    } else Texture = (moTexture*) m_Number.m_Pointer;
+    } else Texture = this->Texture();
 
-    if (Texture!=NULL) {
-        if (( p_i >= 0 ) && ((Texture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
+    if (Texture) {
+        if ( ((Texture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
 								(Texture->GetType() == MO_TYPE_MOVIE) ||
 								(Texture->GetType() == MO_TYPE_VIDEOBUFFER)))
 		{
@@ -1004,9 +1004,9 @@ moData::GetGLId(MOfloat p_fade, moTextFilterParam *p_filterparam ) {
                 Texture = PTI->GetTexture(0);
             }
         }
-    } else Texture = (moTexture*) m_Number.m_Pointer;
+    } else Texture = this->Texture();
 
-    if (Texture!=NULL)
+    if (Texture)
         return Texture->GetGLId();
     else return 0;
 }
@@ -1054,12 +1054,12 @@ moValueDefinition::SetIndex( MOint	p_index ) {
 }
 
 moValueType
-moValueDefinition::GetType() {
+moValueDefinition::GetType() const {
 	return m_Type;
 }
 
 moText
-moValueDefinition::GetTypeStr() {
+moValueDefinition::GetTypeStr() const {
 	switch((int)m_Type) {
 		case MO_VALUE_FUNCTION:
 			return moText("FUNCTION");
@@ -1092,12 +1092,12 @@ moValueDefinition::GetTypeStr() {
 }
 
 MOint
-moValueDefinition::GetIndex() {
+moValueDefinition::GetIndex() const {
 	return m_Index;
 }
 
 moText
-moValueDefinition::GetCodeName() {
+moValueDefinition::GetCodeName() const {
     return m_CodeName;
 }
 
@@ -1128,7 +1128,7 @@ moValueDefinition::GetRange( MOfloat* min, MOfloat* max) {
 }
 
 moText
-moValueDefinition::GetAttribute() {
+moValueDefinition::GetAttribute() const {
     return m_Attribute;
 }
 
@@ -1138,7 +1138,7 @@ moValueDefinition::SetAttribute( moText p_attribute ) {
 }
 
 bool
-moValueDefinition::IsValid() {
+moValueDefinition::IsValid() const {
     return (m_Type!=MO_VALUE_UNDEFINED);
 }
 
@@ -1164,7 +1164,30 @@ moValueBase &moValueBase::operator = (const moValueBase &src) {
 }
 
 
+void
+moValueBase::SetRange( MOfloat min, MOfloat max ) {
+    m_ValueDefinition.SetRange(min,max);
+}
 
+void
+moValueBase::SetRange( moText min, moText max ) {
+    m_ValueDefinition.SetRange(min,max);
+}
+
+void
+moValueBase::GetRange( MOfloat* min, MOfloat* max) {
+    m_ValueDefinition.GetRange(min,max);
+}
+
+moText
+moValueBase::GetAttribute() const {
+    return m_ValueDefinition.GetAttribute();
+}
+
+void
+moValueBase::SetAttribute( moText p_attribute ) {
+    m_ValueDefinition.SetAttribute(p_attribute);
+}
 
 void
 moValueBase::SetType( moValueType p_type ) {
@@ -1177,22 +1200,22 @@ moValueBase::SetIndex( MOint	p_index ) {
 }
 
 moValueType
-moValueBase::GetType() {
+moValueBase::GetType() const {
 	return m_ValueDefinition.GetType();
 }
 
 moText
-moValueBase::GetTypeStr() {
+moValueBase::GetTypeStr() const {
 	return m_ValueDefinition.GetTypeStr();
 }
 
 MOint
-moValueBase::GetIndex() {
+moValueBase::GetIndex() const {
 	return m_ValueDefinition.GetIndex();
 }
 
 moText
-moValueBase::GetCodeName() {
+moValueBase::GetCodeName() const {
     return m_ValueDefinition.GetCodeName();
 }
 

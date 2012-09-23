@@ -31,7 +31,6 @@
 
 #include "moThread.h"
 
-#include "boost/thread/thread.hpp"
 
 #ifdef MO_WIN32
     #include "SDL_thread.h"
@@ -39,7 +38,10 @@
     #include "SDL/SDL_thread.h"
 #endif
 
-using namespace boost;
+
+//#include "boost/thread/thread.hpp"
+//using namespace boost;
+
 
 moThread::moThread() {
 	m_handleThread = NULL;
@@ -51,9 +53,10 @@ moThread::~moThread() {
 }
 
 bool moThread::CreateThread() {
-    thread* pthread;
+    //thread* pthread;
     //pthread = new thread( boost::bind( moThread::InitialThreadFunction, (void*)this ) );
     //m_handleThread = (void*) pthread;
+
 	m_handleThread = (void *)SDL_CreateThread( InitialThreadFunction,(void*)this);
 
 	return(m_handleThread!=NULL);

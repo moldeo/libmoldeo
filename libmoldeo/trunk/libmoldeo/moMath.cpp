@@ -40,7 +40,7 @@
 #ifndef MO_USING_VC
 template<> const MOlong moMath<MOlong>::EPSILON = FLT_EPSILON;
 template<> const MOlong moMath<MOlong>::ZERO_TOLERANCE = 1e-06f;
-template<> const MOlong moMath<MOlong>::MAX_REAL = FLT_MAX;
+template<> const MOlong moMath<MOlong>::MAX_REAL = (MOlong)FLT_MAX;
 template<> const MOlong moMath<MOlong>::PI = (MOlong)(4.0*atan(1.0));
 template<> const MOlong moMath<MOlong>::TWO_PI = 2.0f*moMath<MOlong>::PI;
 template<> const MOlong moMath<MOlong>::HALF_PI = 0.5f*moMath<MOlong>::PI;

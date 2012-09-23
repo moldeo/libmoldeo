@@ -78,6 +78,7 @@ MOboolean moTempo::Init() {
 	factor = 1.0;
 
 	beatpulsecount = 0;
+	m_pFromTempo = NULL;
 
     ///TODO: siempre iniciamos encendiendo el timer
 	Start();

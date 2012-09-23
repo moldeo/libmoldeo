@@ -48,14 +48,13 @@
 
 IMPLEMENT_SCRIPT_CLASS(moLuaSoundManager)
 
-DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaSoundManager)
 
-    {0}
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaSoundManager)
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaSoundManager)
-{0}
 END_SCRIPT_CLASS_PROPERTIES
+
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaSoundManager)
 {
@@ -89,6 +88,8 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaSoundManager, GetSound )
   return 1;
 }
 
+
+
 /**
 
 
@@ -106,13 +107,13 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaCircularVideoBuffer)
       SCRIPT_FUNCTION( moLuaCircularVideoBuffer, StopRecording),
       SCRIPT_FUNCTION( moLuaCircularVideoBuffer, GetRecordPosition),
       SCRIPT_FUNCTION( moLuaCircularVideoBuffer, GetFrameCount),
-      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, IsRecording),
-    {0}
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, IsRecording)
 END_SCRIPT_CLASS_FUNCTIONS
 
+
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaCircularVideoBuffer)
-{0}
 END_SCRIPT_CLASS_PROPERTIES
+
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaCircularVideoBuffer)
 {
@@ -193,12 +194,10 @@ IMPLEMENT_SCRIPT_CLASS(moLuaVideoManager)
 
 DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoManager)
     SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBufferCount ),
-    SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBuffer ),
-    {0}
+    SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBuffer )
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoManager)
-{0}
 END_SCRIPT_CLASS_PROPERTIES
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaVideoManager)
@@ -239,6 +238,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetCircularVideoBuffer )
   return 1;
 }
 
+
 /**
 
 
@@ -260,13 +260,13 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaResourceManager)
 
     SCRIPT_FUNCTION( moLuaResourceManager, GetTextureMan),
     SCRIPT_FUNCTION( moLuaResourceManager, GetVideoMan),
-    SCRIPT_FUNCTION( moLuaResourceManager, GetSoundMan),
-    {0}
+    SCRIPT_FUNCTION( moLuaResourceManager, GetSoundMan)
 END_SCRIPT_CLASS_FUNCTIONS
 
+
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaResourceManager)
-{0}
 END_SCRIPT_CLASS_PROPERTIES
+
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaResourceManager)
 {
@@ -318,6 +318,8 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceByType)
 {
     int id;
 
+    id = -1;
+
     if (lua_isnumber(L,1)) {
       int typei = (int) lua_tonumber(L, 1);
       ///chequear validez del indice...
@@ -336,11 +338,9 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceByType)
         id = pResource->GetId();
     }
 
-   	int id = -1;
      (m_pResourceManager && typei<MO_RESOURCETYPE_) ?
       pResource = m_pResourceManager->GetResourceByType((moResourceType)typei) : pResource=NULL;
-
-  */
+*/
 
     lua_pushnumber(L, (lua_Number)id);
     return 1;
@@ -420,40 +420,44 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetSoundMan)
 }
 
 
-// moLuaMath implementation ***************************************************
 
+
+/** moLuaMath implementation ***************************************************
+*/
+/*
 IMPLEMENT_SCRIPT_CLASS(moLuaMath)
 
 // Bind member functions to LUA
 DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaMath)
-SCRIPT_FUNCTION(moLuaMath, ACos),
-SCRIPT_FUNCTION(moLuaMath, ASin),
-SCRIPT_FUNCTION(moLuaMath, ATan),
-SCRIPT_FUNCTION(moLuaMath, ATan2),
-SCRIPT_FUNCTION(moLuaMath, Ceil),
-SCRIPT_FUNCTION(moLuaMath, Cos),
-SCRIPT_FUNCTION(moLuaMath, Exp),
-SCRIPT_FUNCTION(moLuaMath, FAbs),
-SCRIPT_FUNCTION(moLuaMath, Floor),
-SCRIPT_FUNCTION(moLuaMath, FMod),
-SCRIPT_FUNCTION(moLuaMath, InvSqrt),
-SCRIPT_FUNCTION(moLuaMath, Log),
-SCRIPT_FUNCTION(moLuaMath, Log2),
-SCRIPT_FUNCTION(moLuaMath, Log10),
-SCRIPT_FUNCTION(moLuaMath, Pow),
-SCRIPT_FUNCTION(moLuaMath, Sin),
-SCRIPT_FUNCTION(moLuaMath, Sqr),
-SCRIPT_FUNCTION(moLuaMath, Sqrt),
-SCRIPT_FUNCTION(moLuaMath, Tan),
-SCRIPT_FUNCTION(moLuaMath, UnitRandom),
-SCRIPT_FUNCTION(moLuaMath, SymmetricRandom),
-SCRIPT_FUNCTION(moLuaMath, IntervalRandom),
-{ 0, 0 }
+    SCRIPT_FUNCTION(moLuaMath, ACos),
+    SCRIPT_FUNCTION(moLuaMath, ASin),
+    SCRIPT_FUNCTION(moLuaMath, ATan),
+    SCRIPT_FUNCTION(moLuaMath, ATan2),
+    SCRIPT_FUNCTION(moLuaMath, Ceil),
+    SCRIPT_FUNCTION(moLuaMath, Cos),
+    SCRIPT_FUNCTION(moLuaMath, Exp),
+    SCRIPT_FUNCTION(moLuaMath, FAbs),
+    SCRIPT_FUNCTION(moLuaMath, Floor),
+    SCRIPT_FUNCTION(moLuaMath, FMod),
+    SCRIPT_FUNCTION(moLuaMath, InvSqrt),
+    SCRIPT_FUNCTION(moLuaMath, Log),
+    SCRIPT_FUNCTION(moLuaMath, Log2),
+    SCRIPT_FUNCTION(moLuaMath, Log10),
+    SCRIPT_FUNCTION(moLuaMath, Pow),
+    SCRIPT_FUNCTION(moLuaMath, Sin),
+    SCRIPT_FUNCTION(moLuaMath, Sqr),
+    SCRIPT_FUNCTION(moLuaMath, Sqrt),
+    SCRIPT_FUNCTION(moLuaMath, Tan),
+    SCRIPT_FUNCTION(moLuaMath, UnitRandom),
+    SCRIPT_FUNCTION(moLuaMath, SymmetricRandom),
+    SCRIPT_FUNCTION(moLuaMath, IntervalRandom)
 END_SCRIPT_CLASS_FUNCTIONS
+
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaMath)
 {0}
 END_SCRIPT_CLASS_PROPERTIES
+
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaMath)
 {
@@ -639,9 +643,10 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, IntervalRandom)
 	lua_pushnumber(L, (lua_Number)rand);
     return 1;
 }
+*/
 
-// moLuaParserFunction implementation *********************************************
-
+/** moLuaParserFunction implementation **********************************************/
+/*
 IMPLEMENT_SCRIPT_CLASS(moLuaParserFunction)
 
 // Bind member functions to LUA
@@ -658,9 +663,11 @@ SCRIPT_FUNCTION(moLuaParserFunction, GetVariableCount),
 { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
+
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaParserFunction)
 {0}
 END_SCRIPT_CLASS_PROPERTIES
+
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaParserFunction) : moParserFunction()
 {
@@ -738,8 +745,9 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaParserFunction, GetVariableCount)
 	lua_pushnumber(L, (lua_Number)res);
     return 1;
 }
+*/
 
-// moLuaMath implementation ***************************************************
+/** moLuaP5 implementation ****************************************************/
 
 IMPLEMENT_SCRIPT_CLASS(moLuaP5)
 
@@ -782,7 +790,6 @@ SCRIPT_FUNCTION(moLuaP5, PPI),
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaP5)
-{0}
 END_SCRIPT_CLASS_PROPERTIES
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaP5) : moP5()

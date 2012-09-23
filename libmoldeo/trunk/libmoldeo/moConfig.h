@@ -431,7 +431,7 @@ class LIBMOLDEO_API moConfig
 
         /// Devuelve el índice del parámetro actualmente seleccionado
         /**  @return índice del parámetro*/
-		int						GetCurrentParamIndex();
+		int						GetCurrentParamIndex() const;
 
         /// Selecciona el parámetro por el índice
         /**  @param índice del parámetro*/

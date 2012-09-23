@@ -118,13 +118,13 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         * observador de la clase, devuelve el id del conector
         * @return el id del conector
         */
-        MOint		GetConnectorId();
+        MOint		GetConnectorId() const;
 
         /**
         * observador de la clase, devuelve el nombre único del objeto al que pertenece el conector
         * @return el nombre único del objeto al que pertenece el conector
         */
-		moText		GetMoldeoLabelName();
+		moText		GetMoldeoLabelName() const;
 
         /**
         * fija el nombre único del objeto al que pertenece el conector
@@ -136,7 +136,7 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         * observador de la clase, devuelve el id del objeto al que pertenece este conector
         * @return el id del objeto al que pertenece este conector
         */
-		MOint		GetMoldeoId();
+		MOint		GetMoldeoId() const;
 
         /**
         * fija el id único del objeto al que pertenece este conector
@@ -148,7 +148,7 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         * observador de la clase, devuelve el nombre único de este conector
         * @return el nombre único de este conector
         */
-		moText		GetConnectorLabelName();
+		virtual const moText&		GetConnectorLabelName() const;
 
         /**
         * fija el tipo de dato vinculado a este conector
@@ -160,7 +160,7 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         * observador de la clase, devuelve el tipo de dato del conector
         * @return el tipo de dato del conector
         */
-		moDataType	GetType();
+		moDataType	GetType() const;
 
         /**
         * fija el parámetro al que estará vinculado este conector
@@ -203,7 +203,7 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         * observador sobre la actualización del conector
         * @return devuelve true si fue actualizado recientemente, false si no
         */
-		MOboolean	Updated();
+		MOboolean	Updated() const;
 
         /**
         * marca este dato como actualizado

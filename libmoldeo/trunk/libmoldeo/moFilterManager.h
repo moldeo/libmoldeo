@@ -490,7 +490,7 @@ class LIBMOLDEO_API moTrackerSystemHistory : public moAbstract {
       long  CountRecords();
       bool  SaveToFile( moText filename );
       bool  SaveToXML( moText filename );
-      moTrackerInstanceRecord& Get( int index ) { return m_History.Get(index); }
+      moTrackerInstanceRecord& Get( int index );
 
     public:
 

@@ -734,7 +734,7 @@ moFile::SetCompletePath( moText p_completepath ) {
             m_Dirs.Remove(m_Dirs.Count()-1);
         }
 
-        for(int d=0; d < m_Dirs.Count(); d++ ) {
+        for( MOuint d=0; d < m_Dirs.Count(); d++ ) {
           if (m_Dirs[d]!="" && m_Dirs[d]!="/" && m_Dirs[d]!="." && m_Dirs[d]!="..")
             m_Path+= m_Dirs[d] + "/";
         }

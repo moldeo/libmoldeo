@@ -369,7 +369,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         int GetObjectId( moText p_objectlabelname );
 
-        const int GetDirectoryFileCount( moText p_path );
+        int GetDirectoryFileCount( moText p_path );
 
         ///============================
         ///SCRIPTED in LUA
@@ -460,7 +460,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         virtual void GLSwapBuffers();
         virtual void GUIYield();
 
-        moConsoleState			state;
+        moConsoleState			m_ConsoleState;
 
         MOboolean				m_bExternalResources;
 

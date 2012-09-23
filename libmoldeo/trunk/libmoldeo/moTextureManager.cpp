@@ -291,9 +291,10 @@ moTextureBuffer::LoadImage( moText p_ImageName, moBitmap* pImage, int indeximage
         w = FreeImage_GetWidth(pImageResult);
         h = FreeImage_GetHeight(pImageResult);
 
-        MOuint i;
+        int i;
         for (i = 1; i < w; i *= 2);
         w = i;
+
         for (i = 1; i < h; i *= 2);
         h = i;
 
@@ -569,7 +570,7 @@ MOint moTextureManager::GetTextureBuffer( moText p_foldername, MOboolean p_creat
 
 
 moTextureBuffer* moTextureManager::GetTextureBuffer( int idx ) {
-    if (0<=idx && idx<m_textures_array.Count()) {
+    if (0<=idx && idx<(int)m_textures_array.Count()) {
         return m_textures_buffers[idx];
     } else return NULL;
 }

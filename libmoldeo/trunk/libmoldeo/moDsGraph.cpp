@@ -163,7 +163,7 @@ moCaptureDevices* moDsFramework::UpdateCaptureDevices() {
 	moCaptureDevice CapDev;
 
 	for( K=0; K < m_CaptureDevices.Count(); K++) {
-		CapDev = m_CaptureDevices.Get(K);
+		CapDev = m_CaptureDevices.GetRef(K);
 		CapDev.Present( false );
 		m_CaptureDevices.Set( K , CapDev );
 	}
@@ -219,7 +219,7 @@ moCaptureDevices* moDsFramework::UpdateCaptureDevices() {
 			for( K=0; K < m_CaptureDevices.Count(); K++) {
 				if ( m_CaptureDevices.Get(K).GetPath() == DevicePath ) {
 					//AN OLD ONE... :-D CONFIRMS HIS PRESENCE
-					CapDev = m_CaptureDevices.Get(K);
+					CapDev = m_CaptureDevices.GetRef(K);
 					CapDev.Present( true );
 					m_CaptureDevices.Set( K , CapDev );
 					CapDevFounded = true;

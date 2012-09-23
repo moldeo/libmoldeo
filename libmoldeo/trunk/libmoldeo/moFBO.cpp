@@ -266,7 +266,7 @@ void moFBO::ClearAttachements()
 	}
 }
 
-MOuint moFBO::CheckStatus()
+MOuint moFBO::CheckStatus()  const
 {
 	if (MODebug2 != NULL) MODebug2->Push("Framebuffer status: ");
 	GLenum status;
@@ -307,7 +307,7 @@ MOuint moFBO::CheckStatus()
 	return status;
 }
 
-MOboolean moFBO::IsValidTexture(MOuint p_width, MOuint p_height, const moTexParam& p_param)
+MOboolean moFBO::IsValidTexture(MOuint p_width, MOuint p_height, const moTexParam& p_param)  const
 {
 	if (m_num_color_attach_points == 0) return true;
 	else

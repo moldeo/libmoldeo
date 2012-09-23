@@ -542,7 +542,7 @@ void  moCircularVideoBuffer::ContinueRecording() {
 void  moCircularVideoBuffer::JumpRecording( long at_position ) {
   //m_RecTimer.Start();
   //chequear
-  if ( at_position>=0 && at_position<m_Frames.Count()) {
+  if ( at_position>=0 && at_position<(long)m_Frames.Count()) {
     m_WriteIndex = at_position;
   }
 }
@@ -999,7 +999,7 @@ int moVideoManager::GetCameraCount() {
 }
 
 moCircularVideoBuffer* moVideoManager::GetCircularVideoBuffer( int cb_idx ) {
-  return m_CircularVideoBuffers.Get(cb_idx);
+  return m_CircularVideoBuffers.GetRef(cb_idx);
 }
 
 int moVideoManager::GetCircularVideoBufferCount() {
@@ -1007,7 +1007,7 @@ int moVideoManager::GetCircularVideoBufferCount() {
 }
 
 moVideoBufferPath* moVideoManager::GetVideoBufferPath( int vb_idx ) {
-  return m_VideoBufferPaths.Get(vb_idx);
+  return m_VideoBufferPaths.GetRef(vb_idx);
 }
 
 int moVideoManager::GetVideoBufferPathCount() {

@@ -34,13 +34,14 @@
 #include "moTypes.h"
 #include "moAbstract.h"
 #include "moTempo.h"
+#include "moMoldeoObject.h"
 
 /**
  * moEffectState
  * estado de un efecto
  */
 
-class LIBMOLDEO_API moEffectState : public moAbstract
+class LIBMOLDEO_API moEffectState : public moMobState
 {
 
 	public:

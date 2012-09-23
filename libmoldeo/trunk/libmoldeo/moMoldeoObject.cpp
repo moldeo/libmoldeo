@@ -40,6 +40,56 @@
 #include "moArray.h"
 moDefineDynamicArray(moMoldeoObjects)
 
+
+
+
+    moMobState::moMobState() {
+        m_Activated = MO_OFF;
+        m_Selected = MO_OFF;
+    }
+
+    moMobState::~moMobState() {
+    }
+
+    moMobState::moMobState( const moMobState& p_MobState ) {
+        (*this) = p_MobState;
+    }
+
+    moMobState&
+    moMobState::operator=( const moMobState& src) {
+        m_Activated = src.m_Activated;
+        m_Selected = src.m_Selected;
+        return (*this);
+    }
+
+    void moMobState::Activate() {
+        m_Activated = MO_ON;
+
+    }
+
+    void moMobState::Deactivate() {
+        m_Activated = MO_OFF;
+    }
+
+    bool moMobState::Activated() const {
+        return (m_Activated==MO_ON);
+    }
+
+
+    void moMobState::Select() {
+        m_Selected = MO_ON;
+    }
+
+    void moMobState::Unselect() {
+        m_Selected = MO_OFF;
+    }
+
+    bool moMobState::Selected() const {
+        return (m_Selected==MO_ON);
+    }
+
+
+
 //===========================================
 //
 //				moMoldeoObject
@@ -52,9 +102,8 @@ moMoldeoObject::moMoldeoObject() {
 	SetLabelName("");
 	SetName("");
 	SetConfigName("");
-
-	m_Description = moText("");
-	m_Script = moText("");
+	SetDescription("");
+	SetScript("");
 
 	m_pResourceManager = NULL;
 	m_Inlets.Init( 0 , NULL );
@@ -66,6 +115,67 @@ moMoldeoObject::moMoldeoObject() {
 moMoldeoObject::~moMoldeoObject() {
   moMoldeoObject::Finish();
 }
+
+void
+moMoldeoObject::SetScript( const moText& p_script ) {
+    m_Script = p_script;
+}
+
+const
+moMobState& moMoldeoObject::GetState() const {
+    return m_MobState;
+}
+
+bool
+moMoldeoObject::SetState( const moMobState& p_MobState ) {
+
+    //TODO: check things before commit changes
+    m_MobState = p_MobState;
+    return true;
+}
+
+
+void moMoldeoObject::Activate() {
+
+    moMobState mobstate = GetState();
+
+    mobstate.Activate();
+    SetState( mobstate );
+}
+
+void moMoldeoObject::Deactivate() {
+
+    moMobState mobstate = GetState();
+
+    mobstate.Deactivate();
+    SetState( mobstate );
+}
+
+bool moMoldeoObject::Activated() const {
+    return GetState().Activated();
+}
+
+void moMoldeoObject::Select() {
+
+    moMobState mobstate = GetState();
+
+    mobstate.Select();
+    SetState( mobstate );
+}
+
+void moMoldeoObject::Unselect() {
+    moMobState mobstate = GetState();
+    mobstate.Unselect();
+    SetState( mobstate );
+}
+
+bool moMoldeoObject::Selected() const {
+    return GetState().Selected();
+}
+
+
+
+
 
 
 MOboolean
@@ -467,7 +577,7 @@ moMoldeoObject::Finish() {
 
   ScriptExeFinish();
 
-  for(int i=0; i<m_Inlets.Count(); i++ ) {
+  for(MOuint i=0; i<m_Inlets.Count(); i++ ) {
     moInlet *pInlet = dynamic_cast<moInlet*>(m_Inlets[i]);
     if (pInlet) {
         delete pInlet;
@@ -475,7 +585,7 @@ moMoldeoObject::Finish() {
   }
   m_Inlets.Empty();
 
-  for(int i=0; i<m_Outlets.Count(); i++ ) {
+  for(MOuint i=0; i<m_Outlets.Count(); i++ ) {
     moOutlet *pOutlet = dynamic_cast<moOutlet*>(m_Outlets[i]);
     if (pOutlet) {
         delete pOutlet;
@@ -490,7 +600,7 @@ moMoldeoObject::Finish() {
 
 
 moMoldeoObjectType
-moMoldeoObject::GetType() {
+moMoldeoObject::GetType() const {
 	return m_MobDefinition.GetType();
 }
 
@@ -500,7 +610,7 @@ moMoldeoObject::SetType( moMoldeoObjectType p_type ) {
 }
 
 MOint
-moMoldeoObject::GetId() {
+moMoldeoObject::GetId() const {
 	return m_MobDefinition.GetMoldeoId();
 }
 
@@ -557,9 +667,11 @@ moMoldeoObject::LoadDefinition() {
 	//m_Config.Check();
 
 	moParamDefinitions *pdefinitions = m_Config.GetConfigDefinition()->GetParamDefinitions();
+    moParamDefinitions& PD(*pdefinitions);
 
 	for( MOuint i=0; i < pdefinitions->Count(); i++ ) {
-		pdefinitions->Get(i).SetIndex( m_Config.GetParamIndex( pdefinitions->Get(i).GetName() ));
+        moText name = pdefinitions->Get(i).GetName();
+		PD[i].SetIndex( m_Config.GetParamIndex( name ));
 	}
 
 }
@@ -576,23 +688,22 @@ moMoldeoObject::GetInlets() {
 }
 
 MOint
-moMoldeoObject::GetInletIndex( moText p_connector_name ) {
+moMoldeoObject::GetInletIndex( moText p_connector_name ) const {
 
 	for( MOuint i=0; i< m_Inlets.Count(); i++ ) {
-	    moInlet* pInlet = m_Inlets[i];
-      if ( pInlet )
-            if ( pInlet->GetConnectorLabelName() == p_connector_name )
-                return i;
+	  moInlet* pInlet = m_Inlets.Get(i);
+      if ( pInlet->GetConnectorLabelName() == p_connector_name )
+        return i;
 	}
 	return (-1);
 
 }
 
 MOint
-moMoldeoObject::GetOutletIndex( moText p_connector_name ) {
+moMoldeoObject::GetOutletIndex( moText p_connector_name ) const {
 
 	for( MOuint i=0; i< m_Outlets.Count(); i++ ) {
-	    moOutlet* pOutlet = m_Outlets[i];
+	    moOutlet* pOutlet = m_Outlets.Get(i);
 		if ( pOutlet )
             if ( pOutlet->GetConnectorLabelName() == p_connector_name )
                 return i;
@@ -998,7 +1109,7 @@ int moMoldeoObject::luaGetInletIndex(moLuaVirtualMachine& vm) {
 
     int inletid = -1;
 
-    for( int i=0; i<m_Inlets.Count(); i++ ) {
+    for( MOuint i=0; i<m_Inlets.Count(); i++ ) {
         moInlet* pInlet = m_Inlets[i];
         if (pInlet) {
             moText lname = pInlet->GetConnectorLabelName();
@@ -1025,9 +1136,9 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
     moVector4i* pv4i;
 
 
-    MOint inletindex = (MOint) lua_tonumber (state, 1);
+    int inletindex = (int) lua_tonumber (state, 1);
 
-    if ( inletindex>=0 && inletindex<m_Inlets.Count()) {
+    if ( inletindex>=0 && inletindex<(int)m_Inlets.Count()) {
         moInlet* pInlet = m_Inlets[inletindex];
         if ( pInlet ) {
             moData* pData = pInlet->GetData();
@@ -1127,9 +1238,9 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint inletindex = (MOint) lua_tonumber (state, 1);
+    int inletindex = (int) lua_tonumber (state, 1);
 
-    if ( inletindex>=0 && inletindex<m_Inlets.Count()) {
+    if ( inletindex>=0 && inletindex<(int)m_Inlets.Count()) {
 
         moInlet* pInlet = m_Inlets[inletindex];
 
