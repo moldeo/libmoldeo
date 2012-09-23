@@ -66,12 +66,10 @@ moConfigDefinition::~moConfigDefinition() {
 
 bool
 moConfigDefinition::Exists( moText p_name ) {
-  int i;
-  for( i = 0; i < m_ParamDefinitions.Count(); i++ ) {
+  for( MOuint i = 0; i < m_ParamDefinitions.Count(); i++ ) {
     moParamDefinition pdef = m_ParamDefinitions[i];
-    if ( pdef.GetName() == p_name ) {
+    if ( pdef.GetName() == p_name )
       return true;
-    }
   }
   return false;
 }
@@ -79,13 +77,12 @@ moConfigDefinition::Exists( moText p_name ) {
 bool
 moConfigDefinition::SetIndex( moText p_name, MOint p_index) {
 
-    int i;
     bool founded;
     moParamDefinition pdef;
 
     founded = false;
 
-    for( i = 0; i < m_ParamDefinitions.Count(); i++ ) {
+    for( MOuint i = 0; i < m_ParamDefinitions.Count(); i++ ) {
         pdef = m_ParamDefinitions[i];
         if ( pdef.GetName() == p_name ) {
             founded = true;
@@ -168,7 +165,7 @@ moConfigDefinition::SetParamIndex( int defined_array_index, moParamIndex paramin
     return false;
   }
 
-  if ( ! ( 0 <= defined_array_index && defined_array_index < m_ParamIndexes.Count()) ) {
+  if ( ! ( 0 <= defined_array_index && defined_array_index < (int)m_ParamIndexes.Count()) ) {
         MODebug2->Error( moText("moConfigDefinition::SetParamIndex[" + m_ObjectName + "] > defined array entry index not in range : ")
                         + IntToStr(defined_array_index)
                         + moText(" Max Indexes : ")
@@ -210,11 +207,9 @@ MOboolean moConfig::IsConfigLoaded() {
 void
 moConfig::Indexation() {
 
-    int i;
-
     if ( GetConfigDefinition()!=NULL) {
 
-        for( i = 0; i < GetConfigDefinition()->GetParamDefinitions()->Count(); i++ ) {
+        for( MOuint i = 0; i < GetConfigDefinition()->GetParamDefinitions()->Count(); i++ ) {
 
             moParamDefinition pdef = GetConfigDefinition()->GetParamDefinitions()->Get(i);
 
@@ -232,22 +227,30 @@ void
 moConfig::FixConfig() {
 
   ///AGREGAMOS PARAMETROS FALTANTES
-  for(int j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
-    moParamDefinition& pDef( m_ConfigDefinition.GetParamDefinitions()->Get(j) );
-    int real_idx = GetParamIndex( pDef.GetName() );
-    if (real_idx==-1) {
-      CreateParam( pDef );
+  for( MOuint j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
+    moParamDefinitions* pd = m_ConfigDefinition.GetParamDefinitions();
+    if (pd) {
+        moParamDefinition pDef = pd->Get(j);
+        moText paramname = pDef.GetName();
+        int real_idx = GetParamIndex( paramname );
+        if (real_idx==-1) {
+          CreateParam( pDef );
+        }
     }
   }
 
   ///RE-INDEXAMOS....
-  for( int i=0; i< m_Params.Count(); i++ ) {
+  for( MOuint i=0; i< m_Params.Count(); i++ ) {
     moParam& param(m_Params[i]);
-    for(int j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
-        moParamDefinition& pDef( m_ConfigDefinition.GetParamDefinitions()->Get(j) );
-        if ( param.GetParamDefinition().GetName() == pDef.GetName() ) {
-          pDef.SetIndex(i);
-          break;
+    for( MOuint j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
+        moParamDefinitions* pd = m_ConfigDefinition.GetParamDefinitions();
+        moParamDefinition pDef = pd->Get(j);
+        if (pd) {
+            if ( param.GetParamDefinition().GetName() == pDef.GetName() ) {
+                pDef.SetIndex(i);
+                pd->Set( j, pDef );
+                break;
+            }
         }
     }
     param.GetParamDefinition().SetIndex(i);
@@ -340,9 +343,11 @@ int moConfig::LoadConfig( moText p_filename ) {
 
                             moValueBase& xvbase( xvalue.GetLastSubValue() );
 
-                            xvbase.GetValueDefinition().SetCodeName( valuecodename );
-                            xvbase.GetValueDefinition().SetAttribute( valueattribute );
-                            xvbase.GetValueDefinition().SetRange( valuemin, valuemax );
+                            xvbase.SetCodeName( valuecodename );
+                            xvbase.SetAttribute( valueattribute );
+                            xvbase.SetRange( valuemin, valuemax );
+                            /** TODO: */
+                            // SetSelect ???
 
 							VALUEDATA = VALUEDATA->NextSiblingElement("D");
 
@@ -359,9 +364,9 @@ int moConfig::LoadConfig( moText p_filename ) {
 
 								moValueBase& xvbase( xvalue.GetLastSubValue() );
 
-								xvbase.GetValueDefinition().SetCodeName( subvaluecodename );
-								xvbase.GetValueDefinition().SetAttribute( subvalueattribute );
-								xvbase.GetValueDefinition().SetRange( subvaluemin, subvaluemax );
+								xvbase.SetCodeName( subvaluecodename );
+								xvbase.SetAttribute( subvalueattribute );
+								xvbase.SetRange( subvaluemin, subvaluemax );
 
 								VALUEDATA = VALUEDATA->NextSiblingElement("D");
 							}
@@ -479,7 +484,7 @@ int moConfig::SaveConfig( moText p_filename ) {
             for( int p = 0; p< (int)m_Params.Count(); p++ ) {
 
                 //proximo parámetro
-                moParam& xparam( m_Params.Get(p) );
+                moParam& xparam( m_Params[p] );
                 moParamDefinition definition = xparam.GetParamDefinition();
 
                 TiXmlElement*  PARAM = new TiXmlElement( "PARAM" );
@@ -508,7 +513,7 @@ int moConfig::SaveConfig( moText p_filename ) {
                                     moText  valuecodename = xvaluedata.GetValueDefinition().GetCodeName();
                                     moText  valueattribute = xvaluedata.GetValueDefinition().GetAttribute();
                                     MOfloat valuemin, valuemax;
-                                    xvaluedata.GetValueDefinition().GetRange( &valuemin, &valuemax );
+                                    xvaluedata.GetRange( &valuemin, &valuemax );
 
                                     if ( valuecodename !=moText("") ) VALUEDATA->SetAttribute( "code" , valuecodename );
                                     if ( valueattribute !=moText("") ) VALUEDATA->SetAttribute( "attribute" , valueattribute );
@@ -537,7 +542,7 @@ int moConfig::SaveConfig( moText p_filename ) {
 
             for( int pc=0; pc< (int)m_PreConfigs.Count(); pc++) {
 
-                moPreConfig& xPreConfig( m_PreConfigs.Get(pc) );
+                moPreConfig& xPreConfig( m_PreConfigs[pc] );
 
                 TiXmlElement* PRECONFIG = new TiXmlElement("PRE");
                 if (PRECONFIG) {
@@ -595,7 +600,7 @@ moConfig::CreateParam( moParamDefinition& p_ParamDef ) {
   m_Params.Add( xparam );
 
   ///asigna los indices...
-  moParam& pParam( m_Params.Get(m_Params.Count()-1) );
+  moParam& pParam( m_Params[m_Params.Count()-1] );
   pParam.GetParamDefinition().SetIndex(m_Params.Count()-1);
   p_ParamDef.SetIndex(m_Params.Count()-1);
 }
@@ -739,9 +744,9 @@ moConfig::GetParams() {
 moParam&
 moConfig::GetParam( MOint	p_paramindex ) {
 	if ( p_paramindex == -1 )
-		return m_Params.Get( m_CurrentParam );
+		return m_Params[m_CurrentParam];
 	else
-		return m_Params.Get( p_paramindex );
+		return m_Params[p_paramindex];
 }
 
 moParam&
@@ -796,7 +801,7 @@ moConfig::GetValue( int indexparam, int indexvalue ) {
 
 MOint
 moConfig::Int( moParamReference p_paramreference ) {
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     return param.GetValue().GetSubValue().Int();
 }
 
@@ -807,7 +812,7 @@ moConfig::Int( moText p_param_name ) {
 
 MOdouble
 moConfig::Double( moParamReference p_paramreference ) {
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     return param.GetValue().GetSubValue().Double();
 }
 
@@ -818,7 +823,7 @@ moConfig::Double( moText p_param_name ) {
 
 moText
 moConfig::Text( moParamReference p_paramreference ) {
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     return param.GetValue().GetSubValue().Text();
 }
 
@@ -830,7 +835,7 @@ moConfig::Text( moText p_param_name ) {
 moVector4d
 moConfig::EvalColor( moParamReference p_paramreference ) {
 
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moVector4d  full_color(0.0,0.0,0.0,1.0);
     double r,g,b,a;
     if (param.GetValue().GetSubValueCount()==4) {
@@ -847,7 +852,7 @@ moConfig::EvalColor( moParamReference p_paramreference ) {
 moVector4d
 moConfig::EvalColor( moParamReference p_paramreference, double x, ... ) {
 
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moVector4d  full_color(0.0,0.0,0.0,1.0);
     double r,g,b,a;
     if (param.GetValue().GetSubValueCount()==4) {
@@ -864,7 +869,7 @@ moConfig::EvalColor( moParamReference p_paramreference, double x, ... ) {
 MOdouble
 moConfig::Eval( moParamReference p_paramreference, double x, ... ) {
 
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
       return pdata->Eval( x );
@@ -888,7 +893,7 @@ moConfig::Eval( moText p_param_name , double x, ... ) {
 MOdouble
 moConfig::Eval( moParamReference p_paramreference ) {
 
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
       return pdata->Eval();
@@ -912,7 +917,7 @@ moConfig::Eval( moText p_param_name ) {
 GLint
 moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
 
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
       return pdata->GetGLId( p_cycle, p_fade, p_filterparam );
@@ -922,7 +927,7 @@ moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p
 
 GLint
 moConfig::GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
       return pdata->GetGLId( p_tempo, p_fade, p_filterparam );
@@ -932,7 +937,7 @@ moConfig::GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat 
 
 GLint
 moConfig::GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
       return pdata->GetGLId( p_i, p_fade, p_filterparam );
@@ -942,7 +947,7 @@ moConfig::GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade
 
 GLint
 moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
       return pdata->GetGLId( p_fade, p_filterparam );
@@ -957,7 +962,7 @@ moConfig::Fun(  moParamReference p_paramreference ) {
       ///error...
       return *m_pFun;
   }
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moMathFunction* pFun = pdata->Fun();
@@ -965,12 +970,12 @@ moConfig::Fun(  moParamReference p_paramreference ) {
         return *pFun;
       }
   }
-  return *m_pFun;
+  return (*m_pFun);
 }
 
 const moFont&
 moConfig::Font( moParamReference p_paramreference ) {
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moFont* pFont = pdata->Font();
@@ -984,7 +989,7 @@ moConfig::Font( moParamReference p_paramreference ) {
 const moTextureBuffer&
 moConfig::TextureBuffer(  moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moTextureBuffer* pTextureBuffer = pdata->TextureBuffer();
@@ -992,14 +997,14 @@ moConfig::TextureBuffer(  moParamReference p_paramreference ) {
         return *pTextureBuffer;
       }
   }
-  return moTextureBuffer();
+  return (*m_pTextureBuffer);
 
 }
 
 const mo3DModelSceneNode&
 moConfig::Model(  moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       mo3DModelSceneNode* pModel = pdata->Model();
@@ -1007,14 +1012,14 @@ moConfig::Model(  moParamReference p_paramreference ) {
         return *pModel;
       }
   }
-  return mo3DModelSceneNode();
+  return (*m_pModel);
 
 }
 
 const moVector2d&
 moConfig::Vector2d( moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moVector2d* pVector = pdata->Vector2d();
@@ -1022,14 +1027,14 @@ moConfig::Vector2d( moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moVector2d();
+  return (*m_pVector2d);
 
 }
 
 const moVector2i&
 moConfig::Vector2i( moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moVector2i* pVector = pdata->Vector2i();
@@ -1037,14 +1042,14 @@ moConfig::Vector2i( moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moVector2i();
+  return (*m_pVector2i);
 
 }
 
 const moVector3d&
 moConfig::Vector3d( moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moVector3d* pVector = pdata->Vector3d();
@@ -1052,14 +1057,14 @@ moConfig::Vector3d( moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moVector3d();
+  return (*m_pVector3d);
 
 }
 
 const moVector3i&
 moConfig::Vector3i( moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moVector3i* pVector = pdata->Vector3i();
@@ -1067,14 +1072,14 @@ moConfig::Vector3i( moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moVector3i();
+  return (*m_pVector3i);
 
 }
 
 const moVector4d&
 moConfig::Vector4d( moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moVector4d* pVector = pdata->Vector4d();
@@ -1082,7 +1087,7 @@ moConfig::Vector4d( moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moVector4d();
+  return (*m_pVector4d);
 
 }
 
@@ -1090,7 +1095,7 @@ moConfig::Vector4d( moParamReference p_paramreference ) {
 const moVector4i&
 moConfig::Vector4i( moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moVector4i* pVector = pdata->Vector4i();
@@ -1098,14 +1103,14 @@ moConfig::Vector4i( moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moVector4i();
+  return (*m_pVector4i);
 
 }
 
 const moDataMessage&
 moConfig::Message(  moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moDataMessage* pVector = pdata->Message();
@@ -1113,14 +1118,14 @@ moConfig::Message(  moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moDataMessage();
+  return (*m_pMessage);
 
 }
 
 const moDataMessages&
 moConfig::Messages( moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moDataMessages* pVector = pdata->Messages();
@@ -1128,14 +1133,14 @@ moConfig::Messages( moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moDataMessages();
+  return (*m_pMessages);
 
 }
 
 moSound&
 moConfig::Sound(  moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moSound* pVector = pdata->Sound();
@@ -1150,7 +1155,7 @@ moConfig::Sound(  moParamReference p_paramreference ) {
 const moTexture&
 moConfig::Texture(  moParamReference p_paramreference ) {
 
-  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) ));
+  moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
       moTexture* pVector = pdata->Texture();
@@ -1158,7 +1163,7 @@ moConfig::Texture(  moParamReference p_paramreference ) {
         return *pVector;
       }
   }
-  return moTexture();
+  return (*m_pTexture);
 
 }
 
@@ -1175,17 +1180,17 @@ moConfig::GetCurrentValueIndex( MOint p_paramindex ) {
 
 moValue&
 moConfig::GetCurrentValue() {
-	return m_Params.Get( m_CurrentParam ).GetValue();
+	return m_Params[m_CurrentParam].GetValue();
 }
 
 moParam&
 moConfig::GetCurrentParam() {
-	return m_Params.Get( m_CurrentParam );
+	return m_Params[m_CurrentParam];
 }
 
 
 int
-moConfig::GetCurrentParamIndex() {
+moConfig::GetCurrentParamIndex() const {
 	return m_CurrentParam;
 }
 

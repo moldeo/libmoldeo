@@ -74,7 +74,7 @@ public:
      * @return resultado de la operación: true si fue exitosa, false en caso contrario.
      */
 	virtual MOboolean Init(moConfig* p_cfg, moParamReference p_param_ref, moTextureManager* p_tex_man)
-	{ LoadTextures(p_cfg, p_cfg->GetConfigDefinition()->ParamIndexes().Get(p_param_ref.reference).index, p_tex_man); return true; }
+	{ LoadTextures(p_cfg, p_cfg->GetConfigDefinition()->ParamIndexes().GetRef(p_param_ref.reference).index, p_tex_man); return true; }
     /**
      * Método de finalización.
      * @return resultado de la operación: true si fue exitosa, false en caso contrario.

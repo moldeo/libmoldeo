@@ -356,27 +356,27 @@ class LIBMOLDEO_API moCaptureDevice {
 		}
 
         /// Devuelve el nombre del dispositivo
-		moText GetName() {
+		const moText& GetName() const {
 			return m_Name;
 		}
 
         /// Devuelve la descripción del dispositivo
-		moText GetDescription() {
+		const moText& GetDescription() const {
 			return m_Description;
 		}
 
         /// Devuelve el camino al dispositivo
-		moText GetPath() {
+		const moText& GetPath() const {
 			return m_Path;
 		}
 
         /// Devuelve el puerto del dispositivo
-		MOint GetPort() {
+		MOint GetPort() const {
 			return m_DevicePort;
 		}
 
         /// Devuelve el formato de video del dispositivo
-		moVideoFormat GetVideoFormat() {
+		moVideoFormat& GetVideoFormat() {
 
 			return m_VideoFormat;
 		}
@@ -394,7 +394,7 @@ class LIBMOLDEO_API moCaptureDevice {
 		}
 
         /// Señala y verifica si está presente el dispositivo
-		bool IsPresent() {
+		bool IsPresent() const {
 			return m_bPresent;
 		}
 
@@ -404,32 +404,32 @@ class LIBMOLDEO_API moCaptureDevice {
 		}
 
         /// Devuelve el nombre de código del dispositivo
-		moText GetCodeName() {
+		const moText& GetCodeName() const {
 			return m_CodeName;
 		}
 
         /// Devuelve el ancho de la imagen de origen
-        int GetSourceWidth() {
+        int GetSourceWidth() const {
             return m_SourceWidth;
         }
 
         /// Devuelve el alto de la imagen de origen
-        int GetSourceHeight() {
+        int GetSourceHeight() const {
             return m_SourceHeight;
         }
 
         /// Devuelve los bits por pixel de la imagen de origen
-        int GetSourceBpp() {
+        int GetSourceBpp() const {
             return m_SourceBpp;
         }
 
         /// Devuelve el valor de inversión de imagen horizontal
-        int GetSourceFlipH() {
+        int GetSourceFlipH() const {
             return m_SourceFlipH;
         }
 
         /// Devuelve el valor de inversión de imagen vertical
-        int GetSourceFlipV() {
+        int GetSourceFlipV() const {
             return m_SourceFlipV;
         }
 
@@ -499,7 +499,7 @@ class LIBMOLDEO_API moVideoFramework : public moAbstract {
 		/**
 		*   fija el formato con el formato de la referencia a un moCaptureDevice
 		*/
-        virtual void SetPreferredFormat( moCaptureDevice &p_CaptureDevice );
+        virtual void SetPreferredFormat( const moCaptureDevice &p_CaptureDevice );
 
 		/// Acceso a los dispositivos de video preferidos
 		/**

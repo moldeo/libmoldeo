@@ -171,11 +171,11 @@ MOboolean moMathFunction::Init( const moText& p_Expression, moMoldeoObject* p_pM
 
     if ( m_pConfig ) {
         moParams& Params( m_pConfig->GetParams() );
-        for( int i=0; i < m_Variables.Count(); i++ ) {
+        for( MOuint i=0; i < m_Variables.Count(); i++ ) {
 
             moMathVariable* pVariable = m_Variables[i];
 
-            for( int p=0; p<Params.Count(); p++  ) {
+            for( MOuint p=0; p<Params.Count(); p++  ) {
 
                 moParam& param( Params[p] );
                 ///check for every parameters in config...
@@ -188,7 +188,7 @@ MOboolean moMathFunction::Init( const moText& p_Expression, moMoldeoObject* p_pM
 
             }
 
-            for( int m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
+            for( MOuint m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
 
               moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
 
@@ -609,11 +609,11 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
 
     if ( m_pConfig ) {
         moParams& Params( m_pConfig->GetParams() );
-        for( int i=0; i < m_Variables.Count(); i++ ) {
+        for( MOuint i=0; i < m_Variables.Count(); i++ ) {
 
             moMathVariable* pVariable = m_Variables[i];
 
-            for( int p=0; p<Params.Count(); p++  ) {
+            for( MOuint p=0; p<Params.Count(); p++  ) {
 
                 moParam& param( Params[p] );
                 ///check for every parameters in config...
@@ -626,7 +626,7 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
 
             }
 
-            for( int m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
+            for( MOuint m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
 
               moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
 

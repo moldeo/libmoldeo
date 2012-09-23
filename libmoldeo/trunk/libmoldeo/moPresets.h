@@ -53,8 +53,8 @@ public:
 
     MOboolean Init( MOint, MOint);//(0) cuantos presets voy a guardar,(1) el archivo de configuracion para saber cuantos parametros tengo que guardar
     MOboolean Finish();
-    void Load(MOint, moConfig*, moEffectState*);
-    void Save(MOint, moConfig*, moEffectState*);
+    const moEffectState& Load( MOint p, moConfig* conf, const moEffectState& fxstate );
+    void Save(MOint p, moConfig* conf, const moEffectState& fxstate);
 };
 
 #endif

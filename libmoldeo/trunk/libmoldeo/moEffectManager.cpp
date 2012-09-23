@@ -95,8 +95,10 @@ moEffectManager::NewEffect( moText p_resname, moText p_configname, moText p_labe
 	if (peffect) {
 		peffect->SetConfigName( p_configname );
 		peffect->SetLabelName( p_labelname );
-        peffect->GetMobDefinition().GetMobIndex().SetParamIndex(p_paramindex);
-        peffect->GetMobDefinition().GetMobIndex().SetValueIndex(p_valueindex);
+
+        peffect->SetConsoleParamIndex(p_paramindex);
+        peffect->SetConsoleValueIndex(p_valueindex);
+
 		m_AllEffects.Add((moEffect*) peffect);
 	}
 
@@ -148,53 +150,53 @@ moEffectManager::RemoveEffect( MOint p_ID, moMoldeoObjectType p_type ) {
 
 	switch( p_type ) {
 		case MO_OBJECT_EFFECT:
-			peffect = m_Effects.Get(p_ID);
+			peffect = m_Effects.GetRef(p_ID);
 			if (peffect) {
 				all_ID = GetEffectId( peffect->GetLabelName() );
 				moDeleteEffect( peffect, m_Plugins );
 				m_Effects.Remove(p_ID);
 				for(i=0;i<m_Effects.Count();i++) {
 				    if (m_Effects[i]!=NULL) {
-                        m_Effects[i]->GetMobDefinition().GetMobIndex().SetValueIndex(i);
+                        m_Effects[i]->SetConsoleValueIndex(i);
 				    }
 				}
 			}
 			break;
 		case MO_OBJECT_PREEFFECT:
-			ppreeffect = m_PreEffects.Get(p_ID);
+			ppreeffect = m_PreEffects.GetRef(p_ID);
 			if (ppreeffect) {
 				all_ID = GetEffectId( ppreeffect->GetLabelName() );
 				moDeletePreEffect( ppreeffect, m_PrePlugins );
 				m_PreEffects.Remove(p_ID);
 				for(i=0;i<m_PreEffects.Count();i++) {
 				    if (m_PreEffects[i]) {
-                        m_PreEffects[i]->GetMobDefinition().GetMobIndex().SetValueIndex(i);
+                        m_PreEffects[i]->SetConsoleValueIndex(i);
 				    }
 				}
 			}
 			break;
 		case MO_OBJECT_POSTEFFECT:
-			pposteffect = m_PostEffects.Get(p_ID);
+			pposteffect = m_PostEffects.GetRef(p_ID);
 			if (pposteffect) {
 				all_ID = GetEffectId( pposteffect->GetLabelName() );
 				moDeletePostEffect( pposteffect, m_PostPlugins );
 				m_PostEffects.Remove(p_ID);
 				for(i=0;i<m_PostEffects.Count();i++) {
 				    if (m_PostEffects[i]) {
-                        m_PostEffects[i]->GetMobDefinition().GetMobIndex().SetValueIndex(i);
+                        m_PostEffects[i]->SetConsoleValueIndex(i);
 				    }
 				}
 			}
 			break;
 		case MO_OBJECT_MASTEREFFECT:
-			pmastereffect = m_MasterEffects.Get(p_ID);
+			pmastereffect = m_MasterEffects.GetRef(p_ID);
 			if (pmastereffect) {
 				all_ID = GetEffectId( pmastereffect->GetLabelName() );
 				moDeleteMasterEffect( pmastereffect, m_MasterPlugins );
 				m_MasterEffects.Remove(p_ID);
 				for(i=0;i<m_MasterEffects.Count();i++)
                     if (m_MasterEffects[i]) {
-                        m_MasterEffects[i]->GetMobDefinition().GetMobIndex().SetValueIndex(i);
+                        m_MasterEffects[i]->SetConsoleValueIndex(i);
                     }
 			}
 			break;
@@ -212,7 +214,7 @@ moEffectManager::GetEffectId( moText p_labelname ) {
 
 	for(MOuint i=0;i<m_AllEffects.Count();i++) {
 		if ( m_AllEffects.Get(i) != NULL ) {
-			if ( m_AllEffects.Get(i)->GetLabelName() == p_labelname) {
+			if ( m_AllEffects.GetRef(i)->GetLabelName() == p_labelname) {
 				return i;
 			}
 		}
@@ -239,7 +241,7 @@ moEffectManager::GetEffectByLabel( moText p_label_name, moMoldeoObjectType p_mob
 
   for(unsigned int a=0; a<m_AllEffects.Count(); a++ ) {
 
-    peffect =  m_AllEffects.Get( a );
+    peffect =  m_AllEffects.GetRef( a );
     if (peffect) {
      label_name = peffect->GetLabelName();
 

@@ -141,8 +141,8 @@ moResourceManager::NewResource( moText p_resname, int paramindex, int valueindex
 
     moResource* pResource = moNewResource( p_resname, m_Plugins );
     if (pResource) {
-        pResource->GetMobDefinition().GetMobIndex().SetParamIndex( paramindex );
-        pResource->GetMobDefinition().GetMobIndex().SetValueIndex( valueindex );
+        pResource->SetConsoleParamIndex( paramindex );
+        pResource->SetConsoleValueIndex( valueindex );
         AddResource( pResource  );
     } else {
         MODebug2->Error("moResourceManager::NewResource Error creating resource "+p_resname);
@@ -160,14 +160,14 @@ moResourceManager::AddResource( moResource* m_pResource ) {
 		m_Resources.Add(m_pResource);
 	}
 
-	return (m_pResource!=NULL && m_Resources.Get(m_Resources.Count()-1)==m_pResource);
+	return (m_pResource!=NULL && m_Resources.GetRef(m_Resources.Count()-1)==m_pResource);
 }
 
 MOboolean
 moResourceManager::RemoveResource( MOint p_ID ) {
 
     moResource* pResource;
-    pResource = m_Resources.Get(p_ID);
+    pResource = m_Resources.GetRef(p_ID);
     ///Tratamos de borrarlo de los recursos de plugins
     if (pResource) {
         if (moDeleteResource( pResource, m_Plugins )) {
@@ -189,7 +189,7 @@ moResourceManager::Resources() {
 moResource*
 moResourceManager::GetResource( MOint p_index ) {
 
-	return m_Resources.Get(p_index);
+	return m_Resources.GetRef(p_index);
 
 }
 
@@ -198,8 +198,8 @@ MOint
 moResourceManager::GetResourceIndex( moText p_labelname ) {
 
 	for(MOuint i=0;i<m_Resources.Count();i++) {
-		if ( m_Resources.Get(i) != NULL ) {
-			if ( m_Resources.Get(i)->GetLabelName() == p_labelname) {
+		if ( m_Resources.GetRef(i) != NULL ) {
+			if ( m_Resources.GetRef(i)->GetLabelName() == p_labelname) {
 				return i;
 			}
 		}
@@ -211,7 +211,7 @@ moText
 moResourceManager::GetResourceName( MOint p_index ) {
 
 	if ( m_Resources.Get(p_index) != NULL ) {
-		return m_Resources.Get(p_index)->GetName();
+		return m_Resources.GetRef(p_index)->GetName();
 	}
 
 	return moText("");//not found
@@ -222,7 +222,7 @@ moText
 moResourceManager::GetResourceLabelName( MOint p_index ) {
 
 	if ( m_Resources.Get(p_index) != NULL ) {
-		return m_Resources.Get(p_index)->GetLabelName();
+		return m_Resources.GetRef(p_index)->GetLabelName();
 	}
 
 	return moText("");//not found
@@ -232,8 +232,8 @@ moResourceManager::GetResourceLabelName( MOint p_index ) {
 
 moResourceType
 moResourceManager::GetResourceType( MOint p_index ) {
-	if ( m_Resources.Get(p_index) != NULL ) {
-		return m_Resources.Get(p_index)->GetResourceType();
+	if ( m_Resources.GetRef(p_index) ) {
+		return m_Resources.GetRef(p_index)->GetResourceType();
 	} else return MO_RESOURCETYPE_UNDEFINED;
 }
 
@@ -241,9 +241,9 @@ moResource*
 moResourceManager::GetResourceByType( moResourceType p_type )
 {
 	for(MOuint i=0;i<m_Resources.Count();i++) {
-		if ( m_Resources.Get(i) != NULL ) {
-			if ( m_Resources.Get(i)->GetResourceType() == p_type) {
-				return m_Resources.Get(i);
+		if ( m_Resources.GetRef(i) ) {
+			if ( m_Resources.GetRef(i)->GetResourceType() == p_type) {
+				return m_Resources.GetRef(i);
 			}
 		}
 	}
@@ -349,8 +349,8 @@ moResourceManager::Init(
 		if (pResource) {
 			pResource->SetConfigName(cfname);
 			pResource->SetLabelName(lblname);
-      pResource->GetMobDefinition().GetMobIndex().SetParamIndex( presources.GetParamDefinition().GetIndex() );
-      pResource->GetMobDefinition().GetMobIndex().SetValueIndex( r );
+            pResource->SetConsoleParamIndex( presources.GetParamDefinition().GetIndex() );
+            pResource->SetConsoleValueIndex( r );
 		}
 		presources.NextValue();
 	}

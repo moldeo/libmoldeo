@@ -193,7 +193,7 @@ class LIBMOLDEO_API moFBO : public moAbstract
          * Devuelve el estado del FBO.
          * @return estado del FBO.
          */
-		MOuint CheckStatus();
+		MOuint CheckStatus()  const ;
 
         /**
          * Revisa que una textura de tamaño p_width x p_height y parámetros p_param sea compatible con
@@ -204,33 +204,33 @@ class LIBMOLDEO_API moFBO : public moAbstract
          * @param p_param parámetros a revisar.
          * @return resultado de la revisión: true en caso de que los parámetros sean compatibles, false en caso contrario.
          */
-		MOboolean IsValidTexture(MOuint p_width, MOuint p_height, const moTexParam& p_param);
+		MOboolean IsValidTexture(MOuint p_width, MOuint p_height, const moTexParam& p_param)  const ;
 
         /**
          * Devuelve el identificador de OpenGL de este FBO.
          * @return identificador de OpenGL.
          */
-		MOuint GetGLId() { return m_fbo; }
+		MOuint GetGLId()  const  { return m_fbo; }
         /**
          * Devuelve el tárget OpenGL (GL_TEXTURE_2D, GL_TEXTURE_RECT, etc.) de las texturas asociadas a los búfers de color de este FBO.
          * @return OpenGL target de las texturas asociadas.
          */
-		MOuint GetTarget() { return m_target; }
+		MOuint GetTarget() const { return m_target; }
         /**
          * Devuelve el formato interno (GL_RGBA, GL_RGB, etc.) de las texturas asociadas a los búfers de color de este FBO.
          * @return formato interno de las texturas asociadas.
          */
-		MOuint GetInternalFormat() { return m_internal_format; }
+		MOuint GetInternalFormat()  const  { return m_internal_format; }
         /**
          * Devuelve el ancho de las texturas asociadas a los búfers de color de este FBO.
          * @return ancho de la texturas asociadas.
          */
-		MOuint GetWidth() { return m_width; }
+		MOuint GetWidth()  const  { return m_width; }
         /**
          * Devuelve el alto de las texturas asociadas a los búfers de color de este FBO.
          * @return alto de la texturas asociadas.
          */
-		MOuint GetHeight() { return m_height; }
+		MOuint GetHeight()  const  { return m_height; }
     private:
 		moGLManager* m_gl;
 

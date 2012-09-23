@@ -133,6 +133,15 @@ public:
     virtual void LoadCodes( moIODeviceManager* );
 	virtual moConfigDefinition * GetDefinition( moConfigDefinition *p_configdefinition = NULL );//retreive the parameters definition of the Moldeo Object
 
+    /**
+    * Devuelve el estado del objeto
+    */
+    virtual const moEffectState& GetEffectState();
+    virtual bool SetEffectState(  const moEffectState& p_state );
+    virtual const moMobState& GetState();
+    virtual bool SetState( const moMobState& p_MobState );
+
+
     //virtual void SetNombreConfig(moText texto);
 
     static void SetColor( moValue& color, moValue& alpha, moEffectState& pstate  );
@@ -146,16 +155,36 @@ public:
     virtual void Disable();
     virtual void SwitchOn();
     virtual void SwitchEnabled();
+    virtual void Synchronize();
+    virtual void Unsynchronize();
+    virtual bool Synchronized();
+    virtual void BeatPulse();
+    virtual double TempoDelta( double p_delta );
+    virtual double GetTempoDelta() const;
+    virtual double TempoFactor( double p_factor );
+    virtual double GetTempoFactor() const;
+
+    virtual double Alpha( double alpha );
+    virtual double GetAlpha() const;
+    virtual double Amplitude( double amplitude );
+    virtual double GetAmplitude() const;
+    virtual double Magnitude( double magnitude );
+    virtual double GetMagnitude() const;
+
+    virtual void TintCSV( double tintc, double tints, double tint );
+    virtual moVector3f GetTintCSV() const;
+    virtual moVector3f GetTintRGB() const;
+
 
     virtual void Play();
     virtual void Stop();
     virtual void Pause();
+    virtual void Continue();
 
     virtual moTimerState State();
 
 	public:
 
-		moEffectState		state;
 		moPresets			presets;
 		moMotion			mov;
 		moDeviceCodeList*	devicecode; //accion vs moDeviceCode, personalizable
@@ -169,6 +198,8 @@ public:
 		MOint				keyidx;
 
   protected:
+
+        moEffectState		m_EffectState;
 
         int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
         void RegisterFunctions();

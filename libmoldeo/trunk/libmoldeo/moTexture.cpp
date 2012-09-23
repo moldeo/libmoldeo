@@ -624,8 +624,8 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
 
     if (!GLEW_ARB_texture_non_power_of_two) {
         //crop image...to  match resolution
-        if (    m_pResourceManager->GetRenderMan()->ScreenWidth() == w && w <= GetWidth()
-                && m_pResourceManager->GetRenderMan()->ScreenHeight() == h && h <= GetHeight()  ) {
+        if (    m_pResourceManager->GetRenderMan()->ScreenWidth() == w && w <= (int)GetWidth()
+                && m_pResourceManager->GetRenderMan()->ScreenHeight() == h && h <= (int)GetHeight()  ) {
 
                     fbitmap = FreeImage_Copy( fbitmap, 0, 0, w, h);
 

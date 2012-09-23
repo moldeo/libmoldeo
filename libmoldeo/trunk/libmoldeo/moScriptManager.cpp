@@ -83,8 +83,8 @@ void moScriptManager::RegisterLunaClasses()
 	lua_State *state = (lua_State *) m_vm;
 
 	REGISTER_CLASS(moLuaResourceManager, state);
-	REGISTER_CLASS(moLuaMath, state);
-	REGISTER_CLASS(moLuaParserFunction, state);
+	//REGISTER_CLASS(moLuaMath, state);
+	//REGISTER_CLASS(moLuaParserFunction, state);
 	REGISTER_CLASS(moLuaP5, state);
 
   m_pLuaResourceManager = new moLuaResourceManager( state );

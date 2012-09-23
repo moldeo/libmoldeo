@@ -141,17 +141,17 @@ class LIBMOLDEO_API moParamDefinition
 
 		moParamDefinition &operator = (const moParamDefinition &src);
 
-		bool   IsValid();
+		bool   IsValid() const;
 
-		moText GetName() {
+		const moText& GetName() const {
 			return m_Name;
 		}
-		moParamType GetType() {
+		moParamType GetType() const {
 			return m_Type;
 		}
-		moText GetTypeStr();
+		moText GetTypeStr()  const;
 
-		MOint GetIndex() {
+		MOint GetIndex()  const {
 			return m_Index;
 		}
 		void SetIndex( MOint p_index ) {
@@ -202,7 +202,7 @@ class LIBMOLDEO_API moParam
 		}
 
 		moValues& GetValues();
-		MOuint GetValuesCount();
+		MOuint GetValuesCount() const;
 
 		void AddValue( moValue &value );
 		void DeleteValue( MOint i );
@@ -213,7 +213,7 @@ class LIBMOLDEO_API moParam
 		moParamDefinition& GetParamDefinition();
 
 		void SetIndexValue( int indexvalue );
-		int GetIndexValue();
+		int GetIndexValue() const;
 
 		void NextValue();
 		void PrevValue();

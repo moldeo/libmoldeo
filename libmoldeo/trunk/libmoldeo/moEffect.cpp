@@ -36,7 +36,7 @@
 #include <moFileManager.h>
 
 
-moDefineDynamicArray( moEffectsArray)
+moDefineDynamicArray(moEffectsArray)
 
 
 
@@ -50,6 +50,36 @@ moEffect::~moEffect() {
 
 }
 
+
+const
+moEffectState& moEffect::GetEffectState() {
+    return m_EffectState;
+}
+
+bool moEffect::SetEffectState(  const moEffectState& p_state ) {
+
+    //TODO: check valid states!
+    m_MobState = (moMobState&) p_state;
+    m_EffectState = p_state;
+    return true;
+
+}
+
+const
+moMobState& moEffect::GetState() {
+    return (moMobState&)m_EffectState;
+}
+
+bool
+moEffect::SetState( const moMobState& p_MobState ) {
+
+    //TODO: check things before commit changes
+    m_MobState = p_MobState;
+    (moMobState&)(m_EffectState) = p_MobState;
+    return true;
+}
+
+
 // Esta funcion debe ser llamada al comienzo en cada implementacion
 // de la funcion virtual Init().  Contiene el codigo obligatorio.
 // 1) Levanta el config de disco
@@ -61,7 +91,7 @@ moEffect::PreInit() {
 	moText debug;
 
 	devicecode = NULL;
-	state.Init();
+	m_EffectState.Init();
 
     moInlet* Inlet = new moInlet();
     if (Inlet) {
@@ -101,8 +131,8 @@ moEffect::PreInit() {
 	if(iphase==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("phase parameter missing."));
 
 
-	if(state.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Initializing state"));//debug
-	if(state.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Setting preconfigs..."));//debug
+	if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Initializing m_EffectState"));//debug
+	if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Setting preconfigs..."));//debug
 
 	//devicecode es llenado por la moConsole(por defecto)
 	//si en el nombrefecto.cfg encontramos el parametro ":acciones" entonces tomamos las acciones
@@ -153,47 +183,47 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 		if (sync) {
 		  moMathFunction* pFun = sync->Fun();
       if (sync->Type()==MO_DATA_FUNCTION && pFun) {
-        //state.tempo.syncro = pFun->Eval(state.tempo.ang);
-        state.tempo.syncro = pFun->Eval();
+        //m_EffectState.tempo.syncro = pFun->Eval(m_EffectState.tempo.ang);
+        m_EffectState.tempo.syncro = pFun->Eval();
       }
-      else state.tempo.syncro = sync->Double();
+      else m_EffectState.tempo.syncro = sync->Double();
 		}
 
 		/**código alternativo*/
-		//state.tempo.syncro = m_Config.Fun(isyncro).Eval( state.tempo.ang );
+		//m_EffectState.tempo.syncro = m_Config.Fun(isyncro).Eval( m_EffectState.tempo.ang );
 	}
 
-    if(state.synchronized==MO_DEACTIVATED)
+    if(m_EffectState.synchronized==MO_DEACTIVATED)
     {
-        //state.tempo.ticks = moGetTicks();
+        //m_EffectState.tempo.ticks = moGetTicks();
         ///Clock independiente
-        state.tempo.Duration();
-        state.tempo.getTempo();
+        m_EffectState.tempo.Duration();
+        m_EffectState.tempo.getTempo();
     }
     else
     {
-        syncrotmp = state.tempo.syncro;
-        state.tempo = *tempogral;
-        state.tempo.syncro = syncrotmp;
-        state.tempo.getTempo();
-        //if(state.fulldebug==MO_ACTIVATED) MODebug2->Push("SYNCRO: " + FloatToStr(state.tempo.syncro,3));
+        syncrotmp = m_EffectState.tempo.syncro;
+        m_EffectState.tempo = *tempogral;
+        m_EffectState.tempo.syncro = syncrotmp;
+        m_EffectState.tempo.getTempo();
+        //if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push("SYNCRO: " + FloatToStr(m_EffectState.tempo.syncro,3));
     }
 
 	if(iphase != MO_PARAM_NOT_FOUND) {
 		moData *phase = m_Config.GetParam(iphase).GetData();
 		if (phase) {
 		  moMathFunction* pFun = phase->Fun();
-      if (phase->Type()==MO_DATA_FUNCTION && pFun) {
-        //state.tempo.ang+= pFun->Eval(state.tempo.ang);
-        state.tempo.ang+= pFun->Eval();
-      }
-      else state.tempo.ang+= phase->Double();
-    }
+          if (phase->Type()==MO_DATA_FUNCTION && pFun) {
+            //m_EffectState.tempo.ang+= pFun->Eval(m_EffectState.tempo.ang);
+            m_EffectState.tempo.ang+= pFun->Eval();
+          }
+          else m_EffectState.tempo.ang+= phase->Double();
+        }
 	}
 
 	if(parentstate!=NULL) {
 		//asginar parametros del state del padre al state del hijo
-		state = *parentstate;
+		m_EffectState = *parentstate;
 	}
 
 	if (m_Inlets.Count()>2) {
@@ -201,13 +231,13 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 	  moInlet* InletT = m_Inlets[1];
 	  moInlet* InletTempo = m_Inlets[2];
 	  if (InletTime) {
-        InletTime->GetData()->SetDouble( state.tempo.ang );
+        InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
     }
 	  if (InletT) {
-        InletT->GetData()->SetDouble( state.tempo.ang );
+        InletT->GetData()->SetDouble( m_EffectState.tempo.ang );
     }
 	  if (InletTempo) {
-        InletTempo->GetData()->SetDouble( moMathd::FMod( state.tempo.ang , moMathd::TWO_PI ) );
+        InletTempo->GetData()->SetDouble( moMathd::FMod( m_EffectState.tempo.ang , moMathd::TWO_PI ) );
     }
   }
 
@@ -241,7 +271,7 @@ moEffect::LoadCodes(moIODeviceManager *consolaesarray) {
 	MOint coddisp,accioncod;
 	moText strcod;
 
-	if(state.fulldebug==MO_ACTIVATED) MODebug2->Message(moText("Cargando codigos de dispositivo especificos..."));
+	if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Message(moText("Cargando codigos de dispositivo especificos..."));
 
 	nroparam = m_Config.GetParamIndex("codes");
 	if(nroparam==MO_PARAM_NOT_FOUND) return;//se va, no hay codigos
@@ -267,7 +297,7 @@ moEffect::LoadCodes(moIODeviceManager *consolaesarray) {
 			strcod = m_Config.GetParam().GetValue().GetSubValue(k).Text();
 			for( j=0 ; j < consolaesarray->IODevices().Count(); j++) {
 			  moIODevice* pIODevice;
-			  pIODevice = consolaesarray->IODevices().Get(j);
+			  pIODevice = consolaesarray->IODevices().GetRef(j);
 			  if (pIODevice) {
 			    if (strcod.Trim().Length()>0) {
             coddisp = pIODevice->GetCode(strcod);
@@ -311,7 +341,7 @@ moEffect::LoadCodes(moIODeviceManager *consolaesarray) {
 		}
 	}
 
-	if(state.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Codes loaded."));
+	if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Codes loaded."));
 }
 
 
@@ -434,44 +464,189 @@ void moEffect::SetBlending( moBlendingModes blending ) {
 }
 
 void moEffect::TurnOn() {
-    this->state.on = MO_ON;
+    m_EffectState.Activate();
 }
 
 void moEffect::TurnOff() {
-    this->state.on = MO_OFF;
+    m_EffectState.Deactivate();
 }
 
 void moEffect::Enable() {
-    this->state.enabled = MO_ON;
+    m_EffectState.enabled = MO_ON;
 }
 
 void moEffect::Disable() {
-    this->state.enabled = MO_OFF;
+    m_EffectState.enabled = MO_OFF;
 }
 
 void moEffect::SwitchOn() {
-    this->state.on*= -1;
+    ( m_EffectState.Activated() ) ? m_EffectState.Deactivate() : m_EffectState.Activate();
 }
 
 void moEffect::SwitchEnabled() {
-    this->state.enabled*= -1;
+    this->m_EffectState.enabled*= -1;
 }
+
+
+void moEffect::Synchronize() {
+    this->m_EffectState.synchronized = MO_ACTIVATED;
+}
+
+
+void moEffect::Unsynchronize() {
+    this->m_EffectState.synchronized = MO_DEACTIVATED;
+}
+
+bool moEffect::Synchronized() {
+    return (this->m_EffectState.synchronized == MO_ACTIVATED);
+}
+
+void moEffect::BeatPulse() {
+    this->m_EffectState.synchronized = MO_DEACTIVATED;
+    this->m_EffectState.tempo.BeatPulse(moGetTicksAbsolute());
+}
+
+
+double
+moEffect::TempoDelta( double p_delta ) {
+
+    if (p_delta!=0.0) this->Unsynchronize();
+
+    m_EffectState.tempo.delta+=p_delta;
+    if(m_EffectState.tempo.delta>2.0)
+        m_EffectState.tempo.delta = 2.0;
+    else
+    if( m_EffectState.tempo.delta < 0.005 )
+        m_EffectState.tempo.delta = 0.0;
+
+    return m_EffectState.tempo.delta;
+}
+
+double
+moEffect::GetTempoDelta() const {
+    return m_EffectState.tempo.delta;
+}
+
+
+double
+moEffect::TempoFactor( double p_factor ) {
+    m_EffectState.tempo.factor+=p_factor;
+    if(m_EffectState.tempo.factor>50.0)
+        m_EffectState.tempo.factor = 50.0;
+    else
+    if(m_EffectState.tempo.factor<1.0)
+        m_EffectState.tempo.factor = 1.0;
+    return m_EffectState.tempo.factor;
+}
+
+double
+moEffect::GetTempoFactor() const {
+    return m_EffectState.tempo.factor;
+}
+
+
+double moEffect::Alpha( double alpha ) {
+    m_EffectState.alpha+= alpha;
+    if(m_EffectState.alpha>=1.0)
+        m_EffectState.alpha=1.0;
+    else
+    if(m_EffectState.alpha<=0.0)
+        m_EffectState.alpha=0.0;
+    return m_EffectState.alpha;
+}
+
+double moEffect::GetAlpha() const {
+    return m_EffectState.alpha;
+}
+
+double
+moEffect::Amplitude( double amplitude ) {
+    m_EffectState.amplitude = amplitude;
+    return m_EffectState.amplitude;
+}
+
+double
+moEffect::GetAmplitude() const {
+    return m_EffectState.amplitude;
+}
+
+double
+moEffect::Magnitude( double magnitude ) {
+    m_EffectState.magnitude = magnitude;
+    return m_EffectState.magnitude;
+}
+
+double
+moEffect::GetMagnitude() const {
+    return m_EffectState.magnitude;
+}
+
+void
+moEffect::TintCSV( double tintc, double tints, double tint ) {
+    m_EffectState.tint+= tint;
+    m_EffectState.tintc+= tintc;
+    m_EffectState.tints+= tints;
+
+    //circular (0..1) > (0..1) > (0..1)
+    if (m_EffectState.tintc>1.0) {
+        m_EffectState.tintc = 0.0;
+    } else if (m_EffectState.tintc<0.0) {
+        m_EffectState.tintc = 1.0;
+    }
+
+    //lineal [0 .. 1.0]
+    if (m_EffectState.tints>1.0) {
+        m_EffectState.tints = 1.0;
+    } else if (m_EffectState.tints<0.0) {
+        m_EffectState.tints = 0.0;
+    }
+
+    //lineal 0..1.0
+    if (m_EffectState.tint>1.0) {
+        m_EffectState.tint = 1.0;
+    } else if (m_EffectState.tint<0.0) {
+        m_EffectState.tint = 0.0;
+    }
+
+
+    m_EffectState.CSV2RGB();
+}
+
+
+moVector3f
+moEffect::GetTintCSV() const {
+    return moVector3f( m_EffectState.tintc, m_EffectState.tints, m_EffectState.tint );
+}
+
+moVector3f
+moEffect::GetTintRGB() const {
+    return moVector3f( m_EffectState.tintr, m_EffectState.tintg, m_EffectState.tintb );
+}
+
 
 
 void moEffect::Play() {
-    return this->state.tempo.Start();
+    Unsynchronize();
+    return this->m_EffectState.tempo.Start();
 }
 
 void moEffect::Stop(){
-    return this->state.tempo.Stop();
+    Unsynchronize();
+    return this->m_EffectState.tempo.Stop();
 }
 
 void moEffect::Pause(){
-    return this->state.tempo.Pause();
+    Unsynchronize();
+    return this->m_EffectState.tempo.Pause();
+}
+
+void moEffect::Continue(){
+    Unsynchronize();
+    return this->m_EffectState.tempo.Continue();
 }
 
 moTimerState moEffect::State() {
-    return this->state.tempo.State();
+    return this->m_EffectState.tempo.State();
 }
 
 /*
@@ -573,7 +748,7 @@ int moEffect::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
 
 int moEffect::luaPlay( moLuaVirtualMachine& vm ) {
 
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
     Play();
 
@@ -582,7 +757,7 @@ int moEffect::luaPlay( moLuaVirtualMachine& vm ) {
 
 int moEffect::luaPause( moLuaVirtualMachine& vm ) {
 
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
     Pause();
 
@@ -591,7 +766,7 @@ int moEffect::luaPause( moLuaVirtualMachine& vm ) {
 
 int moEffect::luaStop( moLuaVirtualMachine& vm ) {
 
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
     Stop();
 
@@ -600,20 +775,20 @@ int moEffect::luaStop( moLuaVirtualMachine& vm ) {
 
 int moEffect::luaState( moLuaVirtualMachine& vm ) {
 
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
     moTimerState elstate = State();
     int retstate = (int) elstate;
-    lua_pushnumber( state, (lua_Number) retstate);
+    lua_pushnumber( luastate, (lua_Number) retstate);
 
     return 1;
 }
 
 int moEffect::luaSetTicks(moLuaVirtualMachine& vm)
 {
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
-    MOint ticksint = (MOint) lua_tonumber (state, 1);
+    MOint ticksint = (MOint) lua_tonumber (luastate, 1);
 
     //this->SetTicks(ticksint);
 
@@ -622,16 +797,16 @@ int moEffect::luaSetTicks(moLuaVirtualMachine& vm)
 
 int moEffect::luaGetTicks(moLuaVirtualMachine& vm)
 {
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
-    lua_pushnumber(state, (lua_Number) moGetTicks() );
+    lua_pushnumber(luastate, (lua_Number) moGetTicks() );
 
     return 1;
 }
 
 int moEffect::luaEnable(moLuaVirtualMachine& vm)
 {
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
     TurnOn();
 
@@ -640,7 +815,7 @@ int moEffect::luaEnable(moLuaVirtualMachine& vm)
 
 int moEffect::luaDisable(moLuaVirtualMachine& vm)
 {
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
     TurnOff();
 
@@ -654,12 +829,12 @@ int moEffect::luaSetEffectState(moLuaVirtualMachine& vm) {
     lua_State *luastate = (lua_State *) vm;
 
 
-    state.alpha = (MOfloat) lua_tonumber (luastate, 1);
-    state.tint = (MOfloat) lua_tonumber (luastate, 2);
-    state.tintr = (MOfloat) lua_tonumber (luastate, 3);
-    state.tintg = (MOfloat) lua_tonumber (luastate, 4);
-    state.tintb = (MOfloat) lua_tonumber (luastate, 5);
-    state.tempo.ang = (MOfloat) lua_tonumber (luastate, 7);
+    m_EffectState.alpha = (MOfloat) lua_tonumber (luastate, 1);
+    m_EffectState.tint = (MOfloat) lua_tonumber (luastate, 2);
+    m_EffectState.tintr = (MOfloat) lua_tonumber (luastate, 3);
+    m_EffectState.tintg = (MOfloat) lua_tonumber (luastate, 4);
+    m_EffectState.tintb = (MOfloat) lua_tonumber (luastate, 5);
+    m_EffectState.tempo.ang = (MOfloat) lua_tonumber (luastate, 7);
 
     return 0;
 
@@ -668,12 +843,12 @@ int moEffect::luaSetEffectState(moLuaVirtualMachine& vm) {
 int moEffect::luaGetEffectState(moLuaVirtualMachine& vm) {
     lua_State *luastate = (lua_State *) vm;
 
-    lua_pushnumber(luastate, (lua_Number) state.alpha );
-    lua_pushnumber(luastate, (lua_Number) state.tint );
-    lua_pushnumber(luastate, (lua_Number) state.tintr );
-    lua_pushnumber(luastate, (lua_Number) state.tintg );
-    lua_pushnumber(luastate, (lua_Number) state.tintb );
-    lua_pushnumber(luastate, (lua_Number) state.tempo.ang );
+    lua_pushnumber(luastate, (lua_Number) m_EffectState.alpha );
+    lua_pushnumber(luastate, (lua_Number) m_EffectState.tint );
+    lua_pushnumber(luastate, (lua_Number) m_EffectState.tintr );
+    lua_pushnumber(luastate, (lua_Number) m_EffectState.tintg );
+    lua_pushnumber(luastate, (lua_Number) m_EffectState.tintb );
+    lua_pushnumber(luastate, (lua_Number) m_EffectState.tempo.ang );
 
     return 0;
 }

@@ -58,7 +58,7 @@ moParamDefinition::moParamDefinition( const moText& p_name, moParamType p_type )
 }
 
 bool
-moParamDefinition::IsValid() {
+moParamDefinition::IsValid() const {
     return (m_Type!=MO_PARAM_UNDEFINED);
 }
 /*
@@ -194,7 +194,7 @@ moParamDefinition &moParamDefinition::operator = (const moParamDefinition &src)
 
 
 moText
-moParamDefinition::GetTypeStr() {
+moParamDefinition::GetTypeStr() const {
     switch(m_Type) {
         case MO_PARAM_UNDEFINED:
             return moText("UNDEFINED");
@@ -338,7 +338,7 @@ moParam::GetValues() {
 }
 
 MOuint
-moParam::GetValuesCount() {
+moParam::GetValuesCount() const {
 	return m_Values.Count();
 }
 
@@ -467,9 +467,9 @@ moParam::GetValue( MOint i ) {
 		i = m_CurrentIndexValue;
 
 	if (0<=i && i<(MOint)m_Values.Count() )
-		return m_Values.Get(i);
+		return m_Values[i];
 	else
-		return m_Values.Get(m_CurrentIndexValue);
+		return m_Values[m_CurrentIndexValue];
 }
 
 void
@@ -484,7 +484,7 @@ moParam::SetIndexValue( int indexvalue ) {
 
 
 int
-moParam::GetIndexValue() {
+moParam::GetIndexValue() const {
 
 	return m_CurrentIndexValue;
 

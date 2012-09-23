@@ -148,7 +148,7 @@ public:
 
 	}
 
-	T& Get(int x) {
+	const T& Get(int x) const {
 
 		if ( 0<=x && x<(MOint)n && array!=NULL) {
 
@@ -217,7 +217,7 @@ public:
 		Empty();
 		T cpy;
 		for(int i=x0; i<= x1; i++) {
-			cpy = A.Get(i);
+			cpy = A[i];
 			Add( cpy );
 		}
 	}
@@ -253,8 +253,10 @@ public:                                                                  \
 	void Empty();														 \
 	void Set(int x, const T &value);									 \
 	void Insert(int x, const T &value);									 \
-	T& Get(int x);														 \
-	T& operator[] (int x) { return Get(x); }						     \
+	const T& Get(int x) const;														 \
+	T& GetRef(int x);														 \
+	T& Item(int x);														 \
+	T& operator[] (int x);                  						     \
 	MOuint Count() const;														 \
 	void Add( const T &value );											 \
 	void Remove(int x);													 \

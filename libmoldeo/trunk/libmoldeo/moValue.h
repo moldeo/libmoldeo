@@ -163,7 +163,7 @@ class LIBMOLDEO_API moData {
 		moData& operator = ( const moData& data);
 		void Copy( const moData& data );
 
-		bool        IsValid();
+		bool        IsValid() const;
 
 		void		SetFloat( MOfloat pfloat );
 		void		SetDouble( MOdouble pdouble );
@@ -213,8 +213,8 @@ class LIBMOLDEO_API moData {
 		MOchar                  Char();
 		moNumber                Number();
 		MOpointer               Pointer();
-		moDataType              Type();
-		MOulong                 Size();
+		moDataType              Type() const;
+		MOulong                 Size() const;
 		MOdouble                Eval();
 		MOdouble                Eval( double x );
 
@@ -327,21 +327,21 @@ class LIBMOLDEO_API moValueDefinition
 
 		void SetType( moValueType p2_type );
 		void SetIndex( MOint	p_index );
-		moValueType GetType();
-		moText		GetTypeStr();
-		MOint GetIndex();
+		moValueType GetType()  const;
+		moText		GetTypeStr()  const;
+		MOint GetIndex()  const;
 
-		moText      GetCodeName();
+		moText      GetCodeName() const;
 		void        SetCodeName( moText p_codename );
 		void        SetRange( MOfloat min, MOfloat max );
 		void        SetRange( moText min, moText max );
 
 		void        GetRange( MOfloat* min, MOfloat* max);
 
-		moText      GetAttribute();
+		moText      GetAttribute()  const;
 		void        SetAttribute( moText p_attribute );
 
-		bool        IsValid();
+		bool        IsValid()  const;
 
 	private:
 		moValueType		m_Type;
@@ -388,7 +388,7 @@ class LIBMOLDEO_API moValueBase : public moData
         *   también permite acotar el dato que representa el valor
         *   @return la definición del valor
         */
-        moValueDefinition& GetValueDefinition() {
+        const moValueDefinition& GetValueDefinition() const {
             return m_ValueDefinition;
         }
 
@@ -402,7 +402,7 @@ class LIBMOLDEO_API moValueBase : public moData
         /**
         *   @return la definición del valor
         */
-		moValueType GetType();
+		moValueType GetType()  const;
 
         /// Fija el índice al que corresponde este valor dentro de la configuración
         /**
@@ -415,21 +415,21 @@ class LIBMOLDEO_API moValueBase : public moData
         *
         *   @return  el texto que corresponde al tipo del valor [ MO_VALUE_TXT devuelve "TXT", MO_VALUE_FUNCTION devuelve "FUNCTION" ... ]
         */
-		moText		GetTypeStr();
+		moText		GetTypeStr()  const;
 
         /// Devuelve el índice de este valor
         /**
         *
         *   @return  el índice dentro de los subvalores
         */
-		MOint		GetIndex();
+		MOint		GetIndex()  const;
 
         /// Devuelve un nombre de código en texto fijado por el usuario para este valor
         /**
         *
         *   @return  el nombre de código de este valor
         */
-        moText      GetCodeName();
+        moText      GetCodeName()  const;
 
         /// Fija el nombre del código para este valor
         /**
@@ -437,6 +437,15 @@ class LIBMOLDEO_API moValueBase : public moData
         *   @param p_codename   un texto
         */
         void        SetCodeName( moText p_codename );
+
+
+		void        SetRange( MOfloat min, MOfloat max );
+		void        SetRange( moText min, moText max );
+
+		void        GetRange( MOfloat* min, MOfloat* max);
+
+		moText      GetAttribute()  const;
+		void        SetAttribute( moText p_attribute );
 
 	private:
 
@@ -492,16 +501,16 @@ class LIBMOLDEO_API moValue
 		moValue &operator = (const moValue &src);
 		moValueBase &operator [] ( MOint p_indexsubvalue ) {
 			if (p_indexsubvalue!=-1) {
-				return m_List.Get( p_indexsubvalue );
+				return m_List[p_indexsubvalue];
 			} else {
-				return m_List.Get( 0 );
+				return m_List[0];
 			}
 		}
 		moValueBase &GetSubValue( MOint p_indexsubvalue = 0 ) {
-			return m_List.Get( p_indexsubvalue );
+			return m_List[p_indexsubvalue];
 		}
 		moValueBase &GetLastSubValue() {
-			return m_List.Get( GetSubValueCount() - 1 );
+			return m_List[GetSubValueCount() - 1];
 		}
 		MOuint	GetSubValueCount() {
 			return m_List.Count();

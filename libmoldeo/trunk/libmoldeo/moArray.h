@@ -146,13 +146,39 @@ void name::Insert(int x, const T &value) {\
 \
 }\
 \
-T& name::Get(int x) {\
+const T& name::Get(int x) const {\
 \
-	if ( 0<=x && x<(MOint)n && array!=NULL) {\
+    if ( 0<=x && x<(MOint)n && array!=NULL) {\
 \
-		return array[x];  \
+        return array[x];\
 \
-	} else return m_NULL;\
+    } else return m_NULL;\
+}\
+\
+T& name::GetRef(int x) {\
+\
+    if ( 0<=x && x<(MOint)n && array!=NULL) {\
+\
+        return array[x];\
+\
+    } else return m_NULL;\
+}\
+\
+T& name::Item(int x) {\
+\
+    if ( 0<=x && x<(MOint)n && array!=NULL) {\
+\
+        return array[x];\
+\
+    } else return m_NULL;\
+}\
+\
+T& name::operator [] (int x) {\
+    if ( 0<=x && x<(MOint)n && array!=NULL) {\
+\
+        return array[x];\
+\
+    } else return m_NULL;\
 }\
 \
 MOuint name::Count() const {\

@@ -128,12 +128,12 @@ moFontManager::GetFont( moText p_fontname, bool create, moFontType p_fonttype, M
     if (! (p_fontname.Trim().Length() == 0)) {
 
         if (p_fontname.Trim()==moText("Default") || p_fontname.Trim()==moText("default")) {
-            return m_Fonts.Get(0);
+            return m_Fonts.GetRef(0);
         }
 
         for(int i=0; i< (int)m_Fonts.Count(); i++) {
 
-                pFont = m_Fonts.Get(i);
+                pFont = m_Fonts.GetRef(i);
                 if (pFont) {
                     if (pFont->GetName() == (moText)p_fontname ) {
                             return pFont;
@@ -411,9 +411,9 @@ moFont::Draw( MOfloat x, MOfloat y, moText& text, moFontSize p_fontsize, MOint s
     }
 
     else {
-      if (m_FontGLId>=0) {
+      //if (m_FontGLId>=0) {
           this->glPrint( (int)x, (int)y, text, set, sx, sy, rt );
-      }
+        //}
     }
 }
 

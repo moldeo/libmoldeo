@@ -129,8 +129,8 @@ moIODeviceManager::NewIODevice( moText p_devname, moText p_cfname, moText p_labe
 	}
 
 	if (pdevice) {
-	    pdevice->GetMobDefinition().GetMobIndex().SetParamIndex(paramindex);
-	    pdevice->GetMobDefinition().GetMobIndex().SetValueIndex(valueindex);
+	    pdevice->SetConsoleParamIndex(paramindex);
+	    pdevice->SetConsoleValueIndex(valueindex);
 		pdevice->SetConfigName( p_cfname );
 		pdevice->SetLabelName( p_labelname );
 	}
@@ -150,7 +150,7 @@ moIODeviceManager::RemoveIODevice( MOint p_ID ) {
 
 	moIODevice* pdevice = NULL;
 
-    pdevice = m_IODevices.Get(p_ID);
+    pdevice = m_IODevices.GetRef(p_ID);
     if (pdevice) {
         moDeleteIODevice( pdevice, m_Plugins );
         m_IODevices.Remove(p_ID);
@@ -167,7 +167,7 @@ moIODeviceManager::Update() {
 	PollEvents();
 
 	for(MOuint i = 0; i < m_IODevices.Count(); i++) {
-		moIODevice* piodevice = m_IODevices.Get(i);
+		moIODevice* piodevice = m_IODevices.GetRef(i);
 		if(piodevice!=NULL) piodevice->Update(Events);
 	}
 }

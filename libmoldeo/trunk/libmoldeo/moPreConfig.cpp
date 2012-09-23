@@ -46,7 +46,7 @@ moPreConfig::~moPreConfig()
 moPreConfig::moPreConfig( moPreconfigIndexes& preconfindexes ) {
     m_PreconfIndexes = preconfindexes;
     m_ValueIndexes.Empty();
-    for( int i=0; i<m_PreconfIndexes.Count(); i++ ) {
+    for( MOuint i=0; i<m_PreconfIndexes.Count(); i++ ) {
 
         moValueIndex PIndex;
         PIndex.m_ParamIndex = m_PreconfIndexes[i].m_ParamIndex;
@@ -59,7 +59,7 @@ moPreConfig::moPreConfig( moPreconfigIndexes& preconfindexes ) {
 moPreConfig::moPreConfig( moValueIndexes& valueindexes ) {
     m_ValueIndexes = valueindexes;
     m_PreconfIndexes.Empty();
-    for( int i=0; i<m_PreconfIndexes.Count(); i++ ) {
+    for( MOuint i=0; i<m_PreconfIndexes.Count(); i++ ) {
 
         moPreconfigParamIndex PIndex;
         PIndex.m_ParamIndex = m_ValueIndexes[i].m_ParamIndex;

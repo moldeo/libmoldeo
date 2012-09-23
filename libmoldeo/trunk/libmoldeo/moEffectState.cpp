@@ -31,7 +31,7 @@
 
 #include "moEffectState.h"
 
-moEffectState::moEffectState() {
+moEffectState::moEffectState() : moMobState() {
     Init();
 }
 
@@ -39,12 +39,15 @@ moEffectState::~moEffectState() {
 }
 
 
-moEffectState::moEffectState(const moEffectState& src) {
+moEffectState::moEffectState(const moEffectState& src)  : moMobState( src ) {
     (*this) = src;
 }
 
 moEffectState&
 moEffectState::operator=(const moEffectState& src) {
+
+        m_Activated = src.m_Activated;
+        m_Selected = src.m_Selected;
         on = src.on;
         synchronized = src.synchronized;
         enabled = src.enabled;

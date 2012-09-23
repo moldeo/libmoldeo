@@ -92,6 +92,8 @@ class moLuaCircularVideoBuffer : public moCircularVideoBuffer
       moCircularVideoBuffer* m_pCircularVideoBuffer;
 };
 
+
+
 class LIBMOLDEO_API moLuaVideoManager : public moAbstract
 {
 	DECLARE_SCRIPT_CLASS(moLuaVideoManager)
@@ -114,8 +116,8 @@ class LIBMOLDEO_API moLuaVideoManager : public moAbstract
 
 };
 
-/**
-*/
+
+
 class LIBMOLDEO_API moLuaResourceManager : public moAbstract
 {
 	DECLARE_SCRIPT_CLASS(moLuaResourceManager)
@@ -145,6 +147,7 @@ class LIBMOLDEO_API moLuaResourceManager : public moAbstract
  * Esta clase encapsula moMathd.
  * @see moMath
  */
+ /*
 class LIBMOLDEO_API moLuaMath : public moMathd
 {
 	DECLARE_SCRIPT_CLASS(moLuaMath)
@@ -175,11 +178,13 @@ class LIBMOLDEO_API moLuaMath : public moMathd
 	SCRIPT_FUNCTION_DECLARATION(SymmetricRandom)
 	SCRIPT_FUNCTION_DECLARATION(IntervalRandom)
 };
+*/
 
 /**
  * Esta clase encapsula moParserFunction.
  * @see moParserFunction
  */
+/*
 class LIBMOLDEO_API moLuaParserFunction : public moParserFunction
 {
 	DECLARE_SCRIPT_CLASS(moLuaParserFunction)
@@ -199,6 +204,7 @@ class LIBMOLDEO_API moLuaParserFunction : public moParserFunction
 	SCRIPT_FUNCTION_DECLARATION(GetParameterCount)
     SCRIPT_FUNCTION_DECLARATION(GetVariableCount)
 };
+*/
 
 /**
  * Esta clase encapsula moP5.

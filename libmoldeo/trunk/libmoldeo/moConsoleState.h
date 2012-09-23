@@ -34,6 +34,7 @@
 #include "moTypes.h"
 #include "moAbstract.h"
 #include "moTempo.h"
+#include "moEffect.h"
 
 
 /// Estado de la consola
@@ -41,7 +42,7 @@
 * Estado de la consola
 *   tempo interno
 */
-class LIBMOLDEO_API moConsoleState : public moAbstract
+class LIBMOLDEO_API moConsoleState : public moEffectState
 {
 	public:
 
@@ -52,11 +53,11 @@ class LIBMOLDEO_API moConsoleState : public moAbstract
 		MOboolean Finish();
 
     public:
-		moTempo tempo;
 		MOswitch pause;
 		MOswitch automatic;
 		MOswitch reinit;
 		MOswitch finish;
+
 		MOswitch setfps;
 		MOuint fps, fps0, fps1;
 

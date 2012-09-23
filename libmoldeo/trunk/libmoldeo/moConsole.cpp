@@ -255,7 +255,7 @@ MOboolean moConsole::Init(
 	m_EffectManager.Init();
 
 	//Inicializando Estado de la Consola
-	state.Init();
+	m_ConsoleState.Init();
 
     //==========================================================================
 	//   CARGAMOS EL ARCHIVO DE CONFIGURACION
@@ -418,7 +418,7 @@ MOboolean moConsole::Init(
 	LoadEffects();
 	LoadMasterEffects();
 
-	state.m_nAllEffects = m_EffectManager.AllEffects().Count();
+	m_ConsoleState.m_nAllEffects = m_EffectManager.AllEffects().Count();
 
 	MOboolean m_bMasterEffects_On = m_Config.GetParam( moText("mastereffects_on") ).GetValue().GetSubValue(0).Int();
 	if (m_bMasterEffects_On) {
@@ -463,7 +463,6 @@ MOboolean moConsole::Init(
 
 void
 moConsole::UpdateMoldeoIds() {
-  int i;
 
   ///RECREATE ALL REFERENCES int this order
   /**
@@ -479,41 +478,41 @@ moConsole::UpdateMoldeoIds() {
   m_MoldeoObjects.Empty();
   m_MoldeoObjects.Init( max, NULL);
 
-  for( i=0; i<m_pResourceManager->Resources().Count(); i++ ) {
-    moResource* pResource = m_pResourceManager->Resources().Get(i);
+  for( MOuint i=0; i<m_pResourceManager->Resources().Count(); i++ ) {
+    moResource* pResource = m_pResourceManager->Resources().GetRef(i);
     m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_RESOURCE ), pResource );
   }
 
-  for( i=0; i<m_pIODeviceManager->IODevices().Count(); i++ ) {
-    moIODevice* pIODevice = m_pIODeviceManager->IODevices().Get(i);
+  for( MOuint i=0; i<m_pIODeviceManager->IODevices().Count(); i++ ) {
+    moIODevice* pIODevice = m_pIODeviceManager->IODevices().GetRef(i);
     m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_IODEVICE ), pIODevice );
   }
 
-  for( i=0; i<m_EffectManager.PreEffects().Count(); i++ ) {
-    moPreEffect* pFx = m_EffectManager.PreEffects().Get(i);
+  for( MOuint i=0; i<m_EffectManager.PreEffects().Count(); i++ ) {
+    moPreEffect* pFx = m_EffectManager.PreEffects().GetRef(i);
     m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_PREEFFECT ), pFx );
   }
 
-  for( i=0; i<m_EffectManager.PostEffects().Count(); i++ ) {
-    moPostEffect* pFx = m_EffectManager.PostEffects().Get(i);
+  for( MOuint i=0; i<m_EffectManager.PostEffects().Count(); i++ ) {
+    moPostEffect* pFx = m_EffectManager.PostEffects().GetRef(i);
     m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_POSTEFFECT ), pFx );
   }
 
-  for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
-    moEffect* pFx = m_EffectManager.Effects().Get(i);
+  for( MOuint i=0; i<m_EffectManager.Effects().Count(); i++ ) {
+    moEffect* pFx = m_EffectManager.Effects().GetRef(i);
     m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_EFFECT ), pFx );
   }
 
-  for( i=0; i<m_EffectManager.MasterEffects().Count(); i++ ) {
-    moMasterEffect* pFx = m_EffectManager.MasterEffects().Get(i);
+  for( MOuint i=0; i<m_EffectManager.MasterEffects().Count(); i++ ) {
+    moMasterEffect* pFx = m_EffectManager.MasterEffects().GetRef(i);
     m_MoldeoObjects.Set( RelativeToGeneralIndex( i, MO_OBJECT_MASTEREFFECT ), pFx );
   }
 
   m_MoldeoObjects.Set( RelativeToGeneralIndex( 0, MO_OBJECT_CONSOLE ), this);
 
 	///SET Moldeo Objects Unique Id's
-	for( i=0; i<m_MoldeoObjects.Count(); i++) {
-		moMoldeoObject* mobject = m_MoldeoObjects.Get(i);
+	for( MOuint i=0; i<m_MoldeoObjects.Count(); i++) {
+		moMoldeoObject* mobject = m_MoldeoObjects.GetRef(i);
 		if (mobject) mobject->SetId(MO_MOLDEOOBJECTS_OFFSET_ID + i);
 	}
 
@@ -544,7 +543,7 @@ moConsole::LoadConnections() {
 
                 for( k = 0; k < p_connections->Count(); k++ ) {
 
-                    moConnection *p_connection = p_connections->Get(k);//get the connection to update
+                    moConnection *p_connection = p_connections->GetRef(k);//get the connection to update
 
                     moText DestinationMoldeoLabelName = p_connection->GetDestinationMoldeoLabelName();
                     moText DestinationConnectorLabelName = p_connection->GetDestinationConnectorLabelName();
@@ -665,7 +664,7 @@ moConsole::LoadIODevices() {
 void moConsole::UnloadIODevices() {
     if (m_pIODeviceManager)
         while(m_pIODeviceManager->IODevices().Count()>0) {
-            if( m_pIODeviceManager->IODevices().Get(0) != NULL ) {
+            if( m_pIODeviceManager->IODevices().GetRef(0) != NULL ) {
                 m_pIODeviceManager->RemoveIODevice( 0 );
             }
         }
@@ -689,7 +688,7 @@ moConsole::LoadMasterEffects() {
 		MODebug2->Message( moText("moConsole:: Master Effects.") + IntToStr(N)  );
 	}
 
-	state.m_nMasterEffects = N;
+	m_ConsoleState.m_nMasterEffects = N;
 
 	if(N>0) {
 		m_Config.FirstValue();
@@ -706,11 +705,11 @@ moConsole::LoadMasterEffects() {
                 if (pmastereffect) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) pmastereffect );
                     pmastereffect->SetResourceManager( m_pResourceManager );
-                    pmastereffect->Set( &m_EffectManager, &state );
+                    pmastereffect->Set( &m_EffectManager, &m_ConsoleState );
                     if( pmastereffect->GetName() == moText("ligia") ) {
                                 iligia=i;
                                 pmastereffect->Init();
-                                //pmastereffect->state.on = MO_ON;
+                                pmastereffect->Activate();
                     }
                 } else MODebug2->Error( moText("moConsole:: Couldn't load Master Effect:") + moText(fxname));
 			} else {
@@ -727,7 +726,7 @@ moConsole::LoadMasterEffects() {
 void moConsole::UnloadMasterEffects() {
 
     while(m_EffectManager.MasterEffects().Count()>0) {
-		if( m_EffectManager.MasterEffects().Get(0) != NULL ) {
+		if( m_EffectManager.MasterEffects().GetRef(0) != NULL ) {
 			m_EffectManager.RemoveEffect( 0, MO_OBJECT_MASTEREFFECT );
 		}
 	}
@@ -753,7 +752,7 @@ moConsole::LoadPreEffects() {
 		MODebug2->Message( moText(" Pre-Effects.") + IntToStr(N) );
 	}
 
-	state.m_nPreEffects = N;
+	m_ConsoleState.m_nPreEffects = N;
 
 	if(N>0) {
 		m_Config.FirstValue();
@@ -777,14 +776,17 @@ moConsole::LoadPreEffects() {
                     if ( ppreeffect->GetName() == moText("erase") ) {
                         iborrado = i;
                         if (ppreeffect->Init()) {
+
                             MOint pre,on;
                             MOint paramindex, valueindex;
+
                             paramindex = ppreeffect->GetMobDefinition().GetMobIndex().GetParamIndex();
                             valueindex = ppreeffect->GetMobDefinition().GetMobIndex().GetValueIndex();
+
                             pre = m_Config.GetParam(paramindex  ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_PRE).Int();
                             on = m_Config.GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_ON).Int();
                             if (pre>=0) ppreeffect->GetConfig()->SetCurrentPreConf(pre);
-                            if (on>0) ppreeffect->state.on = true;
+                            if (on>0) ppreeffect->Activate();
                         }
                     }
                 } else MODebug2->Error( moText("moConsole:: Couldn't load Pre Effect:") + moText(fxname));			m_Config.NextValue();
@@ -800,7 +802,7 @@ moConsole::LoadPreEffects() {
 void moConsole::UnloadPreEffects() {
 
     while(m_EffectManager.PreEffects().Count()>0) {
-		if( m_EffectManager.PreEffects().Get(0) != NULL ) {
+		if( m_EffectManager.PreEffects().GetRef(0) != NULL ) {
 			m_EffectManager.RemoveEffect( 0, MO_OBJECT_PREEFFECT );
 		}
 	}
@@ -825,7 +827,7 @@ moConsole::LoadEffects() {
 		MODebug2->Message( moText("moConsole:: Effects.") + IntToStr(N)  );
 	}
 
-	state.m_nEffects = N;
+	m_ConsoleState.m_nEffects = N;
 
 	if(N>0) {
 		m_Config.FirstValue();
@@ -864,7 +866,7 @@ moConsole::LoadEffects() {
 void moConsole::UnloadEffects() {
 
 	while(m_EffectManager.Effects().Count()>0) {
-		if( m_EffectManager.Effects().Get(0) != NULL ) {
+		if( m_EffectManager.Effects().GetRef(0) != NULL ) {
 			m_EffectManager.RemoveEffect( 0, MO_OBJECT_EFFECT );
 		}
     }
@@ -891,7 +893,7 @@ moConsole::LoadPostEffects() {
 		MODebug2->Message( moText("moConsole:: Post Effects.") + IntToStr(N)  );
 	}
 
-	state.m_nPostEffects = N;
+	m_ConsoleState.m_nPostEffects = N;
 
 	if(N>0) {
 		m_Config.FirstValue();
@@ -913,7 +915,7 @@ moConsole::LoadPostEffects() {
                     if(posteffect->GetName() == moText("debug")) {
                             idebug = i;
                             posteffect->Init();
-                            posteffect->state.on = MO_ON;
+                            posteffect->Activate();
                     }
                 } else MODebug2->Error( moText("moConsole:: Couldn't load Post Effect:") + moText(fxname));
 			} else {
@@ -928,7 +930,7 @@ moConsole::LoadPostEffects() {
 void moConsole::UnloadPostEffects() {
 
     while(m_EffectManager.PostEffects().Count()>0) {
-		if( m_EffectManager.PostEffects().Get(0) != NULL ) {
+		if( m_EffectManager.PostEffects().GetRef(0) != NULL ) {
 			m_EffectManager.RemoveEffect( 0, MO_OBJECT_POSTEFFECT );
 		}
 	}
@@ -1001,7 +1003,7 @@ moConsole::LoadResources() {
 void moConsole::UnloadResources() {
     if (m_pResourceManager)
     for(int i=m_pResourceManager->Resources().Count()-1; i>=0; i--) {
-        if (m_pResourceManager->Resources().Get(i)!=NULL) {
+        if (m_pResourceManager->Resources().GetRef(i)!=NULL) {
             m_pResourceManager->RemoveResource(i);
         }
     }
@@ -1021,30 +1023,38 @@ moConsole::InitializeAllEffects() {
 
 
 	for(MOuint i=0; i<m_EffectManager.AllEffects().Count(); i++ ) {
-		p_effect = m_EffectManager.AllEffects().Get(i);
+		p_effect = m_EffectManager.AllEffects().GetRef(i);
 		if( p_effect !=NULL) {
+
+            moMobDefinition MD = p_effect->GetMobDefinition();
+
             Draw();
+
+            MOint pre,on;
+            MOint paramindex = MD.GetMobIndex().GetParamIndex();
+            MOint valueindex = MD.GetMobIndex().GetValueIndex();
+            moEffectState fxstate = p_effect->GetEffectState();
+
 			if(m_Config.GetParam(dg).GetValue().GetSubValue(0).Text()==moText("yes")) {
-				p_effect->state.fulldebug = MO_ACTIVATED;
+				fxstate.fulldebug = MO_ACTIVATED;
 			} else {
-				p_effect->state.fulldebug = MO_DEACTIVATED;
+				fxstate.fulldebug = MO_DEACTIVATED;
 			}
+
 			if( p_effect->GetName()!=moText("debug") && p_effect->GetName()!=moText("erase")
 				&& p_effect->GetName()!=moText("ligia")) {
+
 				    bool res = p_effect->Init();
 
-					if (res) {
 
-                        MOint pre,on;
-                        MOint paramindex = p_effect->GetMobDefinition().GetMobIndex().GetParamIndex();
-                        MOint valueindex = p_effect->GetMobDefinition().GetMobIndex().GetValueIndex();
+					if (res) {
 
                         pre = m_Config.GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_PRE).Int();
                         on = m_Config.GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_ON).Int();
 
                         if (pre>=0) p_effect->GetConfig()->SetCurrentPreConf(pre);
-                        if (on>0) p_effect->state.on = MO_ON;
-                        else p_effect->state.on = MO_OFF;
+                        if (on>0) p_effect->Activate();
+                        else p_effect->Deactivate();
 
                         // Sucio codigo agregado rapidamente para poder asignar los efectos a teclas arbitrarias de las 4 filas
                         // del teclado:
@@ -1060,18 +1070,14 @@ moConsole::InitializeAllEffects() {
 					}
 			} else {
 
-                MOint pre,on;
-                MOint paramindex = p_effect->GetMobDefinition().GetMobIndex().GetParamIndex();
-                MOint valueindex = p_effect->GetMobDefinition().GetMobIndex().GetValueIndex();
-
                 pre = m_Config.GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_PRE).Int();
                 on = m_Config.GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_ON).Int();
 
                 if (pre>=0) p_effect->GetConfig()->SetCurrentPreConf(pre);
-                if (on>0) p_effect->state.on = MO_ON;
-                else p_effect->state.on = MO_OFF;
+                if (on>0) p_effect->Activate();
+                else p_effect->Deactivate();
 
-                // Sucio codigo agregado rapidamente para poder asignar los efectos a teclas arbitrarias de las 4 filas
+                // TODO: para poder asignar los efectos a teclas arbitrarias de las 4 filas
                 // del teclado:
                 /*
                 MOint idx;
@@ -1080,9 +1086,8 @@ moConsole::InitializeAllEffects() {
                 idx = ConvertKeyNameToIdx(key);
                 p_effect->keyidx = idx;
                 */
-                // Fabri, despues implementa mejor esto... ;-)
 			}
-			//carga cÃ³digos...
+			//carga códigos...
 			p_effect->LoadCodes( m_pIODeviceManager );
 		}
 	}
@@ -1094,7 +1099,7 @@ void moConsole::FinalizeAllEffects() {
 	moEffect*	p_effect = NULL;
 
 	for( MOuint i=0; i< m_EffectManager.AllEffects().Count(); i++ ) {
-		p_effect = m_EffectManager.AllEffects().Get(i);
+		p_effect = m_EffectManager.AllEffects().GetRef(i);
 		if( p_effect!=NULL ) {
 			p_effect->Finish();
 		}
@@ -1115,21 +1120,21 @@ moConsole::StartMasterEffects() {
 	//PRENDEMOS LOS EFFECTS MAESTROS y ...LARGAMOS
 	//==========================================================================
 	for( i=0; i<m_EffectManager.MasterEffects().Count(); i++ ) {
-		p_effect = m_EffectManager.MasterEffects().Get(i);
+		p_effect = m_EffectManager.MasterEffects().GetRef(i);
 		if( p_effect!=NULL ) {
 			Draw();
-			p_effect->state.on = MO_ACTIVATED;
+			p_effect->Activate();
 		}
 	}
 	if( m_EffectManager.MasterEffects().Count()>0 ) {
-		p_effect = m_EffectManager.MasterEffects().Get(0);
+		p_effect = m_EffectManager.MasterEffects().GetRef(0);
 		if(p_effect!=NULL)
-			p_effect->state.on = MO_ON;
+			p_effect->Activate();
 	}
 	if( m_EffectManager.MasterEffects().Count()>1 ) {
-		p_effect = m_EffectManager.MasterEffects().Get(1);
+		p_effect = m_EffectManager.MasterEffects().GetRef(1);
 		if(p_effect!=NULL)
-			p_effect->state.on = MO_ON;
+			p_effect->Activate();
 	}
 	if (MODebug2) MODebug2->Push( moText("moConsole:: Master effects on.") );
 
@@ -1142,20 +1147,20 @@ void moConsole::StopMasterEffects() {
     if (MODebug2) MODebug2->Push( moText("moConsole:: turning off MasterEffects.") );
 
 	if(m_EffectManager.MasterEffects().Count()>0) {
-		pEffect = m_EffectManager.MasterEffects().Get(0);
+		pEffect = m_EffectManager.MasterEffects().GetRef(0);
 		if( pEffect!=NULL )
-			pEffect->state.on = MO_OFF;
+			pEffect->Deactivate();
 	}
 	if( m_EffectManager.MasterEffects().Count()>1 ) {
-		pEffect = m_EffectManager.MasterEffects().Get(1);
+		pEffect = m_EffectManager.MasterEffects().GetRef(1);
 		if(pEffect!=NULL)
-			pEffect->state.on = MO_OFF;
+			pEffect->Deactivate();
 	}
 	for(MOuint i=0;i<m_EffectManager.MasterEffects().Count();i++) {
-		pEffect = m_EffectManager.MasterEffects().Get(i);
+		pEffect = m_EffectManager.MasterEffects().GetRef(i);
 		if( pEffect!=NULL ) {
 			Draw();
-			pEffect->state.on = MO_DEACTIVATED;
+			pEffect->Deactivate();
 		}
 	}
 
@@ -1214,27 +1219,27 @@ moConsole::Draw() {
 	MOswitch borrar = MO_ACTIVATED;
     MOboolean pre_effect_on = false;
 
-	if(state.pause==MO_DEACTIVATED) {
+	if(m_ConsoleState.pause==MO_DEACTIVATED) {
 
-		//state.tempo.ticks = GetTicks();
-		state.tempo.Duration();
-		state.tempo.getTempo();
-		/*
-        MODebug2->Push( "Console: tempo.on: " + IntToStr( (int)state.tempo.Started() )
-                    + " tempo.pause_on: " + IntToStr( (int)state.tempo.Paused())
-                    + " tempo.ticks: " + IntToStr( state.tempo.ticks )
-                    + " tempo.ang: " + FloatToStr( state.tempo.ang ) );
+		//m_ConsoleState.tempo.ticks = GetTicks();
+		m_ConsoleState.tempo.Duration();
+		m_ConsoleState.tempo.getTempo();
+/*
+        MODebug2->Push( "Console: tempo.on: " + IntToStr( (int)m_ConsoleState.tempo.Started() )
+                    + " tempo.pause_on: " + IntToStr( (int)m_ConsoleState.tempo.Paused())
+                    + " tempo.ticks: " + IntToStr( m_ConsoleState.tempo.ticks )
+                    + " tempo.ang: " + FloatToStr( m_ConsoleState.tempo.ang ) );
 */
 		RenderMan->BeginDraw();
 
 		//Se dibujan los m_PreEffects
 		for(i=1; i<m_EffectManager.PreEffects().Count(); i++ ) {
-			pEffect = m_EffectManager.PreEffects().Get(i);
-			if( pEffect!=NULL ) {
-				if( pEffect->state.on==MO_ON ) {
+			pEffect = m_EffectManager.PreEffects().GetRef(i);
+			if( pEffect ) {
+				if( pEffect->Activated() ) {
 					pre_effect_on = true;
 					RenderMan->BeginDrawEffect();
-					pEffect->Draw(&state.tempo);
+					pEffect->Draw(&m_ConsoleState.tempo);
 					RenderMan->EndDrawEffect();
 					borrar = MO_DEACTIVATED;
 				}
@@ -1244,12 +1249,12 @@ moConsole::Draw() {
 		if(borrar==MO_ACTIVATED)
 		{
 			if( m_EffectManager.PreEffects().Count()>0 ) {
-				pEffect = m_EffectManager.PreEffects().Get(0);
-				if( pEffect!=NULL ) {
-					if( pEffect->state.on==MO_ON)
+				pEffect = m_EffectManager.PreEffects().GetRef(0);
+				if( pEffect ) {
+					if( pEffect->Activated() )
 					{
 						RenderMan->BeginDrawEffect();
-						pEffect->Draw(&state.tempo);
+						pEffect->Draw(&m_ConsoleState.tempo);
 						RenderMan->EndDrawEffect();
 					}
 					else
@@ -1263,18 +1268,27 @@ moConsole::Draw() {
 		}
 
         ///3D STEREOSCOPIC RENDER METHOD
-        if (state.stereooutput==MO_ACTIVATED) {
+        if (m_ConsoleState.stereooutput==MO_ACTIVATED) {
             ///Dibujamos los efectos con capacidad stereo
 
             ///ojo izquierdo
             for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
-                pEffect = m_EffectManager.Effects().Get(i);
-                if(pEffect!=NULL && pEffect->state.stereo==MO_ACTIVATED) {
-                    pEffect->state.stereoside = MO_STEREO_LEFT;
-                    if(pEffect->state.on==MO_ON) {
-                            RenderMan->BeginDrawEffect();
-                            pEffect->Draw(&state.tempo);
-                            RenderMan->EndDrawEffect();
+
+                pEffect = m_EffectManager.Effects().GetRef(i);
+
+                if(pEffect) {
+                    moEffectState fxstate = pEffect->GetEffectState();
+                    if (fxstate.stereo==MO_ACTIVATED) {
+
+                        fxstate.stereoside = MO_STEREO_LEFT;
+                        pEffect->SetEffectState( fxstate );
+
+                        if(pEffect->Activated()) {
+                                RenderMan->BeginDrawEffect();
+                                pEffect->Draw(&m_ConsoleState.tempo);
+                                RenderMan->EndDrawEffect();
+                        }
+
                     }
                 }
             }
@@ -1283,17 +1297,23 @@ moConsole::Draw() {
 
             ///ojo derecho
             for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
-                pEffect = m_EffectManager.Effects().Get(i);
-                if(pEffect!=NULL && pEffect->state.stereo==MO_ACTIVATED) {
-                    pEffect->state.stereoside = MO_STEREO_RIGHT;
-                    if(pEffect->state.on==MO_ON) {
-                            RenderMan->BeginDrawEffect();
-                            pEffect->Draw(&state.tempo);
-                            RenderMan->EndDrawEffect();
-                    }
 
-                    ///reset state to NONE so you can draw like always...
-                    pEffect->state.stereoside = MO_STEREO_NONE;
+                pEffect = m_EffectManager.Effects().GetRef(i);
+
+                if(pEffect) {
+                    moEffectState fxstate = pEffect->GetEffectState();
+                    if (fxstate.stereo==MO_ACTIVATED) {
+
+                        fxstate.stereoside = MO_STEREO_RIGHT;
+                        pEffect->SetEffectState( fxstate );
+
+                        if(pEffect->Activated()) {
+                                RenderMan->BeginDrawEffect();
+                                pEffect->Draw(&m_ConsoleState.tempo);
+                                RenderMan->EndDrawEffect();
+                        }
+
+                    }
                 }
             }
 
@@ -1304,11 +1324,12 @@ moConsole::Draw() {
 
             //Se dibujan los Effects
             for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
-                pEffect = m_EffectManager.Effects().Get(i);
-                if(pEffect!=NULL) {
-                    if(pEffect->state.on==MO_ON) {
+
+                pEffect = m_EffectManager.Effects().GetRef(i);
+                if(pEffect) {
+                    if(pEffect->Activated()) {
                             RenderMan->BeginDrawEffect();
-                            pEffect->Draw(&state.tempo);
+                            pEffect->Draw(&m_ConsoleState.tempo);
                             RenderMan->EndDrawEffect();
                     }
                 }
@@ -1319,11 +1340,13 @@ moConsole::Draw() {
 
 		//sedibujan los post Effects
 		for(i=0;i<m_EffectManager.PostEffects().Count();i++) {
-			pEffect = m_EffectManager.PostEffects().Get(i);
-			if(pEffect!=NULL) {
-				if(pEffect->state.on==MO_ON) {
+
+			pEffect = m_EffectManager.PostEffects().GetRef(i);
+
+			if(pEffect) {
+				if(pEffect->Activated()) {
 					RenderMan->BeginDrawEffect();
-					pEffect->Draw(&state.tempo);
+					pEffect->Draw(&m_ConsoleState.tempo);
 					RenderMan->EndDrawEffect();
 				}
 			}
@@ -1331,11 +1354,12 @@ moConsole::Draw() {
 
 		//se dibujan los Effects masters
 		for(i=0;i<m_EffectManager.MasterEffects().Count();i++) {
-			pEffect = m_EffectManager.MasterEffects().Get(i);
-			if(pEffect!=NULL) {
-				if(pEffect->state.on==MO_ON) {
+
+			pEffect = m_EffectManager.MasterEffects().GetRef(i);
+			if(pEffect) {
+				if(pEffect->Activated()) {
 					RenderMan->BeginDrawEffect();
-					pEffect->Draw(&state.tempo);
+					pEffect->Draw(&m_ConsoleState.tempo);
 					RenderMan->EndDrawEffect();
 				}
 			}
@@ -1348,10 +1372,10 @@ moConsole::Draw() {
 
 
 		//aca controlamos los fps
-		if( state.setfps == MO_ACTIVATED ) {
-			state.fps1 = GetTicks();
-			while(( state.fps1 - state.fps0 ) <(1000 / state.fps) ) {
-				state.fps1 = GetTicks();
+		if( m_ConsoleState.setfps == MO_ACTIVATED ) {
+			m_ConsoleState.fps1 = GetTicks();
+			while(( m_ConsoleState.fps1 - m_ConsoleState.fps0 ) <(1000 / m_ConsoleState.fps) ) {
+				m_ConsoleState.fps1 = GetTicks();
 			}
 		}
 
@@ -1363,7 +1387,7 @@ moConsole::Draw() {
 		this->GLSwapBuffers();
 	}
 
-	state.fps0 = GetTicks();
+	m_ConsoleState.fps0 = GetTicks();
 }
 
 
@@ -1402,7 +1426,7 @@ moConsole::Finish() {
 	}
 
 	//FINALIZAMOS LOS RECURSOS (liberando memoria)
-	state.Finish();
+	m_ConsoleState.Finish();
 	m_Config.DeleteConfig();//finally we unload the console configuration
 
 	m_bInitialized = false;
@@ -1436,7 +1460,7 @@ moConsole::Interaction() {
                     MODebug2->Log("key down");
                     if ( event->reservedvalue0 == SDLK_ESCAPE ) {
                         MODebug2->Log("ESCAPE pressed");
-                        state.finish = MO_TRUE;
+                        m_ConsoleState.finish = MO_TRUE;
                     }
                 }
             }
@@ -1451,9 +1475,10 @@ moConsole::Interaction() {
 	//INTERACCION EFFECTS MAESTROS
 
 	for( i=0; i<m_EffectManager.MasterEffects().Count(); i++) {
-		pEffect = m_EffectManager.MasterEffects().Get(i);
+		pEffect = m_EffectManager.MasterEffects().GetRef(i);
+		moEffectState fxstate = pEffect->GetEffectState();
 		if(pEffect!=NULL) {
-			if(pEffect->state.on == MO_ACTIVATED) {
+			if(pEffect->Activated()) {
 				pEffect->Interaction( m_pIODeviceManager );
 			}
 		}
@@ -1467,25 +1492,25 @@ moConsole::Interaction() {
 		//se pasa el control de events al CanalMaestro array[0], el sabra a quien pasar el control
 	if ( m_EffectManager.MasterEffects().Count() > 2 ) {
 
-		pChannel = m_EffectManager.MasterEffects().Get(0);
+		pChannel = m_EffectManager.MasterEffects().GetRef(0);
 		//pChannel = m_EffectManager.GetEffectByLabel( "channel0" );
-		pPanel = m_EffectManager.MasterEffects().Get(2);
+		pPanel = m_EffectManager.MasterEffects().GetRef(2);
 		//pPanel = m_EffectManager.GetEffectByLabel( "panel" );
 
 		if (pPanel && pChannel)
-		if((pChannel->state.on != MO_ACTIVATED) && (pPanel->state.on != MO_ACTIVATED) ) {
+		if( !pChannel->Activated() && !pPanel->Activated() ) {
 		    /// signifa que el canal y el panel estan desactivados....
 		    /// modo de captura....   ( control del efecto seleccionado por el channel... )
 			pChannel->Interaction( m_pIODeviceManager );
 		}
 	} else {
       ///MODO DIRECTO!!!!! todos los efectos prendidos reciben Interaccion
-	    for(int all=0;all<m_EffectManager.AllEffects().Count(); all++) {
+	    for( MOuint all=0;all<m_EffectManager.AllEffects().Count(); all++) {
 	        moEffect* pEffect = NULL;
 
-	        pEffect = m_EffectManager.AllEffects().Get(all);
-	        if ( pEffect && pEffect->state.on == MO_ON ) {
-            pEffect->Interaction( m_pIODeviceManager );
+	        pEffect = m_EffectManager.AllEffects().GetRef(all);
+	        if ( pEffect && pEffect->Activated() ) {
+                pEffect->Interaction( m_pIODeviceManager );
 	        }
       }
   }
@@ -1493,14 +1518,14 @@ moConsole::Interaction() {
 
 	//TAREAS ESPECIALES
 	//reinicializa
-	if(state.reinit) {
+	if(m_ConsoleState.reinit) {
 		Finish();
 		Init();
-		state.reinit = MO_FALSE;
+		m_ConsoleState.reinit = MO_FALSE;
 	}
 
 
-	return state.finish;
+	return m_ConsoleState.finish;
 }
 
 void
@@ -1620,6 +1645,9 @@ moConsole::ConvertKeyNameToIdx(moText& name) {
 }
 
 void moConsole::ConsolePlay() {
+
+    m_ConsoleState.tempo.Start();
+
     if (moIsTimerPaused())
         moContinueTimer();
     else
@@ -1666,8 +1694,7 @@ void moConsole::SetTicks( int ticksid ) {
 }
 
 int moConsole::GetObjectId( moText p_objectlabelname ) {
-    int i;
-    for(i=0; i<m_MoldeoObjects.Count(); i++) {
+    for( MOuint i=0; i<m_MoldeoObjects.Count(); i++) {
 
         if (p_objectlabelname == m_MoldeoObjects[i]->GetLabelName()) {
             return m_MoldeoObjects[i]->GetId();
@@ -1677,7 +1704,7 @@ int moConsole::GetObjectId( moText p_objectlabelname ) {
     return -1;
 }
 
-const int moConsole::GetDirectoryFileCount( moText p_path ) {
+int moConsole::GetDirectoryFileCount( moText p_path ) {
     int i;
     moDirectory* pDir;
     pDir = NULL;
@@ -1959,7 +1986,7 @@ int moConsole::luaSetObjectPreconf(moLuaVirtualMachine& vm)
 
     moMoldeoObject* Object = NULL;
 
-    if ( 0<=objectid && objectid<m_MoldeoObjects.Count() )
+    if ( 0<=objectid && objectid< (int) m_MoldeoObjects.Count() )
         Object = m_MoldeoObjects[objectid];
 
     if (Object && Object->GetConfig()) {
@@ -2000,7 +2027,7 @@ int moConsole::luaObjectEnable(moLuaVirtualMachine& vm)
     moMoldeoObject* Object = NULL;
     moEffect* pEffect = NULL;
 
-    if ( 0<=objectid && objectid<m_MoldeoObjects.Count() )
+    if ( 0<=objectid && objectid<(int)m_MoldeoObjects.Count() )
         Object = m_MoldeoObjects[objectid];
 
     if (Object && Object->GetConfig()) {
@@ -2032,7 +2059,7 @@ int moConsole::luaObjectDisable(moLuaVirtualMachine& vm)
     moMoldeoObject* Object = NULL;
     moEffect* pEffect = NULL;
 
-    if ( 0<=objectid && objectid<m_MoldeoObjects.Count() )
+    if ( 0<=objectid && objectid<(int)m_MoldeoObjects.Count() )
         Object = m_MoldeoObjects[objectid];
 
         if (Object && Object->GetConfig()) {
@@ -2378,7 +2405,7 @@ int moConsole::luaSetEffectState(moLuaVirtualMachine& vm) {
             case MO_OBJECT_POSTEFFECT:
             case MO_OBJECT_MASTEREFFECT:
                 pEffect = (moEffect*) Object;
-                fxstate = pEffect->state;
+                fxstate = pEffect->GetEffectState();
                 fxstate.alpha = (MOfloat) lua_tonumber (state, 2);
                 fxstate.tint = (MOfloat) lua_tonumber (state, 3);
                 fxstate.tintr = (MOfloat) lua_tonumber (state, 4);
@@ -2386,7 +2413,7 @@ int moConsole::luaSetEffectState(moLuaVirtualMachine& vm) {
                 fxstate.tintb = (MOfloat) lua_tonumber (state, 6);
                 fxstate.tempo.ang = (MOfloat) lua_tonumber (state, 7);
 
-                pEffect->state = fxstate;
+                pEffect->SetEffectState(fxstate);
                 break;
             default:
                 break;
@@ -2401,9 +2428,9 @@ int moConsole::luaSetEffectState(moLuaVirtualMachine& vm) {
 }
 
 int moConsole::luaGetEffectState(moLuaVirtualMachine& vm) {
-    lua_State *state = (lua_State *) vm;
+    lua_State *luastate = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (luastate, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
 
     moMoldeoObject* Object = m_MoldeoObjects[objectid];
     moEffect*       pEffect = NULL;
@@ -2416,12 +2443,12 @@ int moConsole::luaGetEffectState(moLuaVirtualMachine& vm) {
             case MO_OBJECT_POSTEFFECT:
             case MO_OBJECT_MASTEREFFECT:
                 pEffect = (moEffect*) Object;
-                lua_pushnumber(state, (lua_Number) pEffect->state.alpha );
-                lua_pushnumber(state, (lua_Number) pEffect->state.tint );
-                lua_pushnumber(state, (lua_Number) pEffect->state.tintr );
-                lua_pushnumber(state, (lua_Number) pEffect->state.tintg );
-                lua_pushnumber(state, (lua_Number) pEffect->state.tintb );
-                lua_pushnumber(state, (lua_Number) pEffect->state.tempo.ang );
+                lua_pushnumber(luastate, (lua_Number) pEffect->GetEffectState().alpha );
+                lua_pushnumber(luastate, (lua_Number) pEffect->GetEffectState().tint );
+                lua_pushnumber(luastate, (lua_Number) pEffect->GetEffectState().tintr );
+                lua_pushnumber(luastate, (lua_Number) pEffect->GetEffectState().tintg );
+                lua_pushnumber(luastate, (lua_Number) pEffect->GetEffectState().tintb );
+                lua_pushnumber(luastate, (lua_Number) pEffect->GetEffectState().tempo.ang );
                 return 6;
 
             default:

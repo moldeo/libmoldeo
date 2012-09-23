@@ -78,9 +78,12 @@ MOboolean moSequenceEffect::Init()
 	//INICIALIZACION DE CADA EFFECT(LA ASIGNACION DE CODIGOS DE DISPOSITIVO SE HACE APARTE)
 	for(i=0; i<effects.Count(); i++) {
 		if(effects[i]!=NULL) {
-			effects[i]->state.fulldebug = state.fulldebug;
+            moEffectState fxstate = effects[i]->GetEffectState();
+			fxstate.fulldebug = m_EffectState.fulldebug;
+
+            effects[i]->SetEffectState( fxstate );
 			effects[i]->Init();
-			effects[i]->state.on = MO_ON;
+			effects[i]->Activate();
 		}
 	}
 
@@ -105,9 +108,14 @@ void moSequenceEffect::Draw( moTempo* tempogral,moEffectState* parentstate)
 
 	for(i=0;i<effects.Count();i++) {
 		if(effects[i]!=NULL) {
-			if(effects[i]->state.on==MO_ON) {
+			if(effects[i]->Activated()) {
 				effects[i]->GetConfig()->SetCurrentPreConf( m_Config.GetParam(idp_sequence).GetValue().GetSubValue(i).Int());
-					effects[i]->Draw(&state.tempo,&state);
+
+				moEffectState scene_state = GetEffectState();
+				moTempo scene_tempo = GetEffectState().tempo;
+
+				effects[i]->Draw(&scene_tempo, &scene_state );
+
 			}
 		}
 	}

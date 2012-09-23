@@ -241,7 +241,7 @@ LIBMOLDEO_API bool moDeleteMasterEffect(moMasterEffect *mastereffect, moMasterPl
     // a partir del nombre del efecto.
     moText complete_name;
 
-    if(!stricmp(mastereffect->GetName(), "")) return false;
+    if( mastereffect->GetName() == "" ) return false;
 
     #if defined(_WIN32)
     complete_name = moText(MODULESDIR "/mastereffects/") + moText(mastereffect->GetName());

@@ -98,23 +98,24 @@ MOboolean moPresets::Finish()
 
 }
 
-void moPresets::Save( MOint p, moConfig *conf, moEffectState *est) {
+void moPresets::Save( MOint p, moConfig *conf, const moEffectState& fxstate ) {
 	MOint i;
     for( i=0; i<paramnum; i++)
         preset[p][i] = conf->GetCurrentValueIndex( i);
-    state[p] = *est;
+    state[p] = fxstate;
     setting[p] = MO_TRUE;
 }
 
 
-void moPresets::Load( MOint p, moConfig *conf, moEffectState *est) {
+const moEffectState& moPresets::Load( MOint p, moConfig *conf, const moEffectState& fxstate ) {
 	MOint i;
     if(setting[p])
     {
         for( i=0; i<paramnum; i++)
             conf->SetCurrentValueIndex( i, preset[p][i]);
-        *est = state[p];
+        return state[p];
     }
+    return fxstate;
 }
 
 
