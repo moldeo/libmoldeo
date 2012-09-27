@@ -30,6 +30,7 @@
 *******************************************************************************/
 
 #include "moP5.h"
+#include "moMath.h"
 
 moP5::moP5()
 {
@@ -46,9 +47,9 @@ moP5::moP5()
 	strokeColor[2] = 0.7;
 	strokeColor[3] = 1.0;
 
-	fillColor[0] = 0.2;
-	fillColor[1] = 0.2;
-	fillColor[2] = 0.2;
+	fillColor[0] = 0.7;
+	fillColor[1] = 0.7;
+	fillColor[2] = 0.7;
 	fillColor[3] = 1.0;
 }
 
@@ -64,7 +65,7 @@ void moP5::triangle(float x1, float y1, float x2, float y2, float x3, float y3)
 
 void moP5::line(float x1, float y1, float x2, float y2)
 {
-
+    glEnable( GL_TEXTURE_2D );
   glBindTexture(GL_TEXTURE_2D,0);
 	glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
 	glBegin(GL_LINES);
@@ -75,6 +76,7 @@ void moP5::line(float x1, float y1, float x2, float y2)
 
 void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
 {
+	glEnable( GL_TEXTURE_2D );
 	glBindTexture(GL_TEXTURE_2D,0);
 	glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
 	glBegin(GL_LINES);
@@ -83,21 +85,57 @@ void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
 	glEnd();
 }
 
-void moP5::arc(float x, float y, float width, float height, float start, float stop)
+void moP5::arc(float x, float y, float width, float height, float start, float stop, int slices )
 {
 	// Implement display list with precomputed circle coordinates...
+  glEnable( GL_TEXTURE_2D );
+  glBindTexture(GL_TEXTURE_2D,0);
+
+	float N;
+    float Nstep;
+
+	N = (float)slices;
+	Nstep = MO_P5_TWO_PI / N;
+
+	switch(fillMode) {
+
+        case MO_P5_NOFILL:
+            glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+            glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
+            glBegin(GL_LINE_LOOP);
+            break;
+
+        case MO_P5_FILL:
+            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+            glColor4f(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            glBegin(GL_POLYGON);
+            break;
+        default:
+            return;
+            break;
+
+	}
+
+        glVertex2f( (float)x, (float)y);
+        for(float t = start; t <= stop; t += Nstep )
+            glVertex2f(width* cos(t) + (float)x, height * sin(t) + (float)y);
+    glEnd();
 
 }
 
 void moP5::point(float x, float y)
 {
-	glVertex2f(x, y);
+    glBegin(GL_POINTS);
+        glVertex2f(x, y);
+    glEnd();
 }
 
 
 void moP5::point(float x, float y, float z)
 {
-	glVertex3f(x, y, z);
+    glBegin(GL_POINTS);
+        glVertex3f(x, y, z);
+    glEnd();
 }
 
 void moP5::quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
@@ -110,19 +148,22 @@ void moP5::quad(float x1, float y1, float x2, float y2, float x3, float y3, floa
 	glEnd();
 }
 
-void moP5::ellipse(float x, float y, float width, float height)
+void moP5::ellipse(float x, float y, float width, float height, int slices )
 {
 	// Implement display list with precomputed circle coordinates...
 	// and scale it to the right size.
+  glEnable( GL_TEXTURE_2D );
   glBindTexture(GL_TEXTURE_2D,0);
 
-	int N;
+	float N;
 
-	N = 12;
+	N = (float)slices;
 
 	switch(fillMode) {
 
         case MO_P5_NOFILL:
+            glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+            glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
             glBegin(GL_LINE_LOOP);
                 for(float t = 0; t <= MO_P5_TWO_PI; t += MO_P5_TWO_PI/N)
                     glVertex2f(width* cos(t) + (float)x, height * sin(t) + (float)y);
@@ -130,6 +171,8 @@ void moP5::ellipse(float x, float y, float width, float height)
             break;
 
         case MO_P5_FILL:
+            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+            glColor4f(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
             glBegin(GL_POLYGON);
                 for(float t = 0; t <= MO_P5_TWO_PI; t += MO_P5_TWO_PI/N)
                     glVertex2f(width * cos(t) + (float)x, height * sin(t) + (float)y);
@@ -332,6 +375,7 @@ void moP5::stroke(float value1, float value2, float value3, float alpha)
 void moP5::noFill()
 {
     fillMode = MO_P5_NOFILL;
+    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 }
 
 void moP5::noStroke()
@@ -344,31 +388,23 @@ void moP5::noStroke()
 
 void moP5::fill(float gray)
 {
-    fillMode = MO_P5_FILL;
-    fillColor[0] = gray;
-    fillColor[1] = gray;
-    fillColor[2] = gray;
-    fillColor[3] = 1.0;
+    fill( gray, gray, gray , 1.0 );
 }
 
 void moP5::fill(float gray, float alpha)
 {
-    fill(gray);
-    fillColor[3] = alpha;
+    fill( gray, gray, gray , alpha );
 }
 
 void moP5::fill(float value1, float value2, float value3)
 {
-    fillMode = MO_P5_FILL;
-    fillColor[0] = value1;
-    fillColor[1] = value2;
-    fillColor[2] = value3;
-    fillColor[3] = 1.0;
+    fill( value1, value2, value3 , 1.0 );
 }
 
 void moP5::fill(float value1, float value2, float value3, float alpha)
 {
     fillMode = MO_P5_FILL;
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     fillColor[0] = value1;
     fillColor[1] = value2;
     fillColor[2] = value3;
@@ -398,19 +434,9 @@ void moP5::scale(float size)
 	glScalef(size, size, size);
 }
 
-void moP5::scale(float x, float y)
-{
-	glScalef(x, y, 1.0);
-}
-
 void moP5::scale(float x, float y, float z)
 {
 	glScalef(x, y, z);
-}
-
-void moP5::translate(float x, float y)
-{
-	glTranslatef(x, y, 0.0);
 }
 
 void moP5::translate(float x, float y, float z)
@@ -418,9 +444,9 @@ void moP5::translate(float x, float y, float z)
 	glTranslatef(x, y, z);
 }
 
-void moP5::rotate(float angle)
+void moP5::rotate(float angle, float x, float y, float z)
 {
-	glRotatef(angle, 0.0, 0.0, 1.0);
+	glRotatef(angle * moMathf::RAD_TO_DEG, x, y, z);
 }
 
 void moP5::generateTmpColor(float comp1, float comp2, float comp3)

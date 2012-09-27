@@ -272,10 +272,19 @@ moGsGraph::on_rtsppadd_added( moGstElement *rtspsrc, moGstPad *pad, moGPointer u
         medianame = gst_structure_get_string (str, "media");
         //strname = GST_STRUCTURE(str)->has_field("media");
 
+        moText dbgstr = medianame;
+        pGsGraph->MODebug2->Push( dbgstr );
+
         if (g_strrstr (medianame, "video")) {
             ///link video...
             if ( pGsGraph->m_pRTSPDepaySink ) {
                 padlink = gst_pad_link ( Gpad, (GstPad*)pGsGraph->m_pRTSPDepaySink);
+                if (padlink==GST_PAD_LINK_OK) {
+                    ///all ok!!!
+                }
+            } else
+            if ( pGsGraph->m_pHTTPSource ) {
+                padlink = gst_pad_link ( Gpad, (GstPad*)pGsGraph->m_pDecoderBin );
                 if (padlink==GST_PAD_LINK_OK) {
                     ///all ok!!!
                 }
@@ -857,6 +866,8 @@ moGsGraph::moGsGraph() {
     m_pFileSink = NULL;
     m_pRTSPSource = NULL;
     m_pRTSPDepay = NULL;
+    m_pHTTPSource = NULL;
+    m_pJpegDecode = NULL;
     m_pDecoderBin = NULL;
     m_pEncoder = NULL;
 
@@ -1037,6 +1048,16 @@ moGsGraph::FinishGraph() {
     if (m_pFileSource) {
         gst_object_unref( (GstElement*) m_pFileSource);
         m_pFileSource = NULL;
+    }
+
+    if (m_pJpegDecode) {
+        gst_object_unref( (GstElement*) m_pJpegDecode);
+        m_pJpegDecode = NULL;
+    }
+
+    if (m_pHTTPSource) {
+        gst_object_unref( (GstElement*) m_pHTTPSource);
+        m_pHTTPSource = NULL;
     }
 
     if (m_pRTSPDepay) {
@@ -1377,6 +1398,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
     MOint p_forceflipV;
     moText colormode;
 
+
     codename = p_capdev.GetCodeName();
 
     devicename = p_capdev.GetName();
@@ -1414,7 +1436,11 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                 m_pRTSPDepaySink = gst_element_get_static_pad ( (GstElement*)m_pRTSPDepay, "sink"  );
                 signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBACK (on_rtsppadd_added), (gpointer)this);
             }
-
+        } else if (codename==moText("HTTP")) {
+            m_pHTTPSource = gst_element_factory_make ("souphttpsrc", "source");
+            if ( m_pHTTPSource ) {
+                //signal_rtsppad_added_id = g_signal_connect (m_pHTTPSource, "pad-added", G_CALLBACK (on_rtsppadd_added), (gpointer)this);
+            }
         } else {
 
             #ifdef MO_WIN32
@@ -1461,6 +1487,31 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
             }
 
         }
+
+        ///SOUP HTTP source (MJPEG/HTTP)   videofeed
+        if (m_pHTTPSource) {
+
+            g_object_set (G_OBJECT (m_pHTTPSource), "location", (char*)devicename, NULL);
+            g_object_set (G_OBJECT (m_pHTTPSource), "automatic-redirect", TRUE, NULL);
+
+            //g_object_set (G_OBJECT (m_pRTSPSource), "latency", (guint) 0, NULL);
+            //g_object_set (G_OBJECT (m_pRTSPSource), "debug", (gboolean) true, NULL);
+            //g_object_set (G_OBJECT (m_pRTSPSource), "protocols", (guint) 0x00000004, NULL);
+
+            res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pHTTPSource );
+
+            if (res) {
+                link_result = true;
+            }
+
+            if (link_result) {
+                m_pFinalSource = m_pHTTPSource;
+            } else {
+                m_pFinalSource = NULL;
+            }
+
+        }
+
 
        ///STANDAR DEVICES....
        if (m_pFileSource) {
@@ -1542,7 +1593,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
            }
            gst_iterator_free (iterator);
 
-
+            //queue = gst_element_factory_make("queue", "vqueue");
 
            if (b_sourceselect) {
                MODebug2->Message(moText("moGsGraph:: sourceselect:") + (moText)colormode + moText(" ") + IntToStr(p_sourcewidth) + moText("X") + IntToStr(p_sourceheight)+ moText(" bpp:") + IntToStr(p_sourcebpp));
