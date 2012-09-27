@@ -1498,6 +1498,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
             //g_object_set (G_OBJECT (m_pRTSPSource), "debug", (gboolean) true, NULL);
             //g_object_set (G_OBJECT (m_pRTSPSource), "protocols", (guint) 0x00000004, NULL);
 
+
             res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pHTTPSource );
 
             if (res) {

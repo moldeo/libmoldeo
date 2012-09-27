@@ -110,6 +110,7 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
             glColor4f(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
             glBegin(GL_POLYGON);
             break;
+
         default:
             return;
             break;
