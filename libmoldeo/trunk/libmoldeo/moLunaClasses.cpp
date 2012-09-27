@@ -798,41 +798,101 @@ SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaP5) : moP5()
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, triangle)
 {
+    int n = lua_pindexes(L);
+
+  MOfloat x1,y1,x2,y2,x3,y3;
+
+  if (n==6) {
+    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+    x2 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+    y2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
+    x3 = (MOfloat) lua_tonumber (L, lua_pindex(5));
+    y3 = (MOfloat) lua_tonumber (L, lua_pindex(6));
+    moP5::triangle( x1, y1, x2, y2, x3, y3 );
+  }
+
+    return 0;
+
 	return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, line)
 {
-  int n = lua_pindexes(L);
+    int n = lua_pindexes(L);
 
-  MOfloat x1,x2,y1,y2,z1,z2;
+    MOfloat x1,x2, y1,y2, z1,z2;
 
-  if (n==4) {
-    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
-    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
-    x2 = (MOfloat) lua_tonumber (L, lua_pindex(3));
-    y2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
-    moP5::line(x1, y1, x2, y2);
-  } else if (n==6) {
-    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
-    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
-    z1 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+    switch(n) {
+        case 4:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+            x2 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+            y2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
+            moP5::line(x1, y1, x2, y2);
+            break;
+        case 6:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+            z1 = (MOfloat) lua_tonumber (L, lua_pindex(3));
 
-    x2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
-    y2 = (MOfloat) lua_tonumber (L, lua_pindex(5));
-    z2 = (MOfloat) lua_tonumber (L, lua_pindex(6));
-    moP5::line(x1, y1, x2, y2);
-  }
+            x2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
+            y2 = (MOfloat) lua_tonumber (L, lua_pindex(5));
+            z2 = (MOfloat) lua_tonumber (L, lua_pindex(6));
+            moP5::line(x1, y1, x2, y2);
+            break;
+    }
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, arc)
 {
+
+  int n = lua_pindexes(L);
+
+  MOfloat x1,y1,width,height,start,stop;
+  int slices;
+
+  switch(n) {
+
+    case 6:
+        x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+        y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+        width = (MOfloat) lua_tonumber (L, lua_pindex(3));
+        height = (MOfloat) lua_tonumber (L, lua_pindex(4));
+        start = (MOfloat) lua_tonumber (L, lua_pindex(5));
+        stop = (MOfloat) lua_tonumber (L, lua_pindex(6));
+        moP5::arc(x1, y1, width, height,start,stop);
+        break;
+    case 7:
+        x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+        y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+        width = (MOfloat) lua_tonumber (L, lua_pindex(3));
+        height = (MOfloat) lua_tonumber (L, lua_pindex(4));
+        start = (MOfloat) lua_tonumber (L, lua_pindex(5));
+        stop = (MOfloat) lua_tonumber (L, lua_pindex(6));
+        slices = (int) lua_tonumber (L, lua_pindex(7));
+        moP5::arc(x1, y1, width, height,start,stop, slices );
+        break;
+
+  }
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, point)
 {
+    int n = lua_pindexes(L);
+
+  MOfloat x1,y1;
+
+  if (n==2) {
+    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+    moP5::point(x1, y1);
+  }
+
     return 0;
 }
 
@@ -842,7 +902,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, quad)
 
   MOfloat x1,x2,x3,x4,y1,y2,y3,y4;
 
-  if (n==4) {
+  if (n==8) {
     x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
     y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
     x2 = (MOfloat) lua_tonumber (L, lua_pindex(3));
@@ -859,6 +919,31 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, quad)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, ellipse)
 {
+  int n = lua_pindexes(L);
+
+  MOfloat x1,y1,width,height;
+  int slices;
+
+  switch(n) {
+
+    case 4:
+        x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+        y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+        width = (MOfloat) lua_tonumber (L, lua_pindex(3));
+        height = (MOfloat) lua_tonumber (L, lua_pindex(4));
+        moP5::ellipse(x1, y1, width, height);
+        break;
+    case 5:
+        x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+        y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+        width = (MOfloat) lua_tonumber (L, lua_pindex(3));
+        height = (MOfloat) lua_tonumber (L, lua_pindex(4));
+        slices = (int) lua_tonumber (L, lua_pindex(5));
+        moP5::ellipse(x1, y1, width, height, slices );
+        break;
+
+  }
+
     return 0;
 }
 
@@ -869,12 +954,15 @@ SCRIPT_FUNCTION_IMPLEMENTATION( moLuaP5, rect )
 
   MOfloat x1,y1,width,height;
 
-  if (n==4) {
-    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
-    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
-    width = (MOfloat) lua_tonumber (L, lua_pindex(3));
-    height = (MOfloat) lua_tonumber (L, lua_pindex(4));
-    moP5::rect(x1, y1, width, height);
+  switch(n) {
+
+    case 4:
+        x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+        y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+        width = (MOfloat) lua_tonumber (L, lua_pindex(3));
+        height = (MOfloat) lua_tonumber (L, lua_pindex(4));
+        moP5::rect(x1, y1, width, height);
+        break;
   }
 
     return 0;
@@ -923,7 +1011,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, background)
       moP5::background( r, g, b, alpha );
       break;
     default:
-      moP5::background( 0.2, 0.2, 0.2, 1.0 );
+      moP5::background( 1.0, 1.0, 1.0, 1.0 );
       break;
   }
 }
@@ -966,7 +1054,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, stroke)
       moP5::stroke( r, g, b, alpha );
       break;
     default:
-      moP5::stroke( 0.8, 0.8, 0.8, 1.0 );
+      moP5::stroke( 1.0, 1.0, 1.0, 1.0 );
       break;
   }
 
@@ -993,36 +1081,33 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, fill)
 {
 
   int n = lua_pindexes(L);
-  MOfloat r,g,b,grey;
-  MOfloat alpha = 1.0;
+  MOfloat r=1.0f,g=1.0f,b=1.0f,grey=1.0f;
+  MOfloat alpha = 1.0f;
 
   switch(n) {
     case 1:
       grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
-      alpha = (MOfloat) lua_tonumber (L, lua_pindex(2));
-      moP5::fill(grey);
+      r = g = b = grey;
       break;
     case 2:
       grey = (MOfloat) lua_tonumber (L, lua_pindex(1) );
-      moP5::fill(grey, alpha);
+      alpha = (MOfloat) lua_tonumber (L, lua_pindex(2));
+      r = g = b = grey;
       break;
     case 3:
       r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
       g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
       b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
-      moP5::fill( r, g, b );
       break;
     case 4:
       r = (MOfloat) lua_tonumber (L, lua_pindex(1) );
       g = (MOfloat) lua_tonumber (L, lua_pindex(2) );
       b = (MOfloat) lua_tonumber (L, lua_pindex(3) );
       alpha = (MOfloat) lua_tonumber (L, lua_pindex(4));
-      moP5::fill( r, g, b, alpha );
-      break;
-    default:
-      moP5::fill( 0.8, 0.8, 0.8, 1.0 );
       break;
   }
+
+  moP5::fill( r, g, b, alpha );
 
     return 0;
 }
@@ -1044,17 +1129,79 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, resetMatrix)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, scale)
 {
+  int n = lua_pindexes(L);
+
+  MOfloat x1 = 1.0f,y1 = 1.0f, z1 = 1.0f;
+
+    switch(n) {
+        case 1:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            break;
+        case 2:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+            break;
+        case 3:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+            z1 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+            break;
+    }
+
+    moP5::scale(x1, y1, z1 );
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, translate)
 {
+  int n = lua_pindexes(L);
+
+  MOfloat x1 = 0.0f,y1 = 0.0f, z1 = 0.0f;
+
+    switch(n) {
+        case 1:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            break;
+        case 2:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+            break;
+        case 3:
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+            z1 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+            break;
+    }
+
+    moP5::translate(x1, y1, z1 );
+
     return 0;
+
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, rotate)
 {
+  int n = lua_pindexes(L);
+
+  MOfloat angle = 0.0f, x1=0.0f, y1=0.0f, z1=1.0f;
+
+    switch(n) {
+        case 1:
+            angle = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            break;
+        case 4:
+            angle = (MOfloat) lua_tonumber (L, lua_pindex(1));
+            x1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+            y1 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+            z1 = (MOfloat) lua_tonumber (L, lua_pindex(4));
+            break;
+    }
+
+    moP5::rotate( angle, x1, y1, z1 );
+
     return 0;
+
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, PRGB)

@@ -94,7 +94,7 @@ public:
 	 * @param start ángulo donde comenzar el arco, especificado en radianes o grados dependiendo del modo de ángulo actual.
 	 * @param stop ángulo donde detener el arco, especificado en radianes o grados dependiendo del modo de ángulo actual.
 	 */
-	void arc(float x, float y, float width, float height, float start, float stop);
+	void arc(float x, float y, float width, float height, float start, float stop, int slices = 24 );
 
 	/**
 	 * Dibuja un punto, una coordenada en el espacio de las dimensiones de un píxel. El primer parámetro
@@ -138,7 +138,7 @@ public:
 	 * @param height alto de la elipse.
 	 * @see ellipseMode()
 	 */
-	void ellipse(float x, float y, float width, float height);
+	void ellipse(float x, float y, float width, float height, int slices=24 );
 
 	/**
 	 * Dibuja un rectángulo en la pantalla. Un rectángulo es un figura de cuatro lados en la cual cada ángulo
@@ -288,8 +288,7 @@ public:
 	 * @see popMatrix()
 	 */
 	void scale(float size);
-	void scale(float x, float y);
-	void scale(float x, float y, float z);
+	void scale(float x, float y, float z=1.0f);
 
 	/**
 	 * Especifica una cantidad a desplazar los objetos dentro de la pantalla. El parámetro x especifica translación de izquierda
@@ -303,8 +302,7 @@ public:
 	 * @see pushMatrix()
 	 * @see popMatrix()
 	 */
-	void translate(float x, float y);
-	void translate(float x, float y, float z);
+	void translate(float x, float y, float z = 0.0f);
 
 	/**
 	 * Gira un objeto en la cantidad especificada por el parámero de ángulo. Los ángulos deben ser especificados
@@ -318,7 +316,7 @@ public:
 	 * @see pushMatrix()
 	 * @see popMatrix()
 	 */
-	void rotate(float angle);
+	void rotate(float angle, float x=0.0f, float y=0.0f, float z=1.0f );
 
 	enum moP5StrokeJoinMode
 	{
