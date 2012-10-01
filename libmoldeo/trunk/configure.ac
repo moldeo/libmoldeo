@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [0.7.9.6], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [0.7.9.7], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -57,7 +57,7 @@ AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
 AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
 
 dnl check for ftgl
-PKG_CHECK_MODULES([FTGL], [ftgl] ,has_ftgl=yes)
+PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
 
 dnl check for freeimage
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
