@@ -69,7 +69,7 @@ PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 dnl check for TUIO
 #AC_LANG_PUSH(C++)dnl
 #AC_CHECK_HEADER(TUIO/TuioObject.h, , AC_MSG_ERROR([TUIO header not found. Please read README.]))
-PKG_CHECK_MODULES([TUIO], [libTUIO] ,has_tuio=yes)
+#PKG_CHECK_MODULES([TUIO], [libTUIO] ,has_tuio=yes)
 
 #SAVED_LDFLAGS=$LDFLAGS
 #LDFLAGS="$LDFLAGS -lTUIO"
