@@ -31,8 +31,10 @@
 #include "moFilterManager.h"
 
 #include "moArray.h"
+#ifdef USE_TUIO
 moDefineDynamicArray( moTuioCursorArray )
 moDefineDynamicArray( moTuioObjectArray )
+#endif
 moDefineDynamicArray( moTrackerFeatureArray )
 moDefineDynamicArray( moTrackerInstanceRecords );
 
@@ -219,6 +221,8 @@ moTrackerInstanceRecord&
 moTrackerSystemHistory::Get( int index ) {
     return m_History[index];
 }
+
+#ifdef USE_TUIO
 
 moTUIOSystemData::moTUIOSystemData() {
 
@@ -601,7 +605,7 @@ void moTUIOSystemData::removeUntouchedStoppedCursors() {
 	}
 }
 
-
+#endif
 
 
 

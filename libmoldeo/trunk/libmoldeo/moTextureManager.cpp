@@ -98,6 +98,27 @@ MOboolean  moTextureBuffer::Init() {
 }
 
 MOboolean
+moTextureBuffer::Init( moText p_foldername, moTextureBufferFormat p_bufferformat, int p_pattern_width, int p_pattern_height, moResourceManager* p_pResourceManager ) {
+
+    moText str_format;
+
+    pattern_width = p_pattern_width;
+    pattern_height = p_pattern_height;
+
+    if (p_bufferformat==MO_TEXTURE_BUFFER_FORMAT_LEVELS) {
+
+        str_format = "LEVELS";
+
+    } else if (p_bufferformat==MO_TEXTURE_BUFFER_FORMAT_PATTERNS) {
+
+        str_format = "PATTERNS";
+
+    }
+
+    Init( p_foldername, str_format, p_pResourceManager );
+}
+
+MOboolean
 moTextureBuffer::Init( moText p_foldername, moText p_bufferformat, moResourceManager* p_pResourceManager ) {
 	m_pResourceManager = p_pResourceManager;
 
@@ -339,7 +360,9 @@ moTextureBuffer::LoadImage( moText p_ImageName, moBitmap* pImage, int indeximage
     int idx = m_pResourceManager->GetTextureMan()->AddTexture( MO_TYPE_TEXTUREMEMORY, p_ImageName );
 
 	if (idx>-1) {
+
 	    pTextureMemory = (moTextureMemory*) m_pResourceManager->GetTextureMan()->GetTexture(idx);
+
         if (pTextureMemory) {
             if (pTextureMemory->BuildFromBitmap( pImageResult, m_BufferFormat )) {
 
@@ -405,6 +428,23 @@ MOboolean moTextureBuffer::LoadFromVideo(  moText p_moviefile ) {
 	return true;
 }
 */
+
+moTextureFrames&
+moTextureBuffer::GetBufferPatterns( moTexture* p_ImageReference, int x, int y, int width, int height ) {
+
+    int index = 0;
+
+    return m_pBufferPatterns[index];
+}
+
+moTextureFrames&
+moTextureBuffer::GetBufferPatterns( const moTexture& p_ImageReference, int x, int y, int width, int height ) {
+
+    int index = 0;
+
+    return m_pBufferPatterns[index];
+}
+
 
 moTextureFrames&  moTextureBuffer::GetBufferLevels( int L, int C ) {
 

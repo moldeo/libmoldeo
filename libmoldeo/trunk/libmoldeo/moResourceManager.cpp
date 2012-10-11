@@ -137,10 +137,12 @@ moResourceManager::~moResourceManager() {
 }
 
 moResource*
-moResourceManager::NewResource( moText p_resname, int paramindex, int valueindex  ) {
+moResourceManager::NewResource( moText p_resname,  moText p_configname, moText p_labelname, int paramindex, int valueindex  ) {
 
     moResource* pResource = moNewResource( p_resname, m_Plugins );
     if (pResource) {
+        pResource->SetConfigName(p_configname);
+        pResource->SetLabelName(p_labelname);
         pResource->SetConsoleParamIndex( paramindex );
         pResource->SetConsoleValueIndex( valueindex );
         AddResource( pResource  );
