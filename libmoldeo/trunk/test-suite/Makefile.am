@@ -31,8 +31,9 @@ check_libmoldeo_LDADD       = @CHECK_LIBS@ \
 	@BOOST_ASIO_LIB@ \
 	@BOOST_FILESYSTEM_LIB@ \
 	@BOOST_THREAD_LIB@ \
-	@FTGL_LIBS@ \
-	@TUIO_LIBS@
+	@FTGL_LIBS@ 
+#\
+	#@TUIO_LIBS@
 
 CLEANFILES                  = check_libmoldeo.log
 
