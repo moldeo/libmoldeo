@@ -46,7 +46,10 @@ moDeclareExportedDynamicArray(moTextureFramePtr,moTextureFrames);
     de un buffer de memoria y a la vez permite reproducir cada cuadro de forma independiente, descomprimiendo de memoria
     y asignando una textura
 */
-
+enum moTextureBufferFormat {
+    MO_TEXTURE_BUFFER_FORMAT_LEVELS = 0,
+    MO_TEXTURE_BUFFER_FORMAT_PATTERNS = 1
+};
 
 class LIBMOLDEO_API moTextureBuffer : public moAbstract {
 
@@ -56,6 +59,7 @@ class LIBMOLDEO_API moTextureBuffer : public moAbstract {
 
 		virtual MOboolean  Init();
 		virtual MOboolean  Init( moText p_foldername, moText p_bufferformat, moResourceManager* p_pResourceManager );
+		virtual MOboolean  Init( moText p_foldername, moTextureBufferFormat p_bufferformat, int p_pattern_width, int p_pattern_height, moResourceManager* p_pResourceManager );
 		virtual MOboolean  Finish();
 
 		virtual int GetFrame( MOuint p_i );
@@ -77,6 +81,8 @@ class LIBMOLDEO_API moTextureBuffer : public moAbstract {
 		moText GetName() { return m_FolderName; }
 
         moTextureFrames& GetBufferLevels( int L, int C );
+        moTextureFrames& GetBufferPatterns( moTexture* p_ImageReference, int x, int y, int width=0, int height=0 );
+        moTextureFrames& GetBufferPatterns( const moTexture& p_ImageReference, int x, int y, int width=0, int height=0 );
 
         int max_luminance;
         int min_luminance;
@@ -87,6 +93,9 @@ class LIBMOLDEO_API moTextureBuffer : public moAbstract {
         MObyte*   LevelDiagram;
 
 	private:
+
+        int pattern_width;
+        int pattern_height;
 
 		MOint m_ImagesProcessed;
 		MOboolean	m_bLoadCompleted;
@@ -105,8 +114,7 @@ class LIBMOLDEO_API moTextureBuffer : public moAbstract {
 		///max level contrast = 10
 		///max level luminance = 10
 		moTextureFrames**  m_pBufferLevels;
-
-
+		moTextureFrames*  m_pBufferPatterns;
 
 };
 

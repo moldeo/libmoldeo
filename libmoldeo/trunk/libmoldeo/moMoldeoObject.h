@@ -709,6 +709,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
         int luaGetInletData(moLuaVirtualMachine& vm);
         int luaSetInletData(moLuaVirtualMachine& vm);
 
+#ifdef USE_TUIO
         ///functions to access Inlets Data
         ///TUIO
         ///Tracker, etc...
@@ -717,7 +718,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
         int luaGetTuioCursor(moLuaVirtualMachine& vm);
         int luaGetTuioObjectCount(moLuaVirtualMachine& vm);
         int luaGetTuioObject(moLuaVirtualMachine& vm);
-
+#endif
 
         int luaGetTrackerSystemData(moLuaVirtualMachine& vm);
         int luaGetTrackerFeaturesCount(moLuaVirtualMachine& vm);

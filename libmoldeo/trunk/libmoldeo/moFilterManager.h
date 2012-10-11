@@ -40,9 +40,6 @@
 #include "moParam.h"
 #include "moMathVector.h"
 
-//these includes TuioPoint.h TuioTime.h and TuioContainer.h
-#include <TUIO/TuioObject.h>
-#include <TUIO/TuioCursor.h>
 
 #define MO_TRACKER_TRACKED 0
 #define MO_TRACKER_NOT_FOUND -1
@@ -51,7 +48,15 @@
 #define MO_TRACKER_OOB -4
 #define MO_TRACKER_LARGE_RESIDUE -5
 
+
+#undef USE_TUIO 0
+#ifdef USE_TUIO
+
 using namespace TUIO;
+
+//these includes TuioPoint.h TuioTime.h and TuioContainer.h
+#include <TUIO/TuioObject.h>
+#include <TUIO/TuioCursor.h>
 
 moDeclareExportedDynamicArray( TuioCursor*, moTuioCursorArray );
 moDeclareExportedDynamicArray( TuioObject*, moTuioObjectArray );
@@ -62,6 +67,7 @@ moDeclareExportedDynamicArray( TuioObject*, moTuioObjectArray );
 * sistema de datos tangibles, TUIO ( Tangible Universal Input/Output )
 *   esta clase encapsula los objetos TUIO creados
 */
+
 class LIBMOLDEO_API moTUIOSystemData {
 
     public:
@@ -341,7 +347,7 @@ class LIBMOLDEO_API moTUIOSystemData {
 		bool verbose;
 
 };
-
+#endif
 
 class moTrackerFeature;
 

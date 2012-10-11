@@ -881,7 +881,7 @@ int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) 
             ResetScriptCalling();
             return luaSetInletData(vm);//9
 
-
+#ifdef USE_TUIO
         ///functions to access Inlets Data
         ///TUIO
         ///Tracker, etc...
@@ -900,7 +900,15 @@ int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) 
         case 14:
             ResetScriptCalling();
             return  luaGetTuioObject(vm);//14
-
+#else
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+            ResetScriptCalling();
+            return  0;
+#endif
 
         case 15:
             ResetScriptCalling();
@@ -1363,6 +1371,7 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
 */
 
 
+#ifdef USE_TUIO
 
 using namespace TUIO;
 ///functions to access Inlets Data
@@ -1524,7 +1533,7 @@ int moMoldeoObject::luaGetTuioObject(moLuaVirtualMachine& vm) {
     return 1;
 
 }
-
+#endif
 
 /**
 *
@@ -1615,7 +1624,7 @@ int moMoldeoObject::luaGetTrackerFeature(moLuaVirtualMachine& vm) {
 
     pInlet = m_Inlets[trackerindex];
 
-    float x, y;
+    float x, y, vx, vy, tr_x, tr_y;
     int v;
     x = y = 0.0;
     v = 0;
@@ -1628,6 +1637,10 @@ int moMoldeoObject::luaGetTrackerFeature(moLuaVirtualMachine& vm) {
                 x = TF->x;
                 y = TF->y;
                 v = TF->val;
+                vx = TF->v_x;
+                vy = TF->v_y;
+                tr_x = TF->tr_x;
+                tr_y = TF->tr_y;
             }
         }
     }
@@ -1635,8 +1648,12 @@ int moMoldeoObject::luaGetTrackerFeature(moLuaVirtualMachine& vm) {
 	lua_pushnumber(state, (lua_Number)x);
 	lua_pushnumber(state, (lua_Number)y);
 	lua_pushnumber(state, (lua_Number)v);
+	lua_pushnumber(state, (lua_Number)vx);
+	lua_pushnumber(state, (lua_Number)vy);
+	lua_pushnumber(state, (lua_Number)tr_x);
+	lua_pushnumber(state, (lua_Number)tr_y);
 
-    return 3;
+    return 7;
 
 }
 

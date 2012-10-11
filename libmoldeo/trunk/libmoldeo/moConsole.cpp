@@ -972,14 +972,14 @@ moConsole::LoadResources() {
 		} else {
 			//maybe a plugin
 			resource_valueindex = r;
-			presource = m_pResourceManager->NewResource(resname, paramindex, resource_valueindex);
+			presource = m_pResourceManager->NewResource(resname, cfname, lblname, paramindex, resource_valueindex);
 			if (presource) {
-        presource->SetConfigName(cfname);
-        presource->SetLabelName(lblname);
-        if (presource->Init()) {
-            MODebug2->Message( moText("moConsole:: Loaded plugin resource: ") + (moText)resname );
-        } else MODebug2->Error( moText("moConsole:: Error: Loading plugin resource: ") + (moText)resname );
-			}
+                presource->SetConfigName(cfname);
+                presource->SetLabelName(lblname);
+                if (presource->Init()) {
+                    MODebug2->Message( moText("moConsole:: Loaded plugin resource: ") + (moText)resname );
+                } else MODebug2->Error( moText("moConsole:: Error: Loading plugin resource: ") + (moText)resname );
+            }
 		}
 		presources.NextValue();
 	}

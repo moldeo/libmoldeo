@@ -797,7 +797,8 @@ MOboolean moVideoManager::Init()
       m_pLiveSystems = new moLiveSystems();
       m_pLiveSystems->Init(0, NULL);
 
-        MODebug2->Message(moText("Finally load live systems grabber for each device...."));
+      MODebug2->Message(moText("Finally load live systems grabber for each device...."));
+
       if ( m_pLiveSystems->LoadLiveSystems( pPreferredDevices ) ) {
         //los inicializa...
         for( MOuint i = 0; i < m_pLiveSystems->Count(); i++) {
@@ -805,11 +806,58 @@ MOboolean moVideoManager::Init()
           moLiveSystemPtr pLS = m_pLiveSystems->Get(i);
 
           if (pLS && pLS->GetCaptureDevice().IsPresent()) {
+
             if (pLS->Init()) {
+
                 MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
-                    } else {
-                        MODebug2->Error( moText(pLS->GetCaptureDevice().GetName()) + " not initialized");
+
+                if ( pLS->GetVideoGraph()->GetVideoFormat().m_WaitForFormat == false ) {
+
+                    moBucketsPool* pBucketsPool = pLS->GetBucketsPool();
+
+                    if ( pBucketsPool!=NULL ) {
+
+                        if ( pBucketsPool->IsFull() ) {
+
+                            moBucket* pbucket = pBucketsPool->RetreiveBucket();
+
+                            if ( pbucket && pLS->GetVideoGraph() ) {
+
+                                moVideoSample* pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
+
+                                ///procesamos el GetState para que ejecute la iteracion del loop interno...obligatorio!!
+                                pLS->GetVideoGraph()->GetState();
+
+                                if( pSample!=NULL ) {
+
+                                  moTexture * ts =(moTexture*)Images[i];
+
+                                  if(ts!=NULL)
+                                  {
+
+                                    if ((ts->GetGLId() == 0) || (ts->GetWidth() != pSample->m_VideoFormat.m_Width))
+                                    {
+                                      if (ts->GetGLId() != 0) ts->Finish();
+                                      ts->BuildEmpty(pSample->m_VideoFormat.m_Width,  pSample->m_VideoFormat.m_Height);
+                                    }
+
+                                    MOubyte* pbuffer = pbucket->GetBuffer();
+
+                                    if (pbuffer) {
+                                      pbucket->Lock();
+                                      ts->SetBuffer( pbuffer, GL_BGR_EXT);
+                                      pbucket->Unlock();
+                                    }
+                                    }
+
+                                } else {
+                                    MODebug2->Error( moText(pLS->GetCaptureDevice().GetName()) + " not initialized");
+                                }
+                            }
+                        }
                     }
+                }
+            }
           }
 
         }

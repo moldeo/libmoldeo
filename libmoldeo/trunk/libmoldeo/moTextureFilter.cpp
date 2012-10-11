@@ -617,7 +617,6 @@ void moTextureFilter::Apply(MOuint p_i, MOfloat p_fade, moTextFilterParam *p_par
 	m_shader->StartShader();
 	SetupShader(w, h, NULL, p_fade, p_params);
 
-
 	BindSrcTex(p_i);
 	m_shader->DrawGrid(w, h, m_src_tex.Count());
 	UnbindSrcTex();

@@ -129,8 +129,9 @@ libmoldeo_la_LIBADD = -ldl\
 	${BOOST_FILESYSTEM_LIB} \
 	${BOOST_SYSTEM_LIB} \
 	${LUA51_LIBS} \
-	${GST_LIBS} \
-	${TUIO_LIBS}
+	${GST_LIBS} 
+#\
+	#${TUIO_LIBS}
 
 libmoldeo_includedir = $(includedir)/libmoldeo
 
