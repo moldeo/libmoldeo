@@ -811,7 +811,7 @@ MOboolean moVideoManager::Init()
 
                 MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
 
-                if ( pLS->GetVideoGraph()->GetVideoFormat().m_WaitForFormat == false ) {
+                if ( pLS->GetVideoGraph()->GetVideoFormat().m_WaitForFormat == false && 1==2 ) {
 
                     moBucketsPool* pBucketsPool = pLS->GetBucketsPool();
 
