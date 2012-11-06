@@ -811,7 +811,8 @@ MOboolean moVideoManager::Init()
 
                 MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
 
-                if ( pLS->GetVideoGraph()->GetVideoFormat().m_WaitForFormat == false && 1==2 ) {
+
+                if ( pLS->GetVideoGraph()->GetVideoFormat().m_WaitForFormat == false  && 1==2 ) {
 
                     moBucketsPool* pBucketsPool = pLS->GetBucketsPool();
 
@@ -823,22 +824,22 @@ MOboolean moVideoManager::Init()
 
                             if ( pbucket && pLS->GetVideoGraph() ) {
 
-                                moVideoSample* pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
+                                //moVideoSample* pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
 
                                 ///procesamos el GetState para que ejecute la iteracion del loop interno...obligatorio!!
                                 pLS->GetVideoGraph()->GetState();
 
-                                if( pSample!=NULL ) {
+                                //if( pSample!=NULL ) {
 
                                   moTexture * ts =(moTexture*)Images[i];
 
                                   if(ts!=NULL)
                                   {
 
-                                    if ((ts->GetGLId() == 0) || (ts->GetWidth() != pSample->m_VideoFormat.m_Width))
+                                    if ((ts->GetGLId() <= 0) || (ts->GetWidth() != pLS->GetVideoGraph()->GetVideoFormat().m_Width))
                                     {
                                       if (ts->GetGLId() != 0) ts->Finish();
-                                      ts->BuildEmpty(pSample->m_VideoFormat.m_Width,  pSample->m_VideoFormat.m_Height);
+                                      ts->BuildEmpty(pLS->GetVideoGraph()->GetVideoFormat().m_Width,  pLS->GetVideoGraph()->GetVideoFormat().m_Height);
                                     }
 
                                     MOubyte* pbuffer = pbucket->GetBuffer();
@@ -848,11 +849,12 @@ MOboolean moVideoManager::Init()
                                       ts->SetBuffer( pbuffer, GL_BGR_EXT);
                                       pbucket->Unlock();
                                     }
-                                    }
-
+                                }
+/*
                                 } else {
                                     MODebug2->Error( moText(pLS->GetCaptureDevice().GetName()) + " not initialized");
                                 }
+*/
                             }
                         }
                     }
