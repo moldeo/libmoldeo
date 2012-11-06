@@ -115,18 +115,23 @@ class LIBMOLDEO_API moDataSessionConfig {
 		moText GetConsoleConfigName();
 		moText GetVideoFileName();
 		moText GetSessionFileName();
+
 		long   GetMaxKeys() {
                 return m_MaxKeys;
         }
+
 		long   GetMaxTimecode() {
                 return m_MaxTimecode;
         }
+
 		long   GetPort() {
 		    return m_Port;
 		}
+
 		long   GetAddress() {
                 return m_Address;
         }
+
 
 	private:
 
@@ -265,6 +270,10 @@ class LIBMOLDEO_API moDataManager : public moResource
         void StartPlayinbackSession(  );
 
         moDataSession*  GetSession();
+
+        bool Export( moText _export_path_, moText _from_config_console_ = "" );
+        bool IteratedExport( moText _from_config_file_ );
+
 
 	protected:
 

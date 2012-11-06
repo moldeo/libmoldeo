@@ -851,7 +851,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, arc)
 
   int n = lua_pindexes(L);
 
-  MOfloat x1,y1,width,height,start,stop;
+  MOfloat x1,y1,width,height,start,stop,band;
   int slices;
 
   switch(n) {
@@ -875,7 +875,17 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, arc)
         slices = (int) lua_tonumber (L, lua_pindex(7));
         moP5::arc(x1, y1, width, height,start,stop, slices );
         break;
-
+    case 8:
+        x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+        y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+        width = (MOfloat) lua_tonumber (L, lua_pindex(3));
+        height = (MOfloat) lua_tonumber (L, lua_pindex(4));
+        start = (MOfloat) lua_tonumber (L, lua_pindex(5));
+        stop = (MOfloat) lua_tonumber (L, lua_pindex(6));
+        slices = (int) lua_tonumber (L, lua_pindex(7));
+        band = (MOfloat) lua_tonumber (L, lua_pindex(8));
+        moP5::arc(x1, y1, width, height,start,stop, slices, band );
+        break;
   }
 
     return 0;
