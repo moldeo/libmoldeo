@@ -217,15 +217,21 @@ moFontManager::LoadFont( moText p_fontname_path, moFontType p_fonttype, MOfloat 
 	if (pFont) {
 
         if ( p_fonttype == MO_FONT_GLBUILD ) {
+
             idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( p_fontname_path, true );
             if (idx>-1) p_Texture = (moTexture*) m_pResourceManager->GetTextureMan()->GetTexture(idx);
             if (p_Texture)
               pFont->Init( p_fonttype, p_fontname_path, p_fontsize, p_Texture->GetGLId() );
             MODebug2->Push( moText("Loaded Bitmap Font: ") + (moText)p_fontname_path );
+
         } else if ( pFont->Init( p_fonttype, p_fontname_path, p_fontsize) ) {
+
             MODebug2->Push( moText("Loaded FreeType Font: ") + (moText)p_fontname_path );
+
         } else {
+
             MODebug2->Push( moText("Error: font: ") + (moText)p_fontname_path );
+
             return NULL;
         }
 
@@ -287,14 +293,14 @@ moFont::Init() {
 MOboolean
 moFont::Init( moFontType p_Type, moText p_fontname, MOint p_size, MOuint glid ) {
 
-  glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+    glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
-  moFile file(p_fontname);
+    moFile file(p_fontname);
 
-  if (!file.Exists()) {
-    MODebug2->Error("moFont:Init filename "+p_fontname+" not found.");
-    return false;
-  }
+    if (!file.Exists()) {
+        MODebug2->Error("moFont:Init filename "+p_fontname+" not found.");
+        return false;
+    }
 
 	switch( (int)p_Type ) {
 		case MO_FONT_OUTLINE://3d
@@ -330,24 +336,50 @@ moFont::Init( moFontType p_Type, moText p_fontname, MOint p_size, MOuint glid ) 
 	}
 
 
-  FTFont* FF = (FTFont*) m_pFace;
-  FT_Error FontError;
-  if (FF)
-    FontError = FF->Error();
+    FTFont* FF = (FTFont*) m_pFace;
 
-	if ( ( p_Type!=MO_FONT_GLBUILD && ( FF == NULL || FontError!=0 ) ) ||
+    FT_Error FontError;
+
+    if (FF) FontError = FF->Error();
+
+  //if (FontError==FT_Er)
+
+    if ( ( p_Type!=MO_FONT_GLBUILD && ( FF == NULL || FontError!=0 ) ) ||
          ( p_Type==MO_FONT_UNDEFINED )  || (p_Type==MO_FONT_GLBUILD && (int)m_FontGLId==-1)) {
-        MODebug2->Error(moText("FontManager: Could not construct face from ")+(moText)p_fontname);
+
+        MODebug2->Error(moText("moFont::Init > Could not construct face from ")+(moText)p_fontname);
+
         return false;
-	} else {
-		m_Name = p_fontname;
-    if (FF) {
-      SetSize(p_size);
-      FF->Depth(20);
-      //FF->CharMap(ft_encoding_unicode);
+
+    } else {
+
+        m_Name = p_fontname;
+
+        MODebug2->Push(moText("moFont::Init >  ")+(moText)m_Name);
+
+        if (FF) {
+
+          SetSize(p_size);
+
+          FF->Depth(20);
+
+          //if (!FF->CharMap(ft_encoding_latin_1)) {
+
+            //MODebug2->Error(moText("moFont::Init > Could not set charmap to ft_encoding_latin_1 for ")+(moText)m_Name);
+            //if (!FF->CharMap(ft_encoding_latin_2)) {
+                //MODebug2->Error(moText("moFont::Init > Could not set charmap to ft_encoding_latin_2 for ")+(moText)m_Name);
+                if (!FF->CharMap(ft_encoding_unicode)) {
+                    MODebug2->Error(moText("moFont::Init > Could not set charmap to ft_encoding_unicode for ")+(moText)m_Name);
+                    return false;
+                }
+
+            //}
+          //}
+
+        }
+
+        return true;
     }
-		return true;
-	}
 
 	return false;
 }
@@ -401,13 +433,24 @@ moFont::Draw( MOfloat x, MOfloat y, moText& text) {
 	Draw( x, y, text, m_FontSize );
 }
 
+const wchar_t *GetWC(const char *c)
+{
+    const size_t cSize = strlen(c)+1;
+    wchar_t* wc = new wchar_t[cSize];
+    mbstowcs (wc, c, cSize);
+
+    return wc;
+}
+
 void
 moFont::Draw( MOfloat x, MOfloat y, moText& text, moFontSize p_fontsize, MOint set, MOfloat sx, MOfloat sy, MOfloat rt ) {
 
     FTFont* FF = (FTFont*) m_pFace;
     if (FF) {
         SetSize(p_fontsize);
-        FF->Render( text, text.Length(), FTPoint(x,y) );
+
+        //FF->Render( text, text.Length(), FTPoint(x,y) );
+        FF->Render( GetWC( text ), text.Length(), FTPoint(x,y) );
     }
 
     else {

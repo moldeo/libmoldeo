@@ -91,6 +91,7 @@ moDataSession::LoadFromFile( moText p_filename ) {
 
 }
 
+
 bool
 moDataSession::AddKey( moDataSessionKey* p_key ) {
 
@@ -275,4 +276,112 @@ void moDataManager::StartPlayinbackSession(  ) {
 moDataSession*  moDataManager::GetSession() {
         return m_pDataSession;
 }
+
+
+bool
+moDataManager::Export( moText _export_path_, moText _from_config_console_ ) {
+
+
+    /** OPENING CONSOLE PROJECT */
+
+    moConfig from_console;
+
+    if ( m_pDataSessionConfig && _from_config_console_ == "") {
+
+        _from_config_console_ = m_pDataSessionConfig->GetDataPath() + moSlash + m_pDataSessionConfig->GetConsoleConfigName();
+
+    }
+
+    if ( _from_config_console_ != "" ) {
+
+        if ( from_console.LoadConfig( _from_config_console_ ) != MO_CONFIG_OK ) {
+
+            MODebug2->Error( moText("moDataManager::Export > Couldn't load config from ") + _from_config_console_ );
+            return false;
+
+        } else {
+            MODebug2->Push( moText("moDataManager::Export > Exporting moldeo console project: ") + _from_config_console_  );
+        }
+
+    } else {
+
+        MODebug2->Error( moText("moDataManager::Export > Couldn't load config from no console config file, please define one or load a project.") );
+        return false;
+
+    }
+
+
+    /** EXPORTING */
+
+
+    /** Iterate every config file */
+
+    /** specific to console... */
+
+
+    bool result = true;
+    moMobDefinition MobDef;
+
+    /** IODevices */
+    /** Resources */
+        /** videomanager > videobuffer... */
+    /** PreEffects */
+    /** Effects */
+    /** PostEffects */
+    /** MasterEffects */
+
+    for( int m=0; m<MO_OBJECT_TYPES; m++ ) {
+
+        moText object_type_str = MobDef.GetTypeStr( (moMoldeoObjectType) m  );
+
+        for( int i=0; i< from_console.GetParam( object_type_str ).GetValuesCount(); i++) {
+
+            moText config_file = from_console.GetParam( object_type_str ).GetValue(i).GetSubValue(1).Text();
+            result&= IteratedExport( config_file );
+        }
+
+    }
+
+    result&= IteratedExport( _from_config_console_ );
+
+    return result;
+
+}
+
+bool moDataManager::IteratedExport( moText _from_config_file_ ) {
+
+
+    moConfig config;
+
+    if ( _from_config_file_ != "" ) {
+
+        if ( config.LoadConfig( _from_config_file_ ) != MO_CONFIG_OK ) {
+
+            MODebug2->Error( moText("moDataManager::IteratedExport > error loading config file ") + _from_config_file_ );
+            return false;
+
+        }
+
+
+/**
+
+    Browse the parameters of type:
+
+        SCRIPT > copy and create folders and files .
+        TEXTURE > check shader's configs .
+        TEXTURE_FOLDER > copy full folders .
+
+
+*/
+
+
+
+
+    } else return true;
+
+
+    return false;
+
+}
+
 

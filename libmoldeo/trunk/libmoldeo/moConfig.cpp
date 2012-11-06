@@ -261,16 +261,17 @@ moConfig::FixConfig() {
 int moConfig::LoadConfig( moText p_filename ) {
 
 	TiXmlDocument			m_XMLDocument;
+    TiXmlEncoding           xencoding = TIXML_ENCODING_LEGACY;
 
 	UnloadConfig();
 
-  if (!moFileManager::FileExists(p_filename)) {
-    moDebugManager::Error( "moConfig::LoadConfig > Error " + p_filename + " doesn't exists." );
-  }
+      if (!moFileManager::FileExists(p_filename)) {
+        moDebugManager::Error( "moConfig::LoadConfig > Error " + p_filename + " doesn't exists." );
+      }
 
 	cout << "XML DOM about to load..." << endl;
 
-	if (m_XMLDocument.LoadFile( (char *) p_filename )) {
+	if (m_XMLDocument.LoadFile( (char *) p_filename, xencoding )) {
 
 		//parse the xml for params...
 		cout << "XML DOM loaded" << endl;
@@ -458,7 +459,7 @@ int moConfig::SaveConfig( moText p_filename ) {
     //chequear si existe el archivo?
     TiXmlDocument			m_XMLDocument( p_filename );
 
-    TiXmlDeclaration * DECL = new TiXmlDeclaration( "1.0", "", "" );
+    TiXmlDeclaration * DECL = new TiXmlDeclaration( "1.0", "ISO-8859-1", "" );
     m_XMLDocument.LinkEndChild( DECL );
 
     TiXmlElement * MOCONFIG = new TiXmlElement( "MOCONFIG" );

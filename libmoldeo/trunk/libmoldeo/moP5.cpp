@@ -85,7 +85,7 @@ void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
 	glEnd();
 }
 
-void moP5::arc(float x, float y, float width, float height, float start, float stop, int slices )
+void moP5::arc(float x, float y, float width, float height, float start, float stop, int slices,  float band )
 {
 	// Implement display list with precomputed circle coordinates...
   glEnable( GL_TEXTURE_2D );
@@ -108,7 +108,10 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
         case MO_P5_FILL:
             glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
             glColor4f(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-            glBegin(GL_POLYGON);
+
+            if ( band>0.0 ) {
+                glBegin(GL_TRIANGLE_STRIP);
+            } else glBegin(GL_TRIANGLE_FAN);
             break;
 
         default:
@@ -117,9 +120,21 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
 
 	}
 
-        glVertex2f( (float)x, (float)y);
-        for(float t = start; t <= stop; t += Nstep )
+
+        if ( band==0.0 ) {
+            /** Triangle Fan*/
+            glVertex2f( (float)x, (float)y);
+        }
+
+        for(float t = start; t <= stop; t += Nstep ) {
+            if ( band>0.0 ) {
+                /** Triangle Strip*/
+                glVertex2f( (width-band)* cos(t) + (float)x, (height-band) * sin(t) + (float)y);
+            }
+
             glVertex2f(width* cos(t) + (float)x, height * sin(t) + (float)y);
+
+        }
     glEnd();
 
 }

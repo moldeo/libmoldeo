@@ -94,7 +94,7 @@ public:
 	 * @param start ángulo donde comenzar el arco, especificado en radianes o grados dependiendo del modo de ángulo actual.
 	 * @param stop ángulo donde detener el arco, especificado en radianes o grados dependiendo del modo de ángulo actual.
 	 */
-	void arc(float x, float y, float width, float height, float start, float stop, int slices = 24 );
+	void arc(float x, float y, float width, float height, float start, float stop, int slices = 24, float band = 0.0 );
 
 	/**
 	 * Dibuja un punto, una coordenada en el espacio de las dimensiones de un píxel. El primer parámetro
