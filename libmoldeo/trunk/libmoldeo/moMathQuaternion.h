@@ -335,3 +335,4 @@ typedef moQuaternion<MOfloat> moQuaternionf;
 typedef moQuaternion<MOdouble> moQuaterniond;
 
 #endif
+

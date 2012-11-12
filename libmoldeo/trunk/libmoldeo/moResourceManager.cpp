@@ -583,3 +583,4 @@ moResourceManager::Finish() {
 
 	return true;
 }
+

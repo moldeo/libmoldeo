@@ -177,3 +177,4 @@ class LIBMOLDEO_API moNetManager : public moResource
 };
 
 #endif
+

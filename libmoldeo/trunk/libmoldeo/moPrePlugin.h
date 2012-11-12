@@ -78,3 +78,4 @@ LIBMOLDEO_API moPreEffect* moNewPreEffect(moText effect_name, moPrePluginsArray 
 LIBMOLDEO_API bool moDeletePreEffect(moPreEffect* effect, moPrePluginsArray &plugins);
 
 #endif
+

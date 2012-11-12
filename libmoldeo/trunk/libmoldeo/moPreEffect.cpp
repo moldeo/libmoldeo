@@ -42,3 +42,4 @@ moPreEffect::~moPreEffect()
 {
 }
 
+

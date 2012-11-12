@@ -715,3 +715,4 @@ void moTextureFilterIndex::SetupDestTexFBO()
 	for (i = 0; i < m_filters_array.Count(); i++)
 		m_filters_array[i]->CheckDestTexAttachStatus();
 }
+

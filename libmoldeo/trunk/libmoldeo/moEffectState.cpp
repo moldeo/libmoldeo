@@ -142,3 +142,4 @@ moEffectState::CSV2RGB() {
 	HSVtoRGB( C, S, V, &tintr, &tintg, &tintb);
 
 }
+

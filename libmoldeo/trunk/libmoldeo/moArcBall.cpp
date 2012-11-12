@@ -70,14 +70,14 @@ void ArcBall_t::_mapToSphere(const Point2fT* NewPt, Vector3fT* NewVec) const
 ArcBall_t::ArcBall_t()
 {
     this->StVec.s.X     =
-    this->StVec.s.Y     = 
-    this->StVec.s.Z     = 
+    this->StVec.s.Y     =
+    this->StVec.s.Z     =
 
     this->EnVec.s.X     =
-    this->EnVec.s.Y     = 
+    this->EnVec.s.Y     =
     this->EnVec.s.Z     = 0.0f;
 
-    this->AdjustWidth   = 
+    this->AdjustWidth   =
     this->AdjustHeight  = 0.0f;
 }
 
@@ -85,11 +85,11 @@ ArcBall_t::ArcBall_t(GLfloat NewWidth, GLfloat NewHeight)
 {
     //Clear initial values
     this->StVec.s.X     =
-    this->StVec.s.Y     = 
-    this->StVec.s.Z     = 
+    this->StVec.s.Y     =
+    this->StVec.s.Z     =
 
     this->EnVec.s.X     =
-    this->EnVec.s.Y     = 
+    this->EnVec.s.Y     =
     this->EnVec.s.Z     = 0.0f;
 
     //Set initial bounds
@@ -130,11 +130,10 @@ void    ArcBall_t::drag(const Point2fT* NewPt, Quat4fT* NewRot)
         else                                    //if its zero
         {
             //The begin and end vectors coincide, so return an identity transform
-            NewRot->s.X = 
-            NewRot->s.Y = 
-            NewRot->s.Z = 
+            NewRot->s.X =
+            NewRot->s.Y =
+            NewRot->s.Z =
             NewRot->s.W = 0.0f;
         }
     }
 }
-

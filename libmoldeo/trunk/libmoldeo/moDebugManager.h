@@ -86,3 +86,4 @@ class moDebugManager : public moResource {
 };
 
 #endif
+

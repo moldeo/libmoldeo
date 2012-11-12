@@ -139,3 +139,4 @@ moDeviceCodeList::Copy(moDeviceCodeList *copy) {
 	}
 
 }
+

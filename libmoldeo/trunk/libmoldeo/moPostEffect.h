@@ -63,3 +63,4 @@ public:
 moDeclareExportedDynamicArray( moPostEffect*, moPostEffectsArray);
 
 #endif
+

@@ -536,3 +536,4 @@ bool moScript::RunSelectedFunction (int nReturns /* = 0 */)
 
    return fSuccess;
 }
+

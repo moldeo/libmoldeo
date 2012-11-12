@@ -520,3 +520,4 @@ LIBMOLDEO_API moText moGetVersionStr();
 #endif
 
 #endif
+

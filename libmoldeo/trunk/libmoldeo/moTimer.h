@@ -398,3 +398,4 @@ class LIBMOLDEO_API moTimer : public moTimerAbsolute {
 moDeclareExportedDynamicArray( moTimer*, moTimers);
 
 #endif
+

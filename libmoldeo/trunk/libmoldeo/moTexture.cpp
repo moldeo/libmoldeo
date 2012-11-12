@@ -1740,3 +1740,4 @@ void moMovie::GetFrame( MOuint p_i )
       MODebug2->Error( moText("moMovie::GetFrame()") + moText(" m_pGraph is NULL !!!") );
   }
 }
+

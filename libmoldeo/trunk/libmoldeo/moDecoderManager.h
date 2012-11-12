@@ -163,3 +163,4 @@ class LIBMOLDEO_API moDecoderManager : public moResource
 #include "moGLManager.h"
 
 #endif
+

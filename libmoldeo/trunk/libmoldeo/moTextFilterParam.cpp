@@ -10,3 +10,4 @@ void moTextFilterParam::setParamValues()
         if ((-1 < m_par_mat3) && (par_mat3 != NULL)) glUniformMatrix3fvARB(m_par_mat3, 1, false, par_mat3);
         if ((-1 < m_par_mat4) && (par_mat4 != NULL)) glUniformMatrix4fvARB(m_par_mat4, 1, false, par_mat4);
     }
+

@@ -284,3 +284,4 @@ class LIBMOLDEO_API moDataManager : public moResource
 };
 
 #endif
+

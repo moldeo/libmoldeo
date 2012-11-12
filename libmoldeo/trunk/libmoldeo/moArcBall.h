@@ -474,4 +474,3 @@
     } ArcBallT;
 
 #endif
-

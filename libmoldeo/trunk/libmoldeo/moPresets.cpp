@@ -117,5 +117,3 @@ const moEffectState& moPresets::Load( MOint p, moConfig *conf, const moEffectSta
     }
     return fxstate;
 }
-
-

@@ -3103,3 +3103,4 @@ template<> const moMatrix4<MOdouble> moMatrix4<MOdouble>::IDENTITY(
     0.0,0.0,1.0,0.0,
     0.0,0.0,0.0,1.0);
 */
+

@@ -1567,5 +1567,3 @@ MOboolean moFilterManager::Finish() {
 	return true;
 }
 
-
-

@@ -63,3 +63,4 @@ class LIBMOLDEO_API moLock {
 };
 
 #endif
+

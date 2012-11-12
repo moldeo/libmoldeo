@@ -129,3 +129,4 @@ typedef moPolynomial1<MOfloat> moPolynomial1f;
 typedef moPolynomial1<MOdouble> moPolynomial1d;
 
 #endif
+

@@ -78,3 +78,5 @@ LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArr
 LIBMOLDEO_API bool moDeletePostEffect(moPostEffect* effect, moPostPluginsArray &plugins);
 
 #endif
+
+

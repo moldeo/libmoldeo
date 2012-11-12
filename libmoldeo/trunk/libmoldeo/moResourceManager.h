@@ -450,3 +450,4 @@ class LIBMOLDEO_API moResourceManager : public moAbstract {
 
 
 #endif
+

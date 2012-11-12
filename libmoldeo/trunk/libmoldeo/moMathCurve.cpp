@@ -1083,3 +1083,4 @@ Real moMultipleCurve3<Real>::GetVariation (Real fT0, Real fT1,
     return fVariation;
 }
 */
+

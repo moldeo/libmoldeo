@@ -116,3 +116,4 @@ moDeclareExportedDynamicArray( moMasterEffect*, moMasterEffectsArray);
 #include "moEffectManager.h"
 
 #endif
+

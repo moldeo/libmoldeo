@@ -35,6 +35,7 @@
 #include "moTextureFilter.h"
 
 #include "moArray.h"
+#include "moText.h"
 
 moDefineDynamicArray( moValueIndexes )
 moDefineDynamicArray( moValueBases )
@@ -159,36 +160,42 @@ void
 moData::SetFloat( MOfloat pfloat ) {
 	m_Number.m_Float = pfloat;
 	m_DataType = MO_DATA_NUMBER_FLOAT;
+	m_Text = FloatToStr(m_Number.m_Float);
 }
 
 void
 moData::SetDouble( MOdouble pdouble ) {
 	m_Number.m_Double = pdouble;
 	m_DataType = MO_DATA_NUMBER_DOUBLE;
+	m_Text = FloatToStr(m_Number.m_Double);
 }
 
 void
 moData::SetInt( MOint pint ) {
 	m_Number.m_Int = pint;
 	m_DataType = MO_DATA_NUMBER_INT;
+	m_Text = IntToStr(m_Number.m_Int);
 }
 
 void
 moData::SetLong( MOlonglong plong ) {
 	m_Number.m_Long = plong;
 	m_DataType = MO_DATA_NUMBER_LONG;
+	m_Text = IntToStr(m_Number.m_Long);
 }
 
 void
 moData::SetChar( MOchar pchar ) {
 	m_Number.m_Char = pchar;
 	m_DataType = MO_DATA_NUMBER_CHAR;
+	m_Text = IntToStr(m_Number.m_Char);
 }
 
 void
 moData::SetNumber( moNumber p_number ) {
 	m_Number = p_number;
 	m_DataType = MO_DATA_NUMBER;
+	m_Text = "";
 }
 
 void
@@ -1463,4 +1470,5 @@ moValue &moValue::operator = (const moValue &src) {
 		m_List = src.m_List;
 		return *this;
 }
+
 

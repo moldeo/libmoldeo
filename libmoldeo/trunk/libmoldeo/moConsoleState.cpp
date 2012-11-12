@@ -98,3 +98,4 @@ moConsoleState::Finish() {
 
 	return true;
 }
+

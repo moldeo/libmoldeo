@@ -1060,3 +1060,4 @@ LIBMOLDEO_API moText0 FloatToStr(double a, int nzeros, int ndecimals )
 }
 
 #endif
+

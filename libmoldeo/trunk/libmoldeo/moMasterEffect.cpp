@@ -59,3 +59,4 @@ moMasterEffect::Set( moEffectManager *pEffectManager, moConsoleState* cstate ) {
 	consolestate = cstate;
 
 }
+

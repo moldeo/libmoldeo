@@ -446,3 +446,4 @@ void moMinimize1<Real>::GetBracketedMinimum (Real fT0, Real fF0, Real fTm,
         }
     }
 }
+

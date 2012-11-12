@@ -458,3 +458,4 @@ void moPolynomial1<Real>::Divide (const moPolynomial1& rkDiv, moPolynomial1& rkQ
         rkRem = *this;
     }
 }
+

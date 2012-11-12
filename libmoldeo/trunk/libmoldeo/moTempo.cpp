@@ -228,3 +228,4 @@ void moTempo::getInterpolatedTempo( MOfloat inter_value ) {//ivalue entre 0.0 y 
 	//aca se hace el calculointerpolado
 }
 
+

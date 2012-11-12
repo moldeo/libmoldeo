@@ -778,3 +778,4 @@ double moParserFunction::OnFuncEval() {
     return m_LastEval;
 
 }
+

@@ -285,3 +285,4 @@ moDeclareExportedDynamicArray( moTextureFilter*, moTextureFilterArray)
 #include "moRenderManager.h"
 
 #endif
+

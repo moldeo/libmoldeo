@@ -160,3 +160,4 @@ MOuint moTextureIndex::LoadTextures(moConfig* p_cfg, MOuint p_param_idx, moTextu
 	}
 	return m_textures_array.Count();
 }
+

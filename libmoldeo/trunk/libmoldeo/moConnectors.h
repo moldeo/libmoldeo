@@ -413,3 +413,5 @@ class LIBMOLDEO_API moOutlet : public moConnector {
 moDeclareExportedDynamicArray( moOutlet*, moOutlets);
 
 #endif
+
+

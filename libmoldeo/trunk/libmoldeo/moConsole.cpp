@@ -2579,6 +2579,3 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
     return 1;
 
 }
-
-
-

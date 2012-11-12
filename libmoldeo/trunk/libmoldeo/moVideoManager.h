@@ -509,3 +509,4 @@ class LIBMOLDEO_API moVideoManager : public moResource
 #include "moResourceManager.h"
 
 #endif
+

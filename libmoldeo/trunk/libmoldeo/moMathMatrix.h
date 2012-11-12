@@ -3351,3 +3351,4 @@ template class LIBMOLDEO_API moMatrix4<MOfloat>;
 typedef moMatrix4<MOfloat> moMatrix4f;
 */
 #endif
+

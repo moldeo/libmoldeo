@@ -168,3 +168,4 @@ moVideoFramework::SetPreferredFormat( const moCaptureDevice &m_CaptureDevice ) {
 	}
 
 }
+

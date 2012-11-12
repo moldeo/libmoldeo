@@ -157,3 +157,4 @@ moText moGetVersionStr() {
     return moText(PACKAGE_VERSION);
 
 }
+

@@ -986,3 +986,4 @@ moFileManager::CopyFile( moText FileSrc, moText FileDst ) {
 	return 1;
 
 }
+

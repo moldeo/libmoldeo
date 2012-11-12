@@ -1963,6 +1963,3 @@ moDsGraph::CheckMediaType( IPin* p_Pin ) {
 }
 
 #endif
-
-
-

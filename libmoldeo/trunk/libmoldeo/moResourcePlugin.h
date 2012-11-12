@@ -78,3 +78,4 @@ LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsA
 LIBMOLDEO_API bool moDeleteResource(moResource* Resource, moResourcePluginsArray &plugins);
 
 #endif
+

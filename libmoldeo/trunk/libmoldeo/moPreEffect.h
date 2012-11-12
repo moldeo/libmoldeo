@@ -70,3 +70,4 @@ public:
 moDeclareExportedDynamicArray( moPreEffect*, moPreEffectsArray);
 
 #endif
+

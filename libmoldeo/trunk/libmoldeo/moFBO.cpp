@@ -320,3 +320,4 @@ void moFBO::InitAttachPointsArray()
 	for (MOuint i = 0; i < MO_MAX_COLOR_ATTACHMENTS_EXT; i++)
 		m_attach_points_array[i] = GL_COLOR_ATTACHMENT0_EXT + i;
 }
+

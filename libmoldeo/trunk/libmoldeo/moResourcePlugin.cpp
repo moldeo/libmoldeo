@@ -295,3 +295,4 @@ LIBMOLDEO_API bool moDeleteResource(moResource *Resource, moResourcePluginsArray
 
     return res;
 }
+

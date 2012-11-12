@@ -104,3 +104,4 @@ moLuaResourceManager* moScriptManager::PushLuaResourceManager( moResourceManager
   }
   return m_pLuaResourceManager;
 }
+

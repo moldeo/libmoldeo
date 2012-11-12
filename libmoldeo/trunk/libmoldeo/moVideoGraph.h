@@ -761,3 +761,4 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
 
 
 #endif
+

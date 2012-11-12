@@ -383,5 +383,3 @@ bool moDataManager::IteratedExport( moText _from_config_file_ ) {
     return false;
 
 }
-
-
