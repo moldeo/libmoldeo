@@ -367,3 +367,4 @@ class LIBMOLDEO_API moRenderManager : public moResource
 };
 
 #endif
+

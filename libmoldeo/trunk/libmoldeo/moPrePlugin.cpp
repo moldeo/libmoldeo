@@ -246,3 +246,4 @@ LIBMOLDEO_API bool moDeletePreEffect(moPreEffect *preeffect, moPrePluginsArray &
     return res;
 }
 
+

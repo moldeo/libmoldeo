@@ -151,3 +151,4 @@ typedef moMinimize1<MOfloat> moMinimize1f;
 typedef moMinimize1<MOdouble> moMinimize1d;
 
 #endif
+

@@ -251,3 +251,4 @@ moIODeviceManager::Finish() {
 	Events = NULL;
 	return true;
 }
+

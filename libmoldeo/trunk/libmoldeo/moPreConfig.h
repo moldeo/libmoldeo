@@ -66,3 +66,4 @@ class LIBMOLDEO_API moPreConfig {
 moDeclareExportedDynamicArray( moPreConfig, moPreConfigs );
 
 #endif
+

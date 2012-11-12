@@ -515,5 +515,4 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         MOint ConvertKeyNameToIdx(moText& name);
 
 };
-
 #endif

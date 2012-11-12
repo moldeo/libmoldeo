@@ -166,3 +166,4 @@ void moMathManager::SetFunctionParam(MOuint p_idx, double s0, double s1, double 
 {
     if (ValidFunction(p_idx)) m_functions[p_idx]->SetParameters(s0, s1, s2);
 }
+

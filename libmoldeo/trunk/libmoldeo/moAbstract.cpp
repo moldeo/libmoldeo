@@ -102,3 +102,4 @@ MOboolean
 moAbstract::Initialized() {
 	return m_bInitialized;
 }
+

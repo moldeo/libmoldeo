@@ -131,3 +131,4 @@ class LIBMOLDEO_API moFontManager : public moResource {
 
 
 #endif
+

@@ -712,3 +712,4 @@ class LIBMOLDEO_API moFilterManager : public moResource
 
 
 #endif
+

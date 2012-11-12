@@ -736,3 +736,4 @@ MOboolean moSoundManager::Finish() {
 	#endif
 	return true;
 }
+

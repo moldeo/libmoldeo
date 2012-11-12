@@ -639,3 +639,4 @@ moDeclareExportedDynamicArray( moVector3f*, moVector3fArray );
 moDeclareExportedDynamicArray( moVector3d*, moVector3dArray );
 
 #endif
+

@@ -927,3 +927,4 @@ typedef moMath<float> moMathf;
 #endif
 
 #endif /*__MO_MATH_H__*/
+

@@ -1189,3 +1189,4 @@ template class LIBMOLDEO_API moMultipleCurve3<MOdouble>;
 typedef moMultipleCurve3<MOdouble> moMultipleCurve3d;
 
 #endif
+

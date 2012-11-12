@@ -124,3 +124,4 @@ moMathFunction* moMathFunctionIndex::Fun( MOint p_value_index ) {
 	return (m_pConfig !=NULL ? GetFunction( p_value_index ) : NULL);
 
 }
+

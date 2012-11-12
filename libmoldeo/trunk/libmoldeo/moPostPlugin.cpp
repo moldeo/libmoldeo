@@ -243,3 +243,4 @@ LIBMOLDEO_API bool moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArr
 
     return res;
 }
+

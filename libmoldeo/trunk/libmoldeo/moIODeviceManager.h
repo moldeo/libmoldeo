@@ -241,5 +241,3 @@ class LIBMOLDEO_API moIODeviceManager : public moAbstract {
 
 
 #endif
-
-

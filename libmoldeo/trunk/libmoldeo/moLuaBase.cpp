@@ -430,3 +430,4 @@ void moLuaDebugger::ErrorRun (int iErrorCode)
    printf ("LUA Error: %s\n", lua_tostring ((lua_State *) m_vm, -1));
    if (MODebug2!= NULL) MODebug2->Error(moText("LUA Error: ") + moText((char*)lua_tostring ((lua_State *) m_vm, -1)));
 }
+

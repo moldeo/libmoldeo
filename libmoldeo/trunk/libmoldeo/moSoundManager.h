@@ -354,3 +354,4 @@ class LIBMOLDEO_API moSoundManager : public moResource {
 
 
 #endif
+

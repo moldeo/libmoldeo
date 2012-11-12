@@ -70,7 +70,9 @@ private:
 
 // :-D
 
-// Falta crear una clase ajFuncMov que tenga la estructura para contener las N funciones 
-// de movimiento y que permita acceder a cualquier value en tiempo de ejecucion, para 
+// Falta crear una clase ajFuncMov que tenga la estructura para contener las N funciones
+// de movimiento y que permita acceder a cualquier value en tiempo de ejecucion, para
 // poder hacer por ejemplo  fm.amplitude *= amp;  y que ademas se pueda convertir ida y
-// vuelta en un moParam.    
+// vuelta en un moParam.
+
+

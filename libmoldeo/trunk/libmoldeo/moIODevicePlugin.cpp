@@ -245,3 +245,4 @@ LIBMOLDEO_API bool moDeleteIODevice(moIODevice *IODevice, moIODevicePluginsArray
 
     return res;
 }
+

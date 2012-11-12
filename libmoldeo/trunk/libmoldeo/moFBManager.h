@@ -255,3 +255,4 @@ class LIBMOLDEO_API moFBManager : public moResource
 #include "moGLManager.h"
 
 #endif
+

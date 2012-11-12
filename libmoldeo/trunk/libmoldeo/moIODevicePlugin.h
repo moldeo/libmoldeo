@@ -90,3 +90,4 @@ LIBMOLDEO_API moIODevice* moNewIODevice(moText iodevice_name, moIODevicePluginsA
 LIBMOLDEO_API bool moDeleteIODevice(moIODevice* iodevice, moIODevicePluginsArray &plugins);
 
 #endif
+

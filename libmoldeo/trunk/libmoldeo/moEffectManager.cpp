@@ -349,3 +349,4 @@ moMasterEffectsArray&
 moEffectManager::MasterEffects() {
 	return m_MasterEffects;
 }
+

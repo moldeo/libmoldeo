@@ -852,4 +852,3 @@ int moEffect::luaGetEffectState(moLuaVirtualMachine& vm) {
 
     return 0;
 }
-

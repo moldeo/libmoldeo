@@ -126,3 +126,4 @@ moLock::Unlock() {
     return(SDL_mutexV( (SDL_mutex*)m_lock )!=-1);
     //#endif
 }
+

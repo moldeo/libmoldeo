@@ -175,4 +175,3 @@ MOboolean moDecoderManager::Finish()
 
 	return true;
 }
-

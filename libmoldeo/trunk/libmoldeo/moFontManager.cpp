@@ -536,5 +536,3 @@ moFont::KillFont()									// Delete The Font From Memory
 	glDeleteLists( m_GLBaseList, 256);							// Delete All 256 Display Lists
 
 }
-
-

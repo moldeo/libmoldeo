@@ -157,3 +157,4 @@ LIBMOLDEO_API moEffect* moNewEffect(moText effect_name, moPluginsArray &plugins)
 LIBMOLDEO_API bool moDeleteEffect(moEffect* effect, moPluginsArray &plugins);
 
 #endif
+

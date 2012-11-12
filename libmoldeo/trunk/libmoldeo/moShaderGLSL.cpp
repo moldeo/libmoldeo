@@ -222,3 +222,4 @@ void moShaderGLSL::printInfoLog(GLhandleARB obj)
         free(infoLog);
     }
 }
+

@@ -207,3 +207,4 @@ MOboolean moShaderManager::DeleteShader(MOint p_idx)
 	}
 	else return false;
 }
+

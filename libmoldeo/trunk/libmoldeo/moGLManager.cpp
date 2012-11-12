@@ -374,4 +374,3 @@ void moGLManager::RestoreFBOState()
 	SetCurrentReadBuffer(m_previous_read_buffer);
 	SetCurrentDrawBuffer(m_previous_draw_buffer);
 }
-

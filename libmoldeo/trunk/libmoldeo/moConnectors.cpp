@@ -510,4 +510,3 @@ moOutlet::Finish() {
 moConnections*	moOutlet::GetConnections() {
 	return &m_Connections;
 }
-

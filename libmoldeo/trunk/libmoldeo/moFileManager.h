@@ -256,3 +256,4 @@ class LIBMOLDEO_API moFileManager : public moResource
 };
 
 #endif
+

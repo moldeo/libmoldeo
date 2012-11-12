@@ -279,3 +279,4 @@ moText moShader::LoadShaderSource(moText p_fn)
 
 	return src_text;
 }
+

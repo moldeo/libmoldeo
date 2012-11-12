@@ -528,3 +528,4 @@ class LIBMOLDEO_API moValue
 moDeclareExportedDynamicArray( moValue, moValues );
 
 #endif
+

@@ -399,3 +399,4 @@ Real moDVector<Real>::Normalize ()
 
     return fLength;
 }
+

@@ -837,3 +837,4 @@ void moTextureFilter::CheckDestTexAttachStatus()
 			break;
 		}
 }
+

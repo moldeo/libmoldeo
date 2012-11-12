@@ -88,3 +88,5 @@ int moThread::InitialThreadFunction( void *data ) {
 bool moThread::ProcessMessage() {
 	return true;
 }
+
+

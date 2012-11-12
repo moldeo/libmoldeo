@@ -577,3 +577,4 @@ template<> const moQuaternion<MOdouble>
 template<> const moQuaternion<MOdouble>
     moQuaternion<MOdouble>::ZERO(0.0,0.0,0.0,0.0);
 template<> int moQuaternion<MOdouble>::ms_iNext[3] = { 1, 2, 0 };
+

@@ -36,10 +36,10 @@
 #include "moAbstract.h"
 
 class LIBMOLDEO_API moDeviceCode {
-public:	
+public:
 	MOint device;
 	MOint devicecode;
-	MOint value;	
+	MOint value;
 	moDeviceCode *next;
 	moDeviceCode *previous;
 
@@ -48,8 +48,8 @@ public:
 };
 
 class LIBMOLDEO_API moDeviceCodeList : public moAbstract {
-public:	
-	
+public:
+
 	moDeviceCode *First;
 	moDeviceCode *Last;
 
@@ -65,3 +65,4 @@ public:
 };
 
 #endif
+

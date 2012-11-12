@@ -81,3 +81,4 @@ LIBMOLDEO_API moMasterEffect* moNewMasterEffect(moText effect_name, moMasterPlug
 LIBMOLDEO_API bool moDeleteMasterEffect(moMasterEffect* effect, moMasterPluginsArray &plugins);
 
 #endif
+

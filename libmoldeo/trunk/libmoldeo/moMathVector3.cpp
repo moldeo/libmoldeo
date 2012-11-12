@@ -664,3 +664,4 @@ template<> const moVector3<MOdouble> moVector3<MOdouble>::UNIT_Y(0.0,1.0,0.0);
 template<> const moVector3<MOdouble> moVector3<MOdouble>::UNIT_Z(0.0,0.0,1.0);
 template<> const moVector3<MOdouble> moVector3<MOdouble>::ONE(1.0,1.0,1.0);
 
+

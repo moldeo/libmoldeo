@@ -548,3 +548,4 @@ void moRenderManager::SetView( int p_width, int p_height ) {
 
 
 }
+

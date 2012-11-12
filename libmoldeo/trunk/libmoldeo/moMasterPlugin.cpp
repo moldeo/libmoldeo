@@ -285,3 +285,4 @@ LIBMOLDEO_API bool moDeleteMasterEffect(moMasterEffect *mastereffect, moMasterPl
     return res;
 
 }
+

@@ -1243,3 +1243,4 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, PPI)
 	lua_pushnumber(L, (lua_Number)MO_P5_PI);
     return 1;
 }
+

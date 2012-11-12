@@ -251,3 +251,4 @@ void moShaderCG::compileFragShader(moText frag_source)
         m_FragErrorCode = 0;
     }
 }
+

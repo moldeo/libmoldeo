@@ -156,3 +156,4 @@ class LIBMOLDEO_API moTimeManager : public moResource
 };
 
 #endif
+

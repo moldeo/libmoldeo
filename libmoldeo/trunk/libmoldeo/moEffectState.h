@@ -157,3 +157,4 @@ class LIBMOLDEO_API moEffectState : public moMobState
 };
 
 #endif
+

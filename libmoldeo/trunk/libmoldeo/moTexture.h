@@ -922,3 +922,4 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
 #include "moTextureFilter.h"
 
 #endif
+

@@ -331,3 +331,4 @@ void moFBManager::GetScreenBuffers()
 	glGetIntegerv(GL_DRAW_BUFFER, &m_screen_draw_buffer);
 	glGetIntegerv(GL_READ_BUFFER, &m_screen_read_buffer);
 }
+

@@ -470,3 +470,4 @@ class LIBMOLDEO_API moTextureManager : public moResource
 
 
 #endif
+

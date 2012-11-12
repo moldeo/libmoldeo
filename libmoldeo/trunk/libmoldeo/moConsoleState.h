@@ -76,3 +76,4 @@ class LIBMOLDEO_API moConsoleState : public moEffectState
 };
 
 #endif
+
