@@ -537,6 +537,48 @@ MOint moRenderManager::ScreenHeight() {
     return m_screen_height;
 }
 
+float moRenderManager::ScreenProportion() {
+
+    float prop = 1.0;
+    int w = ScreenWidth();
+    int h = ScreenHeight();
+
+    if ( w == 0 || h == 0 ) {
+        w  = 1; h = 1; prop = 1.0;
+    }
+    else {
+        prop = (float) h / (float) w;
+    }
+
+    return prop;
+
+}
+
+
+MOint moRenderManager::RenderWidth() {
+    return m_render_width;
+}
+
+MOint moRenderManager::RenderHeight() {
+    return m_render_height;
+}
+
+float moRenderManager::RenderProportion() {
+
+    float prop = 1.0;
+    int w = RenderWidth();
+    int h = RenderHeight();
+
+    if ( w == 0 || h == 0 ) {
+        w  = 1; h = 1; prop = 1.0;
+    }
+    else {
+        prop = (float) h / (float) w;
+    }
+
+    return prop;
+
+}
 
 void moRenderManager::SetView( int p_width, int p_height ) {
 

@@ -304,15 +304,29 @@ class LIBMOLDEO_API moRenderManager : public moResource
 		MOint ScreenHeight();
 
         /**
-         * Devuelve ancho de render.
-         * @return ancho de render.
+         * Devuelve proporción de la pantalla de salida, la relación del ancho por la altura.
+         * @return proporción.
          */
-		MOint RenderWidth() { return m_render_width; }
+		float ScreenProportion();
+
+
         /**
-         * Devuelve alto de render.
-         * @return alto de render.
+         * Devuelve ancho de render / procesamiento.
+         * @return ancho de render / procesamiento.
          */
-		MOint RenderHeight() { return m_render_height; }
+		MOint RenderWidth();
+        /**
+         * Devuelve alto de render / procesamiento.
+         * @return alto de render / procesamiento.
+         */
+		MOint RenderHeight();
+
+        /**
+         * Devuelve proporción de la pantalla de procesamiento, la relación del ancho por la altura.
+         * @return proporción.
+         */
+		float RenderProportion();
+
 
         /**
          * Verifica que la placa gráfica soporte texturas múltiples.
