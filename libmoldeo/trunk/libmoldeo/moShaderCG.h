@@ -36,6 +36,9 @@
 #define __MO_SHADER_CG_H__
 
 #include "moShader.h"
+
+#ifdef SHADER_CG
+
 #ifdef MO_MACOSX
     #include <cg.h>
     #include <cgGL.h>
@@ -43,6 +46,7 @@
     #include <Cg/cg.h>
     #include <Cg/cgGL.h>
 #endif
+
 /**
  * Clase que encapsula un shader escrito en el lenguaje CG de NVidia.
  */
@@ -134,6 +138,8 @@ protected:
     void compileVertShader(moText vert_source);
     void compileFragShader(moText frag_source);
 };
+
+#endif
 
 #endif
 

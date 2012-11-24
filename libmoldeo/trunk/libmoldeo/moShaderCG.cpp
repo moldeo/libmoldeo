@@ -34,6 +34,8 @@
 
 #include "moShaderCG.h"
 
+#ifdef SHADER_CG
+
 moShaderCG::moShaderCG() : moShader()
 {
 	SetType(MO_SHADER_CG);
@@ -252,3 +254,4 @@ void moShaderCG::compileFragShader(moText frag_source)
     }
 }
 
+#endif

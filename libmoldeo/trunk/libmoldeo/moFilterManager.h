@@ -49,7 +49,7 @@
 #define MO_TRACKER_LARGE_RESIDUE -5
 
 
-#undef USE_TUIO 0
+#undef USE_TUIO
 #ifdef USE_TUIO
 
 using namespace TUIO;
