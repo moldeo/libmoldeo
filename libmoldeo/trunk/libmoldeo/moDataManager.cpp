@@ -334,7 +334,7 @@ moDataManager::Export( moText _export_path_, moText _from_config_console_ ) {
 
         moText object_type_str = MobDef.GetTypeStr( (moMoldeoObjectType) m  );
 
-        for( int i=0; i< from_console.GetParam( object_type_str ).GetValuesCount(); i++) {
+        for( MOuint i=0; i< from_console.GetParam( object_type_str ).GetValuesCount(); i++) {
 
             moText config_file = from_console.GetParam( object_type_str ).GetValue(i).GetSubValue(1).Text();
             result&= IteratedExport( config_file );

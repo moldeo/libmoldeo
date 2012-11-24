@@ -36,7 +36,9 @@ moDefineDynamicArray(moSoundEffectArray)
 moDefineDynamicArray(moSoundBufferArray)
 
 #ifdef MO_WIN32
+/*
     #include <AL/alut.h>
+*/
 #endif
 
 #ifdef MO_LINUX
@@ -306,10 +308,12 @@ moSound3D::~moSound3D() {
 
 MOboolean moSound3D::Finish() {
 	// Clean up by deleting Source(s) and Buffer(s)
+	/*
 	alSourceStop(m_SourceId);
 	alSourcei(m_SourceId, AL_BUFFER, 0);
     alDeleteSources(1, &m_SourceId);
 	alDeleteBuffers(1, &m_BufferId);
+	*/
 	return true;
 }
 
@@ -326,11 +330,12 @@ MOboolean
 moSound3D::BuildEmpty( MOuint p_size ) {
 
 	// Generate an AL Buffer
+	/*
 	alGenBuffers( 1, &m_BufferId );
 
 	// Generate a Source to playback the Buffer
 	alGenSources( 1, &m_SourceId );
-
+*/
 	return true;
 }
 
@@ -370,7 +375,9 @@ moSound3D::BuildFromFile( moText p_filename ) {
 	}
 
 	// Attach Source to Buffer
+	/*
 	alSourcei( m_SourceId, AL_BUFFER, m_BufferId );
+	*/
 
 	return true;
 
@@ -378,7 +385,9 @@ moSound3D::BuildFromFile( moText p_filename ) {
 
 void moSound3D::Play() {
 	// Start playing source
+	/*
 	alSourcePlay(m_SourceId);
+	*/
 }
 
 
@@ -386,32 +395,38 @@ void moSound3D::PlaySample( MOint sampleid ) {
 
 	m_OldSample = m_ActualSample;
 
-	alGetSourcei( m_SourceId , AL_BUFFER /*AL_BYTE_OFFSET*/, &m_ActualSample);
+/*	alGetSourcei( m_SourceId , AL_BUFFER , &m_ActualSample);
 
 	alSourceStop(m_SourceId);
 
 	if (m_ActualSample!=sampleid) {
-		alSourcei( m_SourceId, AL_BUFFER /*AL_BYTE_OFFSET*/, sampleid );
+		alSourcei( m_SourceId, AL_BUFFER , sampleid );
 		m_ActualSample = sampleid;
 	}
 
 	alGetError();
 	alSourcePlay(m_SourceId);
-
+*/
 }
 
 void moSound3D::Pause() {
+    /*
 	alSourcePause(m_SourceId);
+	*/
 }
 
 void moSound3D::Stop() {
 	// Stop the Source and clear the Queue
+	/*
 	alSourceStop(m_SourceId);
+	*/
 
 }
 
 void moSound3D::Rewind() {
+    /*
 	alSourceRewind(m_SourceId);
+	*/
 }
 
 
@@ -431,6 +446,7 @@ void moSound3D::Repeat(int repeat) {
 moStreamState moSound3D::State() {
 	// Get Source State
 	int m_iAlState;
+	/*
 	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_iAlState);
 	switch(m_iAlState) {
       case AL_INITIAL:
@@ -449,51 +465,61 @@ moStreamState moSound3D::State() {
         return MO_STREAMSTATE_STOPPED;
         break;
 	}
+	*/
   return MO_STREAMSTATE_UNKNOWN;
 }
 
 void moSound3D::Update() {
+    /*
 	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_iAlState );
-	alGetSourcei( m_SourceId, AL_BUFFER /*AL_BYTE_OFFSET*/, &m_ActualSample );
+	alGetSourcei( m_SourceId, AL_BUFFER , &m_ActualSample );
+	*/
 }
 
 void moSound3D::SetPosition( float x, float y, float z ) {
-
+/*
 	alSource3f( m_SourceId, AL_POSITION, x, y, z );
-
+*/
 }
 
 void moSound3D::SetVelocity( float x, float y, float z ) {
-
+/*
 	alSource3f( m_SourceId, AL_VELOCITY, x, y, z );
-
+*/
 }
 
 void moSound3D::SetDirection( float x, float y, float z ) {
-
+/*
 	alSource3f( m_SourceId, AL_DIRECTION, x, y, z );
-
+*/
 }
 
 void moSound3D::SetVolume( float volume ) {
+    /*
 	alSourcef( m_SourceId, AL_GAIN, volume );
+	*/
 }
 
 float moSound3D::GetVolume() {
-
+/*
 	alGetSourcef( m_SourceId, AL_GAIN, &m_Volume );
+	*/
 	return m_Volume;
 
 }
 
 void moSound3D::SetPitch( float pitch )  {
     m_Pitch = pitch;
+    /*
     alSourcef(m_SourceId, AL_PITCH, pitch);
+    */
 }
 
 
 float moSound3D::GetPitch()  {
+/*
   alGetSourcef( m_SourceId, AL_PITCH, &m_Pitch );
+  */
   return m_Pitch;
 }
 
@@ -501,14 +527,14 @@ float moSound3D::GetPitch()  {
 /*======================*/
 /*		moSoundManager		*/
 /*======================*/
-void moSoundEffect::SetParameterF( ALenum param, ALfloat flValue ) {
+void moSoundEffect::SetParameterF( MOint param, MOfloat flValue ) {
 #ifdef MO_WIN32
 	//alEffectf( m_EffectId, param, flValue );
 #endif
 
 }
 
-void moSoundEffect::GetParameterF( ALenum param, ALfloat *pflValue ) {
+void moSoundEffect::GetParameterF( MOint param, MOfloat *pflValue ) {
 #ifdef MO_WIN32
 	//alGetEffectf( m_EffectId, param,  pflValue );
 #endif

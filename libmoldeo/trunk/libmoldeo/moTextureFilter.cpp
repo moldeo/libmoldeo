@@ -510,12 +510,15 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
 
 	m_shader = p_shader;
 	moShaderGLSL* pglsl = NULL;
-	moShaderCG* pcg = NULL;
 
-
+#ifdef SHADER_CG
+    moShaderCG* pcg = NULL;
+#endif
 
 	if (m_shader->GetType()==MO_SHADER_CG) {
+#ifdef SHADER_CG
         pcg = (moShaderCG*)m_shader;
+#endif
 	} else {
         pglsl = (moShaderGLSL*)m_shader;
 	}
@@ -532,6 +535,7 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
 		uname = moText("src_tex_unit") + (moText)IntToStr(i);
 
 		if (pglsl) m_src_tex_unit[i] = pglsl->GetUniformID(uname);
+#ifdef SHADER_CG
 		if (pcg) {
             CGparameter pres =  pcg->GetFragParameter(uname);
             if (pres==NULL) m_src_tex_unit[i]  = -1;
@@ -539,20 +543,24 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
             MODebug2->Push("pcg - m_src_tex_unit[i]:" + IntToStr( m_src_tex_unit[i] ) );
 		}
 		//if (pcg) m_src_tex_unit[i] = -1;
+#endif
 
 		uname = moText("src_tex_offset") + IntToStr(i);
 
 		if (pglsl) m_src_tex_offset[i] = pglsl->GetUniformID(uname);
+#ifdef SHADER_CG
 		if (pcg) {
 		    CGparameter pres = pcg->GetFragParameter(uname);
             if (pres==NULL) m_src_tex_offset[i]  = -1;
             else m_src_tex_offset[i] = 0/*(int)pres*/;
             MODebug2->Push("pcg - m_src_tex_offset[i]:" + IntToStr( m_src_tex_offset[i] ) );
 		}
+#endif
 	}
 
 	uname = moText("tempo_angle");
 	if (pglsl) m_tempo_angle = pglsl->GetUniformID(uname);
+#ifdef SHADER_CG
     //if (pcg) m_tempo_angle = (int)pcg->GetFragParameter(uname);
     if (pcg) {
         CGparameter pres = pcg->GetFragParameter(uname);
@@ -560,9 +568,12 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
         else m_tempo_angle = 0/*(int)pres*/;
         MODebug2->Push("pcg - m_tempo_angle:" + IntToStr( m_tempo_angle ) );
     }
+#endif
 
 	uname = moText("dest_tex_size");
 	if (pglsl) m_dest_tex_size = pglsl->GetUniformID(uname);
+
+#ifdef SHADER_CG
     //if (pcg) m_dest_tex_size = (int)pcg->GetFragParameter(uname);
     if (pcg) {
         CGparameter pres = pcg->GetFragParameter(uname);
@@ -570,8 +581,11 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
         else m_dest_tex_size = 0/*(int)pres*/;
         MODebug2->Push("pcg - m_dest_tex_size:" + IntToStr( m_dest_tex_size ) );
     }
+#endif
+
     uname = moText("fade_const");
 	if (pglsl) m_fade_const  = pglsl->GetUniformID(uname);
+#ifdef SHADER_CG
     if (pcg) {
         CGparameter pres = pcg->GetFragParameter(uname);
         if (pres==NULL) m_fade_const  = -1;
@@ -580,15 +594,18 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
     }
     //if (pcg)
     //pcg->GetFragParameter(uname)==NULL )
-
+#endif
     if (p_params == NULL) m_DefParams = new moTextFilterParam();
     else m_DefParams = p_params;
 
     if (pglsl) {
         m_DefParams->getParamIDs(pglsl);
-    } else if (pcg) {
+    }
+#ifdef SHADER_CG
+    else if (pcg) {
         m_DefParams->getParamIDs(pcg);
     }
+#endif
 
 	return true;
 }

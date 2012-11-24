@@ -72,7 +72,7 @@ public:
             m_par_mat4 = p_glsl->GetUniformID(uname);
         }
     }
-
+#ifdef SHADER_CG
 	void getParamIDs(moShaderCG* p_cg)
     {
         moText uname;
@@ -93,7 +93,7 @@ public:
             */
         }
     }
-
+#endif
     /**
      * Determina los valores de los parámetros uniformes.
      */

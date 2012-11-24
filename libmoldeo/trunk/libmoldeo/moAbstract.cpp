@@ -76,7 +76,6 @@ moDebug::SetStdout( const moText& filename ) {
 }
 
 
-
 moDebug *moAbstract::MODebug2 = new moDebug();
 
 

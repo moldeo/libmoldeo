@@ -329,7 +329,7 @@ public:
                 return fTime;
             }
 
-            fTime -= fDifference/GetSpeed(fTime);
+            fTime -= fDifference/this->GetSpeed(fTime);
         }
 
         // Newton's method failed.  You might want to increase iterations or
@@ -502,12 +502,12 @@ public:
         moVector2<Real> kP0, kP1;
         if (!pkP0)
         {
-            kP0 = GetPosition(fT0);
+            kP0 = this->GetPosition(fT0);
             pkP0 = &kP0;
         }
         if (!pkP1)
         {
-            kP1 = GetPosition(fT1);
+            kP1 = this->GetPosition(fT1);
             pkP1 = &kP1;
         }
         Real fInvDT = ((Real)1.0)/(fT1 - fT0);
@@ -896,7 +896,7 @@ public:
                 return fTime;
             }
 
-            fTime -= fDifference/GetSpeed(fTime);
+            fTime -= fDifference/this->GetSpeed(fTime);
         }
 
         // Newton's method failed.  You might want to increase iterations or
@@ -1066,12 +1066,12 @@ public:
         moVector3<Real> kP0, kP1;
         if (!pkP0)
         {
-            kP0 = GetPosition(fT0);
+            kP0 = this->GetPosition(fT0);
             pkP0 = &kP0;
         }
         if (!pkP1)
         {
-            kP1 = GetPosition(fT1);
+            kP1 = this->GetPosition(fT1);
             pkP1 = &kP1;
         }
         Real fInvDT = ((Real)1.0)/(fT1 - fT0);

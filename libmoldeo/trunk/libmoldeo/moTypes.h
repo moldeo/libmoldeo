@@ -60,14 +60,16 @@
 #ifdef MO_WIN32
   #ifndef _MSC_VER
     //atencion, esto se agregó para evitar el conflicto con freeimage en mingw
-    #define NOGDI
+    #define NOGDI //comentar esta línea con MinGW64??
+    //#undef _WINDOWS_
     #define MO_GSTREAMER
     #define MO_HANDLE HWND
     #define MO_DISPLAY void*
+
   #endif
 #endif
 
-
+#undef SHADER_CG
 
 
 #include <math.h>

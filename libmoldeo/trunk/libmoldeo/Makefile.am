@@ -111,10 +111,7 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 libmoldeo_la_LIBADD = -ldl\
 	${FT2_LIBS} \
 	${SDL_LIBS} \
-	${CG_LIBS} \
-	${CGGL_LIBS} \
 	${TINYXML_LIBS} \
-	${OPENAL_LIBS} \
 	${GL_LIBS} \
 	${GLE_LIBS} \
 	${GLEW_LIBS} \
@@ -131,6 +128,9 @@ libmoldeo_la_LIBADD = -ldl\
 	${LUA51_LIBS} \
 	${GST_LIBS} 
 #\
+#	${CG_LIBS} \
+#	${CGGL_LIBS} \
+#	${OPENAL_LIBS} \
 	#${TUIO_LIBS}
 
 libmoldeo_includedir = $(includedir)/libmoldeo

@@ -32,10 +32,10 @@
 #include "moLock.h"
 
 #ifdef MO_WIN32
-  #include "boost/thread/mutex.hpp"
-  #include "boost/thread/locks.hpp"
+  //#include "boost/thread/mutex.hpp"
+  //#include "boost/thread/locks.hpp"
   #include "SDL_thread.h"
-  using namespace boost;
+  //using namespace boost;
 #endif
 
 #ifdef MO_LINUX

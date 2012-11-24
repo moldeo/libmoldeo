@@ -100,7 +100,7 @@ MOint moShaderManager::AddShader(MOuint p_type, moText p_name)
 {
 	moShader* pshader;
 	moShaderGLSL* pshader_glsl;
-	moShaderCG* pshader_cg;
+
 	if (p_type == MO_SHADER_GLSL)
 	{
 		pshader_glsl = new moShaderGLSL();
@@ -112,12 +112,15 @@ MOint moShaderManager::AddShader(MOuint p_type, moText p_name)
 	}
     else if (p_type == MO_SHADER_CG)
 	{
+#ifdef SHADER_CG
+        moShaderCG* pshader_cg;
 		pshader_cg = new moShaderCG();
 		pshader_cg->Init();
 		pshader_cg->SetName(p_name);
 		pshader = (moShader*)pshader_cg;
 		m_shaders_array.Add(pshader);
 		return m_shaders_array.Count() - 1;
+#endif
 	}
 	else return -1;
 }
