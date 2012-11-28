@@ -658,9 +658,9 @@ void moParserFunction::AddMathFunctions()
 {
     mu::Parser* pParser = (mu::Parser*) m_pParser;
     if (pParser) {
-        pParser->DefineFun("UnitRandom", moMathd::UnitRandom, false);
-        pParser->DefineFun("SymmetricRandom", moMathd::SymmetricRandom, false);
-        pParser->DefineFun("IntervalRandom", moMathd::IntervalRandom, false);
+        pParser->DefineFun("UnitRandom", (mu::fun_type1) moMathd::UnitRandom, false);
+        pParser->DefineFun("SymmetricRandom", (mu::fun_type1) moMathd::SymmetricRandom, false);
+        pParser->DefineFun("IntervalRandom", (mu::fun_type3) moMathd::IntervalRandom, false);
 
         pParser->DefineFun("FastSin0", moMathd::FastSin0, false);
         pParser->DefineFun("FastSin1", moMathd::FastSin1, false);
