@@ -68,6 +68,27 @@ class LIBMOLDEO_API moLuaSoundManager : public moAbstract
 
 };
 
+class LIBMOLDEO_API moLuaTextureManager : public moAbstract
+{
+	DECLARE_SCRIPT_CLASS(moLuaTextureManager)
+
+	SCRIPT_CONSTRUCTOR_DECLARATION(moLuaTextureManager)
+
+    SCRIPT_FUNCTION_DECLARATION(GetTextureCount);
+    SCRIPT_FUNCTION_DECLARATION(GetTextureMOId);
+    SCRIPT_FUNCTION_DECLARATION(GetTextureBuffer);
+    SCRIPT_FUNCTION_DECLARATION(AddTexture);
+    SCRIPT_FUNCTION_DECLARATION(DeleteTexture);
+    SCRIPT_FUNCTION_DECLARATION(AddTextureBuffer);
+    SCRIPT_FUNCTION_DECLARATION(DeleteTextureBuffer);
+    SCRIPT_FUNCTION_DECLARATION(GetGLId);
+    SCRIPT_FUNCTION_DECLARATION(ValidTexture);
+
+    void Set( moTextureManager* p_pTextureMan);
+  private:
+    moTextureManager*  m_pTextureMan;
+
+};
 
 /**
   Instancia de la clase moCircularVideoBuffer para Lua
@@ -92,7 +113,42 @@ class moLuaCircularVideoBuffer : public moCircularVideoBuffer
       moCircularVideoBuffer* m_pCircularVideoBuffer;
 };
 
+/**
+  Instancia de la clase moVideoBuffer para Lua
+*/
 
+class moLuaVideoBuffer : public moVideoBuffer
+{
+  DECLARE_SCRIPT_CLASS(moLuaVideoBuffer)
+
+    SCRIPT_CONSTRUCTOR_DECLARATION(moLuaVideoBuffer)
+      SCRIPT_FUNCTION_DECLARATION(GetFrameCount);
+
+    void Set( moVideoBuffer* p_pVideoBuffer );
+
+    private:
+      moVideoBuffer* m_pVideoBuffer;
+};
+
+/**
+  Instancia de la clase moVideoBufferPath para Lua
+*/
+class moLuaVideoBufferPath : public moVideoBufferPath
+{
+  DECLARE_SCRIPT_CLASS(moLuaVideoBufferPath)
+
+    SCRIPT_CONSTRUCTOR_DECLARATION(moLuaVideoBufferPath)
+      SCRIPT_FUNCTION_DECLARATION(GetPath);
+      SCRIPT_FUNCTION_DECLARATION(GetCompletePath);
+      SCRIPT_FUNCTION_DECLARATION(GetTotalFiles);
+      SCRIPT_FUNCTION_DECLARATION(GetImagesProcessed);
+      SCRIPT_FUNCTION_DECLARATION(LoadCompleted);
+
+    void Set( moVideoBufferPath* p_pVideoBufferPath );
+
+    private:
+      moVideoBufferPath* m_pVideoBufferPath;
+};
 
 class LIBMOLDEO_API moLuaVideoManager : public moAbstract
 {
@@ -105,10 +161,12 @@ class LIBMOLDEO_API moLuaVideoManager : public moAbstract
     //SCRIPT_FUNCTION_DECLARATION(GetVideoFramework);
     //SCRIPT_FUNCTION_DECLARATION(GetCameraCount);
     //SCRIPT_FUNCTION_DECLARATION(GetCamera);
+    SCRIPT_FUNCTION_DECLARATION(GetVideoBufferCount);
+    SCRIPT_FUNCTION_DECLARATION(GetVideoBuffer);
     SCRIPT_FUNCTION_DECLARATION(GetCircularVideoBufferCount);
     SCRIPT_FUNCTION_DECLARATION(GetCircularVideoBuffer);
-    //SCRIPT_FUNCTION_DECLARATION(GetVideoBufferPathCount);
-    //SCRIPT_FUNCTION_DECLARATION(GetVideoBufferPath);
+    SCRIPT_FUNCTION_DECLARATION(GetVideoBufferPathCount);
+    SCRIPT_FUNCTION_DECLARATION(GetVideoBufferPath);
 
     void Set( moVideoManager* p_pVideoMan);
   private:
