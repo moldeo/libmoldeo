@@ -1191,13 +1191,17 @@ void moConsole::ScriptExeDraw() {
     if (moScript::IsInitialized()) {
         if (ScriptHasFunction("Draw")) {
 
+            m_pResourceManager->GetGLMan()->SaveGLState();
+
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             glDisable(GL_DEPTH_TEST);
             m_pResourceManager->GetGLMan()->SetOrthographicView();
+            m_pResourceManager->GetGLMan()->SetMoldeoGLState();
 
             SelectScriptFunction("Draw");
             RunSelectedFunction();
+            m_pResourceManager->GetGLMan()->RestoreGLState();
         }
     }
 }
@@ -2285,6 +2289,7 @@ int moConsole::luaGetObjectData(moLuaVirtualMachine& vm) {
 }
 
 int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
+    double deluavalor = -1.0f;
     lua_State *state = (lua_State *) vm;
 
     MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
@@ -2296,7 +2301,7 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
         moInlet* pInlet = Object->GetInlets()->Get(inletid);
         if (pInlet) {
             moData* pData = pInlet->GetInternalData();
-            if (pData)
+            if (pData) {
                 switch(pData->Type()) {
                     case MO_DATA_NUMBER:
                     case MO_DATA_NUMBER_CHAR:
@@ -2363,7 +2368,8 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
 
                     case MO_DATA_NUMBER_DOUBLE:
                     case MO_DATA_NUMBER_FLOAT:
-                        pData->SetDouble( (MOdouble) lua_tonumber ( state, 3 ) );
+                        deluavalor = (MOdouble) lua_tonumber ( state, 3 );
+                        pData->SetDouble( deluavalor );
                         pInlet->Update(true);
                         return 0;
 
@@ -2374,6 +2380,7 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                         return 0;
 
                 }
+            }
         } else {
           MODebug2->Error( moText("in console script: SetObjectData : inlet id not found : id:")+(moText)IntToStr(inletid) );
         }
