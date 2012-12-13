@@ -93,6 +93,7 @@ moEffect::PreInit() {
 	devicecode = NULL;
 	m_EffectState.Init();
 
+    /** Crea INLETS INTERNOS, es decir que no tienen un parametro asociado... (especificamente para su uso generico*/
     moInlet* Inlet = new moInlet();
     if (Inlet) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
@@ -122,6 +123,7 @@ moEffect::PreInit() {
     ///Carga el config (definicion y archivo, corrige, etc)
     ///Asigna al config y resuelve variables como texturas, sonidos, etc...
     if (moMoldeoObject::Init()) {
+        ///Al fin luego de levantar todas las configuraciones, creamos los conectores (Inlets <NO INTERNOS> y Outlets)
         moMoldeoObject::CreateConnectors();
     } else return false;
 
@@ -231,13 +233,13 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 	  moInlet* InletT = m_Inlets[1];
 	  moInlet* InletTempo = m_Inlets[2];
 	  if (InletTime) {
-        InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
+            if (InletTime->GetData()) InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
     }
 	  if (InletT) {
-        InletT->GetData()->SetDouble( m_EffectState.tempo.ang );
+        if (InletT->GetData()) InletT->GetData()->SetDouble( m_EffectState.tempo.ang );
     }
 	  if (InletTempo) {
-        InletTempo->GetData()->SetDouble( moMathd::FMod( m_EffectState.tempo.ang , moMathd::TWO_PI ) );
+        if (InletTempo->GetData()) InletTempo->GetData()->SetDouble( moMathd::FMod( m_EffectState.tempo.ang , moMathd::TWO_PI ) );
     }
   }
 
@@ -352,20 +354,22 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
 }
 
 void moEffect::SetColor( moValue& color, moValue& alpha, moEffectState& pstate ) {
-	glColor4f(  color[MO_RED].Fun()->Eval() * pstate.tintr,
-                color[MO_GREEN].Fun()->Eval() * pstate.tintg,
-                color[MO_BLUE].Fun()->Eval() * pstate.tintb,
-				color[MO_ALPHA].Fun()->Eval() *
-				alpha[0].GetData()->Fun()->Eval() * pstate.alpha);
+	glColor4f(  color[MO_RED].Eval() * pstate.tintr,
+                color[MO_GREEN].Eval() * pstate.tintg,
+                color[MO_BLUE].Eval() * pstate.tintb,
+				color[MO_ALPHA].Eval() *
+				alpha[0].Eval() * pstate.alpha);
 
 }
 
 void moEffect::SetColor( moParam& color, moParam& alpha, moEffectState& pstate ) {
-      moVector4d vRGBA( color[MO_SELECTED][MO_RED].GetData()->Eval(),
-                        color[MO_SELECTED][MO_GREEN].GetData()->Eval(),
-                       color[MO_SELECTED][MO_BLUE].GetData()->Eval(),
-                       color[MO_SELECTED][MO_ALPHA].GetData()->Eval() );
+      moVector4d vRGBA( color[MO_SELECTED][MO_RED].Eval(),
+                        color[MO_SELECTED][MO_GREEN].Eval(),
+                       color[MO_SELECTED][MO_BLUE].Eval(),
+                       color[MO_SELECTED][MO_ALPHA].Eval() );
+
       MOfloat alphav = alpha.GetData()->Eval();
+
       glColor4f(  vRGBA.X()*pstate.tintr,
                   vRGBA.Y()*pstate.tintg,
                   vRGBA.Z()*pstate.tintb,
@@ -465,10 +469,12 @@ void moEffect::SetBlending( moBlendingModes blending ) {
 
 void moEffect::TurnOn() {
     m_EffectState.Activate();
+    Activate();
 }
 
 void moEffect::TurnOff() {
     m_EffectState.Deactivate();
+    Deactivate();
 }
 
 void moEffect::Enable() {
