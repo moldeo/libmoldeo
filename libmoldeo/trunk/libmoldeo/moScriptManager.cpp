@@ -82,13 +82,26 @@ void moScriptManager::RegisterLunaClasses()
 {
 	lua_State *state = (lua_State *) m_vm;
 
+    //REGISTERING GLOBAL VARIABLES (necessary to load .lua files from scripts in local directory
+    if (m_pResourceManager) {
+        lua_pushstring( state, m_pResourceManager->GetDataMan()->GetDataPath() );
+        lua_setglobal( state , "ConsoleDataPath" );
+
+        lua_pushstring( state, m_pResourceManager->GetDataMan()->GetAppPath() );
+        lua_setglobal( state , "MoldeoAppPath" );
+    }
+
+
 	REGISTER_CLASS(moLuaResourceManager, state);
 	//REGISTER_CLASS(moLuaMath, state);
 	//REGISTER_CLASS(moLuaParserFunction, state);
 	REGISTER_CLASS(moLuaP5, state);
 
+
+
   m_pLuaResourceManager = new moLuaResourceManager( state );
   m_pLuaResourceManager->Set( GetResourceManager() );
+
 }
 
 moLuaResourceManager* moScriptManager::PushLuaResourceManager( moResourceManager* p_pResourceManager ) {
