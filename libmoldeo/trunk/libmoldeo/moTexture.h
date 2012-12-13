@@ -117,7 +117,7 @@ class LIBMOLDEO_API moTexture : public moAbstract {
          * @param p_type tipo de la textura, por ejemplo: GL_UNSIGNED_BYTE o GL_FLOAT.
          * @return true si la operación fue exitosa, false en caso contrario.
          */
-		MOboolean BuildFromBuffer(MOuint p_width, MOuint p_height, GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
+		MOboolean BuildFromBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
         /**
          * Construye una textura a partir de la imágen contenida en p_filename.
          * @param p_filename nombre del archivo que contiene la imágen a cargar en la textura.
@@ -147,7 +147,7 @@ class LIBMOLDEO_API moTexture : public moAbstract {
          * @param p_type tipo de los datos contenidos en el búfer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
          * @return true si la operación fue exitosa, false en caso contrario.
          */
-		MOboolean SetBuffer(GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
+		MOboolean SetBuffer( const GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
         /**
          * Copia a la textura el búfer pasado como parametro, y usando los parametros de alto y ancho como las nuevas dimensiones de la textura.
          * @param p_width ancho de los datos contenidos en el búfer.
@@ -157,7 +157,7 @@ class LIBMOLDEO_API moTexture : public moAbstract {
          * @param p_type tipo de los datos contenidos en el búfer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
          * @return true si la operación fue exitosa, false en caso contrario.
          */
-		MOboolean SetBuffer(MOuint p_width, MOuint p_height, GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
+		MOboolean SetBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
 
         /**
          * Copia el contenido actual de la textura al búfer pasado como parametro.
@@ -646,6 +646,8 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
          */
 		virtual void		GetFrame( MOuint p_i );
 
+		virtual MOuint		GetActualFrame();
+
         /**
          * Configura el modo de interpolación de la textura. Este modo genera texturas intermedias que
          * entre dos cuadros de la animación.
@@ -687,6 +689,7 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
 		MOuint				m_FrameNext;
 		MOuint				m_FramePrevious;
 		MOuint				m_Time;
+		MOuint              m_ActualFrame;
 
 		//interpolation flags
 		MOboolean			m_bInterpolation;
