@@ -141,7 +141,7 @@ void moLuaVirtualMachine::Panic (lua_State *lua)
 // Success.
 //
 //============================================================================
-bool moLuaVirtualMachine::InitialiseVM (void)
+bool moLuaVirtualMachine::InitialiseVM ()
 {
    // Open Lua!
    if (Ok ()) FinaliseVM ();
