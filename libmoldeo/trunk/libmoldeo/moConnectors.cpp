@@ -302,7 +302,7 @@ moConnector::GetData() {
 		return m_pParam->GetData();
 	}
 
-    /** Unicamente para inlets o outlets independientes...*/
+    /** Unicamente para inlets o outlets independientes y alterar parametros ya existentes (se accede luego desde moParam como m_pExternData...*/
 	if (m_pData) {
 		return m_pData;
 	}
@@ -313,7 +313,8 @@ moConnector::GetData() {
 moData*
 moConnector::GetInternalData() {
 
-    /** Unicamente para inlets o outlets independientes...*/
+    /** Uso interno por moMoldeoObject*/
+    /** si tiene asociado un parametro este inlet */
 	if (m_pData) {
 		return m_pData;
 	}
@@ -439,7 +440,7 @@ moConnection::SetDestinationConnectorLabelName( moText p_DestinationConnectorLab
 //
 //===========================================
 
-moInlet::moInlet() {
+moInlet::moInlet() : moConnector() {
 }
 moInlet::~moInlet() {
 }
