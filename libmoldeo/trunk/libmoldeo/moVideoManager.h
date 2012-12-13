@@ -391,19 +391,26 @@ class LIBMOLDEO_API moVideoBufferPath : public moAbstract {
 		virtual MOboolean  Finish();
 
 		MOboolean	LoadCompleted();
+		moText      GetPath();
+		moText      GetCompletePath();
+		int         GetTotalFiles();
+		int         GetImagesProcessed();
+		int         GetActualImage();
 
 		//MOboolean LoadFromVideo(  moText p_moviefile );
 		MOboolean UpdateImages( MOint maxfiles = -1 );
+        moVideoBuffers	m_VideoBuffers;
 
+    private:
 		moResourceManager*	m_pResourceManager;
 
 		moText m_VideoBufferPath;
 		moText m_CompletePath;
 
 		moDirectory*	m_pDirectory;
-		moVideoBuffers	m_VideoBuffers;
 
 		MOint m_ImagesProcessed;
+		MOint m_TotalFiles;
 		MOboolean	m_bLoadCompleted;
 		MOint m_ActualImage;
 };
@@ -488,6 +495,17 @@ class LIBMOLDEO_API moVideoManager : public moResource
     * Devuelve la cantidad de objetos de moVideoBufferPath disponibles
     */
 		int GetVideoBufferPathCount();
+
+
+    /**
+    * Devuelve el objeto moVideoBuffer del indice vb_idx
+    */
+		moVideoBuffer* GetVideoBuffer( int vb_idx );
+
+    /**
+    * Devuelve la cantidad de objetos de moVideoBuffer disponibles
+    */
+		int GetVideoBufferCount();
 
     static moText NanosecondsToTimecode( MOulonglong duration );
     static moText FramesToTimecode( MOulonglong duration, double framespersecond );
