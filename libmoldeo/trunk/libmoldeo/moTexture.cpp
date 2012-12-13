@@ -123,7 +123,7 @@ MOboolean moTexture::BuildEmpty(MOuint p_width, MOuint p_height)
 	return Build();
 }
 
-MOboolean moTexture::BuildFromBuffer(MOuint p_width, MOuint p_height, GLvoid* p_buffer, GLenum p_format, GLenum p_type)
+MOboolean moTexture::BuildFromBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_buffer, GLenum p_format, GLenum p_type)
 {
 	BuildEmpty(p_width, p_height);
 	return SetBuffer(p_width, p_height, p_buffer, p_format, p_type);
@@ -261,12 +261,12 @@ MOboolean moTexture::Load( moValue* p_value )
 	return BuildFromFile(namefull);
 }
 
-MOboolean moTexture::SetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
+MOboolean moTexture::SetBuffer( const GLvoid* p_buffer, GLenum p_format, GLenum p_type)
 {
 	return SetBuffer(m_width, m_height, p_buffer, p_format, p_type);
 }
 
-MOboolean moTexture::SetBuffer(MOuint p_width, MOuint p_height, GLvoid* p_buffer, GLenum p_format, GLenum p_type)
+MOboolean moTexture::SetBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_buffer, GLenum p_format, GLenum p_type)
 {
 	glBindTexture(m_param.target, m_glid);
 
@@ -982,6 +982,7 @@ moTextureAnimated::moTextureAnimated() : moTexture()
 	m_FramePrevious = -1;
 	m_FrameStart = 0;
 	m_FrameEnd = 0;
+	m_ActualFrame = 0;
 	m_nFrames = 0;
 	m_InterpolationTime = 0;
 	m_bInterpolation = false;
@@ -1275,6 +1276,13 @@ moTextureAnimated::GetFrame( MOuint p_i) {
 	return;
 }
 
+MOuint
+moTextureAnimated::GetActualFrame() {
+
+	return this->m_ActualFrame;
+}
+
+
 void moTextureAnimated::SetPlayMode( moTextureAnimated::moPlayMode playmode ) {
   m_PlayMode = playmode;
 }
@@ -1374,7 +1382,10 @@ void moTextureMultiple::SetTextureCount(MOuint p_tex_count)
 
 void moTextureMultiple::GetFrame(MOuint p_i)
 {
-	if (ValidTexture(p_i)) this->CopyFromTex(m_textures_array[p_i], true, false, false, false);
+	if (ValidTexture(p_i)) {
+	    this->CopyFromTex(m_textures_array[p_i], true, false, false, false);
+	    this->m_ActualFrame = p_i;
+	}
 	else m_glid = 0;
 }
 
