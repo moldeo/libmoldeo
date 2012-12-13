@@ -171,6 +171,7 @@ void moGLManager::SetMoldeoGLState()
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do.
 	glEnable(GL_BLEND);									// Enables blending.
 	glEnable(GL_TEXTURE_2D);							// Enables texturing.
+	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);           // Polygon full filling mode, front and back
 }
 
 // Sets the variables changed by SetMoldeoGLState to the default GL settings.
