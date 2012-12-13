@@ -48,7 +48,6 @@
 
 IMPLEMENT_SCRIPT_CLASS(moLuaSoundManager)
 
-
 DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaSoundManager)
 END_SCRIPT_CLASS_FUNCTIONS
 
@@ -88,6 +87,169 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaSoundManager, GetSound )
   return 1;
 }
 
+/**
+
+    moLuaTextureManager
+
+*/
+
+
+
+IMPLEMENT_SCRIPT_CLASS(moLuaTextureManager)
+
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaTextureManager)
+      SCRIPT_FUNCTION( moLuaTextureManager, GetTextureCount),
+      SCRIPT_FUNCTION( moLuaTextureManager, GetTextureMOId),
+      SCRIPT_FUNCTION( moLuaTextureManager, GetTextureBuffer),
+      SCRIPT_FUNCTION( moLuaTextureManager, AddTexture),
+      SCRIPT_FUNCTION( moLuaTextureManager, DeleteTexture),
+      SCRIPT_FUNCTION( moLuaTextureManager, AddTextureBuffer),
+      SCRIPT_FUNCTION( moLuaTextureManager, DeleteTextureBuffer),
+      SCRIPT_FUNCTION( moLuaTextureManager, GetGLId),
+      SCRIPT_FUNCTION( moLuaTextureManager, ValidTexture)
+END_SCRIPT_CLASS_FUNCTIONS
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaTextureManager)
+END_SCRIPT_CLASS_PROPERTIES
+
+
+SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaTextureManager)
+{
+  m_pTextureMan = NULL;
+}
+
+void moLuaTextureManager::Set( moTextureManager* p_pTextureMan) {
+  m_pTextureMan = p_pTextureMan;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, GetTextureCount )
+{
+  int count = 0;
+  if (m_pTextureMan) {
+    count = m_pTextureMan->GetTextureCount();
+    lua_pushnumber(L, (lua_Number)count);
+    return 1;
+  }
+
+  moText tx_error("moLuaTextureManager::GetTextureCount > no m_pTextureMan pointer");
+  lua_pushstring( L, tx_error );
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, GetTextureMOId )
+{
+  moText texturename = (char *) lua_tostring( L, lua_pindex(1) );
+  //int create_if_not_found = (int) lua_tonumber( L, lua_pindex(1) );
+
+  if (texturename=="") {
+    moText tx_error("moLuaTextureManager::GetTextureMOId > first parameter cannot be empty");
+    lua_pushstring( L, tx_error );
+    return 1;
+  }
+
+  int moid = -1;
+  if (m_pTextureMan) {
+    moid = m_pTextureMan->GetTextureMOId( texturename, false );
+    lua_pushnumber(L, (lua_Number)moid);
+    return 1;
+  }
+
+  moText tx_error("moLuaTextureManager::GetTextureMOId > no m_pTextureMan pointer");
+  lua_pushstring( L, tx_error );
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, GetTextureBuffer )
+{
+    int moid = -1;
+    moText texturename = (char *) lua_tostring( L, lua_pindex(1) );
+    int create_if_not_found = (int) lua_tonumber( L, lua_pindex(1) );
+    moText buffer_format = (char *) lua_tostring( L, lua_pindex(1) );
+
+    if (m_pTextureMan) {
+        moid = m_pTextureMan->GetTextureBuffer( texturename, create_if_not_found, buffer_format );
+        lua_pushnumber(L, (lua_Number)moid);
+        return 1;
+    }
+
+    moText tx_error("moLuaTextureManager::GetTextureBuffer > no m_pTextureMan pointer");
+    lua_pushstring( L, tx_error );
+    return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, AddTexture )
+{
+    /*
+    int moid = -1;
+    if (m_pTextureMan)
+        moid = m_pTextureMan->AddTexture( texturename );
+    */
+    return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, DeleteTexture )
+{
+    /*
+    int moid = -1;
+    if (m_pTextureMan)
+        moid = m_pTextureMan->DeleteTexture( moid );
+    */
+    return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, AddTextureBuffer )
+{
+    /*
+    int moid = -1;
+    if (m_pTextureMan)
+        moid = m_pTextureMan->AddTextureBuffer( texturename );
+    */
+    return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, DeleteTextureBuffer )
+{
+    /*
+    int moid = -1;
+    if (m_pTextureMan)
+        moid = m_pTextureMan->DeleteTextureBuffer( texturename );
+    return 1;
+    */
+    return 0;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, GetGLId )
+{
+    int moid = (int) lua_tonumber( L, lua_pindex(1) );
+    int glid = -1;
+    if (m_pTextureMan) {
+        glid = m_pTextureMan->GetGLId( moid );
+        lua_pushnumber(L, (lua_Number)glid);
+        return 1;
+    }
+
+    moText tx_error("moLuaTextureManager::GetGLId > no m_pTextureMan pointer");
+    lua_pushstring( L, tx_error );
+    return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, ValidTexture )
+{
+    int moid = (int) lua_tonumber( L, lua_pindex(1) );
+
+    int res = 0;
+    if (m_pTextureMan) {
+        res = (int) m_pTextureMan->ValidTexture( moid );
+        lua_pushnumber(L, (lua_Number)res);
+        return 1;
+    }
+
+    moText tx_error("moLuaTextureManager::ValidTexture > no m_pTextureMan pointer");
+    lua_pushstring( L, tx_error );
+    return 1;
+}
 
 
 /**
@@ -182,6 +344,146 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, IsRecording )
   lua_pushboolean(L, res);
   return 1;
 }
+
+
+
+/**
+
+
+        moLuaVideoBuffer
+
+
+*/
+
+IMPLEMENT_SCRIPT_CLASS(moLuaVideoBuffer)
+
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoBuffer)
+    SCRIPT_FUNCTION( moLuaVideoBuffer, GetFrameCount)
+END_SCRIPT_CLASS_FUNCTIONS
+
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoBuffer)
+END_SCRIPT_CLASS_PROPERTIES
+
+
+SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaVideoBuffer)
+{
+  m_pVideoBuffer = NULL;
+}
+
+void moLuaVideoBuffer::Set( moVideoBuffer* p_pVideoBuffer) {
+  m_pVideoBuffer = p_pVideoBuffer;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoBuffer, GetFrameCount )
+{
+  int fcount = -1;
+  if (m_pVideoBuffer) {
+    fcount = m_pVideoBuffer->GetFrameCount();
+    lua_pushnumber(L, (lua_Number)fcount);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+/**
+
+
+        moLuaVideoBufferPath
+
+
+*/
+
+IMPLEMENT_SCRIPT_CLASS(moLuaVideoBufferPath)
+
+DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoBufferPath)
+      SCRIPT_FUNCTION( moLuaVideoBufferPath, GetPath),
+      SCRIPT_FUNCTION( moLuaVideoBufferPath, GetCompletePath),
+      SCRIPT_FUNCTION( moLuaVideoBufferPath, GetTotalFiles),
+      SCRIPT_FUNCTION( moLuaVideoBufferPath, GetImagesProcessed),
+      SCRIPT_FUNCTION( moLuaVideoBufferPath, LoadCompleted)
+END_SCRIPT_CLASS_FUNCTIONS
+
+
+DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoBufferPath)
+END_SCRIPT_CLASS_PROPERTIES
+
+
+SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaVideoBufferPath)
+{
+  m_pVideoBufferPath = NULL;
+}
+
+void moLuaVideoBufferPath::Set( moVideoBufferPath* p_pVideoBufferPath) {
+  m_pVideoBufferPath = p_pVideoBufferPath;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoBufferPath, GetPath )
+{
+  moText path = "";
+  if (m_pVideoBufferPath) {
+    path = m_pVideoBufferPath->GetPath();
+    lua_pushstring(L,  path );
+    return 1;
+  }
+
+  return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoBufferPath, GetCompletePath )
+{
+  moText path = "";
+  if (m_pVideoBufferPath) {
+    path = m_pVideoBufferPath->GetCompletePath();
+    lua_pushstring(L,  path );
+    return 1;
+  }
+
+  return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoBufferPath, GetTotalFiles )
+{
+  int fcount = -1;
+  if (m_pVideoBufferPath) {
+    fcount = m_pVideoBufferPath->GetTotalFiles();
+    lua_pushnumber(L, (lua_Number)fcount);
+    return 1;
+  }
+
+  return 0;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoBufferPath, GetImagesProcessed )
+{
+  int fcount = -1;
+  if (m_pVideoBufferPath) {
+    fcount = m_pVideoBufferPath->GetImagesProcessed();
+    lua_pushnumber(L, (lua_Number)fcount);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoBufferPath, LoadCompleted )
+{
+  int completed = -1;
+  if (m_pVideoBufferPath) {
+    completed = (int)m_pVideoBufferPath->LoadCompleted();
+    lua_pushnumber(L, (lua_Number)completed);
+    return 1;
+  }
+
+  return 0;
+}
+
+
 /**
 
 
@@ -193,8 +495,12 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, IsRecording )
 IMPLEMENT_SCRIPT_CLASS(moLuaVideoManager)
 
 DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoManager)
+    SCRIPT_FUNCTION( moLuaVideoManager, GetVideoBufferCount ),
+    SCRIPT_FUNCTION( moLuaVideoManager, GetVideoBuffer ),
     SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBufferCount ),
-    SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBuffer )
+    SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBuffer ),
+    SCRIPT_FUNCTION( moLuaVideoManager, GetVideoBufferPathCount ),
+    SCRIPT_FUNCTION( moLuaVideoManager, GetVideoBufferPath )
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoManager)
@@ -238,6 +544,64 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetCircularVideoBuffer )
   return 1;
 }
 
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetVideoBufferCount )
+{
+  //MOdouble fValue = (MOdouble) lua_tonumber (L, 1);
+  //MOdouble res = moMathd::ACos(fValue);
+  //lua_pushnumber(L, (lua_Number)res);
+  int count = m_pVideoMan->GetVideoBufferCount();
+  lua_pushnumber(L, (lua_Number)count);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetVideoBuffer )
+{
+  int id = (int) lua_tonumber (L, 1);
+
+  moVideoBuffer* pVid = NULL;
+  moLuaVideoBuffer* pLuaVid = NULL;
+
+  if (m_pVideoMan) {
+     pVid = m_pVideoMan->GetVideoBuffer(id);
+     if (pVid) {
+        pLuaVid = new moLuaVideoBuffer(L);
+        pLuaVid->Set( pVid );
+        moLuna <moLuaVideoBuffer>::createFromExisting( L, pLuaVid);
+     }
+  }
+  return 1;
+}
+
+
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetVideoBufferPathCount )
+{
+  //MOdouble fValue = (MOdouble) lua_tonumber (L, 1);
+  //MOdouble res = moMathd::ACos(fValue);
+  //lua_pushnumber(L, (lua_Number)res);
+  int count = m_pVideoMan->GetVideoBufferPathCount();
+  lua_pushnumber(L, (lua_Number)count);
+  return 1;
+}
+
+SCRIPT_FUNCTION_IMPLEMENTATION(moLuaVideoManager, GetVideoBufferPath )
+{
+  int id = (int) lua_tonumber (L, 1);
+
+  moVideoBufferPath* pVid = NULL;
+  moLuaVideoBufferPath* pLuaVid = NULL;
+
+  if (m_pVideoMan) {
+     pVid = m_pVideoMan->GetVideoBufferPath(id);
+     if (pVid) {
+        pLuaVid = new moLuaVideoBufferPath(L);
+        pLuaVid->Set( pVid );
+        moLuna <moLuaVideoBufferPath>::createFromExisting( L, pLuaVid);
+     }
+  }
+  return 1;
+}
 
 /**
 
@@ -396,6 +760,12 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceType)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetTextureMan)
 {
+    moLuaTextureManager* pLuaTextureMan = new moLuaTextureManager( L );
+    if (pLuaTextureMan && m_pResourceManager) {
+      pLuaTextureMan->Set( m_pResourceManager->GetTextureMan());
+      moLuna<moLuaTextureManager>::createFromExisting( L, pLuaTextureMan );
+      return 1;
+    }
     return 0;
 }
 
@@ -813,8 +1183,6 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, triangle)
   }
 
     return 0;
-
-	return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, line)
