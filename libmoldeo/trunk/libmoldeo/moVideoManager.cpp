@@ -295,6 +295,9 @@ void moVideoBuffer::GetFrame( MOuint p_i ) {
                 }
                 SetBuffer( m_width, m_height, FreeImage_GetBits(pImage), p_format);
                 FreeImage_Unload( pImage );
+
+                this->m_ActualFrame = p_i;
+
 			} else MODebug2->Error( moText("moVideoBuffer::GetFrame") +
                                     moText("Couldn't load image from memory, texture name: ") +
                                     moText(this->GetName())
@@ -572,6 +575,7 @@ moVideoBufferPath::moVideoBufferPath() {
 	m_pResourceManager = NULL;
 	m_pDirectory = NULL;
 	m_bLoadCompleted = false;
+	m_TotalFiles = 0;
 
 }
 
@@ -600,6 +604,7 @@ moVideoBufferPath::Init( moResourceManager* pResources, moText videobufferpath )
 
 	m_pDirectory = m_pResourceManager->GetFileMan()->GetDirectory( m_CompletePath );
 
+    if (m_pDirectory) this->m_TotalFiles = (MOint)m_pDirectory->GetFiles().Count();
 
 	return Init();
 }
@@ -616,6 +621,27 @@ moVideoBufferPath::LoadCompleted() {
 	return m_bLoadCompleted;
 }
 
+moText      moVideoBufferPath::GetPath() {
+    return this->m_VideoBufferPath;
+}
+
+moText      moVideoBufferPath::GetCompletePath() {
+    return this->m_CompletePath;
+}
+
+
+int         moVideoBufferPath::GetTotalFiles() {
+    return this->m_TotalFiles;
+}
+
+int         moVideoBufferPath::GetImagesProcessed() {
+    return this->m_ImagesProcessed;
+}
+
+int         moVideoBufferPath::GetActualImage() {
+    return this->m_ActualImage;
+}
+
 MOboolean moVideoBufferPath::UpdateImages( MOint maxfiles ) {
 
 	//carga los frames desde los archivos
@@ -624,6 +650,8 @@ MOboolean moVideoBufferPath::UpdateImages( MOint maxfiles ) {
 	MOint counter = 0;
 
 	if (!m_pDirectory) return false;
+
+    this->m_TotalFiles = (MOint)m_pDirectory->GetFiles().Count();
 
 	if (m_ActualImage>=(MOint)m_pDirectory->GetFiles().Count()) {
 		m_bLoadCompleted = true;
@@ -1064,6 +1092,24 @@ int moVideoManager::GetVideoBufferPathCount() {
   return m_VideoBufferPaths.Count();
 }
 
+moVideoBuffer* moVideoManager::GetVideoBuffer( int vb_idx ) {
+
+  moVideoBuffer* pVideoBuffer = NULL;
+
+  moVideoBufferPath* pVideoBufferPath = m_VideoBufferPaths.GetRef(vb_idx);
+
+  if (pVideoBufferPath) {
+    if (pVideoBufferPath->m_VideoBuffers.Count()>0) {
+        pVideoBuffer = pVideoBufferPath->m_VideoBuffers.GetRef(0);
+    }
+  }
+  return pVideoBuffer;
+}
+
+int moVideoManager::GetVideoBufferCount() {
+  return m_VideoBufferPaths.Count();
+}
+
 #include <gst/gst.h>
 
 moText moVideoManager::NanosecondsToTimecode( MOulonglong duration ) {
@@ -1278,7 +1324,7 @@ void moVideoManager::Update(moEventList * p_EventList)
 
 		if (pVideoBufferPath && !pVideoBufferPath->LoadCompleted()) {
 			pVideoBufferPath->UpdateImages( 1 );
-			MODebug2->Push( pVideoBufferPath->m_VideoBufferPath + moText(":") + IntToStr(pVideoBufferPath->m_ImagesProcessed));
+			MODebug2->Push( pVideoBufferPath->GetPath() + moText(":") + IntToStr(pVideoBufferPath->GetImagesProcessed()));
 		}
 
 	}
