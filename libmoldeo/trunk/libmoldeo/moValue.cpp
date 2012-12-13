@@ -48,7 +48,8 @@ moDefineDynamicArray( moDataMessages )
 //================================================================
 
 moData::moData() {
-	m_Number.m_Long = 0;
+    m_Number.m_Long = 0;
+	m_Number.m_Pointer = NULL;
 	m_DataSize = 0;
 	m_DataType = MO_DATA_UNDEFINED;
 	m_bFilteredAlpha = false;
