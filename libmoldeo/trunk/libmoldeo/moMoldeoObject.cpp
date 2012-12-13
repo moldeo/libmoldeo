@@ -378,9 +378,9 @@ moMoldeoObject::CreateConnectors() {
                         ///
                         if ( ! (valuebase.Text().Trim() == moText("")) ) {
 
-                            ///si tenemos un segundo parametro deberia ser el formato del buffer (JPG)
+                            ///si tenemos un segundo parametro deberia ser el formato del buffer (JPG o PNG)
 
-                            idx = m_pResourceManager->GetTextureMan()->GetTextureBuffer( valuebase.Text(), true );
+                            idx = m_pResourceManager->GetTextureMan()->GetTextureBuffer( valuebase.Text(), true, "PNG" );
                             if (idx>-1) {
 
                                 moTextureBuffer*  pTextureBuffer = m_pResourceManager->GetTextureMan()->GetTextureBuffer(idx);
@@ -1142,6 +1142,7 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
     moVector2i* pv2i;
     moVector3i* pv3i;
     moVector4i* pv4i;
+    void* pv;
 
 
     int inletindex = (int) lua_tonumber (state, 1);
@@ -1150,85 +1151,106 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
         moInlet* pInlet = m_Inlets[inletindex];
         if ( pInlet ) {
             moData* pData = pInlet->GetData();
-            moDataType pType = pData->Type();
             //lua_pushnumber( state, (lua_Number) (int)pType );
-            switch((int)pType) {
-                case 	MO_DATA_NUMBER:
-                        lua_pushnumber( state, (lua_Number) pData->Long() );
-                        return 1;
-                        break;
-                case    MO_DATA_NUMBER_CHAR:
-                        lua_pushnumber( state, (lua_Number) pData->Long() );
-                        return 1;
-                        break;
-                case    MO_DATA_NUMBER_INT:
-                        lua_pushnumber( state, (lua_Number) pData->Long() );
-                        return 1;
-                        break;
-                case    MO_DATA_NUMBER_LONG:
-                        lua_pushnumber( state, (lua_Number) pData->Long() );
-                        return 1;
-                        break;
-                case    MO_DATA_NUMBER_DOUBLE:
-                        lua_pushnumber( state, (lua_Number) pData->Double() );
-                        return 1;
-                case    MO_DATA_NUMBER_FLOAT:
-                        lua_pushnumber( state, (lua_Number) pData->Float() );
-                        return 1;
-                case    MO_DATA_TEXT:
-                        lua_pushstring( state, (char*) pData->Text() );
-                        return 1;
-                case MO_DATA_VECTOR2F:
-                        pv2d = (moVector2d*)pData->Pointer();
-                        lua_pushnumber( state, (lua_Number) pv2d->X() );
-                        lua_pushnumber( state, (lua_Number) pv2d->Y() );
-                        return 2;
-                case MO_DATA_VECTOR3F:
-                        pv3d = (moVector3d*)pData->Pointer();
-                        lua_pushnumber( state, (lua_Number) pv3d->X() );
-                        lua_pushnumber( state, (lua_Number) pv3d->Y() );
-                        lua_pushnumber( state, (lua_Number) pv3d->Z() );
-                        return 3;
-                case MO_DATA_VECTOR4F:
-                        pv4d = (moVector4d*)pData->Pointer();
-                        lua_pushnumber( state, (lua_Number) pv4d->X() );
-                        lua_pushnumber( state, (lua_Number) pv4d->Y() );
-                        lua_pushnumber( state, (lua_Number) pv4d->Z() );
-                        lua_pushnumber( state, (lua_Number) pv4d->W() );
-                        return 4;
+            if (pData) {
+                moDataType pType = pData->Type();
+                switch((int)pType) {
+                    case 	MO_DATA_NUMBER:
+                            lua_pushnumber( state, (lua_Number) pData->Long() );
+                            return 1;
+                            break;
+                    case    MO_DATA_NUMBER_CHAR:
+                            lua_pushnumber( state, (lua_Number) pData->Long() );
+                            return 1;
+                            break;
+                    case    MO_DATA_NUMBER_INT:
+                            lua_pushnumber( state, (lua_Number) pData->Long() );
+                            return 1;
+                            break;
+                    case    MO_DATA_NUMBER_LONG:
+                            lua_pushnumber( state, (lua_Number) pData->Long() );
+                            return 1;
+                            break;
+                    case    MO_DATA_NUMBER_DOUBLE:
+                            lua_pushnumber( state, (lua_Number) pData->Double() );
+                            return 1;
+                    case    MO_DATA_NUMBER_FLOAT:
+                            lua_pushnumber( state, (lua_Number) pData->Float() );
+                            return 1;
+                    case    MO_DATA_TEXT:
+                            lua_pushstring( state, (char*) pData->Text() );
+                            return 1;
+                    case MO_DATA_VECTOR2F:
+                            pv2d = (moVector2d*)pData->Pointer();
+                            if (pv2d) {
+                                lua_pushnumber( state, (lua_Number) pv2d->X() );
+                                lua_pushnumber( state, (lua_Number) pv2d->Y() );
+                                return 2;
+                            }
+                            break;
+                    case MO_DATA_VECTOR3F:
+                            pv3d = (moVector3d*)pData->Pointer();
+                            if (pv3d) {
+                                lua_pushnumber( state, (lua_Number) pv3d->X() );
+                                lua_pushnumber( state, (lua_Number) pv3d->Y() );
+                                lua_pushnumber( state, (lua_Number) pv3d->Z() );
+                                return 3;
+                            }
+                            break;
+                    case MO_DATA_VECTOR4F:
+                            pv4d = (moVector4d*)pData->Pointer();
+                            if (pv4d) {
+                                lua_pushnumber( state, (lua_Number) pv4d->X() );
+                                lua_pushnumber( state, (lua_Number) pv4d->Y() );
+                                lua_pushnumber( state, (lua_Number) pv4d->Z() );
+                                lua_pushnumber( state, (lua_Number) pv4d->W() );
+                                return 4;
+                            }
+                            break;
+                    case MO_DATA_VECTOR2I:
+                            pv2i = (moVector2i*)pData->Pointer();
+                            if (pv2i) {
+                                lua_pushnumber( state, (lua_Number) pv2i->X() );
+                                lua_pushnumber( state, (lua_Number) pv2i->Y() );
+                                return 2;
+                            }
+                            break;
+                    case MO_DATA_VECTOR3I:
+                            pv3i = (moVector3i*)pData->Pointer();
+                            if (pv3i) {
+                                lua_pushnumber( state, (lua_Number) pv3i->X() );
+                                lua_pushnumber( state, (lua_Number) pv3i->Y() );
+                                lua_pushnumber( state, (lua_Number) pv3i->Z() );
+                                return 3;
+                            }
+                            break;
+                    case MO_DATA_VECTOR4I:
+                            pv4i = (moVector4i*)pData->Pointer();
+                            if (pv4i) {
+                                lua_pushnumber( state, (lua_Number) pv4i->X() );
+                                lua_pushnumber( state, (lua_Number) pv4i->Y() );
+                                lua_pushnumber( state, (lua_Number) pv4i->Z() );
+                                lua_pushnumber( state, (lua_Number) pv4i->W() );
+                                return 4;
+                            }
+                            break;
 
-                case MO_DATA_VECTOR2I:
-                        pv2i = (moVector2i*)pData->Pointer();
-                        lua_pushnumber( state, (lua_Number) pv2i->X() );
-                        lua_pushnumber( state, (lua_Number) pv2i->Y() );
-                        return 2;
-                case MO_DATA_VECTOR3I:
-                        pv3i = (moVector3i*)pData->Pointer();
-                        lua_pushnumber( state, (lua_Number) pv3i->X() );
-                        lua_pushnumber( state, (lua_Number) pv3i->Y() );
-                        lua_pushnumber( state, (lua_Number) pv3i->Z() );
-                        return 3;
-                case MO_DATA_VECTOR4I:
-                        pv4i = (moVector4i*)pData->Pointer();
-                        lua_pushnumber( state, (lua_Number) pv4i->X() );
-                        lua_pushnumber( state, (lua_Number) pv4i->Y() );
-                        lua_pushnumber( state, (lua_Number) pv4i->Z() );
-                        lua_pushnumber( state, (lua_Number) pv4i->W() );
-                        return 4;
-
-                case MO_DATA_FUNCTION:
-                        lua_pushnumber( state, (lua_Number) pData->Eval() );
+                    case MO_DATA_FUNCTION:
+                            lua_pushnumber( state, (lua_Number) pData->Eval() );
+                            return 1;
+                    default:
+                        moText ttype = pData->TypeToText();
+                        lua_pushstring( state, ttype );
+                        if (pData->Type()==MO_DATA_NUMBER_LONG) {
+                            lua_pushnumber( state, (lua_Number) pData->Long() );
+                            return 2;
+                        }
                         return 1;
-                default:
-                    moText ttype = pData->TypeToText();
-                    lua_pushstring( state, ttype );
-                    if (pData->Type()==MO_DATA_NUMBER_LONG) {
-                        lua_pushnumber( state, (lua_Number) pData->Long() );
-                        return 2;
-                    }
-                    return 1;
-
-
+                }
+            } else {
+                moText tres("bad data pointer");
+                lua_pushstring( state, tres );
+                return 1;
             }
         }
         moText tres("inlet data not updated");
@@ -1254,8 +1276,8 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
 
         if ( pInlet ) {
             moData* pData = pInlet->GetData();
-            moDataType pType = pData->Type();
             if (pData) {
+                moDataType pType = pData->Type();
                 switch(pData->Type()) {
                     case MO_DATA_NUMBER:
                     case MO_DATA_NUMBER_CHAR:
@@ -1277,21 +1299,24 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
                         return 0;
 
                     case MO_DATA_VECTOR2I:
-                        (*pData->Vector2i()) = moVector2i(  (MOlong) lua_tonumber ( state, 2 ),
+                        if (pData->Vector2i())
+                            (*pData->Vector2i()) = moVector2i(  (MOlong) lua_tonumber ( state, 2 ),
                                                             (MOlong) lua_tonumber ( state, 3 ) );
                         pInlet->Update();
 
                         return 0;
 
                     case MO_DATA_VECTOR3I:
-                        (*pData->Vector3i()) = moVector3i(  (MOlong) lua_tonumber ( state, 2 ),
+                        if (pData->Vector3i())
+                            (*pData->Vector3i()) = moVector3i(  (MOlong) lua_tonumber ( state, 2 ),
                                                             (MOlong) lua_tonumber ( state, 3 ),
                                                             (MOlong) lua_tonumber ( state, 4 ) );
                                                             pInlet->Update();
                         return 0;
 
                     case MO_DATA_VECTOR4I:
-                        (*pData->Vector4i()) = moVector4i(  (MOlong) lua_tonumber ( state, 2 ),
+                        if (pData->Vector4i())
+                            (*pData->Vector4i()) = moVector4i(  (MOlong) lua_tonumber ( state, 2 ),
                                                             (MOlong) lua_tonumber ( state, 3 ),
                                                             (MOlong) lua_tonumber ( state, 4 ),
                                                             (MOlong) lua_tonumber ( state, 5 ) );
@@ -1299,20 +1324,23 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
                         return 0;
 
                     case MO_DATA_VECTOR2F:
-                        (*pData->Vector2d()) = moVector2d(  (MOdouble) lua_tonumber ( state, 2 ),
+                        if (pData->Vector2d())
+                            (*pData->Vector2d()) = moVector2d(  (MOdouble) lua_tonumber ( state, 2 ),
                                                             (MOdouble) lua_tonumber ( state, 3 ));
                                                             pInlet->Update();
                         return 0;
 
                     case MO_DATA_VECTOR3F:
-                        (*pData->Vector3d()) = moVector3d(  (MOdouble) lua_tonumber ( state, 2 ),
+                        if (pData->Vector3d())
+                            (*pData->Vector3d()) = moVector3d(  (MOdouble) lua_tonumber ( state, 2 ),
                                                             (MOdouble) lua_tonumber ( state, 3 ),
                                                             (MOdouble) lua_tonumber ( state, 4 ));
                         pInlet->Update();
                         return 0;
 
                     case MO_DATA_VECTOR4F:
-                        (*pData->Vector4d()) = moVector4d(  (MOdouble) lua_tonumber ( state, 2 ),
+                        if (pData->Vector4d())
+                            (*pData->Vector4d()) = moVector4d(  (MOdouble) lua_tonumber ( state, 2 ),
                                                             (MOdouble) lua_tonumber ( state, 3 ),
                                                             (MOdouble) lua_tonumber ( state, 4 ),
                                                             (MOdouble) lua_tonumber ( state, 5 ) );
