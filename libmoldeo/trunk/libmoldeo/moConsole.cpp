@@ -2144,8 +2144,12 @@ int moConsole::luaSetObjectCurrentValue(moLuaVirtualMachine& vm) {
 
     if (Object && Object->GetConfig()) {
         Object->GetConfig()->SetCurrentValueIndex( paramid, valueid );
+
+        moParam pParam = Object->GetConfig()->GetParam(paramid);
+
+        MODebug2->Message( moText("in lua console script: SetObjectCurrentValue")+Object->GetLabelName() + " Param:" + pParam.GetParamDefinition().GetName() );
     } else {
-        MODebug2->Error( moText("in console script: SetObjectValue : object not founded : id:")+(moText)IntToStr(objectid) );
+        MODebug2->Error( moText("in console script: SetObjectCurrentValue : object not founded : id:")+(moText)IntToStr(objectid) );
     }
 
     return 0;
@@ -2164,9 +2168,10 @@ int moConsole::luaGetObjectCurrentValue(moLuaVirtualMachine& vm) {
     if (Object && Object->GetConfig()) {
         int valueid = Object->GetConfig()->GetParam( paramid ).GetIndexValue();
         lua_pushnumber(state, (lua_Number) valueid );
+        MODebug2->Message( moText("in lua console script: GetObjectCurrentValue")+Object->GetLabelName() );
         return 1;
     } else {
-        MODebug2->Error( moText("in console script: GetObjectValue : object not founded : id:")+(moText)IntToStr(objectid) );
+        MODebug2->Error( moText("in lua console script: GetObjectCurrentValue : object not founded : id:")+(moText)IntToStr(objectid) );
     }
 
     return 0;

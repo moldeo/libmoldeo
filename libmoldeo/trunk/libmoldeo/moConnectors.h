@@ -40,11 +40,18 @@
 
 /// Conector para vincular objetos con datos
 /**
- *  Objeto base de outlet e inlets para manejar la transmisión de datos entre moMoldeoObject 's
+ *  Objeto base de moOutlet (Emisor) e moInlet (Receptor) para manejar la transmisión de datos entre diferentes moMoldeoObject.
+ *  Un moOutlet es un moConnector que tiene conexiones a uno o varios moInlet (Receptores).
+ *  Cada moOutlet se comunica con los correspondientes moInlet a través de un moMessage.
+ *  moMessage -> Tiene un destinatario definido con su respectivo inlet receptor.
+ *
  *
  * @see moConnection
  * @see moOutlet
  * @see moInlet
+ * @see moMessage
+ * @see moMoldeoObject
+ * @see moMoldeoObject::Update()
  */
 
 class LIBMOLDEO_API moConnector : public moAbstract {
@@ -222,6 +229,9 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         */
         moDataMessages     m_DataMessages;//historical data for streaming
 
+        /**
+        * For synchronization betweem internal parameter's config (edited in real time), and inlets (reciever), and outlets (emitter).
+        */
         moParam		*m_pParam;
 
 		MOint		m_MoldeoId;
@@ -238,8 +248,15 @@ moDeclareExportedDynamicArray( moConnector*, moConnectors);
 
 /// Conección, vínculo entre dos objetos
 /**
- *  Vínculo específico desde un conector moConnector a uno o más conectores
+ *  Vínculo específico desde un conector (moConnector) a uno o más conectores
+ *  Especialmente usado dentro de cada moOutlet para almacenar las conexiones a
+ *  a diferentes moInlet.
  *
+ *  El sentido de las conexiones son desde un moMoldeoObject fuente hacia
+ *  un MoldeoObject destinatario. Los moInlet y correspondiente moMoldeoObject se identifican con sus respectivos
+ *  nombres.
+ *
+ *  @ TODO El id de cada Inlet y cada MoldeoObject debería recalcularse al modificarse la estructura del proyecto.
  */
 
 class LIBMOLDEO_API moConnection : public moAbstract  {
@@ -330,6 +347,8 @@ moDeclareExportedDynamicArray( moConnectionPtr, moConnections);
 /**
  *  Recibe datos desde otro conector. El conector que envía es un Outlet (moOutlet)
  *
+ *
+ *
  * @see moConnector
  * @see moConnection
  * @see moOutlet
@@ -361,9 +380,14 @@ moDeclareExportedDynamicArray( moInlet*, moInlets);
  *  Comunica los datos internos para cada conección de forma independiente
  *  genera el evento/mensaje poblando la lista de eventos (moEventList) con el nuevo dato y el MoldeoID correspondiente a cada conección
  *
+ *  Los mensajes son creados por el mismo moMoldeoObject en la función moMoldeoObject::Update() y puestos en la cola de eventos (moEventList)
+ *
  * @see moConnector
  * @see moConnection
  * @see moInlet
+ * @see moMoldeoObject
+ * @see moMessage
+ * @see moEventList
  */
 class LIBMOLDEO_API moOutlet : public moConnector {
 

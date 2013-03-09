@@ -185,6 +185,10 @@ moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moText t_data
 		m_pData = new moData( MO_DATA_SOUNDSAMPLE );
 	} else if(t_datatype==moText("VIDEO")) {
 		m_pData = new moData( MO_DATA_VIDEOSAMPLE );
+	} else if(t_datatype==moText("MESSAGE")) {
+		m_pData = new moData( MO_DATA_MESSAGE );
+	} else if(t_datatype==moText("MESSAGES")) {
+		m_pData = new moData( MO_DATA_MESSAGES );
 	} else if(t_datatype==moText("TEXT")) {
 		m_pData = new moData( MO_DATA_TEXT );
 	} else {

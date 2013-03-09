@@ -33,9 +33,26 @@
 
 #include "moArray.h"
 moDefineDynamicArray( moEventPacketArray );
+moDefineDynamicArray( moMessages );
 
 //MESSAGE
 moMessage::moMessage() {
+  deviceid = 0;
+	devicecode = 0;
+
+  reservedvalue3 = MO_MESSAGE;
+
+  m_MoldeoIdDest = 0;
+  m_InletIdDest = -1;
+  m_TypeDest = MO_OBJECT_UNDEFINED;
+  m_NameDest = "";
+
+  m_MoldeoIdSrc = 0;
+  m_OutletIdSrc = -1;
+  m_TypeSrc = MO_OBJECT_UNDEFINED;
+  m_NameSrc = "";
+
+  m_Data.SetText("");
 }
 
 moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_MoldeoIdSrc, const moData& data ) {
@@ -101,7 +118,35 @@ moMessage::~moMessage() {
 //skip
 }
 
-//EVENTO
+
+
+
+moMessage&
+moMessage::operator=(const moMessage& src) {
+
+  m_Data = src.m_Data;
+  m_InletIdDest = src.m_InletIdDest;
+  m_MoldeoIdDest = src.m_MoldeoIdDest;
+  m_NameDest = src.m_NameDest;
+  m_NameSrc = src.m_NameSrc;
+  m_OutletIdSrc = src.m_OutletIdSrc;
+  m_TypeDest = src.m_TypeDest;
+  m_TypeSrc = src.m_TypeSrc;
+  return (*this);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/** EVENTO */
 
 moEvent::moEvent() {
 	previous = NULL;

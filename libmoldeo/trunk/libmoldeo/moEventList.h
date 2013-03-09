@@ -85,12 +85,19 @@ public:
 * Esta clase deriva de un Evento adquiriendo además tanto un emisor como un receptor
 * identificados ambos en el contexto de el administrador general de objetos moConsole y los identificadores
 * individuales únicos de los objetos creados
+*
+*   Atención de no confundir con moDataMessage, que es un stream de moData que vienen de una misma fuente...
+*
 */
 class LIBMOLDEO_API moMessage : public moEvent {
 
 	public:
-        moMessage();
-        moMessage(const moMessage&);
+     moMessage();
+    moMessage(const moMessage& src) {
+      (*this) = src;
+    }
+    moMessage& operator=(const moMessage& src);
+
 		moMessage( MOint m_MoldeoIdDest, MOint m_MoldeoIdSrc, const moData& data );
 		moMessage( MOint m_MoldeoIdDest, MOint m_InletIdDest, MOint m_MoldeoIdSrc, const moData& data );
 		moMessage( MOint p_MoldeoIdDest, MOint m_InletIdDest, moMoldeoObjectType p_TypeDest, MOint p_MoldeoIdSrc, moMoldeoObjectType p_TypeSrc, const moData& p_data );
@@ -110,6 +117,10 @@ class LIBMOLDEO_API moMessage : public moEvent {
 		moText					m_NameSrc;
 
 };
+
+moDeclareExportedDynamicArray( moMessage, moMessages );
+
+
 
 /// Lista de eventos
 /**
