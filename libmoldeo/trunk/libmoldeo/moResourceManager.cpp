@@ -357,10 +357,10 @@ moResourceManager::Init(
 		presources.NextValue();
 	}
 
-    if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Embedded Resources."));
+    if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Embedded Resources."));
 	MODebugMan = (moDebugManager*) GetResourceByType( MO_RESOURCETYPE_DEBUG );
 	if (MODebugMan) {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Debug Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Debug Man Resource."));
 	    if (!MODebugMan->Init())
             MODebug2->Error(moText("moResourceManager:: Debug Man. Initialization Error."));
 	} else {
@@ -369,7 +369,7 @@ moResourceManager::Init(
 
 	MONetMan = (moNetManager*) GetResourceByType( MO_RESOURCETYPE_NET );
 	if (MONetMan) {
-	    if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Net Man Resource."));
+	    if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Net Man Resource."));
 	    if (!MONetMan->Init())
 	        MODebug2->Error(moText("moResourceManager:: Net Man. Initialization Error."));
 	} else {
@@ -378,7 +378,7 @@ moResourceManager::Init(
 
 	MOFileMan = (moFileManager*) GetResourceByType( MO_RESOURCETYPE_FILE );
 	if (MOFileMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing File Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing File Man Resource."));
 	    if (!MOFileMan->Init())
             MODebug2->Error(moText("moResourceManager:: File Man Initialization Error."));
 	} else {
@@ -388,7 +388,7 @@ moResourceManager::Init(
 
 	MODataMan = (moDataManager*) GetResourceByType( MO_RESOURCETYPE_DATA );
 	if (MODataMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Data Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Data Man Resource."));
 	    if (!MODataMan->Init( p_apppath, p_datapath, p_consoleconfig.GetName()))
             MODebug2->Error(moText("moResourceManager:: Data Man Initialization Error."));
 	} else {
@@ -397,7 +397,7 @@ moResourceManager::Init(
 
 	MOFilterMan = (moFilterManager*) GetResourceByType( MO_RESOURCETYPE_FILTER );
 	if (MOFilterMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Filter Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Filter Man Resource."));
 	    if (!MOFilterMan->Init())
             MODebug2->Error(moText("moResourceManager:: Filter Man Initialization Error."));
 	} else {
@@ -406,7 +406,7 @@ moResourceManager::Init(
 
 	MOTimeMan = (moTimeManager*) GetResourceByType( MO_RESOURCETYPE_TIME );
 	if (MOTimeMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Time Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Time Man Resource."));
 	    if (!MOTimeMan->Init())
             MODebug2->Error(moText("moResourceManager:: Time Man Initialization Error."));
 	} else {
@@ -415,7 +415,7 @@ moResourceManager::Init(
 
 	MOGLMan = (moGLManager*) GetResourceByType( MO_RESOURCETYPE_GL );
 	if (MOGLMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing GL Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing GL Man Resource."));
 	    if (!MOGLMan->Init())
             MODebug2->Error(moText("moResourceManager:: GL Man Initialization Error."));
 	} else {
@@ -424,7 +424,7 @@ moResourceManager::Init(
 
 	MOFBMan = (moFBManager*) GetResourceByType( MO_RESOURCETYPE_FB );
 	if (MOFBMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing FrameBuffer Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing FrameBuffer Man Resource."));
 	    if (!MOFBMan->Init())
             MODebug2->Error(moText("moResourceManager:: FrameBuffer Man Initialization Error."));
 	} else {
@@ -433,7 +433,7 @@ moResourceManager::Init(
 
 	MOTextureMan = (moTextureManager*)  GetResourceByType( MO_RESOURCETYPE_TEXTURE );
 	if (MOTextureMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Texture Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Texture Man Resource."));
 	    if (!MOTextureMan->Init())
             MODebug2->Error(moText("moResourceManager:: Texture Man Initialization Error."));
 	} else {
@@ -442,17 +442,17 @@ moResourceManager::Init(
 
 	MODecoderMan = (moDecoderManager*)  GetResourceByType( MO_RESOURCETYPE_DECODER );
 	if (MODecoderMan)  {
-        if (MODebug2) MODebug2->Message(moText("moDecoderMan:: Initializing Decoder Manager Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Decoder Manager Resource."));
 	    if (!MODecoderMan->Init())
-            MODebug2->Error(moText("moDecoderMan:: Decoder Manager Initialization Error."));
+            MODebug2->Error(moText("moResourceManager:: Decoder Manager Initialization Error."));
 	} else {
-	    MODebug2->Error(moText("moDecoderMan:: Decoder Manager Creation Error."));
+	    MODebug2->Error(moText("moResourceManager:: Decoder Manager Creation Error."));
   }
 
 
 	MORenderMan = (moRenderManager*) GetResourceByType( MO_RESOURCETYPE_RENDER );
 	if (MORenderMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Render Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Render Man Resource."));
 	    if (!MORenderMan->Init( (moRenderManagerMode)p_render_to_texture_mode, p_screen_width, p_screen_height, p_render_width, p_render_height ))
             MODebug2->Error(moText("moResourceManager:: Render Man Initialization Error."));
 	} else {
@@ -461,7 +461,7 @@ moResourceManager::Init(
 
 	MOMathMan = (moMathManager*) GetResourceByType( MO_RESOURCETYPE_MATH );
 	if (MOMathMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Math Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Math Man Resource."));
 	    if (!MOMathMan->Init())
             MODebug2->Error(moText("moResourceManager:: Math Man Initialization Error."));
 	} else {
@@ -470,7 +470,7 @@ moResourceManager::Init(
 
 	MOShaderMan = (moShaderManager*) GetResourceByType( MO_RESOURCETYPE_SHADER );
 	if (MOShaderMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Shsder Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Shader Man Resource."));
 	    if (!MOShaderMan->Init())
             MODebug2->Error(moText("moResourceManager:: Shader Man Initialization Error."));
 	} else {
@@ -479,7 +479,7 @@ moResourceManager::Init(
 
 	MOFontMan = (moFontManager*) GetResourceByType( MO_RESOURCETYPE_FONT );
 	if (MOFontMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Font Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Font Man Resource."));
 	    if (!MOFontMan->Init())
             MODebug2->Error(moText("moResourceManager:: Font Man Initialization Error."));
 	} else {
@@ -488,7 +488,7 @@ moResourceManager::Init(
 
 	MOGuiMan = (moGUIManager*)  GetResourceByType( MO_RESOURCETYPE_GUI );
 	if (MOGuiMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing GUI Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing GUI Man Resource."));
 	    if (!MOGuiMan->Init( p_OpWindowHandle, p_Display ))
             MODebug2->Error(moText("moResourceManager:: GUI Man Initialization Error."));
 	} else {
@@ -497,7 +497,7 @@ moResourceManager::Init(
 
 	MOSoundMan = (moSoundManager*)  GetResourceByType( MO_RESOURCETYPE_SOUND );
 	if (MOSoundMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Sound Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Sound Man Resource."));
 	    if (!MOSoundMan->Init())
             MODebug2->Error(moText("moResourceManager:: Sound Man Initialization Error."));
 	} else {
@@ -506,7 +506,7 @@ moResourceManager::Init(
 
 	MOVideoMan = (moVideoManager*)  GetResourceByType( MO_RESOURCETYPE_VIDEO );
 	if (MOVideoMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Video Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Video Man Resource."));
 	    if (!MOVideoMan->Init()) {
             MODebug2->Error(moText("moResourceManager:: Video Man Initialization Error."));
 	    }
@@ -516,7 +516,7 @@ moResourceManager::Init(
 
 	MOModelMan = (mo3dModelManager*)  GetResourceByType( MO_RESOURCETYPE_MODEL );
 	if (MOModelMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Model Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Model Man Resource."));
 	    if (!MOModelMan->Init())
             MODebug2->Error(moText("moResourceManager:: Model Man Initialization Error."));
 	} else {
@@ -525,7 +525,7 @@ moResourceManager::Init(
 
 	MOScriptMan = (moScriptManager*)  GetResourceByType( MO_RESOURCETYPE_SCRIPT );
 	if (MOScriptMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager:: Initializing Script Man Resource."));
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Script Man Resource."));
 	    if (!MOScriptMan->Init()) {
             MODebug2->Error(moText("moResourceManager:: Script Man Initialization Error."));
 	    }

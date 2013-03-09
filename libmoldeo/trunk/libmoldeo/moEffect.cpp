@@ -142,7 +142,7 @@ moEffect::PreInit() {
 	//se tratará de mantener valuees como: MOACCIONES_ALPHA... para poder hacer un FADE
 	//la idea es que sea completamente reconfigurable la interfaz del teclado
 
-
+  MODebug2->Message("moEffect::PreInit > OK! for object: " + GetName()+ " config: " + GetConfigName() + " label: " + GetLabelName() );
 
 	return true;
 }

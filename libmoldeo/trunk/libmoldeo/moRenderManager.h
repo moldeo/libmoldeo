@@ -173,6 +173,7 @@ class LIBMOLDEO_API moRenderManager : public moResource
 		virtual MOboolean Finish();
 
 		void SetView( int p_width, int p_height );
+		void SetInterfaceView( int p_width, int p_height );
 
         /**
          * Devuelve true o false dependiendo si el render a FBO está habilitado.
@@ -304,6 +305,17 @@ class LIBMOLDEO_API moRenderManager : public moResource
 		MOint ScreenHeight();
 
         /**
+         * Devuelve ancho de la pantalla de interface.
+         * @return ancho de la pantalla de interface.
+         */
+		MOint InterfaceWidth();
+        /**
+         * Devuelve alto de la pantalla.
+         * @return alto de la pantalla.
+         */
+		MOint InterfaceHeight();
+
+        /**
          * Devuelve proporción de la pantalla de salida, la relación del ancho por la altura.
          * @return proporción.
          */
@@ -370,9 +382,12 @@ class LIBMOLDEO_API moRenderManager : public moResource
         moBucketsPool*           m_pFramesPool;
 
 		moRenderManagerMode m_render_to_texture_mode;
+
 		MOint m_screen_width, m_screen_height;
-        MOint m_render_width, m_render_height;
-        MOint m_render_tex_moid[6];
+    MOint m_render_width, m_render_height;
+    MOint m_interface_width, m_interface_height;
+
+    MOint m_render_tex_moid[6];
 		MOuint m_render_attach_points[4];
 		MOuint m_fbo_idx;
 

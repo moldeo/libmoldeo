@@ -212,7 +212,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
          * Cada objeto derivado de moEffect es dibujado según la jerarquía que los define.
          */
         virtual void Draw();
-
+        virtual void DrawMasterEffects( int interface_width, int interface_height );
 
         /// Finalizador
         /**
@@ -256,7 +256,6 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
          */
 
         void SetIODeviceManager( moIODeviceManager*	p_IODeviceManager );
-
 
         /// asignación de la definición del archivo de configuración de la consola
         /**

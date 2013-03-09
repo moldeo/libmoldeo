@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andr閟 Colubri
+  Andr茅s Colubri
 
 *******************************************************************************/
 
@@ -43,10 +43,28 @@
 
 #include "moResourceManager.h"
 
+
+typedef void* moGLContext;
+typedef void* moDisplayServer;
+typedef void* moDisplayScreen;
+typedef void* moDisplayWindow;
+
+/*
+class moGLContext {
+
+    public:
+        moGLContext();
+        virtual ~moGLContext();
+
+    void *m_Context;
+};
+*/
+
+
 /// manejador de operaciones comunes de Open GL
 /**
- * Contiene funciones b醩icas de manejo de estado de OpenGL, manejo de errors y consulta de caracter韘ticas
- * la placa gr醘ica.
+ * Contiene funciones b谩sicas de manejo de estado de OpenGL, manejo de errors y consulta de caracter铆sticas
+ * la placa gr谩fica.
  */
 class LIBMOLDEO_API moGLManager : public moResource
 {
@@ -62,25 +80,25 @@ class LIBMOLDEO_API moGLManager : public moResource
 
         /**
          * Inicializador.
-         * @ true o false de acuerdo con el resultado de la operaci髇.
+         * @ true o false de acuerdo con el resultado de la operaci贸n.
          */
 		virtual MOboolean Init();
         /**
          * Finalizador.
-         * @return true o false de acuerdo con el resultado de la operaci髇.
+         * @return true o false de acuerdo con el resultado de la operaci贸n.
          */
 		virtual MOboolean Finish();
 
         /**
-         * Imprime los errores que se acumularon en la pila de errores de OpenGL desde la 鷏tima llamada.
-         * @param p_location cadena de texto donde se puede pasar la posici髇 en el programa desde donde se llama a esta funci髇.
+         * Imprime los errores que se acumularon en la pila de errores de OpenGL desde la 煤ltima llamada.
+         * @param p_location cadena de texto donde se puede pasar la posici贸n en el programa desde donde se llama a esta funci贸n.
          * @return true si se encontraron errores, false en caso contrario.
          */
         MOboolean CheckErrors(moText p_location);
 
         /**
-         * Devuelve el c骴igo que identifica al fabricante del GPU.
-         * @return c骴igo del fabricante (MO_GPU_NV, MO_GPU_ATI, etc.).
+         * Devuelve el c贸digo que identifica al fabricante del GPU.
+         * @return c贸digo del fabricante (MO_GPU_NV, MO_GPU_ATI, etc.).
          */
 		MOuint GetGPUVendorCode() { return m_gpu_vendor_code; }
         /**
@@ -90,15 +108,15 @@ class LIBMOLDEO_API moGLManager : public moResource
 		moText GetGPUVendorString() { return m_gpu_ventor_string; }
 
         /**
-         * Configura la matriz de proyecci髇 y el viewport a fin de generar una visualizaci髇 en perspectiva
-         * con el tama駉 de ventana indicado.
+         * Configura la matriz de proyecci贸n y el viewport a fin de generar una visualizaci贸n en perspectiva
+         * con el tama帽o de ventana indicado.
          * @param p_width ancho de la ventana.
          * @param p_height alto de la ventana.
          */
 		void SetPerspectiveView(MOint p_width, MOint p_height);
         /**
-         * Configura la matriz de proyecci髇 y el viewport a fin de generar una visualizaci髇 ortogr醘ica (2D)
-         * con el tama駉 de ventana indicado.
+         * Configura la matriz de proyecci贸n y el viewport a fin de generar una visualizaci贸n ortogr谩fica (2D)
+         * con el tama帽o de ventana indicado.
          * @param p_width ancho de la ventana.
          * @param p_height alto de la ventana.
          */
@@ -116,7 +134,7 @@ class LIBMOLDEO_API moGLManager : public moResource
 		void SetRenderMode(MOint p_mode);
 
         /**
-         * Fija el estado de OpenGL de acuerdo con la configuraci髇 por defecto de Moldeo:
+         * Fija el estado de OpenGL de acuerdo con la configuraci贸n por defecto de Moldeo:
          * test de profundidad, blending y texturas 2D activados.
          */
 		void SetMoldeoGLState();
@@ -126,7 +144,7 @@ class LIBMOLDEO_API moGLManager : public moResource
          */
 		void SetDefaultGLState();
         /**
-         * Establece los modos de almacenamiento de p韝els (pack y unpack) por defecto.
+         * Establece los modos de almacenamiento de p铆xels (pack y unpack) por defecto.
          */
 		void SetDefaultPixelStorageModes();
         /**
@@ -135,15 +153,15 @@ class LIBMOLDEO_API moGLManager : public moResource
          */
 		void SaveGLState();
         /**
-         * Guarda las matrices de OpenGL (proyecci髇, vista de modelo y textura) en su estado actual.
+         * Guarda las matrices de OpenGL (proyecci贸n, vista de modelo y textura) en su estado actual.
          */
 		void SaveGLMatrices();
         /**
-         * Guarda la configuraci髇 de la ventana de visualizaci髇 o viewport.
+         * Guarda la configuraci贸n de la ventana de visualizaci贸n o viewport.
          */
 		void SaveView();
         /**
-         * Guarda el framebuffer actual y los b鷉ers de escritura y lectura.
+         * Guarda el framebuffer actual y los b煤fers de escritura y lectura.
          */
 		void SaveFramebuffer();
         /**
@@ -155,28 +173,28 @@ class LIBMOLDEO_API moGLManager : public moResource
          */
 		void RestoreGLMatrices();
         /**
-         * Restaura la configuraci髇 de la ventana de visualizaci髇 o viewport, guardada anteriormente con
+         * Restaura la configuraci贸n de la ventana de visualizaci贸n o viewport, guardada anteriormente con
          * SaveView.
          */
 		void RestoreView();
         /**
-         * Restaura el framebuffer actual y los b鷉ers de escritura y lectura, guardada anteriormente con
+         * Restaura el framebuffer actual y los b煤fers de escritura y lectura, guardada anteriormente con
          * SaveFramebuffer.
          */
 		void RestoreFramebuffer();
 
         /**
-         * Construye los par醡etros de una textura de punto flotante de acuerdo con las opciones pasadas a la
-         * funci髇.
-         * @param p_16bits si es true, entonces se genera los par醡etros para una textura de 16 bits, en caso contrario, de 32 bits.
-         * @param p_num_components n鷐ero de componentes por p韝el.
-         * @return par醡etros de textura de punto flotante.
+         * Construye los par谩metros de una textura de punto flotante de acuerdo con las opciones pasadas a la
+         * funci贸n.
+         * @param p_16bits si es true, entonces se genera los par谩metros para una textura de 16 bits, en caso contrario, de 32 bits.
+         * @param p_num_components n煤mero de componentes por p铆xel.
+         * @return par谩metros de textura de punto flotante.
          */
 		moTexParam BuildFPTexParam(MOboolean p_16bits = true, MOushort p_num_components = 4);
         /**
          * Revisa que p_target represente una textura rectangular.
          * @param p_target target de textura.
-         * @return true o false, de acuerdo si el t醨get corresponde una textura rectangular o no.
+         * @return true o false, de acuerdo si el t谩rget corresponde una textura rectangular o no.
          */
 		MOboolean RectTexture(GLenum p_target);
         /**
@@ -186,9 +204,9 @@ class LIBMOLDEO_API moGLManager : public moResource
          */
 		MOboolean FPTexture(GLint p_internal_format);
         /**
-         * Revisa que p_min_filter represente un filtro de minimizaci髇 v醠ido.
-         * @param p_min_filter filtro de minimizaci髇.
-         * @return true o false, de acuerdo si el filtro de minimizaci髇 es v醠ido.
+         * Revisa que p_min_filter represente un filtro de minimizaci贸n v谩lido.
+         * @param p_min_filter filtro de minimizaci贸n.
+         * @return true o false, de acuerdo si el filtro de minimizaci贸n es v谩lido.
          */
 		MOboolean MipMapTexture(GLint p_min_filter);
 
@@ -204,37 +222,51 @@ class LIBMOLDEO_API moGLManager : public moResource
 		MOuint GetCurrentFBO() { return m_current_fbo; }
 
         /**
-         * Establece p_buffer como nuevo b鷉er de lectura.
-         * @param p_buffer b鷉er de lectura.
+         * Establece p_buffer como nuevo b煤fer de lectura.
+         * @param p_buffer b煤fer de lectura.
          */
 		void SetCurrentReadBuffer(MOint p_buffer);
         /**
-         * Devuelve el b鷉er de lectura activo en este momento.
-         * @return b鷉er de lectura.
+         * Devuelve el b煤fer de lectura activo en este momento.
+         * @return b煤fer de lectura.
          */
 		MOint GetCurrentReadBuffer() { return m_current_read_buffer; }
         /**
-         * Establece p_buffer como nuevo b鷉er de escritura.
-         * @param p_buffer b鷉er de escritura.
+         * Establece p_buffer como nuevo b煤fer de escritura.
+         * @param p_buffer b煤fer de escritura.
          */
 		void SetCurrentDrawBuffer(MOint p_buffer);
         /**
-         * Devuelve el b鷉er de escritura activo en este momento.
-         * @return b鷉er de escritura.
+         * Devuelve el b煤fer de escritura activo en este momento.
+         * @return b煤fer de escritura.
          */
 		MOint GetCurrentDrawBuffer() { return m_current_draw_buffer; }
         /**
-         * Guarda el FBO y los b鷉ers de escritura y lectura activos en este momento.
+         * Guarda el FBO y los b煤fers de escritura y lectura activos en este momento.
          */
 		void SaveFBOState();
         /**
-         * Restaura el FBO y los b鷉ers de escritura y lectura guardados con SaveFBOState.
+         * Restaura el FBO y los b煤fers de escritura y lectura guardados con SaveFBOState.
          */
 		void RestoreFBOState();
+
+
+		int CreateContext( int p_width, int p_height );
+    moGLContext GetContext();
+    void SetContext(moGLContext p_Context);
+    moDisplayServer GetDisplayServer();
+    moDisplayScreen  GetDisplayScreen();
+    moDisplayWindow  GetDisplayWindow();
 
 		void SetFrameBufferObjectActive( bool active = true );
 
     private:
+
+    moGLContext m_Context;
+    moDisplayServer m_DisplayServer;
+    moDisplayScreen  m_DisplayScreen;
+    moDisplayWindow  m_DisplayWindow;
+
 		MOuint m_gpu_vendor_code;
 		moText m_gpu_ventor_string;
 

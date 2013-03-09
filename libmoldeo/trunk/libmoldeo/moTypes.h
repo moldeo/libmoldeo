@@ -159,6 +159,8 @@ using namespace std;
 #ifdef MO_LINUX
 
     #include "X11/X.h"
+    #include "X11/Xlib.h"
+    #include "X11/Xutil.h"
 
     #define MO_HANDLE Window
     #define MO_DISPLAY void*
@@ -174,10 +176,12 @@ using namespace std;
 	#ifdef USE_GL_EXTENSIONS
 		// GLEW provides gl.h, glu.h and glext.h
 		#include <GL/glew.h>
+		#include <GL/glx.h>
 	#else
 		#include <GL/gl.h>
 		#include <GL/glu.h>
 		#include <GL/glext.h>
+		#include <GL/glx.h>
 	#endif
 
 	#include <GL/glut.h>

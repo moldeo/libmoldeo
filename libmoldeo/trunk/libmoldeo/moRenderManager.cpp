@@ -99,39 +99,6 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 						   MOint p_render_width, MOint p_render_height)
 {
 
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		// Problem: glewInit failed, something is seriously wrong.
-		MODebug2->Error(moText("GLEW Error: ")+ moText((char*)glewGetErrorString(err)));
-		cout << glewGetErrorString(err) << endl;
-
-
-	}
-
-    MODebug2->Message( moText("Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)));
-    MODebug2->Message( moText("GLEW_ARB_texture_non_power_of_two: ") + moText(IntToStr(GLEW_ARB_texture_non_power_of_two)) );
-    MODebug2->Message( moText("GLEW_ARB_color_buffer_float: ") + moText(IntToStr(GLEW_ARB_color_buffer_float))) ;
-    MODebug2->Message( moText("GLEW_ARB_multitexture: ") + moText(IntToStr(GLEW_ARB_multitexture))) ;
-    MODebug2->Message( moText("GL_EXT_gpu_shader4: ") + moText(IntToStr(GL_EXT_gpu_shader4))) ;
-    MODebug2->Message( moText("GLEW_EXT_geometry_shader4: ") + moText(IntToStr(GLEW_EXT_geometry_shader4))) ;
-    MODebug2->Message( moText("GLEW_ARB_imaging: ") + moText(IntToStr(GLEW_ARB_imaging))) ;
-    MODebug2->Message( moText("GLEW_ARB_shading_language_100: ") + moText(IntToStr(GLEW_ARB_shading_language_100))) ;
-
-
-	m_render_to_texture_mode = p_render_to_texture_mode;
-
-  MODebug2->Message(moText("Setting Render Manager Mode to:")+ IntToStr(m_render_to_texture_mode));
-
-	if ( m_render_to_texture_mode == RENDERMANAGER_MODE_VDPAU ) {
-
-	  m_pDecoderManager = m_pResourceManager->GetDecoderMan();
-	  if (m_pDecoderManager!=NULL) {
-        MODebug2->Message("Decoder Manager Acquired.");
-    }
-
-  }
-
 	if (m_pResourceManager){
 		m_pGLManager = m_pResourceManager->GetGLMan();
 		m_pFBManager = m_pResourceManager->GetFBMan();
@@ -139,13 +106,54 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	}
 	if (!(m_pGLManager && m_pFBManager && m_pTextureManager)) return false;
 
+	m_render_to_texture_mode = p_render_to_texture_mode;
 	m_render_width = p_render_width;
-   	m_render_height = p_render_height;
+  m_render_height = p_render_height;
+  m_screen_width = p_screen_width;
+  m_screen_height = p_screen_height;
 
-    //if (m_render_tex_moid[0]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[0]);
-    //if (m_render_tex_moid[1]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[1]);
-    //if (m_render_tex_moid[2]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[2]);
-    //if (m_render_tex_moid[3]!=-1) m_pTextureManager->DeleteTexture(m_render_tex_moid[3]);
+  MODebug2->Message(moText("moRenderManager::Init > Setting Render Manager Mode to:")+ IntToStr(m_render_to_texture_mode));
+  MODebug2->Message(moText("moRenderManager::Init > Setting Render Manager for Render: ")+ IntToStr(m_render_width)+"x"+ IntToStr(m_render_height)
+                          + " for Screen: " + IntToStr(m_screen_width)+"x"+ IntToStr(m_screen_height)  );
+
+	if ( m_render_to_texture_mode == RENDERMANAGER_MODE_VDPAU ) {
+
+	  m_pDecoderManager = m_pResourceManager->GetDecoderMan();
+	  if (m_pDecoderManager!=NULL) {
+        MODebug2->Message("moRenderManager::Init > Decoder Manager Acquired.");
+    }
+  }
+
+/*
+  if ( m_pGLManager->CreateContext( m_screen_width, m_screen_height )) {
+      MODebug2->Error("moRenderManager::Init > Couldn't create GL Context");
+      return false;
+  } else {
+      MODebug2->Message("moRenderManager::Init > GL Context Created");
+  }
+*/
+    /*** GLEW INIT */
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		// Problem: glewInit failed, something is seriously wrong.
+		MODebug2->Error(moText("moRenderManager::Init > GLEW Error: ")+ moText((char*)glewGetErrorString(err)));
+		cout << glewGetErrorString(err) << endl;
+		return false;
+
+	}
+
+  MODebug2->Message( moText("moRenderManager::Init > Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)));
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + moText(IntToStr(GLEW_ARB_texture_non_power_of_two)) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_color_buffer_float: ") + moText(IntToStr(GLEW_ARB_color_buffer_float))) ;
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_multitexture: ") + moText(IntToStr(GLEW_ARB_multitexture))) ;
+  MODebug2->Message( moText("moRenderManager::Init >       GL_EXT_gpu_shader4: ") + moText(IntToStr(GL_EXT_gpu_shader4))) ;
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_geometry_shader4: ") + moText(IntToStr(GLEW_EXT_geometry_shader4))) ;
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + moText(IntToStr(GLEW_ARB_imaging))) ;
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + moText(IntToStr(GLEW_ARB_shading_language_100))) ;
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + moText(IntToStr(GLEW_EXT_framebuffer_object))) ;
+
+
 	if (m_render_tex_moid[0]==-1) {
 	    m_render_tex_moid[0] = m_pTextureManager->AddTexture("render_texture", m_render_width, m_render_height);
 	} else {
@@ -193,10 +201,6 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	}
 
 
-    m_screen_width = p_screen_width;
-   	m_screen_height = p_screen_height;
-
-
    	if (m_OutputConfiguration.m_RenderResolution.width==0) m_OutputConfiguration.m_RenderResolution.width = m_render_width;
    	if (m_OutputConfiguration.m_RenderResolution.height==0) m_OutputConfiguration.m_RenderResolution.height = m_render_height;
 
@@ -207,12 +211,12 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	m_pGLManager->SetPerspectiveView(m_screen_width, m_screen_height);
 
 /// && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU)
-	if (GLEW_EXT_framebuffer_object)
+	if (GLEW_EXT_framebuffer_object && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER) )
 	{
 	    m_pGLManager->SetFrameBufferObjectActive();
-        MODebug2->Message( moText("Using framebuffer_object: creating one fbo per predefined textures (4). ") );
+        MODebug2->Message( moText("moRenderManager::Init > Using framebuffer_object: creating one fbo per predefined textures (4). ") );
 		m_fbo_idx = m_pFBManager->CreateFBO();
-		/*
+
 		MOuint attach_point;
 		for (int i = 0; i < 4; i++)
 		{
@@ -228,8 +232,8 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 			}
 		}
 		m_pFBManager->GetFBO(m_fbo_idx)->AddDepthStencilBuffer();
-		*/
-	} else MODebug2->Message( moText("Framebuffer objects unavailable.") );
+
+	} else MODebug2->Message( moText("moRenderManager::Init > Framebuffer objects unavailable.") );
 	return true;
 }
 
@@ -295,9 +299,8 @@ void moRenderManager::EndUpdateObject()
 
 void moRenderManager::BeginDraw()
 {
-  /*
 	if (IsRenderToFBOEnabled())
-		m_pFBManager->BindFBO(m_fbo_idx, m_render_attach_points[0]);*/
+		m_pFBManager->BindFBO(m_fbo_idx, m_render_attach_points[0]);
 }
 
 void moRenderManager::BeginDrawEffect()
@@ -358,7 +361,7 @@ void moRenderManager::DrawTexture(MOint p_resolution, MOint p_tex_num)
 	else if (p_resolution == MO_RENDER_RESOLUTION) DrawTexture(m_render_width, m_render_height, p_tex_num);
 }
 
-void moRenderManager::DrawTexture(MOint p_width, MOint p_height, MOint p_tex_num)
+void moRenderManager::DrawTexture( MOint p_width, MOint p_height, MOint p_tex_num )
 {
 	if (ValidSourceTexNum(p_tex_num))
 	{
@@ -471,7 +474,7 @@ void moRenderManager::CopyRenderToTexture(MOint p_tex_num)
 
 		if (IsRenderToFBOEnabled())
 		{
-		    m_pFBManager->BindFBO(m_fbo_idx);
+      m_pFBManager->BindFBO(m_fbo_idx);
 			m_pFBManager->SetReadTexture(m_render_attach_points[0]);
 		}
 		else m_pFBManager->BindScreenFB();
@@ -514,28 +517,38 @@ MOboolean moRenderManager::ShadersSupported()
 }
 
 MOint moRenderManager::ScreenWidth() {
-
+/*
     GLint  	params[4];
 
     glGetIntegerv( GL_VIEWPORT, &params[0]);
 
     m_screen_width = params[2];
     m_screen_height = params[3];
-
+*/
     return m_screen_width;
 }
 
 MOint moRenderManager::ScreenHeight() {
-
+/*
     GLint   	params[4];
 
     glGetIntegerv( GL_VIEWPORT, &params[0]);
 
     m_screen_width = params[2];
     m_screen_height = params[3];
-
+*/
     return m_screen_height;
 }
+
+MOint moRenderManager::InterfaceWidth() {
+    return m_interface_width;
+}
+
+MOint moRenderManager::InterfaceHeight() {
+
+    return m_interface_height;
+}
+
 
 float moRenderManager::ScreenProportion() {
 
@@ -591,3 +604,9 @@ void moRenderManager::SetView( int p_width, int p_height ) {
 
 }
 
+
+void moRenderManager::SetInterfaceView( int p_width, int p_height ) {
+  m_interface_width = p_width;
+  m_interface_height = p_height;
+
+}

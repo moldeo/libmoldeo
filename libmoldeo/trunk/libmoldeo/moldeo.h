@@ -40,14 +40,10 @@
 *
 *
 *
-*   \author     Fabricio Costa Alisedo
-*   \author     Gustavo Orrillo
+*   \author     Moldeo Interactive
 *   \author
-*   \author     Cristian Rocha
-*   \author     Christian Parsons
-*   \author     Arturo Bianchetti
-*   \author     Gustavo Lado
-*
+*   \author     Fabricio Costa Alisedo
+*   \author
 *   \endif
 *
 */

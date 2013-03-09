@@ -32,6 +32,13 @@
 #include "moGLManager.h"
 #include "moRenderManager.h"
 
+extern "C"
+{
+  #include "gtk/gtk.h"
+  #include "gdk/gdk.h"
+  #include "gdk/gdkx.h"
+}
+
 moGLManager::moGLManager()
 {
 
@@ -40,6 +47,11 @@ moGLManager::moGLManager()
 
 	SetName("glmanager");
 	SetLabelName("glmanager");
+
+	m_Context = NULL;
+	m_DisplayServer = NULL;
+	m_DisplayScreen = NULL;
+	m_DisplayWindow = NULL;
 
 	m_gpu_vendor_code = 0;
 	m_gpu_ventor_string = moText("");
@@ -61,6 +73,12 @@ MOboolean moGLManager::Init()
 	QueryGPUVendorString();
 	m_current_fbo = 0;
 	m_bFrameBufferObjectActive = false;
+
+	m_Context = NULL;
+	m_DisplayServer = NULL;
+	m_DisplayScreen = NULL;
+	m_DisplayWindow = NULL;
+
 	glGetIntegerv(GL_DRAW_BUFFER, &m_current_draw_buffer);
 	glGetIntegerv(GL_READ_BUFFER, &m_current_read_buffer);
 	return true;
@@ -134,8 +152,8 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
     } else {
       float prop;
 
-      int w = m_pResourceManager->GetRenderMan()->ScreenWidth();
-      int h = m_pResourceManager->GetRenderMan()->ScreenHeight();
+      int w = m_pResourceManager->GetRenderMan()->RenderWidth();
+      int h = m_pResourceManager->GetRenderMan()->RenderHeight();
       if ( w == 0 || h == 0 ) { w  = 1; h = 1; prop = 1.0; }
       else {
         prop = (float) h / (float) w;
@@ -375,3 +393,253 @@ void moGLManager::RestoreFBOState()
 	SetCurrentReadBuffer(m_previous_read_buffer);
 	SetCurrentDrawBuffer(m_previous_draw_buffer);
 }
+
+
+int
+moGLManager::CreateContext( int p_width, int p_height ) {
+
+    #ifdef MO_WIN
+
+    GLuint PixelFormat;
+    PIXELFORMATDESCRIPTOR pfd;
+    hDC = GetDC(NULL);
+
+
+    memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+
+    pfd.nSize = sizeof(pfd);
+    pfd.nVersion = 1;
+    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = 32;
+    pfd.cDepthBits = 16;
+    pfd.cStencilBits = 8;
+    pfd.iLayerType = PFD_MAIN_PLANE;
+
+    PixelFormat = ChoosePixelFormat(hDC, &pfd);
+    SetPixelFormat(hDC, PixelFormat, &pfd);
+
+    //  HGLRC
+    this->m_Context = (moGLContext) wglCreateContext(hDC);
+    wglMakeCurrent(hDC, (HGLRC) this->m_Context );
+
+    #endif
+
+    #ifdef MO_LINUX
+
+    /*
+    If direct is True,
+            then a direct-rendering context is created if the
+            implementation supports direct rendering, if the connection is to an X
+            server that is local, and if a direct-rendering context is available. (An implementation may return an indirect context when share_list is True.)
+            If share_list is False,
+            then a rendering context that renders through the X server is always created.
+            Direct rendering provides a performance advantage in some implementations.
+            However, direct-rendering contexts cannot be shared outside a single process,
+            and they may be unable to render to GLX pixmaps.
+    */
+
+    int m_glxVersion = 0;
+    int glxMajorVer, glxMinorVer;
+    Display *XServerDisplay=NULL;
+    GdkDisplay *XGdkDisplay=NULL;
+    GLXFBConfig *fbc = NULL;
+    GLXPbuffer OffScreenBuffer = 0;
+    int nscreens = 0;
+
+    //XServerDisplay = GDK_DISPLAY();
+    //XServerDisplay = gdk_display_get_default();
+    MODebug2->Message( "moGLManager::CreateContext > getting X server display" );
+    //XServerDisplay = gdk_x11_get_default_xdisplay();
+    if (m_DisplayServer==NULL) {
+      XServerDisplay = XOpenDisplay(NULL);
+      m_DisplayServer = (void*)XServerDisplay;
+    } else {
+      XServerDisplay = (Display *)m_DisplayServer;
+      MODebug2->Message("moGLManager::CreateContext > display server connection already opened.");
+    }
+    //XServerDisplay = GDK_DISPLAY();
+    //  gdk_display_get_screen ()
+    //  gdk_display_get_n_screens ()
+
+    if (XServerDisplay) {
+
+        MODebug2->Message( "moGLManager::CreateContext > X server display OK." );
+
+        XGdkDisplay = gdk_x11_lookup_xdisplay( XServerDisplay );
+        if (!XGdkDisplay) XGdkDisplay = gdk_display_get_default ();
+
+        if (XGdkDisplay) {
+          MODebug2->Error("moGLManager::CreateContext > X Gdk Display OK! : " + IntToStr((MOulong)XGdkDisplay));
+          nscreens = gdk_display_get_n_screens(XGdkDisplay);
+        } else MODebug2->Error("moGLManager::CreateContext > X Gdk Display not found : " + IntToStr((MOulong)XGdkDisplay));
+
+        MODebug2->Message("moGLManager::CreateContext > X Server Display found: " + IntToStr((MOulong)XServerDisplay) + " screens:" + IntToStr(nscreens) );
+
+    } else {
+        MODebug2->Error("moGLManager::CreateContext > X Server Display not found : " + IntToStr((MOulong)XServerDisplay));
+        return false;
+    }
+
+    bool ok = glXQueryVersion( XServerDisplay, &glxMajorVer, &glxMinorVer);
+
+    if (!ok)
+        m_glxVersion = 10; // 1.0 by default
+    else
+        m_glxVersion = glxMajorVer*10 + glxMinorVer;
+
+    MODebug2->Message("moGLManager::CreateContext > GLX Version (10=1.0,13=1.3,...): " + IntToStr(m_glxVersion) + "=" + FloatToStr( (double)(m_glxVersion)/(double) 10.0)  );
+
+    if ( m_glxVersion >= 13)
+    {
+        // GLX >= 1.3
+        //GLXFBConfig *fbc = gc->m_fbc;
+
+        int nelements = 0;
+        int attrib_list[] =
+                        {
+                        GLX_RENDER_TYPE, GLX_RGBA_BIT,
+                        GLX_DOUBLEBUFFER, 1,
+                        GLX_RED_SIZE, 8,
+                        GLX_GREEN_SIZE, 8,
+                        GLX_BLUE_SIZE, 8,
+                        GLX_ALPHA_SIZE, 8,
+                        GLX_DEPTH_SIZE, 16,
+                        GLX_STENCIL_SIZE, 8,
+                        0
+                        };
+
+
+        fbc = glXChooseFBConfig( XServerDisplay,
+                            DefaultScreen(XServerDisplay)/*screen number*/,
+                            attrib_list,
+                            &nelements );
+
+
+        if (fbc) {
+            MODebug2->Message( "moGLManager::CreateContext > FBConfig OK!");
+        } else {
+            MODebug2->Error( "moGLManager::CreateContext > No FBConfig");
+            return false;
+        }
+
+        this->m_Context = (moGLContext) glXCreateNewContext( XServerDisplay /*XServer Display*/,
+                                        fbc[0] /*attribute list FB Config match*/,
+                                        GLX_RGBA_TYPE /*type of rendering*/,
+                                        NULL /*shared context  for display lists*/,
+                                        GL_TRUE /*direct rendering to graphics system*/);
+    }
+    else
+    {
+        // GLX <= 1.2
+        int attrib_list_vi[] =
+                        {
+                        GLX_RGBA,
+                        GLX_DOUBLEBUFFER,
+                        GLX_RED_SIZE, 8,
+                        GLX_GREEN_SIZE, 8,
+                        GLX_BLUE_SIZE, 8,
+                        GLX_ALPHA_SIZE, 8,
+                        GLX_DEPTH_SIZE, 16,
+                        GLX_STENCIL_SIZE, 8,
+                        0
+                        };
+
+        XVisualInfo *vi = glXChooseVisual( XServerDisplay,
+                                           DefaultScreen(XServerDisplay), /*screen number*/
+                                           attrib_list_vi );
+
+        this->m_Context = (moGLContext) glXCreateContext( XServerDisplay,
+                                        vi,
+                                        NULL,
+                                        GL_TRUE );
+    }
+
+    if (this->m_Context) {
+
+        MODebug2->Message("moGLManager::CreateContext > creating offscreen buffer.");
+
+        if ( m_glxVersion >= 13 ) {
+            // GLX >= 1.3
+            int pbuffer_attrib[] = {
+            GLX_PBUFFER_WIDTH, p_width,
+            GLX_PBUFFER_HEIGHT, p_height,
+            GLX_LARGEST_PBUFFER, 0,
+            GLX_PRESERVED_CONTENTS, 0,
+            0 };
+            OffScreenBuffer = glXCreatePbuffer( XServerDisplay, fbc[0], pbuffer_attrib );
+
+            this->m_DisplayScreen = (void*) OffScreenBuffer;
+
+            if (OffScreenBuffer) {
+              MODebug2->Message("moGLManager::CreateContext > Offscreen buffer OK! GLPXBuffer: " + IntToStr( (MOulong) OffScreenBuffer )  );
+            } else {
+              MODebug2->Error("moGLManager::CreateContext > Offscreen buffer BAD... : " + IntToStr( (MOulong) OffScreenBuffer )  );
+              return false;
+            }
+            if ( glXMakeContextCurrent( XServerDisplay, OffScreenBuffer, OffScreenBuffer, (GLXContext) this->m_Context ) ) {
+              MODebug2->Message("moGLManager::CreateContext > Making Context current OK!");
+            }
+        } else {
+            // GLX <= 1.2
+            //glXMakeCurrent( XServerDisplay, GDK_WINDOW_XWINDOW(window), m_glContext );
+        }
+
+    }
+
+    #endif
+
+    #ifdef MO_MAC
+        //CGL
+        CGLCreateContext
+
+
+        //COCOA
+        //NSOpenGLView
+
+        //CARBON
+        //aglCreateContext
+
+    #endif
+
+
+
+    return (this->m_Context == NULL);
+}
+/*
+int
+moGLManager::CreateOffscreen( int p_width, int p_height, int  ) {
+
+}
+*/
+
+moGLContext
+moGLManager::GetContext() {
+    return this->m_Context;
+}
+
+
+moDisplayServer
+moGLManager::GetDisplayServer() {
+    return this->m_DisplayServer;
+}
+
+moDisplayScreen
+moGLManager::GetDisplayScreen() {
+    return this->m_DisplayScreen;
+}
+
+moDisplayWindow
+moGLManager::GetDisplayWindow() {
+    return this->m_DisplayWindow;
+}
+
+
+void
+moGLManager::SetContext(moGLContext p_Context) {
+    m_Context = p_Context;
+}
+
+
+
+
