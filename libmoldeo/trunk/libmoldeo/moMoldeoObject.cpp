@@ -1142,6 +1142,12 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
     moVector2i* pv2i;
     moVector3i* pv3i;
     moVector4i* pv4i;
+
+    int i;
+    moData MData;
+    moDataMessage* pDataMessage;
+    moDataMessages* pDataMessages;
+
     void* pv;
 
 
@@ -1179,6 +1185,19 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
                             return 1;
                     case    MO_DATA_TEXT:
                             lua_pushstring( state, (char*) pData->Text() );
+                            return 1;
+                    case    MO_DATA_MESSAGE:
+                            pDataMessage = (moDataMessage*)pData->Pointer();
+                            //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE");
+                            if (pDataMessage) {
+                                //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > count: " + IntToStr(pDataMessage->Count()) );
+                                for(i=0;i<pDataMessage->Count();i++) {
+                                  MData = pDataMessage->Get(i);
+                                  //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > data: " + MData.ToText() );
+                                  lua_pushstring( state, (char*) MData.ToText() );
+                                }
+                                return i;
+                            }
                             return 1;
                     case MO_DATA_VECTOR2F:
                             pv2d = (moVector2d*)pData->Pointer();
