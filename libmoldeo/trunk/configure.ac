@@ -24,6 +24,9 @@ PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
 dnl check tinyxml
 PKG_CHECK_MODULES([TINYXML], [tinyxml] ,has_tinyxml=yes)
 
+dnl check for gtk+-2.0
+PKG_CHECK_MODULES([GTK2], [gtk+-2.0], has_gtk2=yes )
+
 dnl check for sdl
 PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
 
