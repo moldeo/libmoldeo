@@ -194,11 +194,11 @@ moMoldeoObject::Init() {
           confignamecompleto +=  moSlash + GetConfigName();
           confignamecompleto +=  moText(".cfg");
         } else {
-            MODebug2->Error("moMoldeoObject::Init > DataManager undefined > config:"+GetConfigName()+" label:"+GetLabelName() );
+            MODebug2->Error("moMoldeoObject::Init > DataManager undefined > object: "+GetName()+ " config: " + GetConfigName() + " label:"+GetLabelName() );
             return false;
         }
       } else {
-          MODebug2->Error("moMoldeoObject::Init > ResourceManager undefined > config:"+GetConfigName()+" label:"+GetLabelName() );
+          MODebug2->Error("moMoldeoObject::Init > ResourceManager undefined > object: "+GetName()+ " config: " + GetConfigName() + " label:"+GetLabelName() );
           return false;
       }
     }
@@ -206,7 +206,7 @@ moMoldeoObject::Init() {
     MODebug2->Message("*****Initializing " + GetName() + " *****");
 
     if(m_Config.LoadConfig(confignamecompleto) != MO_CONFIG_OK ) {
-      MODebug2->Error("moMoldeoObject::Init > Config file invalid or not found > object:" + GetName() + " config:" + confignamecompleto + " label: " + GetLabelName());
+      MODebug2->Error("moMoldeoObject::Init > Config file invalid or not found > object: " + GetName() + " config:" + confignamecompleto + " label: " + GetLabelName());
       return false;//bad
     }
 
@@ -217,12 +217,13 @@ moMoldeoObject::Init() {
 
     __iscript = m_Config.GetParamIndex("script");
     if(__iscript==MO_PARAM_NOT_FOUND)
-      MODebug2->Error(moText("moMoldeoObject::Init > config:"+GetConfigName()+" label:"+GetLabelName()+" script parameter missing"));
+      MODebug2->Error(moText("moMoldeoObject::Init > config: "+GetConfigName()+ " config: " + GetConfigName() + " label: "+GetLabelName()+" script parameter missing"));
 
 
     InitScript();
     RegisterFunctions();
 
+    MODebug2->Message("*****moMoldeoObject::Init > for plugin: " + GetName() + " config: " + GetConfigName() + " label: " + GetLabelName() +" is OK!");
     return true;
 }
 
@@ -290,8 +291,8 @@ void moMoldeoObject::ScriptExeRun() {
               */
               RunSelectedFunction();
 
-          } else MODebug2->Error( moText("Couldn't compile lua script ") + (moText)fullscript + " config:"+GetConfigName()+" label:"+GetLabelName() );
-        } else MODebug2->Message("Script file not present. " + (moText)fullscript + " config:"+GetConfigName()+" label:"+GetLabelName() );
+          } else MODebug2->Error( moText("Couldn't compile lua script ") + (moText)fullscript + " config:"+GetConfigName()+" label: "+GetLabelName() );
+        } else MODebug2->Message("Script file not present. " + (moText)fullscript + " config: "+GetConfigName()+" label:"+GetLabelName() );
 	}
 
 
@@ -311,14 +312,17 @@ moMoldeoObject::CreateConnectors() {
   int idx = -1;
 
   if (m_pResourceManager == NULL) {
-    MODebug2->Error("moMoldeoObject::CreateConnectors > ResourceManager is NULL!!! Can't continue. Sorry. Object: " + GetName() + " label:" + GetLabelName() );
+    MODebug2->Error("moMoldeoObject::CreateConnectors > ResourceManager is NULL!!! Can't continue. Sorry for object: "+GetName()+ " config: " + GetConfigName() + " label:"+GetLabelName() );
     return false;
   }
 
   if (m_bConnectorsLoaded) {
-    MODebug2->Error("moMoldeoObject::CreateConnectors : Calling twice. Can't continue. Sorry. Object: " + GetName() + "label:" + GetLabelName() );
+    MODebug2->Error("moMoldeoObject::CreateConnectors > Calling twice. Can't continue. Sorry for object: "+GetName()+ " config: " + GetConfigName() + " label:"+GetLabelName() );
     return false;
   }
+
+  MODebug2->Message("moMoldeoObject::CreateConnectors > Calling once. object: "+GetName()+ " config: " + GetConfigName() + " label:" + GetLabelName() );
+
 
 	///Inicializa las funciones matemáticas del config
 	///así como los inlets y outlets por cada parámetro
@@ -422,7 +426,7 @@ moMoldeoObject::CreateConnectors() {
                                 }
                             }
                         } else {
-                            MODebug2->Error( moText(" VALUE BASE EMPTY: ")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: ")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
                         }
                         break;
 
@@ -452,11 +456,11 @@ moMoldeoObject::CreateConnectors() {
 
                                 pFont = m_pResourceManager->GetFontMan()->AddFont( valuebase.Text(), fonttype, fontsize);
                                 if (pFont==NULL) {
-                                  MODebug2->Error( moText(" FONT NOT FOUND: Using Default")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                                  MODebug2->Error( moText("moMoldeoObject::CreateConnectors > FONT NOT FOUND: Using Default")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
                                   pFont = m_pResourceManager->GetFontMan()->GetFont(0);
                                 }
                             } else {
-                                MODebug2->Error( moText(" VALUE BASE EMPTY: Using Default")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                                MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: Using Default")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
                                 pFont = m_pResourceManager->GetFontMan()->GetFont(0);
                             }
 
@@ -464,7 +468,7 @@ moMoldeoObject::CreateConnectors() {
                                 valuebase.SetFont( pFont );
                             }
                         } else {
-                            MODebug2->Error( moText(" MISSING VALUES: ")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > MISSING VALUES: ")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
                         }
                         break;
 
@@ -504,6 +508,8 @@ moMoldeoObject::CreateConnectors() {
 		}
 	}
 
+  MODebug2->Message("moMoldeoObject::CreateConnectors > loaded params & values for Object: " + GetName() + " config:" + GetConfigName() + " label:" + GetLabelName() );
+
 	///Levanta los Inlets adicionales a los parámetros....
 	moParam& pinlets = m_Config[moText("inlet")];
 
@@ -538,11 +544,11 @@ moMoldeoObject::CreateConnectors() {
 
 			if ( m_Config.GetParamIndex(OutletName)>-1 ) {
 			  ///CREAMOS UN OUTLET nuevo para este parametro....
-			  MODebug2->Message( this->GetLabelName() + moText(" Init > creating Outlet automatic to param.") + OutletName  );
+			  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet automatic to param.") + OutletName  );
 				Outlet->Init( OutletName, i, m_Config.GetParam(OutletName).GetPtr());
 			} else {
 			  ///CREAMOS UN OUTLET desde el .cfg, teniendo en cuenta los tipos...
-			  MODebug2->Message( this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
+			  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
 				Outlet->Init( OutletName, i, poutlets[i][MO_OUTLET_TYPE].Text() );
 			}
 			m_Outlets.Add( Outlet );
@@ -560,6 +566,8 @@ moMoldeoObject::CreateConnectors() {
 
   ///Una vez establecidos los conectores, podemos inicializar el script a su vez....
 	moMoldeoObject::ScriptExeInit();
+
+  MODebug2->Message("moMoldeoObject::CreateConnectors > OK! Object: " + GetName() + " config:" + GetConfigName() + " label: " + GetLabelName() );
 
 	return m_bConnectorsLoaded;
 }

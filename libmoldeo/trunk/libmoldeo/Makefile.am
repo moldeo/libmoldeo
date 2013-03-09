@@ -103,6 +103,7 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 
 libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
+	${GTK2_CFLAGS} \
 	${MUPARSER_CFLAGS} \
 	${BOOST_CPPFLAGS} \
 	${SDL_CFLAGS} \
@@ -110,6 +111,7 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 
 libmoldeo_la_LIBADD = -ldl\
 	${FT2_LIBS} \
+	${GTK2_LIBS} \
 	${SDL_LIBS} \
 	${TINYXML_LIBS} \
 	${GL_LIBS} \

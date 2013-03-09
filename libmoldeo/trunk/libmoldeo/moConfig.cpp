@@ -216,9 +216,9 @@ moConfig::Indexation() {
             int pidx = (MOint)GetParamIndex(  pdef.GetName() );
             if (pidx>-1) {
               if (!GetConfigDefinition()->SetParamIndex( (int)pdef.GetIndex(), moParamIndex(pidx))) {
-                moDebugManager::Error( moText(pdef.GetName()) + moText("  warning. Bad indexation could cause errors."));
+                moDebugManager::Error( "moConfig::Indexation > <mo"+GetObjectClass()+"::"+GetObjectName()+"> Parameter \"" + moText(pdef.GetName()) + moText("\"  warning. Bad indexation could cause errors."));
               }
-            } else moDebugManager::Error( "<"+GetObjectName()+">::Init() > "+GetObjectClass()+ " \"" + moText(pdef.GetName()) + moText("\" not found."));
+            } else moDebugManager::Error( "moConfig::Indexation > <mo"+GetObjectClass()+"::"+GetObjectName()+"> > Parameter \"" + moText(pdef.GetName()) + moText("\" not found."));
         }
     }
 }
