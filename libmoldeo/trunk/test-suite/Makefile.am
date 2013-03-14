@@ -22,8 +22,6 @@ check_libmoldeo_LDADD       = @CHECK_LIBS@ \
 	@FREEIMAGE_LIBS@ \
 	@FREEALUT_LIBS@ \
 	@GLEW_LIBS@ \
-	@CG_LIBS@ \
-	@CGGL_LIBS@ \
 	@LUA51_LIBS@ \
 	@GST_LIBS@ \
 	@TINYXML_LIBS@ \
@@ -33,6 +31,8 @@ check_libmoldeo_LDADD       = @CHECK_LIBS@ \
 	@BOOST_THREAD_LIB@ \
 	@FTGL_LIBS@ 
 #\
+#	@CG_LIBS@ \
+#	@CGGL_LIBS@ \
 	#@TUIO_LIBS@
 
 CLEANFILES                  = check_libmoldeo.log
