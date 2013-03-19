@@ -571,6 +571,8 @@ moData::TypeToText() {
         case MO_DATA_MESSAGES:
             return moText("MO_DATA_MESSAGES");
             break;
+        default:
+            break;
 
     }
 
@@ -676,10 +678,21 @@ moData::ToText() {
         case MO_DATA_NUMBER_FLOAT:
             return FloatToStr( Float() );
             break;
-
+        /*
+        case MO_DATA_FUNCTION:
+            return moText(Eval());
+            break;
+        case MO_DATA_TEXT:
+            return Text();
+            break;
+            */
+        default:
+            break;
     }
 
-    return Text();
+    return m_Text;
+    //return moText("");
+    /*return moText("moData::ToText() for "+TypeToText()+" not implemented");*/
 }
 
 MOint

@@ -1224,6 +1224,8 @@ moConsole::Draw() {
 
   GUIYield();
 
+  //MODebug2->Message("out 2");
+  //exit(1);
 
 	if (RenderMan==NULL) return;
 
@@ -2240,21 +2242,36 @@ int moConsole::luaGetObjectData(moLuaVirtualMachine& vm) {
     MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
     MOint inletid = (MOint) lua_tonumber (state, 2);
 
+    //MODebug2->Message( "in console script: GetObjectData : moldeo objectid: " + moText((long)objectid) );
+
     moMoldeoObject* Object = m_MoldeoObjects[objectid];
 
     if (Object) {
+        //MODebug2->Message( "in console script: GetObjectData : moldeo Object: " + moText((long)Object) );
+        //MODebug2->Message( "in console script: GetObjectData : moldeo Object: " + Object->GetLabelName() );
         moInlet* pInlet = Object->GetInlets()->Get(inletid);
         if (pInlet) {
+            //MODebug2->Message( "in console script: GetObjectData : moldeo Inlet: " + moText((long)pInlet) );
+            //MODebug2->Message( "in console script: GetObjectData : moldeo Inlet: " + pInlet->GetConnectorLabelName() );
             moData* pData = pInlet->GetData();
-            if (pData)
+            if (pData) {
+                //MODebug2->Message( "in console script: GetObjectData : moldeo object: " + Object->GetLabelName()
+                //                  + " inlet: " + pInlet->GetConnectorLabelName() + " Data:" + moText((long)pData)
+                //                  + " Type:" + moText( (int)pData->Type() ) );
+
                 switch(pData->Type()) {
+
+                    case MO_DATA_FUNCTION:
+                        lua_pushnumber(state, (lua_Number) pData->Eval() );
+                        return 1;
+
                     case MO_DATA_NUMBER:
                     case MO_DATA_NUMBER_CHAR:
                     case MO_DATA_NUMBER_INT:
                     case MO_DATA_NUMBER_LONG:
                     case MO_DATA_NUMBER_MIDI:
+                        //MODebug2->Message( "Inlet Number:" + IntToStr(pData->Long() ) );
                         lua_pushnumber(state, (lua_Number) pData->Long() );
-                        MODebug2->Push( "Inlet Number:" + IntToStr(pData->Long() ) );
                         return 1;
 
                     case MO_DATA_3DMODELPOINTER:
@@ -2303,7 +2320,8 @@ int moConsole::luaGetObjectData(moLuaVirtualMachine& vm) {
 
                     case MO_DATA_MESSAGE:
                     case MO_DATA_MESSAGES:
-                        break;
+                        lua_pushstring(state, pData->ToText() );
+                        return 1;
 
                     case MO_DATA_NUMBER_DOUBLE:
                     case MO_DATA_NUMBER_FLOAT:
@@ -2314,7 +2332,14 @@ int moConsole::luaGetObjectData(moLuaVirtualMachine& vm) {
                         lua_pushstring(state, pData->Text() );
                         return 1;
 
+                    default:
+                        //MODebug2->Error( moText("in console script: GetObjectData : inlet found but type not available ")+(moText)pData->TypeToText() );
+                        MODebug2->Error( moText("in console script: GetObjectData : inlet found but type not available "));
+                        break;
                 }
+            } else {
+              MODebug2->Error( moText("in console script: GetObjectData : inlet found but data is null!!!") );
+            }
         } else {
             MODebug2->Error( moText("in console script: GetObjectData : inlet not found : id:")+(moText)IntToStr(inletid) );
         }

@@ -153,6 +153,7 @@ using namespace std;
     typedef __int16_t moWord;
     typedef __int32_t moDWord;
 
+	//#include <assert.h>
 #endif
 
 /*LINUX*/

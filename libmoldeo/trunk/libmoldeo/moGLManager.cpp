@@ -32,12 +32,14 @@
 #include "moGLManager.h"
 #include "moRenderManager.h"
 
+#ifdef MO_LINUX
 extern "C"
 {
   #include "gtk/gtk.h"
   #include "gdk/gdk.h"
   #include "gdk/gdkx.h"
 }
+#endif
 
 moGLManager::moGLManager()
 {
@@ -158,6 +160,7 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
       else {
         prop = (float) h / (float) w;
       }
+      glViewport( 0, 0, w, h );
       glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
       // Set Up An Ortho Screen
     }

@@ -303,11 +303,14 @@ moConnector::GetData() {
 
 	if (m_pParam) {
 	    /** Si es un inlet asociado a un parametro devuelve el m_pData interno que fue asociado por el SetExternalData*/
+	    //MODebug2->Message("Es un inlet asociado a un parametro... connector: " + GetConnectorLabelName() + " param:" + m_pParam->GetParamDefinition().GetName() );
 		return m_pParam->GetData();
 	}
 
     /** Unicamente para inlets o outlets independientes y alterar parametros ya existentes (se accede luego desde moParam como m_pExternData...*/
 	if (m_pData) {
+    //MODebug2->Message("Es un inlet asociado a un dato... connector: " + GetConnectorLabelName());
+    //MODebug2->Message("Es un inlet asociado a un dato... connector: " + GetConnectorLabelName() + " data: " + moText((long)m_pData));
 		return m_pData;
 	}
 

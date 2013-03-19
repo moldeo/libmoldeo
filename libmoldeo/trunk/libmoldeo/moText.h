@@ -57,6 +57,8 @@ enum txtcval    { MO_TXT_LESSER, MO_TXT_EQUAL, MO_TXT_GREATER };
 enum txtpert    { MO_TXT_BELONG, MO_TXT_NOT_BELONG };
 
 typedef char* CHARP;
+typedef int MOINT;
+typedef unsigned int MOUINT;
 
 class moTextArray;
 
@@ -65,6 +67,7 @@ class moTextArray;
  * Operaciones y funciones para la manipulación de cadenas de caracteres.
  */
 #ifdef USE_MOTEXT0
+
 class LIBMOLDEO_API moText0
 {
 public:
@@ -72,6 +75,15 @@ public:
 	moText0(const moText0&);
 	moText0( char*);
 	moText0( const char*);
+
+	moText0( int );
+	moText0( unsigned int );
+	moText0( long );
+	moText0( unsigned long );
+	moText0( long long );
+	moText0( unsigned long long );
+	moText0( float );
+	moText0( double );
 
 	virtual ~moText0();
 
@@ -315,7 +327,6 @@ LIBMOLDEO_API moText IntToStr(unsigned long long a);
 LIBMOLDEO_API moText FloatToStr(double a);
 LIBMOLDEO_API moText FloatToStr(double a, int n);
 LIBMOLDEO_API moText FloatToStr(double a, int nzeros, int ndecimals );
-
 
 #endif
 
