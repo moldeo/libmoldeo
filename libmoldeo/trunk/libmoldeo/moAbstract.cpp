@@ -75,6 +75,33 @@ moDebug::SetStdout( const moText& filename ) {
 
 }
 
+void
+moDebug::Error( moText p_text ) {
+  Lock();
+  moText prefx_error = moText("MOL ERROR ===>>> ");
+  cout << prefx_error << p_text << endl;
+  moErr << prefx_error << p_text << endl;
+  moLog << prefx_error << p_text << endl;
+  m_Debug.Push( moText("MOL ERROR ===>>> ") + (moText)p_text );
+  Unlock();
+}
+
+
+void
+moDebug::Message( moText p_text ) {
+  Lock();
+  cout << p_text << endl;
+  moLog << p_text << endl;
+  m_Debug.Push( p_text );
+  Unlock();
+}
+
+void
+moDebug::Log( moText p_text ) {
+  Lock();
+  moLog << p_text << endl;
+  Unlock();
+}
 
 moDebug *moAbstract::MODebug2 = new moDebug();
 

@@ -77,6 +77,51 @@ moText0::moText0( char* txt)
     txtcopy( txt);
 }
 
+	moText0::moText0( int p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = IntToStr(p_num);
+	}
+
+	moText0::moText0( unsigned int p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = IntToStr(p_num);
+	}
+
+	moText0::moText0( long p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = IntToStr(p_num);
+	}
+	moText0::moText0( unsigned long p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = IntToStr(p_num);
+	}
+	moText0::moText0( long long p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = IntToStr(p_num);
+	}
+	moText0::moText0( unsigned long long p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = IntToStr(p_num);
+	}
+	moText0::moText0( float p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = FloatToStr(p_num);
+	}
+	moText0::moText0( double p_num) {
+    text = NULL;
+    length = 0;
+    (*this) = FloatToStr(p_num);
+	}
+
+
+
 moText0::~moText0()
 {
     if(text != NULL)

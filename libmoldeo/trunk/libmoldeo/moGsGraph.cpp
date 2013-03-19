@@ -30,8 +30,10 @@
   http://gstreamer.freedesktop.org/data/doc/gstreamer/head/pwg/html/section-types-definitions.html
 
 *******************************************************************************/
-
+#ifdef MO_LINUX
 #include <gst/gst.h>
+#endif
+
 #include "moGsGraph.h"
 
 #include "moFileManager.h"

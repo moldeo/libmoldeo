@@ -83,27 +83,14 @@ public:
     *   Anuncia un error apilándolo en la lista de mensajes y escribiéndolo
     *   al archivo de mensajes de errores y al de mensajes registrados...
     */
-    void Error( moText p_text ) {
-        Lock();
-        cout << moText("MOL ERROR: ") << p_text << endl;
-        moErr << moText("MOL ERROR: ") << p_text << endl;
-        moLog << moText("MOL ERROR: ") << p_text << endl;
-        m_Debug.Push( moText("MOL ERROR: ") + (moText)p_text );
-        Unlock();
-    }
+    void Error( moText p_text );
 
     /// Anuncia un mensaje al usuario además de guardarlo en el log de texto
     /**
     * Pone el mensaje en la pila de mensajes, y escribe este al log de texto
     *
     */
-    void Message( moText p_text ) {
-        Lock();
-        cout << p_text << endl;
-        moLog << p_text << endl;
-        m_Debug.Push( p_text );
-        Unlock();
-    }
+    void Message( moText p_text );
 
     /// Escribe un mensaje en el archivo de registro (log)
     /**
@@ -111,11 +98,7 @@ public:
     *   de Moldeo
     *
     */
-    void Log( moText p_text ) {
-        Lock();
-        moLog << p_text << endl;
-        Unlock();
-    }
+    void Log( moText p_text );
 
     /// Apila el mensaje dentro de la pila de mensajes
     /**

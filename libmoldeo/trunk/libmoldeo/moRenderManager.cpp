@@ -211,7 +211,8 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	m_pGLManager->SetPerspectiveView(m_screen_width, m_screen_height);
 
 /// && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU)
-	if (GLEW_EXT_framebuffer_object && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER) )
+
+	if (GLEW_EXT_framebuffer_object /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
 	{
 	    m_pGLManager->SetFrameBufferObjectActive();
         MODebug2->Message( moText("moRenderManager::Init > Using framebuffer_object: creating one fbo per predefined textures (4). ") );

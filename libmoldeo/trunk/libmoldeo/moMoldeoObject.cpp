@@ -331,7 +331,7 @@ moMoldeoObject::CreateConnectors() {
 
 		moParam	&param( m_Config[p] );
 
-		MODebug2->Log( moText("moMoldeoObject:: Init param type ") + param.GetParamDefinition().GetTypeStr() + moText(" name: ") + param.GetParamDefinition().GetName() );
+		MODebug2->Message( moText("moMoldeoObject:: Init param type ") + param.GetParamDefinition().GetTypeStr() + moText(" name: ") + param.GetParamDefinition().GetName() );
 
 
         ///CREAMOS UN INLET POR CADA PARAMETRO
@@ -1302,7 +1302,7 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
         moInlet* pInlet = m_Inlets[inletindex];
 
         if ( pInlet ) {
-            moData* pData = pInlet->GetData();
+            moData* pData = pInlet->GetInternalData();
             if (pData) {
                 moDataType pType = pData->Type();
                 switch(pData->Type()) {
