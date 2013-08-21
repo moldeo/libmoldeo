@@ -1,12 +1,12 @@
 ACLOCAL_AMFLAGS=-I m4
-SUBDIRS = data libmoldeo test-suite
+SUBDIRS = data libmoldeo libmoldeotest test-suite
 
 EXTRA_DIST = AUTHORS ChangeLog NEWS README Makefile.TUIO.patch tuio.sh buildpkg.sh control.amd64 libmoldeo-dev.install.amd64 libmoldeo-dev.dirs.amd64 libmoldeo1.install.amd64 libmoldeo1.dirs.amd64
 
-# pkg-config stuff, note that libpng.pc is always required in order
+# pkg-config stuff
 # to get the correct library
 pkgconfigdir = @pkgconfigdir@
-pkgconfig_DATA = libmoldeo.pc
+pkgconfig_DATA = libmoldeo.pc libmoldeotest.pc
 
 datadir = ${prefix}/share/moldeo
 modulesdir = ${libdir}/moldeo
