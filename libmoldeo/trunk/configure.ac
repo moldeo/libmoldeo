@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [0.7.9.7], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [0.7.9.8], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -199,6 +199,19 @@ LT_INIT
 AC_STRUCT_TM
 AC_TYPE_SIZE_T
 
+AC_ARG_ENABLE(debug,
+AS_HELP_STRING([--enable-debug],
+               [enable debugging, default: no]),
+[case "${enableval}" in
+             yes) debug=true ;;
+             no)  debug=false ;;
+             *)   AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+esac],
+[debug=false])
+
+AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
+
+
 dnl Additional arguments (and substitutions)
 dnl Allow the pkg-config directory to be set
 AC_ARG_WITH(pkgconfigdir,
@@ -214,7 +227,9 @@ AC_OUTPUT([
 Makefile
 data/Makefile
 libmoldeo/Makefile
+libmoldeotest/Makefile
 libmoldeo.pc
+libmoldeotest.pc
 test-suite/Makefile
 ])
 
