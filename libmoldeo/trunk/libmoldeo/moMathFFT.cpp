@@ -41,4 +41,5 @@ bool fftw::Wise=false;
 unsigned int fftw::effort=FFTW_PATIENT;
 const char *fftw::WisdomName="wisdom3.txt";
 */
+int fftdummy = 0;
 

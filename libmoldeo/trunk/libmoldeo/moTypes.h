@@ -70,6 +70,7 @@
 #endif
 
 #undef SHADER_CG
+#define NDEBUG 1
 
 
 #include <math.h>
@@ -151,17 +152,18 @@ using namespace std;
 
     #define moint64 __int64
     typedef __int16_t moWord;
-    typedef __int32_t moDWord;
+	typedef __int32_t moDWord;
 
-	//#include <assert.h>
+    #undef assert
+    #define assert(ignore)((void) 0)
+   
+
 #endif
 
 /*LINUX*/
 #ifdef MO_LINUX
 
     #include "X11/X.h"
-    #include "X11/Xlib.h"
-    #include "X11/Xutil.h"
 
     #define MO_HANDLE Window
     #define MO_DISPLAY void*
@@ -177,12 +179,10 @@ using namespace std;
 	#ifdef USE_GL_EXTENSIONS
 		// GLEW provides gl.h, glu.h and glext.h
 		#include <GL/glew.h>
-		#include <GL/glx.h>
 	#else
 		#include <GL/gl.h>
 		#include <GL/glu.h>
 		#include <GL/glext.h>
-		#include <GL/glx.h>
 	#endif
 
 	#include <GL/glut.h>
@@ -431,7 +431,8 @@ enum moStereoSides {
 //#    include "port/getc.h"
 //#    include "port/itoa.h"
 //#    include "port/ptypes.h"
-#    include "port/stricmp.h"
+////#    include "port/stricmp.h"
+#define stricmp strcasecmp
 #endif
 
 //////////////////////////////////////////////////////

@@ -25,7 +25,9 @@
 #define OGLFT_H
 
 #define OGLFT_NO_QT 1
-//#define OGLFT_NO_SOLID 1
+#ifdef MO_MACOSX
+    #define OGLFT_NO_SOLID 1
+#endif
 
 #include <iostream>
 #include <iomanip>

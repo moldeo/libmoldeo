@@ -30,12 +30,7 @@
   http://gstreamer.freedesktop.org/data/doc/gstreamer/head/pwg/html/section-types-definitions.html
 
 *******************************************************************************/
-#include "moGsGraph.h"
-
-//#ifdef MO_LINUX
 #include <gst/gst.h>
-//#endif
-
 
 #include "moFileManager.h"
 
@@ -1458,12 +1453,19 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
             #ifdef MO_WIN32
             m_pFileSource = gst_element_factory_make ("dshowvideosrc", "source");
-            #else
+            #endif
+            
+            #ifdef MO_LINUX
             if (devicename==moText("DV"))
                 m_pFileSource = gst_element_factory_make ("dv1394src", "source");
             else
                 m_pFileSource = gst_element_factory_make ("v4l2src", "source");
             #endif
+            
+            #ifdef MO_MACOSX
+                m_pFileSource = gst_element_factory_make ("qtkitvideosrc", "source");
+            #endif
+            
 
             m_pFinalSource = m_pFileSource;
         }
@@ -1714,7 +1716,8 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
 
             m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
-            if (m_pDecoderBin) {
+            
+	    if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect (m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pDecoderBin );
 
@@ -1766,7 +1769,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                             event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {
-                        MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > src and decodebin linkage failed: ") + devicename );
+                        MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > src and decodebin2 linkage failed: ") + devicename );
                         event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                     }
 
@@ -1775,7 +1778,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                     event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-                MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > decodebin construction failed"));
+                MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > decodebin2 construction failed"));
                 event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
             }
         } else {
@@ -1973,7 +1976,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
             res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioEcho );
             unsigned long long max_delay,delay;
             max_delay = 2000000000;
-            delay = 0;
+            delay = 1;
             float intensity = 0.0;
 
             g_object_set ( (GstElement*)m_pAudioEcho, "max-delay", max_delay, NULL);
@@ -1988,7 +1991,8 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
            }
 
            m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
-            if (m_pDecoderBin) {
+            
+	   if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect ((GstElement*)m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pDecoderBin );
             }
@@ -2023,11 +2027,11 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
                     return true;
 
                 } else {
-                    MODebug2->Error(moText("moGsGraph::error: m_pAudioConverter m_pAudioResample m_pAudioSink linking failed"));
+                    MODebug2->Error(moText("moGsGraph::error: m_pAudioConverter <-> m_pAudioResample <-> m_pAudioSink linking failed"));
                     event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-               MODebug2->Error(moText("moGsGraph::error: m_pFileSource m_pWavParser linking failed"));
+               MODebug2->Error(moText("moGsGraph::error: m_pFileSource <-> m_pDecoderBin linking failed"));
                event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
             }
 
@@ -2179,7 +2183,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                             event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {
-                        MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > filesrc and decodebin linkage failed: ") + filename );
+                        MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > filesrc and decodebin2 linkage failed: ") + filename );
                         event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                     }
 
@@ -2188,7 +2192,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                     event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-                MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > decodebin construction failed"));
+                MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > decodebin2 construction failed"));
                 event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
             }
         } else {

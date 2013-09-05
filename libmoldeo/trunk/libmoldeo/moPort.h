@@ -113,7 +113,7 @@ const char *const icono3d_STR = "icono3d";
 #include <string>
 using namespace std;
 
-#ifndef MO_WIN32
+#ifdef MO_LINUX
 inline bool
 stricmp (const char *str1, const char *str2)
 {
