@@ -28,9 +28,11 @@
 
 *******************************************************************************/
 
+#include "moTypes.h"
+#include <tinyxml.h>
+
 #include "moConfig.h"
 
-#include <tinyxml.h>
 #include "moFileManager.h"
 #include "moFontManager.h"
 #include "moTextureManager.h"

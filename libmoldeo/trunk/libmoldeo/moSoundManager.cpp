@@ -48,8 +48,8 @@ moDefineDynamicArray(moSoundBufferArray)
 #endif
 
 #ifdef MO_MACOSX
-    #include <al.h>
-    #include <alut.h>
+    //#include <al.h>
+    //#include <alut.h>
     //#include <alext.h>
 #endif
 

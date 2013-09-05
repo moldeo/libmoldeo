@@ -28,6 +28,10 @@
 
 
 *******************************************************************************/
+#include "moTypes.h"
+#include <boost/version.hpp>
+#include <boost/filesystem.hpp>
+
 #include "moFileManager.h"
 
 #include "moArray.h"
@@ -35,9 +39,6 @@ moDefineDynamicArray(moFileArray)
 moDefineDynamicArray(moDirectoryArray)
 
 
-
-#include <boost/version.hpp>
-#include <boost/filesystem.hpp>
 #include <set>
 
 namespace bfs=boost::filesystem;

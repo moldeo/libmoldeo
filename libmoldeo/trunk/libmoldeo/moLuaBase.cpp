@@ -146,7 +146,7 @@ bool moLuaVirtualMachine::InitialiseVM ()
    // Open Lua!
    if (Ok ()) FinaliseVM ();
 
-   m_pState = lua_open ();
+   m_pState = luaL_newstate ();
 
    if (m_pState)
    {
@@ -357,10 +357,10 @@ static void LuaHook (lua_State *lua, lua_Debug *ar)
    switch (ar->event)
    {
    case LUA_HOOKCALL:
+   case LUA_HOOKTAILCALL:
       LuaHookCall (lua);
       break;
    case LUA_HOOKRET:
-   case LUA_HOOKTAILRET:
       LuaHookRet (lua);
       break;
    case LUA_HOOKLINE:
