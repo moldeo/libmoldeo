@@ -172,6 +172,7 @@ public:
     virtual int ResetScriptCalling() {
         m_iMethodBaseIterator = m_iMethodBaseAncestors-1;
         m_iMethodBase = m_MethodBases[m_iMethodBaseIterator--];
+        return m_iMethodBase;
     }
 
     virtual int NextScriptCalling() {

@@ -77,7 +77,18 @@ moText0::moText0( char* txt)
     txtcopy( txt);
 }
 
-	moText0::moText0( int p_num) {
+moText0::moText0( wchar_t* wtxt)
+{
+    char txt[1024];
+    wcstombs ( txt, wtxt, sizeof(txt) );
+
+    text = NULL;
+    length = 0;
+    txtcopy( txt);
+}
+
+
+moText0::moText0( int p_num) {
     text = NULL;
     length = 0;
     (*this) = IntToStr(p_num);

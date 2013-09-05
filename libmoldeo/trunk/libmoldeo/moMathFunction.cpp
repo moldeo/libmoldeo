@@ -235,9 +235,9 @@ double moMathFunction::Eval() {
     int num = m_Variables.Count();
 
     if (num>0) {
-		for (int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             if (m_Variables[i] != NULL) {
-                /// Values are updated from params....
+                /// Values are updated from params and custom inlets
                 m_Variables[i]->GetValue();
             }
         }
@@ -620,6 +620,7 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
                 if ( param.GetParamDefinition().GetName() == pVariable->GetName() ) {
 
                     ///assign pointer to variable!!!!
+                    MODebug2->Message( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText(" to parameter with the same name.") );
                     pVariable->SetParam( param.GetPtr() );
 
                 }
@@ -631,6 +632,7 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
               moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
 
               if ( pInlet->GetConnectorLabelName() == pVariable->GetName() ) {
+                  MODebug2->Message( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText(" to inlet with the same name.") );
                   pVariable->SetInlet( pInlet );
               }
 

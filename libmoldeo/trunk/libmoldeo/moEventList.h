@@ -93,7 +93,7 @@ class LIBMOLDEO_API moMessage : public moEvent {
 
 	public:
      moMessage();
-    moMessage(const moMessage& src) {
+    moMessage(const moMessage& src) : moEvent() {
       (*this) = src;
     }
     moMessage& operator=(const moMessage& src);

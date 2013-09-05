@@ -70,7 +70,7 @@ moPresetParamDefinition &moPresetParamDefinition:: operator = (const moPresetPar
 
 
 
-moConsole::moConsole() {
+moConsole::moConsole() : moMoldeoObject() {
 
 	m_bIODeviceManagerDefault = true;
 	m_pIODeviceManager = NULL;
@@ -437,9 +437,9 @@ MOboolean moConsole::Init(
   if (m_pResourceManager->GetVideoMan() && m_pResourceManager->GetRenderMan()) {
 
     if (MODebug2) MODebug2->Message(moText("moConsole::Init > calling VideoManager update function."));
-    m_pResourceManager->GetRenderMan()->BeginUpdateObject();
-    m_pResourceManager->GetVideoMan()->Update( m_pIODeviceManager->GetEvents() );
-    m_pResourceManager->GetRenderMan()->EndUpdateObject();
+    //m_pResourceManager->GetRenderMan()->BeginUpdateObject();
+    //m_pResourceManager->GetVideoMan()->Update( m_pIODeviceManager->GetEvents() );
+    //m_pResourceManager->GetRenderMan()->EndUpdateObject();
   }
 
 	///Finalmente inicializamos los efectos
@@ -1204,9 +1204,15 @@ void moConsole::ScriptExeDraw() {
 
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-            glDisable(GL_DEPTH_TEST);
+
             m_pResourceManager->GetGLMan()->SetOrthographicView();
             m_pResourceManager->GetGLMan()->SetMoldeoGLState();
+
+            //glDisable(GL_DEPTH_TEST);
+            //glDisable(GL_ALPHA_TEST);
+            //glAlphaFunc(GL_GREATER,0.1);
+            glEnable(GL_BLEND);
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
             SelectScriptFunction("Draw");
             RunSelectedFunction();
@@ -1220,9 +1226,11 @@ moConsole::Draw() {
 	MOuint i;
 	moEffect* pEffect = NULL;
 	moText savename, framesavename;
+
+	if (m_pResourceManager==NULL) return;
 	moRenderManager* RenderMan = m_pResourceManager->GetRenderMan();
 
-  GUIYield();
+  //GUIYield();
 
   //MODebug2->Message("out 2");
   //exit(1);
@@ -1234,7 +1242,7 @@ moConsole::Draw() {
 	MOswitch borrar = MO_ACTIVATED;
     MOboolean pre_effect_on = false;
 
-	if(m_ConsoleState.pause==MO_DEACTIVATED) {
+	if(m_ConsoleState.pause==MO_DEACTIVATED && m_pResourceManager->GetRenderMan() ) {
 
 		//m_ConsoleState.tempo.ticks = GetTicks();
 		m_ConsoleState.tempo.Duration();
@@ -1245,7 +1253,8 @@ moConsole::Draw() {
                     + " tempo.ticks: " + IntToStr( m_ConsoleState.tempo.ticks )
                     + " tempo.ang: " + FloatToStr( m_ConsoleState.tempo.ang ) );
 */
-		RenderMan->BeginDraw();
+        RenderMan = m_pResourceManager->GetRenderMan();
+		if (RenderMan) RenderMan->BeginDraw();
 
 		//Se dibujan los m_PreEffects
 		for(i=1; i<m_EffectManager.PreEffects().Count(); i++ ) {
@@ -1268,9 +1277,9 @@ moConsole::Draw() {
 				if( pEffect ) {
 					if( pEffect->Activated() )
 					{
-						RenderMan->BeginDrawEffect();
+						if (RenderMan) RenderMan->BeginDrawEffect();
 						pEffect->Draw(&m_ConsoleState.tempo);
-						RenderMan->EndDrawEffect();
+						if (RenderMan) RenderMan->EndDrawEffect();
 					}
 					else
 						if (!pre_effect_on && !RenderMan->IsRenderToFBOEnabled() && !RenderMan->RenderResEqualScreenRes())
@@ -1368,7 +1377,7 @@ moConsole::Draw() {
 		}
 
 
-		RenderMan->CopyRenderToTexture(MO_FINAL_TEX);
+		if (RenderMan) RenderMan->CopyRenderToTexture(MO_FINAL_TEX);
 
 //se dibujan los Effects masters (en funcion del modo...) si tiene una sola pantalla... o dos pantallas...
 // 1 sola pantalla:
@@ -1389,9 +1398,9 @@ moConsole::Draw() {
 			}
 		}
 
-		RenderMan->EndDraw();
+		if (RenderMan) RenderMan->EndDraw();
 
-		if (RenderMan->IsRenderToFBOEnabled() || !RenderMan->RenderResEqualScreenRes())
+		if (RenderMan && ( RenderMan->IsRenderToFBOEnabled() || !RenderMan->RenderResEqualScreenRes())  )
 			RenderMan->DrawTexture(MO_SCREEN_RESOLUTION, MO_FINAL_TEX);
 
 		this->GLSwapBuffers();
@@ -1483,7 +1492,10 @@ moConsole::Interaction() {
 	moEffect*	pEffect = NULL;
 	moEffect* pPanel = NULL;
 	moEffect* pChannel = NULL;
+	if (!m_pResourceManager) return -1;
 	moRenderManager* RenderMan = m_pResourceManager->GetRenderMan();
+
+    if (!RenderMan) return -1;
 
 	//_IODEVICE ACTUALIZA
 	RenderMan->BeginUpdate();
@@ -1570,6 +1582,7 @@ moConsole::Interaction() {
 
 void
 moConsole::Update() {
+    if (!m_pResourceManager) return;
 	moRenderManager* RenderMan = m_pResourceManager->GetRenderMan();
 
     m_ScreenshotInterval = m_Config.Int(moR(CONSOLE_SCREENSHOTS));

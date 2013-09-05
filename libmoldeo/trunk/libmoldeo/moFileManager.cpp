@@ -28,16 +28,17 @@
 
 
 *******************************************************************************/
-
-#include <boost/version.hpp>
-#include <boost/filesystem.hpp>
-
 #include "moFileManager.h"
 
 #include "moArray.h"
 moDefineDynamicArray(moFileArray)
 moDefineDynamicArray(moDirectoryArray)
 
+
+
+#include <boost/version.hpp>
+#include <boost/filesystem.hpp>
+#include <set>
 
 namespace bfs=boost::filesystem;
 
@@ -98,7 +99,6 @@ moDirectory::~moDirectory() {
 
 */
 
-#include <set>
 
 MOboolean
 moDirectory::Open( moText p_CompletePath, moText p_Search  ) {

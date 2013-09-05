@@ -67,12 +67,18 @@ class LIBMOLDEO_API moThread {
 	private:
 
 		moBoostThread m_handleThread;
-
 		moLock m_DataLock;
 
 		virtual int ThreadUserFunction() = 0;
 
-		static int InitialThreadFunction( void *data );
+#ifndef WIN32
+        static void* InitialThreadFunction( void *data );
+#else
+        static DWORD WINAPI InitialThreadFunction( LPVOID data );
+#endif
+
+
+
 
 		bool ProcessMessage();
 

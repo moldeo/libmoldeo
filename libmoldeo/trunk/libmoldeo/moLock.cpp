@@ -31,61 +31,92 @@
 
 #include "moLock.h"
 
+#define SDLTHREADS 1
+
 #ifdef MO_WIN32
   //#include "boost/thread/mutex.hpp"
   //#include "boost/thread/locks.hpp"
-  #include "SDL_thread.h"
   //using namespace boost;
 #endif
 
 #ifdef MO_LINUX
-  #include "SDL/SDL_thread.h"
+	#ifdef SDLTHREADS
+		#include "SDL/SDL_thread.h"
+	#endif
+  #include "pthread.h"
 #endif
 
 #ifdef MO_MACOSX
-  #include "SDL/SDL_thread.h"
+  //#include "SDL/SDL_thread.h"
 #endif
 
 
 moLock::moLock() {
 
-//#ifdef MO_LINUX
-	m_lock = (void*) SDL_CreateMutex();
-//#endif
-/*
-#ifdef MO_WIN32
-	timed_mutex *pMutex;
-	pMutex = new timed_mutex();
-	m_mutex = (void*) pMutex;
+	m_lock = NULL;
 
-	if (pMutex) {
-        timed_mutex::scoped_timed_lock *pLock;
-        pLock = new timed_mutex::scoped_timed_lock( *pMutex );
-        m_lock = (void*) pLock;
-        if (pLock) pLock->unlock();
-	}
+#ifndef MO_WIN32
+    #ifdef SDLTHREADS
+			m_lock = (void*) SDL_CreateMutex();
+		#else
+			pthread_mutexattr_t attr;
+
+			pthread_mutex_init( (pthread_mutex_t*)&m_lock, &attr);
+
+			pthread_mutexattr_init(&attr);
+			pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
+			pthread_mutexattr_settype( &attr, PTHREAD_MUTEX_RECURSIVE );
+			if ( pthread_mutex_init((pthread_mutex_t*)&m_lock, &attr) != 0 ) {
+				cout << "couldn create mutex and init with PTHREAD_MUTEX_RECURSIVE" << endl;
+				exit(1);
+			}
+		#endif
+#else
+    #ifdef UNICODE
+        m_lock = (void*)CreateMutex( NULL, FALSE, L"lockMutex" );
+    #else
+        m_lock = (void*)CreateMutex( NULL, FALSE, "lockMutex" );
+    #endif
 #endif
-*/
 
 }
 
 moLock::~moLock() {
-	//#ifdef MO_LINUX
-    SDL_DestroyMutex((SDL_mutex*)m_lock);
- // #endif
 
-	//#ifdef MO_WIN32
+#ifndef WIN32
+		#ifdef SDLTHREADS
+			SDL_DestroyMutex((SDL_mutex*)m_lock);
+		#else
+			if (m_lock!=NULL) {
+				pthread_mutex_destroy( (pthread_mutex_t*)&m_lock );
+			}
+		#endif
+#else
+	CloseHandle(m_lock);
+#endif
 
-    ///todo arreglar!!! pierde memoria!
-    //ATENCION!!!! CORREGIR aqui puede estar el problema de memoria q teniamos!!!!
-
-    //mutex *pMutex = (mutex*) m_lock;
-    //delete pMutex;
- // #endif
+	m_lock = NULL;
 }
 
 bool
 moLock::Lock() {
+
+	if (m_lock==NULL) {
+		return false;
+	}
+
+#ifndef WIN32
+		#ifdef SDLTHREADS
+			return(SDL_mutexP( (SDL_mutex*)m_lock )!=-1);
+		#else
+			if (pthread_mutex_lock( (pthread_mutex_t*)&m_lock ) < 0 ) {
+				return false;
+			}
+		#endif
+#else
+    WaitForSingleObject( m_lock, INFINITE);
+#endif
+
 /*
   #ifdef MO_WIN32
     timed_mutex *pMutex = (timed_mutex*) m_mutex;
@@ -100,30 +131,28 @@ moLock::Lock() {
     }
   #endif
 */
-	//#ifdef MO_LINUX
-    return(SDL_mutexP( (SDL_mutex*)m_lock )!=-1);
-  //#endif
-	//return true;
+  return true;
 }
 
 bool
 moLock::Unlock() {
-    /*
-  #ifdef MO_WIN32
-    timed_mutex *pMutex = (timed_mutex*) m_mutex;
-    timed_mutex::scoped_timed_lock *pLock = (timed_mutex::scoped_timed_lock *) m_lock;
 
-    try {
-        pLock->unlock();
-    }
-    catch(...) {
-        return false;
-    }
-    return( true );
+	if (m_lock==NULL) {
+		return false;
+	}
+
+#ifndef WIN32
+	#ifdef SDLTHREADS
+		return(SDL_mutexV( (SDL_mutex*)m_lock )!=-1);
+	#else
+		if (pthread_mutex_unlock( (pthread_mutex_t*)&m_lock )<0) {
+			return false;
+		}
+	#endif
+#else
+	return ReleaseMutex( m_lock );
 #endif
-*/
-    //#ifdef MO_LINUX
-    return(SDL_mutexV( (SDL_mutex*)m_lock )!=-1);
-    //#endif
+
+	return true;
 }
 

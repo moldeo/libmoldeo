@@ -1,11 +1,21 @@
 ACLOCAL_AMFLAGS=-I m4
 
+if DEBUG
+AM_CFLAGS = -g3 -O0
+AM_CPPFLAGS = -g3 -O0
+AM_CXXFLAGS = -g3 -O0
+else
+AM_CFLAGS = -O2
+AM_CPPFLAGS = -O2
+AM_CXXFLAGS = -O2
+endif
+
 datadir = ${prefix}/share/moldeo
 modulesdir = ${libdir}/moldeo
 docdir = ${prefix}/share/doc/moldeo
 
-AM_CPPFLAGS = $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
-AM_CXXFLAGS = $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
+AM_CPPFLAGS = ${AM_CPPCFLAGS} $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
+AM_CXXFLAGS = ${AM_CXXCFLAGS} $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
 
 lib_LTLIBRARIES = libmoldeo.la
 libmoldeo_la_SOURCES = mo3dModelManager.cpp \
