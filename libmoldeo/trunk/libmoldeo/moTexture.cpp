@@ -1488,8 +1488,11 @@ void BackToBlack( moTexture* pTex ) {
 void moMovie::Stop() {
   if (m_pGraph) {
     //if (GetPosition()==0 && m_pGraph->GetState()!=MO_STREAMSTATE_STOPPED) {
+
       m_pGraph->Stop();
       m_bIsPlaying = false;
+
+
     //} else if ( GetPosition()!=0) {
      // m_pGraph->Pause();
      // m_pGraph->Seek(0);
@@ -1535,7 +1538,10 @@ moStreamState moMovie::State()  {
 bool moMovie::IsPlaying() {
 
   if (m_pGraph) {
-    m_pGraph->GetState();
+    //MODebug2->Message("moMovie::IsPlaying > calling m_pGraph->GetState()");
+    //m_pGraph->GetState();
+    this->State();
+    //MODebug2->Message("moMovie::IsPlaying > GetState returned");
   }
   return m_bIsPlaying;
 }
@@ -1693,9 +1699,12 @@ void moMovie::GetFrame( MOuint p_i )
 {
 	if(m_pGraph)
 	{
-    moStreamState state = m_pGraph->GetState();
 
-		if (m_PlayMode == MO_PLAYMODE_TIMEBASE) {
+    //MODebug2->Message("moMovie::GetFrame > calling m_pGraph->GetState()");
+    moStreamState state = m_pGraph->GetState();
+    //MODebug2->Message("moMovie::GetFrame > returned m_pGraph->GetState()");
+
+    if (m_PlayMode == MO_PLAYMODE_TIMEBASE) {
 		  ///no ponemos play dos veces, logico....
       if (state==MO_STREAMSTATE_PAUSED || state==MO_STREAMSTATE_STOPPED) {
         /*
@@ -1710,13 +1719,13 @@ void moMovie::GetFrame( MOuint p_i )
         //m_pGraph->Pause();
         MODebug2->Push( "moMovie::GetFrame > Going to p_i:"+IntToStr(p_i)+" Actual real timebase position:" + IntToStr(m_pGraph->GetPosition()) );
       }
-		} else {
+	} else {
       m_pGraph->Seek( p_i );
       m_pGraph->Pause();
-		}
+	}
 
 
-		if (!m_BucketsPool.IsEmpty()) {
+	if (!m_BucketsPool.IsEmpty()) {
 
       moBucket* pbucket = NULL;
       MOubyte* pbuffer = NULL;
@@ -1736,7 +1745,7 @@ void moMovie::GetFrame( MOuint p_i )
         }
         m_BucketsPool.DestroyRetreivedBucket();
       }
-		}
+	}
 		/*
 		else {
 

@@ -324,6 +324,22 @@ moMoldeoObject::CreateConnectors() {
   MODebug2->Message("moMoldeoObject::CreateConnectors > Calling once. object: "+GetName()+ " config: " + GetConfigName() + " label:" + GetLabelName() );
 
 
+	///Levanta los Inlets adicionales a los parámetros....
+	moParam& pinlets = m_Config[moText("inlet")];
+
+	for( MOuint i=0; i<pinlets.GetValuesCount(); i++ ) {
+		moInlet* Inlet = new moInlet();
+		if (Inlet) {
+			Inlet->SetMoldeoLabelName( GetLabelName() );
+			moText InletName = pinlets[i][MO_INLET_NAME].Text();
+			///lo creamos si y solo si no existe como parametro....
+			if ( m_Config.GetParamIndex(InletName)==-1 ) {
+				((moConnector*)Inlet)->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
+				m_Inlets.Add( Inlet );
+			}
+		}
+	}
+
 	///Inicializa las funciones matemáticas del config
 	///así como los inlets y outlets por cada parámetro
 	///así como las texturas
@@ -509,22 +525,6 @@ moMoldeoObject::CreateConnectors() {
 	}
 
   MODebug2->Message("moMoldeoObject::CreateConnectors > loaded params & values for Object: " + GetName() + " config:" + GetConfigName() + " label:" + GetLabelName() );
-
-	///Levanta los Inlets adicionales a los parámetros....
-	moParam& pinlets = m_Config[moText("inlet")];
-
-	for( MOuint i=0; i<pinlets.GetValuesCount(); i++ ) {
-		moInlet* Inlet = new moInlet();
-		if (Inlet) {
-			Inlet->SetMoldeoLabelName( GetLabelName() );
-			moText InletName = pinlets[i][MO_INLET_NAME].Text();
-			///lo creamos si y solo si no existe como parametro....
-			if ( m_Config.GetParamIndex(InletName)==-1 ) {
-				((moConnector*)Inlet)->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
-				m_Inlets.Add( Inlet );
-			}
-		}
-	}
 
     /** VERIFICAR ESTO!!!!*/
     /**
@@ -1151,7 +1151,7 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
     moVector3i* pv3i;
     moVector4i* pv4i;
 
-    int i;
+    unsigned int i;
     moData MData;
     moDataMessage* pDataMessage;
     moDataMessages* pDataMessages;

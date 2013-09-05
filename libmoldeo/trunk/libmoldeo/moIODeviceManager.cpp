@@ -31,18 +31,6 @@
 
 #include "moIODeviceManager.h"
 
-#ifdef MO_WIN32
-  #include <SDL.h>
-#endif
-
-#ifdef MO_LINUX
-  #include <SDL/SDL.h>
-#endif
-
-#ifdef MO_MACOSX
-  #include <SDL/SDL.h>
-#endif
-
 #include "moArray.h"
 moDefineDynamicArray(moIODevicesArray)
 
@@ -176,7 +164,7 @@ moIODeviceManager::Update() {
 void
 moIODeviceManager::PollEvents() {
 
-
+/*
 	SDL_Event event;
 
 	   //SDL_KEYDOWN,			// Keys pressed
@@ -218,7 +206,7 @@ moIODeviceManager::PollEvents() {
 					break;
 		}
 	}
-
+*/
 }
 
 moEventList*

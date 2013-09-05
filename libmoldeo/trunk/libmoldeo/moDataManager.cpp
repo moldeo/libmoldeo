@@ -69,6 +69,7 @@ moDataSession::Set(   moText p_Name,
     m_SessionPlaybackMode = p_playbackmode;
     m_SessionRecordMode = p_recordmode;
     m_Keys.Init( pSessionConfig->GetMaxKeys(), NULL );
+/*
     if (m_pVideoGraph) {
         delete m_pVideoGraph;
         m_pVideoGraph = (moVideoGraph*) new moGsGraph();
@@ -77,6 +78,7 @@ moDataSession::Set(   moText p_Name,
         m_pVideoGraph = (moVideoGraph*) new moGsGraph();
         m_pVideoGraph->InitGraph();
     }
+*/
 }
 
 

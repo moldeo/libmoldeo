@@ -301,20 +301,20 @@ void moRenderManager::EndUpdateObject()
 void moRenderManager::BeginDraw()
 {
 	if (IsRenderToFBOEnabled())
-		m_pFBManager->BindFBO(m_fbo_idx, m_render_attach_points[0]);
+		if (m_pFBManager) m_pFBManager->BindFBO(m_fbo_idx, m_render_attach_points[0]);
 }
 
 void moRenderManager::BeginDrawEffect()
 {
     Lock();
-	m_pGLManager->SaveGLState();
-	m_pGLManager->SetPerspectiveView(m_render_width, m_render_height);
+	if (m_pGLManager) m_pGLManager->SaveGLState();
+	if (m_pGLManager) m_pGLManager->SetPerspectiveView(m_render_width, m_render_height);
 	m_saved_screen = false;
 }
 
 void moRenderManager::EndDrawEffect()
 {
-    m_pGLManager->RestoreGLState();
+    if (m_pGLManager) m_pGLManager->RestoreGLState();
     Unlock();
 }
 
@@ -364,7 +364,7 @@ void moRenderManager::DrawTexture(MOint p_resolution, MOint p_tex_num)
 
 void moRenderManager::DrawTexture( MOint p_width, MOint p_height, MOint p_tex_num )
 {
-	if (ValidSourceTexNum(p_tex_num))
+	if (ValidSourceTexNum(p_tex_num) && m_pGLManager )
 	{
         Lock();
 

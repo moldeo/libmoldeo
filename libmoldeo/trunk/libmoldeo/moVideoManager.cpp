@@ -1263,7 +1263,7 @@ void moVideoManager::Update(moEventList * p_EventList)
             pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
 
             ///procesamos el GetState para que ejecute la iteracion del loop interno...obligatorio!!
-            pLS->GetVideoGraph()->GetState();
+            //pLS->GetVideoGraph()->GetState();
 
             if( pSample!=NULL ) {
               moTexture * ts =(moTexture*)Images[i];

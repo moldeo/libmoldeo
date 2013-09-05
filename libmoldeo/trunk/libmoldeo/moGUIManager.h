@@ -39,6 +39,7 @@
 *	Los moWidget 's derivan de este objeto y todos aquellos que necesiten ser accedidos por el usuario.
 */
 class LIBMOLDEO_API moGuiObject : public moAbstract {
+
 	public:
 		moGuiObject();
 		virtual ~moGuiObject();
@@ -52,7 +53,7 @@ class LIBMOLDEO_API moGuiObject : public moAbstract {
 
 moDeclareExportedDynamicArray( moGuiObject*, moGuiObjectArray);
 
-/// Objeto de interface de usuario dibujable
+/// Objeto de interface de usuario tipo ventana.
 /**
 *	Los moWidget 's  son los elementos básicos del GUI ( Graphical User Interface ) de Moldeo.
 */

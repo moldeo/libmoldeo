@@ -223,6 +223,9 @@ typedef moDirectoryArray moDirectories;
 * Manejador de archivos
 * Recurso para el acceso a archivos
 */
+#undef CopyFile
+#undef CreateDirectory
+
 class LIBMOLDEO_API moFileManager : public moResource
 {
 	public:

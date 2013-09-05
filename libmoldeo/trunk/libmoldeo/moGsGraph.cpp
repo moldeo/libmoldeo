@@ -30,15 +30,22 @@
   http://gstreamer.freedesktop.org/data/doc/gstreamer/head/pwg/html/section-types-definitions.html
 
 *******************************************************************************/
-#ifdef MO_LINUX
-#include <gst/gst.h>
-#endif
-
 #include "moGsGraph.h"
+
+//#ifdef MO_LINUX
+#include <gst/gst.h>
+//#endif
+
 
 #include "moFileManager.h"
 
 #ifdef MO_GSTREAMER
+
+    #ifdef MO_MACOSX
+        #define DECODEBIN "decodebin"
+    #else
+        #define DECODEBIN "decodebin2"
+    #endif
 
 static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
 {
@@ -77,7 +84,7 @@ static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
       case GST_MESSAGE_EOS:
       {
           //g_message ("End-of-stream");
-          //pGsGraph->MODebug2->Error(moText("moGsGraph:: EOS <End-of-stream> "));
+          //pGsGraph->MODebug2->Message(moText("moGsGraph:: EOS <End-of-stream> "));
           pGsGraph->SetEOS(true);
           //g_main_loop_quit (loop);
           break;
@@ -575,6 +582,7 @@ event_loop (GstElement * pipeline, gboolean blocking, GstState target_state)
 
   bus = gst_element_get_bus (GST_ELEMENT (pipeline));
 
+  if (!bus) exit(1);
 
   while (TRUE) {
     message = gst_bus_poll (bus, GST_MESSAGE_ANY, blocking ? -1 : 0);
@@ -951,17 +959,17 @@ moGsGraph::InitGraph() {
 
     //opner en el main de la consola...
     //inicialización de la libreria gstreamer
-    guint major, minor, micro, nano;
+    //guint major, minor, micro, nano;
     //GError *errores;
 
     MODebug2->Message( moText("Initializing GStreamer"));
     //bool init_result = gst_init_check (NULL, NULL, &errores);
-    gst_init(NULL,NULL);
+    //gst_init(NULL,NULL);
     //gst_init(NULL, NULL);
     //init_result = init_result && gst_controller_init(NULL,NULL);
 
-    gst_version (&major, &minor, &micro, &nano);
-    MODebug2->Message( moText("GStreamer version") + IntToStr(major) + moText(".") + IntToStr(minor) + moText(".") + IntToStr(minor));
+    //gst_version (&major, &minor, &micro, &nano);
+    //MODebug2->Message( moText("GStreamer version") + IntToStr(major) + moText(".") + IntToStr(minor) + moText(".") + IntToStr(minor));
     //char vers[10];
     //sprintf( vers, "version: %i.%i.%i.%i",major,minor, micro, nano);
 
@@ -984,14 +992,16 @@ moGsGraph::InitGraph() {
     gst_object_unref (m_pGstBus);
     m_pGstBus = NULL;
 
-
+/*
     GMainLoop *loop = g_main_loop_new( NULL, FALSE);
     m_pGMainLoop = (moGMainLoop*) loop;
     if (loop) {
       m_pGMainContext = (moGMainContext*) g_main_loop_get_context( loop );
     }
-
+    */
+    m_pGMainContext = (moGMainContext*) g_main_context_default();
     //fin inicialización
+
 /*
     m_pGstPipeline = gst_element_factory_make ("playbin", "play");
     g_object_set (G_OBJECT (m_pGstPipeline), "uri", "file:///home/fabri/plasma.mpg", NULL);
@@ -1024,6 +1034,7 @@ moGsGraph::FinishGraph() {
             MODebug2->Error(moText("Error releasing bus call watch:") + IntToStr(m_BusWatchId));
         } else m_BusWatchId = 0;
     }
+
 
     if (m_pGMainLoop) {
 
@@ -1702,7 +1713,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
            */
 
 
-            m_pDecoderBin = gst_element_factory_make ("decodebin", "decoder");
+            m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
             if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect (m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pDecoderBin );
@@ -1976,7 +1987,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioConverter4 );
            }
 
-           m_pDecoderBin = gst_element_factory_make ("decodebin", "decoder");
+           m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
             if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect ((GstElement*)m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pDecoderBin );
@@ -2124,11 +2135,11 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            //RetreivePads( m_pFileSource );
 
           ///SOUND...
-          //BuildAudioFilters();
+          BuildAudioFilters();
 
            ///FIN SOUND
 
-            m_pDecoderBin = gst_element_factory_make ("decodebin2", "decoder");
+            m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
             if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect (m_pDecoderBin, "pad-added", G_CALLBACK (cb_pad_added), (gpointer)this);
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pDecoderBin );
@@ -2529,6 +2540,7 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
   GstStateChangeReturn state_wait;
   GstState current_state, pending_state;
   GstClockTime  time_out = GST_CLOCK_TIME_NONE;
+  time_out = GST_SECOND;
 
   while(waitforsync) {
       state_wait = gst_element_get_state(GST_ELEMENT (m_pGstPipeline),&current_state, &pending_state, time_out);
@@ -2541,12 +2553,17 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
             waitforsync = false;
             return false;
             break;
+          default:
+            waitforsync = false;
+            break;
+            /*
           case GST_STATE_CHANGE_ASYNC:
             waitforsync = true;
             break;
           case GST_STATE_CHANGE_NO_PREROLL:
             waitforsync = true;
             break;
+            */
       }
   }
 
@@ -2559,6 +2576,7 @@ moStreamState moGsGraph::GetState() {
     GstStateChangeReturn state_wait;
     GstState current_state, pending_state;
     GstClockTime  time_out = GST_CLOCK_TIME_NONE;
+    time_out = GST_SECOND;
 
     GstPad* srcRGB = NULL;
     bool padactive = false;
@@ -2576,11 +2594,13 @@ moStreamState moGsGraph::GetState() {
       padblocking =  gst_pad_is_blocking( srcRGB );
     }
 
-   if (g_main_context_iteration( (GMainContext*)m_pGMainContext, false )) {
-      //MODebug2->Message(  moText("moGsGraph ::GetState (events)") );
-   } else {
-      //MODebug2->Message(  moText("moGsGraph ::GetState (no events!!)"));
-   }
+    if (m_pGMainContext) {
+       if (g_main_context_iteration( (GMainContext*)m_pGMainContext, false )) {
+          //MODebug2->Message(  moText("moGsGraph ::GetState (events)") );
+       } else {
+          //MODebug2->Message(  moText("moGsGraph ::GetState (no events!!)"));
+       }
+    }
 /*
       MODebug2->Message(  moText(" Position:")
                           + IntToStr( this->GetPosition())
@@ -2594,6 +2614,7 @@ moStreamState moGsGraph::GetState() {
                          // + IntToStr((int)padblocking)
                           );
 */
+    //MODebug2->Message(  moText("moGsGraph ::GetState > gst_element_get_state"));
     state_wait = gst_element_get_state(GST_ELEMENT (m_pGstPipeline),&current_state, &pending_state, time_out);
   /*g_main_context_iteration
       GST_STATE_VOID_PENDING        = 0,
@@ -2605,21 +2626,28 @@ moStreamState moGsGraph::GetState() {
 
     switch(current_state) {
           case GST_STATE_VOID_PENDING:
+            //MODebug2->Message(  moText("moGsGraph ::GetState GST_STATE_VOID_PENDING"));
             return MO_STREAMSTATE_UNKNOWN;
             break;
           case GST_STATE_NULL:
+            //MODebug2->Message(  moText("moGsGraph ::GetState GST_STATE_NULL"));
             return MO_STREAMSTATE_STOPPED;
             break;
           case GST_STATE_READY:
+            //MODebug2->Message(  moText("moGsGraph ::GetState GST_STATE_READY"));
             return MO_STREAMSTATE_READY;
             break;
           case GST_STATE_PAUSED:
+            //MODebug2->Message(  moText("moGsGraph ::GetState GST_STATE_PAUSED"));
             return MO_STREAMSTATE_PAUSED;
             break;
           case GST_STATE_PLAYING:
+            //MODebug2->Message(  moText("moGsGraph ::GetState GST_STATE_PLAYING"));
             return MO_STREAMSTATE_PLAYING;
             break;
   }
+
+  //MODebug2->Message(  moText("moGsGraph ::GetState MO_STREAMSTATE_UNKNOWN"));
 
   return MO_STREAMSTATE_UNKNOWN;
 
@@ -2629,14 +2657,19 @@ moStreamState moGsGraph::GetState() {
 void
 moGsGraph::Play() {
   /* start the pipeline */
+  //MODebug2->Message(moText("moGsGraph::Play()"));
+  //MODebug2->Message(moText("moGsGraph::Play( SetEOS)"));
   SetEOS(false);
+  //MODebug2->Message(moText("moGsGraph::Play() calling CheckState -> GST_STATE_PLAYING"));
   CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PLAYING), true );
+  //MODebug2->Message(moText("moGsGraph::Play() returnin CheckState."));
 }
 
 void
 moGsGraph::Stop() {
   /*set state to NULL*/
   CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_NULL) );
+  //moGsGraph::Pause();
 }
 
 void
@@ -2658,8 +2691,6 @@ moGsGraph::Seek( MOuint frame, float rate ) {
 
   gint64     time_nanoseconds;
   bool        res;
-
-
 
   //MODebug2->Message(moText("moGsGraph :: Seeking:") + IntToStr(frame) );
 

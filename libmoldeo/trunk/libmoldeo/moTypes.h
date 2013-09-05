@@ -264,13 +264,14 @@ using namespace std;
 	#ifdef USE_GL_EXTENSIONS
 		// GLEW provides gl.h, glu.h and glext.h
 		#include <GL/glew.h>
-	#else
+    #else
 		#include "GL/gl.h"
 		#include "GL/glu.h"
 		#include "GL/glext.h"
 	#endif
 
-	#include "GL/glut.h"
+	//#define GLUT_DISABLE_ATEXIT_HACK
+	//#include "GL/glut.h"
 
     //basetyps.h
     # ifndef _int64

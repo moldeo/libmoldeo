@@ -28,7 +28,7 @@
 
 
 *******************************************************************************/
-
+#include "gst/gst.h"
 #include "moResourceManager.h"
 #include <moDebugManager.h>
 #include <moNetManager.h>

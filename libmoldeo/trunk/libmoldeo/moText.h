@@ -75,6 +75,7 @@ public:
 	moText0(const moText0&);
 	moText0( char*);
 	moText0( const char*);
+	moText0( wchar_t*);
 
 	moText0( int );
 	moText0( unsigned int );
@@ -121,6 +122,12 @@ public:
 
     // operadores de conversion para poder usar c-strings //
     virtual operator char*() const                { return text; }
+    wchar_t*  Unicode() const {
+        std::wstring wc( 1024, L'#' );
+        mbstowcs( &wc[0], text, 1024 );
+        return (wchar_t*)wc.c_str();
+    }
+
 
     // metodos comunes en una clase string//
     moText0& Left( MOuint);            // devuelve el comienzo de un text.
@@ -141,7 +148,6 @@ public:
 	unsigned short* Short();
     void ToUpper();                  // convierte el text a mayusculas.
     void ToLower();                  // convierte el text a minusculas.
-
 
     moTextArray     Explode( char* separator ) const; ///divide el texto separado por el caracter especificado
     int             Find( const moText0& target );

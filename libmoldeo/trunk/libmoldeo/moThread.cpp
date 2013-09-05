@@ -31,18 +31,6 @@
 
 #include "moThread.h"
 
-
-#ifdef MO_WIN32
-    #include "SDL_thread.h"
-#else
-    #include "SDL/SDL_thread.h"
-#endif
-
-
-//#include "boost/thread/thread.hpp"
-//using namespace boost;
-
-
 moThread::moThread() {
 	m_handleThread = NULL;
 }
@@ -57,14 +45,27 @@ bool moThread::CreateThread() {
     //pthread = new thread( boost::bind( moThread::InitialThreadFunction, (void*)this ) );
     //m_handleThread = (void*) pthread;
 
-	m_handleThread = (void *)SDL_CreateThread( InitialThreadFunction,(void*)this);
+    //m_handleThread = (void *)SDL_CreateThread( InitialThreadFunction,(void*)this);
+#ifndef MO_WIN32
+    pthread_create( (pthread_t*)&m_handleThread , NULL, InitialThreadFunction, this);
+#else
+    DWORD threadId;
+    m_handleThread = (void*) ::CreateThread( 0, 0, InitialThreadFunction, this, 0, &threadId );
+#endif
 
 	return(m_handleThread!=NULL);
 }
 
 bool moThread::KillThread() {
 	if(ThreadExists()) {
+	    /*
 		SDL_KillThread( (SDL_Thread *) m_handleThread );//SDL_WaitThread ???
+		*/
+#ifndef MO_WIN32
+   pthread_cancel((pthread_t)m_handleThread);
+#else
+    CloseHandle( m_handleThread );
+#endif
 		//thread* pthread = (thread*)m_handleThread;
 		//delete pthread;
 		m_handleThread=NULL;
@@ -79,10 +80,19 @@ bool moThread::SendThreadMessage( int message ) {
 	return true;
 }
 
-int moThread::InitialThreadFunction( void *data ) {
+#ifndef WIN32
+void* moThread::InitialThreadFunction( void *data ) {
+#else
+DWORD WINAPI moThread::InitialThreadFunction( LPVOID data ) {
+#endif
 	moThread* m_pThreadClass;
 	m_pThreadClass =(moThread*)data;
-	return m_pThreadClass->ThreadUserFunction();
+	int b = m_pThreadClass->ThreadUserFunction();
+	#ifndef WIN32
+    return (void*)0;
+  #else
+    return b;
+  #endif
 }
 
 bool moThread::ProcessMessage() {

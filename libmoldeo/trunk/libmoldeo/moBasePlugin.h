@@ -55,7 +55,7 @@
 inline MOpluginHandle moLoadPlugin(moText fn)
 {
     #if defined(_WIN32)
-    return LoadLibrary(fn);
+    return LoadLibraryA(fn);
     #else
     return dlopen(fn, RTLD_LAZY);
     #endif

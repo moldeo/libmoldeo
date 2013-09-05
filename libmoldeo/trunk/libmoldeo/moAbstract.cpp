@@ -39,7 +39,7 @@ moDebug::moDebug() {
     moLog.open ("moldeolog.txt");
 
     backup = cout.rdbuf();     // back up cout's streambuf
-    #ifdef MO_WIN32
+    #ifdef MO_WIN32XX
     psbuf = moStdOut.rdbuf();   // get file's streambuf
     cout.rdbuf( psbuf );         // assign streambuf to cout
 
