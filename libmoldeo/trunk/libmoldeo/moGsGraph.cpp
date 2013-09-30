@@ -33,6 +33,8 @@
 #include <gst/gst.h>
 
 #include "moFileManager.h"
+#include "moGsGraph.h"
+
 
 #ifdef MO_GSTREAMER
 
@@ -1454,18 +1456,18 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
             #ifdef MO_WIN32
             m_pFileSource = gst_element_factory_make ("dshowvideosrc", "source");
             #endif
-            
+
             #ifdef MO_LINUX
             if (devicename==moText("DV"))
                 m_pFileSource = gst_element_factory_make ("dv1394src", "source");
             else
                 m_pFileSource = gst_element_factory_make ("v4l2src", "source");
             #endif
-            
+
             #ifdef MO_MACOSX
                 m_pFileSource = gst_element_factory_make ("qtkitvideosrc", "source");
             #endif
-            
+
 
             m_pFinalSource = m_pFileSource;
         }
@@ -1716,7 +1718,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
 
             m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
-            
+
 	    if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect (m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pDecoderBin );
@@ -1991,7 +1993,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
            }
 
            m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
-            
+
 	   if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect ((GstElement*)m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pDecoderBin );
