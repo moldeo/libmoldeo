@@ -136,6 +136,7 @@ moData& moData::operator =( const moData& data)
 	m_pFilterParam = data.m_pFilterParam;
 	m_bFilteredAlpha = data.m_bFilteredAlpha;
 	m_bFilteredParams = data.m_bFilteredParams;
+	m_LastEval = data.m_LastEval;
     return *this;
 }
 
@@ -162,6 +163,7 @@ moData::SetFloat( MOfloat pfloat ) {
 	m_Number.m_Float = pfloat;
 	m_DataType = MO_DATA_NUMBER_FLOAT;
 	m_Text = FloatToStr(m_Number.m_Float);
+	m_LastEval = (MOdouble)pfloat;
 }
 
 void
@@ -169,6 +171,7 @@ moData::SetDouble( MOdouble pdouble ) {
 	m_Number.m_Double = pdouble;
 	m_DataType = MO_DATA_NUMBER_DOUBLE;
 	m_Text = FloatToStr(m_Number.m_Double);
+	m_LastEval = pdouble;
 }
 
 void
@@ -176,6 +179,7 @@ moData::SetInt( MOint pint ) {
 	m_Number.m_Int = pint;
 	m_DataType = MO_DATA_NUMBER_INT;
 	m_Text = IntToStr(m_Number.m_Int);
+	m_LastEval = (MOdouble)pint;
 }
 
 void
@@ -183,6 +187,7 @@ moData::SetLong( MOlonglong plong ) {
 	m_Number.m_Long = plong;
 	m_DataType = MO_DATA_NUMBER_LONG;
 	m_Text = IntToStr(m_Number.m_Long);
+	m_LastEval = (MOdouble)plong;//loose precision...
 }
 
 void
@@ -221,6 +226,8 @@ void
 moData::SetFun( moMathFunction*	p_Function ) {
 	m_DataType = MO_DATA_FUNCTION;
 	m_Number.m_Pointer = (MOpointer) p_Function;
+	if (p_Function)
+        m_Text = p_Function->GetExpression();
 }
 
 
@@ -408,25 +415,51 @@ MOdouble
 moData::Eval() {
     if (m_DataType==MO_DATA_FUNCTION) {
       moMathFunction* pFun = Fun();
+      m_LastEval = 0.0;
       if (pFun)
-          return pFun->Eval();
-    } else {
-      return Float();
+          m_LastEval = pFun->Eval();
     }
-    return 0.0;
+
+    return LastEval();
 }
 
 MOdouble
 moData::Eval( double x ) {
     if (m_DataType==MO_DATA_FUNCTION) {
       moMathFunction* pFun = Fun();
+      m_LastEval = 0.0;
       if (pFun)
-          return pFun->Eval( x );
-    } else {
-      return Float();
+          m_LastEval = pFun->Eval(x);
     }
-    return 0.0;
+
+    return LastEval();
+
 }
+
+MOdouble
+moData::LastEval() const {
+    switch((int)m_DataType) {
+		case MO_DATA_NUMBER_DOUBLE:
+			return m_Number.m_Double;
+			break;
+		case MO_DATA_NUMBER_FLOAT:
+			return (MOdouble)m_Number.m_Float;
+			break;
+		case MO_DATA_NUMBER_INT:
+			return (MOdouble)m_Number.m_Int;
+			break;
+		case MO_DATA_NUMBER_LONG:
+			return (MOdouble)m_Number.m_Long;
+			break;
+        case MO_DATA_FUNCTION:
+            return m_LastEval;
+            break;
+		default:
+			return m_LastEval;
+			break;
+	}
+}
+
 
 moFont*
 moData::Font() {
@@ -657,7 +690,7 @@ moData::TextToType( moText texttype ) {
 
 
 moText
-moData::ToText() {
+moData::ToText() const {
 
     switch((int)m_DataType) {
         case MO_DATA_NUMBER:
@@ -696,7 +729,7 @@ moData::ToText() {
 }
 
 MOint
-moData::Int() {
+moData::Int() const {
 	double rndD;
 	float rndF;
 	switch((int)m_DataType) {
@@ -718,9 +751,7 @@ moData::Int() {
 			return (MOint) rndD;
 			break;
         case MO_DATA_FUNCTION:
-            if (Fun()) {
-                return (MOint) Fun()->LastEval();
-            } else return (MOint) (0);
+            return (MOint)m_LastEval;
             break;
 		default:
 			return m_Number.m_Int;
@@ -729,7 +760,7 @@ moData::Int() {
 }
 
 MOlonglong
-moData::Long() {
+moData::Long() const {
 	double rndD;
 	float rndF;
 	switch((int)m_DataType) {
@@ -751,9 +782,7 @@ moData::Long() {
 			return (MOlonglong) rndD;
 			break;
         case MO_DATA_FUNCTION:
-            if (Fun()) {
-                return (MOlonglong) Fun()->LastEval();
-            } else return (MOlonglong) (0);
+            return (MOlonglong)m_LastEval;
             break;
 		default:
 			return m_Number.m_Long;
@@ -762,7 +791,7 @@ moData::Long() {
 }
 
 MOfloat
-moData::Float() {
+moData::Float() const {
 	switch((int)m_DataType) {
 		case MO_DATA_NUMBER_FLOAT:
 			return m_Number.m_Float;
@@ -777,9 +806,7 @@ moData::Float() {
 			return (MOfloat)m_Number.m_Long;
 			break;
         case MO_DATA_FUNCTION:
-            if (Fun()) {
-                return (MOfloat) Fun()->LastEval();
-            } else return (MOfloat) (0.0);
+            return (MOfloat)m_LastEval;
             break;
 		default:
 			return m_Number.m_Float;
@@ -788,7 +815,7 @@ moData::Float() {
 }
 
 MOdouble
-moData::Double() {
+moData::Double() const {
 	switch((int)m_DataType) {
 		case MO_DATA_NUMBER_DOUBLE:
 			return m_Number.m_Double;
@@ -803,9 +830,7 @@ moData::Double() {
 			return (MOdouble)m_Number.m_Long;
 			break;
         case MO_DATA_FUNCTION:
-            if (Fun()) {
-                return (MOdouble) Fun()->LastEval();
-            } else return (MOdouble) (0.0);
+            return m_LastEval;
             break;
 		default:
 			return m_Number.m_Double;
@@ -814,7 +839,7 @@ moData::Double() {
 }
 
 MOchar
-moData::Char() {
+moData::Char() const {
 	float rndF;
 	double rndD;
 	switch((int)m_DataType) {
@@ -836,9 +861,7 @@ moData::Char() {
 			return (MOchar) rndD;
 			break;
         case MO_DATA_FUNCTION:
-            if (Fun()) {
-                return (MOchar) Fun()->LastEval();
-            } else return (MOchar) (0);
+            return (MOchar)m_LastEval;
             break;
 		default:
 			return m_Number.m_Char;

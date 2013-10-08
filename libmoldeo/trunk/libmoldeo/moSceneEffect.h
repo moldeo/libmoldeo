@@ -74,6 +74,11 @@
  * @see moEffect
  */
 
+ enum moSceneParamIndex {
+   SCENE_EFFECTS,
+   SCENE_SCENES
+ };
+
 class LIBMOLDEO_API moSceneEffect : public moMasterEffect
 {
 public:
@@ -94,6 +99,7 @@ public:
     MOboolean Finish();
     void Interaction(moIODeviceManager *);
     void LoadCodes(moIODeviceManager *);
+    moConfigDefinition *GetDefinition( moConfigDefinition *p_configdefinition );
 };
 
 #endif

@@ -144,6 +144,8 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	}
 
   MODebug2->Message( moText("moRenderManager::Init > Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)));
+  MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + moText(IntToStr((int)glActiveTextureARB)) );
+  MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + moText(IntToStr((int)glMultiTexCoord2fARB)) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + moText(IntToStr(GLEW_ARB_texture_non_power_of_two)) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_color_buffer_float: ") + moText(IntToStr(GLEW_ARB_color_buffer_float))) ;
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_multitexture: ") + moText(IntToStr(GLEW_ARB_multitexture))) ;
@@ -407,6 +409,8 @@ void moRenderManager::SaveScreen()
 	}
 }
 
+int screenshots_c = 0;
+
 bool moRenderManager::Screenshot( moText pathname ) {
 
         if (m_render_tex_moid[MO_SCREEN_TEX]) {
@@ -429,6 +433,7 @@ bool moRenderManager::Screenshot( moText pathname ) {
 
                 srand(2);
                 int randcode = rand();
+                screenshots_c+= 1;
 
                 time(&rawtime);
                 timeinfo = localtime ( &rawtime );
@@ -447,7 +452,7 @@ bool moRenderManager::Screenshot( moText pathname ) {
                         }
                     }
 
-                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText(".png");
+                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText("_") + IntToStr(screenshots_c) + moText(".png");
                 } else {
                     screenshot_path = pathname;
                     /** crear directorio ?? */

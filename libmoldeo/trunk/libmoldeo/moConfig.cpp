@@ -319,8 +319,11 @@ int moConfig::LoadConfig( moText p_filename ) {
 
 					moText paramname((char*) PARAM->Attribute( "name"));
 					moText paramtype((char*) PARAM->Attribute( "type"));
+					moText paraminterpolation((char*) PARAM->Attribute( "interpolation"));
+					moText paramduration((char*) PARAM->Attribute( "duration"));
 
-					moParamDefinition definition( paramname, paramtype );
+          cout << endl << "moConfig::LoadConfig > name: " <<  paramname << " paraminterpolation: " << paraminterpolation  << endl;
+					moParamDefinition definition( paramname, paramtype, paraminterpolation, paramduration );
 					moParam	xparam( definition );
 
 					TiXmlElement*  VALUE = NULL;
@@ -380,6 +383,11 @@ int moConfig::LoadConfig( moText p_filename ) {
 					}
 
 					xparam.FirstValue();
+					cout    << "moConfig::LoadConfig > adding paramname: " << xparam.GetParamDefinition().GetName()
+                            << "  paramtype:" << xparam.GetParamDefinition().GetTypeStr()
+                            << "  interpolation > IsOn(): " << xparam.GetParamDefinition().GetInterpolation().IsOn()
+                            << "  GetFunctionToText(): " << xparam.GetParamDefinition().GetInterpolation().GetFunctionToText()
+                            << "  GetDuration(): " << xparam.GetParamDefinition().GetInterpolation().GetDuration() << endl;
 					m_Params.Add( xparam );
 
 					PARAM = PARAM->NextSiblingElement("PARAM");
@@ -495,6 +503,10 @@ int moConfig::SaveConfig( moText p_filename ) {
 
                     PARAM->SetAttribute( "name" , definition.GetName() );
                     PARAM->SetAttribute( "type" , definition.GetTypeStr() );
+                    if (definition.GetInterpolation().GetFunctionToText()!=moText("none") ) {
+                      PARAM->SetAttribute( "interpolation" , definition.GetInterpolation().GetFunctionToText() );
+                      PARAM->SetAttribute( "duration" , IntToStr(definition.GetInterpolation().GetDuration()) );
+                    }
 
                     for( int  v = 0; v< (int)xparam.GetValuesCount(); v++ ) {
 
@@ -805,34 +817,43 @@ moConfig::GetValue( int indexparam, int indexvalue ) {
 MOint
 moConfig::Int( moParamReference p_paramreference ) {
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    if (param.GetData()) return param.GetData()->Int();
     return param.GetValue().GetSubValue().Int();
 }
 
 MOint
 moConfig::Int( moText p_param_name ) {
-    return GetValue(p_param_name).GetSubValue().Int();
+    moParam& param(GetParam(p_param_name));
+    if (param.GetData()) return param.GetData()->Int();
+    return param.GetValue().GetSubValue().Int();
 }
 
 MOdouble
 moConfig::Double( moParamReference p_paramreference ) {
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    if (param.GetData()) return param.GetData()->Double();
     return param.GetValue().GetSubValue().Double();
 }
 
 MOdouble
 moConfig::Double( moText p_param_name ) {
-    return GetValue(p_param_name).GetSubValue().Double();
+    moParam& param(GetParam(p_param_name));
+    if (param.GetData()) return param.GetData()->Double();
+    return param.GetValue().GetSubValue().Double();
 }
 
 moText
 moConfig::Text( moParamReference p_paramreference ) {
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    if (param.GetData()) return param.GetData()->Text();
     return param.GetValue().GetSubValue().Text();
 }
 
 moText
 moConfig::Text( moText p_param_name ) {
-    return GetValue( p_param_name ).GetSubValue().Text();
+    moParam& param(GetParam(p_param_name));
+    if (param.GetData()) return param.GetData()->Text();
+    return param.GetValue().GetSubValue().Text();
 }
 
 moVector4d

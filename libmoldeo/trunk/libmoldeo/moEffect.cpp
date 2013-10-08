@@ -93,6 +93,8 @@ moEffect::PreInit() {
 	devicecode = NULL;
 	m_EffectState.Init();
 
+    glewInit();
+
     /** Crea INLETS INTERNOS, es decir que no tienen un parametro asociado... (especificamente para su uso generico*/
     moInlet* Inlet = new moInlet();
     if (Inlet) {
@@ -117,6 +119,23 @@ moEffect::PreInit() {
       ((moConnector*)Inlet)->Init( moText("tempo"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(Inlet);
     }
+
+    Inlet = new moInlet();
+    if (Inlet) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)Inlet)->Init( moText("screen_width"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(Inlet);
+    }
+
+    Inlet = new moInlet();
+    if (Inlet) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)Inlet)->Init( moText("screen_height"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(Inlet);
+    }
+
 
 	if (!m_pResourceManager) return false;
 
@@ -232,6 +251,8 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 	  moInlet* InletTime = m_Inlets[0];
 	  moInlet* InletT = m_Inlets[1];
 	  moInlet* InletTempo = m_Inlets[2];
+	  moInlet* InletScreenWidth = m_Inlets[3];
+	  moInlet* InletScreenHeight = m_Inlets[4];
 	  if (InletTime) {
             if (InletTime->GetData()) InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
     }
@@ -240,6 +261,12 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
     }
 	  if (InletTempo) {
         if (InletTempo->GetData()) InletTempo->GetData()->SetDouble( moMathd::FMod( m_EffectState.tempo.ang , moMathd::TWO_PI ) );
+    }
+    if (InletScreenWidth) {
+        if (InletScreenWidth->GetData()) InletScreenWidth->GetData()->SetDouble( m_pResourceManager->GetRenderMan()->ScreenWidth() );
+    }
+    if (InletScreenHeight) {
+        if (InletScreenHeight->GetData()) InletScreenHeight->GetData()->SetDouble( m_pResourceManager->GetRenderMan()->ScreenHeight() );
     }
   }
 

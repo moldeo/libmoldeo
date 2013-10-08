@@ -49,10 +49,9 @@ MOboolean moSceneEffect::Init()
 {
 	MOuint i;
 
-    PreInit();
+  if (!PreInit()) return false;
 
 	idp_alpha = m_Config.GetParamIndex("alpha");
-
 	idp_effects = m_Config.GetParamIndex("effects");
 	idp_scenes = m_Config.GetParamIndex("scenes");
 
@@ -146,6 +145,15 @@ MOboolean moSceneEffect::Finish()
 void moSceneEffect::Interaction(moIODeviceManager *consolaes) {
 /**/
 
+}
+
+moConfigDefinition *
+moSceneEffect::GetDefinition( moConfigDefinition *p_configdefinition ) {
+
+	//default: alpha, color, syncro
+	p_configdefinition = moEffect::GetDefinition( p_configdefinition );
+	p_configdefinition->Add( moText("effects"), MO_PARAM_TEXT, SCENE_EFFECTS, moValue( "default", MO_VALUE_TXT ) );
+	p_configdefinition->Add( moText("scenes"), MO_PARAM_TEXT, SCENE_SCENES, moValue( "default", MO_VALUE_TXT ) );
 }
 
 

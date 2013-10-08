@@ -49,6 +49,7 @@ enum moParamType {
 	MO_PARAM_TEXTUREFOLDER,	//value type: TXT or LNK
 	MO_PARAM_FONT,          //value type: TXT or LNK
 	MO_PARAM_3DMODEL,		//value type: TXT or LNK
+	MO_PARAM_FILE,		    //value type: TXT or LNK
 	MO_PARAM_OBJECT,		//value type: TXT or LNK
     MO_PARAM_VIDEO,			//value type: TXT or LNK
 	MO_PARAM_SOUND,			//value type: TXT or LNK
@@ -129,6 +130,55 @@ moDeclareExportedDynamicArray( moParamIndex, moParamIndexes );
 //				CONFIG DEFINITION
 //==========================================================
 
+//check CSS3
+enum moParamInterpolationFunction {
+    MO_INTERPOLATION_NONE=0,
+    MO_INTERPOLATION_LINEAR,
+    MO_INTERPOLATION_EASEINOUTQUAD,
+    MO_INTERPOLATION_EASEINOUTSIN,
+    MO_INTERPOLATION_EXPRESSION,
+    MO_INTERPOLATION_ATSPEED
+};
+
+
+class LIBMOLDEO_API moParamInterpolation {
+
+    public:
+
+        moParamInterpolation();
+		moParamInterpolation(const moParamInterpolation &src);
+		virtual ~moParamInterpolation();
+
+		moParamInterpolation &operator = (const moParamInterpolation &src);
+
+        void StartInterpolation( const moData& p_data_in, const moData& p_data_out );
+        void StopInterpolation();
+        const moTimer& GetTimer() const;
+        bool IsOn() const;
+        void Activate();
+
+		void SetInterpolation(  moParamInterpolationFunction p_interpol_fun,
+                                        moText p_fun_duration = moText("1000"),
+                                        moText p_fun_expression = moText("") );
+		void SetDuration(  MOlong p_fun_duration );
+		MOlong GetDuration();
+        moText GetFunctionToText();
+
+        moData* InterpolateData( const moData& pParamData  );
+
+
+    private:
+        bool    m_bIsOn;
+        moTimer m_Timer;
+        MOlong  m_Duration; //in milliseconds
+        moParamInterpolationFunction m_Function;
+
+        moData  m_DataIn;
+        moData  m_DataOut;
+        moData  m_DataInterpolated;
+
+};
+
 
 class LIBMOLDEO_API moParamDefinition
 {
@@ -136,7 +186,7 @@ class LIBMOLDEO_API moParamDefinition
 		moParamDefinition();
 		moParamDefinition( const moParamDefinition &src);
 		moParamDefinition( const  moText& p_name, moParamType p_type );
-		moParamDefinition( const  moText& p_name, const moText& p_type );
+		moParamDefinition( const  moText& p_name, const moText& p_type, const moText& p_interpolation=moText(""), const moText& p_duration=moText("") );
 		virtual ~moParamDefinition();
 
 		moParamDefinition &operator = (const moParamDefinition &src);
@@ -175,6 +225,14 @@ class LIBMOLDEO_API moParamDefinition
                 return m_Options;
         }
 
+        void SetInterpolation( moParamInterpolation& p_Interpolation ) {
+            m_Interpolation = p_Interpolation;
+        }
+
+        moParamInterpolation& GetInterpolation() {
+            return m_Interpolation;
+        }
+
 	private:
 		moText			m_Name;
 		moParamType		m_Type;//type of parameter ()
@@ -182,10 +240,12 @@ class LIBMOLDEO_API moParamDefinition
 
 		moValue         m_DefaultValue;
 		moTextArray     m_Options;
+		moParamInterpolation    m_Interpolation;
 
 };
 
 moDeclareExportedDynamicArray( moParamDefinition, moParamDefinitions);
+
 
 class LIBMOLDEO_API moParam
 {

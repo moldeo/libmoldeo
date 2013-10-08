@@ -813,13 +813,33 @@ MOuint moTextureManager::GetTypeForFile(moText p_filename)
 	moText extension = p_filename;
 	moText begin = p_filename;
 	begin.Left(7);
-	extension.Right(3);
 
-	if (!stricmp(extension,"tga") || !stricmp(extension,"jpg") || !stricmp(extension,"png") || !stricmp(extension,"bmp") || !stricmp(extension,"tif") || !stricmp(extension,"xpm"))
+	moFile FileName(p_filename);
+  extension = FileName.GetExtension();
+
+	if (!stricmp(extension,".tga")
+     || !stricmp(extension,".jpg")
+     || !stricmp(extension,".png")
+     || !stricmp(extension,".bmp")
+     || !stricmp(extension,".tif")
+     || !stricmp(extension,".xpm"))
 		return MO_TYPE_TEXTURE;
 	if (!stricmp(begin,"multiple"))
 		return MO_TYPE_TEXTURE_MULTIPLE;
-	if (!stricmp(extension,"mkv") || !stricmp(extension,"ogg") || !stricmp(extension,"avi") || !stricmp(extension,"mov") || !stricmp(extension,"mpg") || !stricmp(extension,"vob") || !stricmp(extension,"m2v") || !stricmp(extension,"mp4"))
+	if (!stricmp(extension,".mkv")
+     || !stricmp(extension,".ogg")
+     || !stricmp(extension,".ogv")
+     || !stricmp(extension,".avi")
+     || !stricmp(extension,".mov")
+     || !stricmp(extension,".mpg")
+     || !stricmp(extension,".mpeg")
+     || !stricmp(extension,".mts")
+     || !stricmp(extension,".m2ts")
+     || !stricmp(extension,".vob")
+     || !stricmp(extension,".m2v")
+     || !stricmp(extension,".mp4")
+     || !stricmp(extension,".web")
+     || !stricmp(extension,".webm"))
 		return MO_TYPE_MOVIE;
 
 	return MO_TYPE_TEXTURE;
