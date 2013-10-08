@@ -56,6 +56,13 @@
 #include "moRenderManager.h"
 #include "moGUIManager.h"
 
+#define RenderMan()   m_pResourceManager->GetRenderMan()
+#define TextureMan()  m_pResourceManager->GetTextureMan()
+#define DataMan()  m_pResourceManager->GetDataMan()
+#define VideoMan()  m_pResourceManager->GetVideoMan()
+#define SoundMan()  m_pResourceManager->GetSoundMan()
+#define GLMan()  m_pResourceManager->GetGLMan()
+
 
 /// clase base para objetos dibujables
 /** \if spanish

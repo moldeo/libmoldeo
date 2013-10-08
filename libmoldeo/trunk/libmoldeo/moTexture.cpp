@@ -1611,15 +1611,19 @@ bool  moMovie::IsEOS() {
 
 MOboolean moMovie::SupportedFile(moText p_filename)
 {
-	moText extension = p_filename.Right(3);
-	return (!stricmp(extension,"avi") ||
-         !stricmp(extension,"mov") ||
-         !stricmp(extension,"mpg") ||
-         !stricmp(extension,"mp4")||
-         !stricmp(extension,"ogg") ||
-         !stricmp(extension,"mpv") ||
-         !stricmp(extension,"mkv") ||
-         !stricmp(extension,"m2v"));
+
+	moFile FileName(p_filename);
+	moText extension = FileName.GetExtension();
+	return (!stricmp(extension,".avi") ||
+         !stricmp(extension,".mov") ||
+         !stricmp(extension,".mpg") ||
+         !stricmp(extension,".mp4")||
+         !stricmp(extension,".ogg") ||
+         !stricmp(extension,".webm") ||
+         !stricmp(extension,".web") ||
+         !stricmp(extension,".mpv") ||
+         !stricmp(extension,".mkv") ||
+         !stricmp(extension,".m2v"));
 }
 
 MOboolean moMovie::LoadMovieFile(moText p_filename)

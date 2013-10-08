@@ -30,10 +30,16 @@
   http://gstreamer.freedesktop.org/data/doc/gstreamer/head/pwg/html/section-types-definitions.html
 
 *******************************************************************************/
+#include "moGsGraph.h"
+
+//#ifdef MO_LINUX
 #include <gst/gst.h>
+//#endif
+
 
 #include "moFileManager.h"
-#include "moGsGraph.h"
+
+moLock BuildLock;
 
 
 #ifdef MO_GSTREAMER
@@ -454,17 +460,22 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
 
             //pGsGraph->BuildAudioFilters();
 
-            if (pGsGraph->m_pAudioConverter) {
-                audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
-                padlink = gst_pad_link (Gpad, audiopadinconverter);
+            if (pGsGraph->m_pAudioConverter && 1==2) {
+                gboolean link_audioresult = gst_element_link_many( (GstElement*)pGsGraph->m_pAudioConverter,
+                                      (GstElement*)pGsGraph->m_pAudioVolume,
+                                      (GstElement*)pGsGraph->m_pAudioPanorama,
+                                      (GstElement*)pGsGraph->m_pAudioSink, NULL );
+                /*if (link_audioresult) {
+                    audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
+                    padlink = gst_pad_link (Gpad, audiopadinconverter);
 
-                GstPad* srcAudio = gst_element_get_pad ( (GstElement*)pGsGraph->m_pAudioConverter, "src");
+                    GstPad* srcAudio = gst_element_get_pad ( (GstElement*)pGsGraph->m_pAudioConverter, "src");
 
-                if (padlink==GST_PAD_LINK_OK) {
-                    pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
-                }
-
-            } else if (pGsGraph->m_pAudioSink) {
+                    if (padlink==GST_PAD_LINK_OK) {
+                        pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
+                    }
+                }*/
+            } else if (pGsGraph->m_pAudioSink && 1==2) {
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioSink, "sink");
                 padlink = gst_pad_link (Gpad, audiopadinconverter);
             }
@@ -1455,19 +1466,12 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
             #ifdef MO_WIN32
             m_pFileSource = gst_element_factory_make ("dshowvideosrc", "source");
-            #endif
-
-            #ifdef MO_LINUX
+            #else
             if (devicename==moText("DV"))
                 m_pFileSource = gst_element_factory_make ("dv1394src", "source");
             else
                 m_pFileSource = gst_element_factory_make ("v4l2src", "source");
             #endif
-
-            #ifdef MO_MACOSX
-                m_pFileSource = gst_element_factory_make ("qtkitvideosrc", "source");
-            #endif
-
 
             m_pFinalSource = m_pFileSource;
         }
@@ -1718,8 +1722,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
 
             m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
-
-	    if (m_pDecoderBin) {
+            if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect (m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pDecoderBin );
 
@@ -1771,7 +1774,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                             event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {
-                        MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > src and decodebin2 linkage failed: ") + devicename );
+                        MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > src and decodebin linkage failed: ") + devicename );
                         event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                     }
 
@@ -1780,7 +1783,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                     event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-                MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > decodebin2 construction failed"));
+                MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > decodebin construction failed"));
                 event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
             }
         } else {
@@ -1978,7 +1981,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
             res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioEcho );
             unsigned long long max_delay,delay;
             max_delay = 2000000000;
-            delay = 1;
+            delay = 0;
             float intensity = 0.0;
 
             g_object_set ( (GstElement*)m_pAudioEcho, "max-delay", max_delay, NULL);
@@ -1993,8 +1996,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
            }
 
            m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
-
-	   if (m_pDecoderBin) {
+            if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect ((GstElement*)m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pDecoderBin );
             }
@@ -2029,11 +2031,11 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
                     return true;
 
                 } else {
-                    MODebug2->Error(moText("moGsGraph::error: m_pAudioConverter <-> m_pAudioResample <-> m_pAudioSink linking failed"));
+                    MODebug2->Error(moText("moGsGraph::error: m_pAudioConverter m_pAudioResample m_pAudioSink linking failed"));
                     event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-               MODebug2->Error(moText("moGsGraph::error: m_pFileSource <-> m_pDecoderBin linking failed"));
+               MODebug2->Error(moText("moGsGraph::error: m_pFileSource m_pWavParser linking failed"));
                event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
             }
 
@@ -2050,7 +2052,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
 
 void moGsGraph::BuildAudioFilters() {
 
-
+    BuildLock.Lock();
     bool res = false;
 
     if (m_pGstPipeline) {
@@ -2078,7 +2080,7 @@ void moGsGraph::BuildAudioFilters() {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioSink );
            }
     }
-
+    BuildLock.Unlock();
 
 }
 
@@ -2141,7 +2143,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            //RetreivePads( m_pFileSource );
 
           ///SOUND...
-          BuildAudioFilters();
+            //BuildAudioFilters();
 
            ///FIN SOUND
 
@@ -2165,8 +2167,12 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                             link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pVideoBalance, (GstElement*)m_pColorSpace, (GstElement*)m_pCapsFilter, (GstElement*)m_pFakeSink, NULL );
                         else
                             link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pColorSpace, (GstElement*)m_pCapsFilter, (GstElement*)m_pFakeSink, NULL );
+
                         ///agrega sonido en sincro
-                        if (m_pAudioConverter) link_result = link_result && gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
+
+                        //if (m_pAudioConverter)
+                        //  link_audio_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
+
 
                         if (link_result) {
 
@@ -2185,7 +2191,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                             event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {
-                        MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > filesrc and decodebin2 linkage failed: ") + filename );
+                        MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > filesrc and decodebin linkage failed: ") + filename );
                         event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                     }
 
@@ -2194,7 +2200,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                     event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
                 }
             } else {
-                MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > decodebin2 construction failed"));
+                MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > decodebin construction failed"));
                 event_loop( (GstElement*)m_pGstPipeline, false, GST_STATE_PAUSED);
             }
         } else {
@@ -2520,6 +2526,7 @@ typedef enum {
 
 bool
 moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitforsync) {
+
 
   GstStateChangeReturn Gstate_change_result = (GstStateChangeReturn)state_change_result;
 

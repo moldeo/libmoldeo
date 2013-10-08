@@ -719,12 +719,16 @@ moFile::SetCompletePath( moText p_completepath ) {
 
 
 		m_Extension = str.c_str();
+    m_Path = "";
+    moText pathStart = m_CompletePath;
+    pathStart = pathStart.SubText(0,0);
+    //cout << "pathStart:" << pathStart << " slash:" << moSlash << endl;
 
         m_Dirs = m_CompletePath.Explode(moText("\\/"));
-        #ifdef MO_WIN32
-        m_Path = "";
-        #else
-        m_Path = moSlash;
+        #ifndef MO_WIN32
+        if (m_CompletePath.Length()>0)
+          if ( pathStart == moSlash )
+            m_Path = moSlash;
         #endif
 
         if ( m_Dirs.Count() > 0 ) {
@@ -736,7 +740,7 @@ moFile::SetCompletePath( moText p_completepath ) {
         }
 
         for( MOuint d=0; d < m_Dirs.Count(); d++ ) {
-          if (m_Dirs[d]!="" && m_Dirs[d]!="/" && m_Dirs[d]!="." && m_Dirs[d]!="..")
+          if (m_Dirs[d]!="" && m_Dirs[d]!="/" && m_Dirs[d]!=".")// && m_Dirs[d]!="..")
             m_Path+= m_Dirs[d] + "/";
         }
 

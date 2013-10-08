@@ -206,17 +206,18 @@ class LIBMOLDEO_API moData {
 
 
 		moText                  Text();
-		MOint                   Int();
-		MOlonglong              Long();
-		MOfloat                 Float();
-		MOdouble                Double();
-		MOchar                  Char();
+		MOint                   Int() const;
+		MOlonglong              Long() const;
+		MOfloat                 Float() const;
+		MOdouble                Double() const;
+		MOchar                  Char() const;
 		moNumber                Number();
 		MOpointer               Pointer();
 		moDataType              Type() const;
 		MOulong                 Size() const;
 		MOdouble                Eval();
 		MOdouble                Eval( double x );
+        MOdouble                LastEval() const;
 
     ///referencias a clases
 		moMathFunction*         Fun();
@@ -238,7 +239,7 @@ class LIBMOLDEO_API moData {
 		moData*                 GetData();
 
 		//conversion
-		moText                  ToText();
+		moText                  ToText() const;
 		moText                  TypeToText();
 		moDataType              TextToType( moText texttype );
 
@@ -253,16 +254,14 @@ class LIBMOLDEO_API moData {
 		moText			m_Text;
 		MOulong			m_DataSize;
 
+
 		bool            m_bFilteredAlpha;
 		bool            m_bFilteredParams;
 		MOfloat         m_AlphaFilter;
-    moTextFilterParam*  m_pFilterParam;
-    moData*         m_pAlphaFilter;
-/*
-		MOint			m_IndexValueInterpolating;//Indice del valor desde el cual se interpola;
-		MOboolean		m_bInterpolated;//Marcado cuando el modo de interpolación está activado
-		moData*			m_pInterpolatedData;
-*/
+        moTextFilterParam*  m_pFilterParam;
+        moData*         m_pAlphaFilter;
+
+        MOdouble        m_LastEval;
 };
 
 

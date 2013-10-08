@@ -152,6 +152,23 @@ moIODeviceManager::RemoveIODevice( MOint p_ID ) {
 void
 moIODeviceManager::Update() {
 
+  //delete all events before poll new ones...
+  //that means Devices dont need to delete their events anymore
+
+  //Events->Finish();
+    moEvent* actual = Events->First;
+    moEvent* tmp = NULL;
+
+    while(actual) {
+        tmp = actual;
+        actual = tmp->next;
+        //if (tmp->reservedvalue3!=MO_MESSAGE) {
+            //deleting events that are note messages!!!
+            //cout << "moIODeviceManager::Update > Deleting events, not messages: deviceid: " << tmp->deviceid << endl;
+            Events->Delete(tmp);
+        //}
+    }
+
 	PollEvents();
 
 	for(MOuint i = 0; i < m_IODevices.Count(); i++) {

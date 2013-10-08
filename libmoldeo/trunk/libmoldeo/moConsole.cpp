@@ -1581,6 +1581,91 @@ moConsole::Interaction() {
 }
 
 void
+moConsole::ProcessConsoleMessage( moMessage* p_pMessage ) {
+
+    moText action;
+    moText object_label;
+    moText position;
+    moText param_label;
+    moText value_index;
+    int valueidx = -1;
+
+    int objectid = 0;
+    int paramid = 0;
+    moMoldeoObject* Object = NULL;
+    moEffect* pEffect = NULL;
+    moParam pParam;
+
+    if (p_pMessage) {
+        moText actions = p_pMessage->m_Data.ToText();
+        cout << "Console receiving message: " << actions << endl;
+        moTextArray exploded = actions.Explode( moText(",") );
+
+        switch(exploded.Count()) {
+            case 2:
+                action = exploded[0];
+                object_label = exploded[1];
+
+                if (action=="show") {
+                    objectid = GetObjectId(object_label) - MO_MOLDEOOBJECTS_OFFSET_ID;
+
+                    Object = m_MoldeoObjects[objectid];
+
+                    if (Object && Object->GetConfig()) {
+                        pEffect = (moEffect*)Object;
+                        pEffect->Enable();
+                        pEffect->TurnOn();
+                        MODebug2->Message( moText("moConsole::ProcessConsoleMessage > show ")+Object->GetLabelName() );
+                    } else {
+                        MODebug2->Error( moText("moConsole::ProcessConsoleMessage > show : object not founded : id:")+(moText)IntToStr(objectid) + " label:" + object_label );
+                    }
+                }
+
+                break;
+            case 3:
+                action = exploded[0];
+                object_label = exploded[1];
+                position = exploded[2];
+                break;
+            case 4:
+                action = exploded[0];
+                object_label = exploded[1];
+                param_label = exploded[2];
+                value_index = exploded[3];
+                valueidx = atoi(value_index);
+
+                if (action=="setcurrentvalue") {
+                    objectid = GetObjectId(object_label)  - MO_MOLDEOOBJECTS_OFFSET_ID;
+                    Object = m_MoldeoObjects[objectid];
+
+                    if (Object && Object->GetConfig()) {
+
+                        paramid = Object->GetConfig()->GetParamIndex(param_label);
+                        Object->GetConfig()->SetCurrentValueIndex( paramid, valueidx );
+
+                        pParam = Object->GetConfig()->GetParam(paramid);
+
+                        MODebug2->Message( moText("moConsole::ProcessConsoleMessage: SetObjectCurrentValue")+Object->GetLabelName() + " Param:" + pParam.GetParamDefinition().GetName() );
+                    } else {
+                        MODebug2->Error( moText("imoConsole::ProcessConsoleMessage: SetObjectCurrentValue : object not founded : id:")+(moText)IntToStr(objectid) );
+                    }
+                }
+
+
+                break;
+        }
+
+        if (exploded.Count()>=2) {
+            cout << "Console received message: action: " << action << " object: " << object_label << " position:" << position << " param:" << param_label << " value:" << value_index << " valueidx:" << valueidx << endl;
+        }
+
+
+    }
+
+}
+
+
+void
 moConsole::Update() {
     if (!m_pResourceManager) return;
 	moRenderManager* RenderMan = m_pResourceManager->GetRenderMan();
@@ -1613,6 +1698,22 @@ moConsole::Update() {
 			RenderMan->EndUpdateObject();
 		}
 	RenderMan->EndUpdate();
+
+
+    //Procesamos aquellos Mensajes enviados con acciones
+    moEvent* actual = m_pIODeviceManager->GetEvents()->First;
+    moEvent* tmp = NULL;
+    while(actual!=NULL) {
+
+        if ( actual->deviceid==-1 && actual->reservedvalue3 == MO_MESSAGE ) {
+            cout << "Console rec message!" << endl;
+            moMessage* ConsoleMessage = (moMessage*)actual;
+            this->ProcessConsoleMessage(ConsoleMessage);
+        }
+
+        tmp = actual;
+        actual = tmp->next;
+    }
 
 	moMoldeoObject::Update( m_pIODeviceManager->GetEvents() );
 }

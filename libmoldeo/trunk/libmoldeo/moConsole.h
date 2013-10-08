@@ -370,6 +370,9 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         int GetDirectoryFileCount( moText p_path );
 
+
+        void ProcessConsoleMessage( moMessage* p_pMessage );
+
         ///============================
         ///SCRIPTED in LUA
         ///============================

@@ -82,7 +82,7 @@ moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, MOint p_MoldeoI
 
 }
 
-moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, moMoldeoObjectType p_TypeDest, MOint p_MoldeoIdSrc, moMoldeoObjectType p_TypeSrc, const moData& p_data ) {
+moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, moMoldeoObjectType p_TypeDest, MOint p_MoldeoIdSrc, moMoldeoObjectType p_TypeSrc, const moData& p_data )  {
 	deviceid = p_MoldeoIdDest;
 	devicecode = 0;
 	reservedvalue3 = MO_MESSAGE;
@@ -98,6 +98,7 @@ moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, moMoldeoObjectT
 }
 
 moMessage::moMessage( MOint p_MoldeoIdDest, MOint p_InletIdDest, moMoldeoObjectType p_TypeDest, moText	p_NameDest, MOint p_MoldeoIdSrc, moMoldeoObjectType p_TypeSrc, moText p_NameSrc, const moData& p_data ) {
+
 	deviceid = p_MoldeoIdDest;
 	devicecode = 0;
 	reservedvalue3 = MO_MESSAGE;
@@ -124,6 +125,13 @@ moMessage::~moMessage() {
 moMessage&
 moMessage::operator=(const moMessage& src) {
 
+  deviceid = src.deviceid;
+  devicecode = src.devicecode;
+  reservedvalue0 = src.reservedvalue0;
+  reservedvalue1 = src.reservedvalue1;
+  reservedvalue2 = src.reservedvalue2;
+  reservedvalue3 = src.reservedvalue3;
+  pointer = src.pointer;
   m_Data = src.m_Data;
   m_InletIdDest = src.m_InletIdDest;
   m_MoldeoIdDest = src.m_MoldeoIdDest;
@@ -221,7 +229,7 @@ moEvent* DeleteCurrent() {
 }
 */
 void moEventList::Add( moMessage* p_Message ) {
-
+  //cout << "moEventList::Add( moMessage* p_Message )" << endl;
 	m_lock.Lock();
 	moEvent* p_Event = (moEvent*)p_Message;
 	if(First==NULL) {//lista vacia
@@ -243,29 +251,36 @@ void moEventList::Add( moMessage* p_Message ) {
 
 
 void moEventList::Add( moEvent* p_Event ) {
-
+  //cout << "moEventList::Add( moEvent* p_Event )" << endl;
 	m_lock.Lock();
+	//cout << "moEventList::Add Locked" << endl;
 	//MODebug2->Message( " Event List :: added event " );
 	if(First==NULL) {//lista vacia
+	  //cout << "moEventList::Add -> empty list" << endl;
 		First = p_Event;
 		Last = First;
 		First->previous = NULL;
 		First->next = NULL;
-	} else {//no vacia, lo ponemos al final
+	} else if (Last!=NULL) {//no vacia, lo ponemos al final
+	  //cout << "moEventList::Add -> NOt empty -> add to last event: " << Last << endl;
 		Last->next = p_Event;
+		//cout << "moEventList::Add -> Last->next set to " << p_Event << endl;
 		if(Last->next != NULL) {
 			Last->next->previous	= Last;
 			Last->next->next = NULL;
 			Last = Last->next;
 		}
-	}
+	}// else cout << "moEventList::Add -> Invalid values for First and Last values: " << "First is: " << First << " Last is: " << Last << endl;
+	//cout << "moEventList::Add Unlocking" << endl;
 	m_lock.Unlock();
+	//cout << "moEventList::Add Unlocked" << endl;
 
 }
 
 //revisado
 void
 moEventList::Add(MOint did, MOint cod, MOint val0, MOint val1, MOint val2, MOint val3, MOpointer ptr) {
+  //cout << "moEventList::Add(MOint did, MOint cod, MOint val0, MOint val1, MOint val2, MOint val3, MOpointer ptr)" << endl;
 	m_lock.Lock();
 	if(First==NULL) {//lista vacia
 		First = new moEvent(did,cod,val0,val1,val2,val3,ptr);
@@ -285,6 +300,7 @@ moEventList::Add(MOint did, MOint cod, MOint val0, MOint val1, MOint val2, MOint
 
 void
 moEventList::Add(MOint did, MOint cod, MOint val0, MOpointer ptr ) {
+	//cout << "moEventList::Add(MOint did, MOint cod, MOint val0, MOpointer ptr )" << endl;
 	m_lock.Lock();
 
 	if(First==NULL) {//lista vacia
@@ -310,7 +326,7 @@ MOboolean
 moEventList::Delete(moEvent *ev) {
 
 	m_lock.Lock();
-
+  //cout << "moEventList::Delete (moEvent*) ev: " << ev << " First:" << First << " Last:" << Last << endl;
 	if(ev==First) {
 		if(ev==Last) {
 			First = NULL;
@@ -329,6 +345,7 @@ moEventList::Delete(moEvent *ev) {
 
 	}
 	//finalmente, lo borro al maldito
+	//cout << "moEventList::Delete (moEvent*) ev: deleting pointer!" << ev << " First:" << First << " Last:" << Last << endl;
 	delete ev;
 	ev = NULL;
 
@@ -341,12 +358,14 @@ MOboolean
 moEventList::Delete(moMessage *ev) {
 
 	m_lock.Lock();
-
+  //cout << "moEventList::Delete (moMessage*) ev: " << ev << " First:" << First << " Last:" << Last << endl;
 	if(ev==First) {
 		if(ev==Last) {
+		  //only one
 			First = NULL;
 			Last = NULL;
 		} else {
+		  //at least two
 			First->next->previous = NULL;
 			First = First->next;
 		}
