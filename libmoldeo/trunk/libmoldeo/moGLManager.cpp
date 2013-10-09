@@ -428,7 +428,7 @@ moGLManager::CreateContext( int p_width, int p_height ) {
 
     #endif
 
-    #ifdef MO_LINUX
+    #ifdef MO_LINUXX
 
     /*
     If direct is True,

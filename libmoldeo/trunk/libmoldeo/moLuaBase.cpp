@@ -357,7 +357,9 @@ static void LuaHook (lua_State *lua, lua_Debug *ar)
    switch (ar->event)
    {
    case LUA_HOOKCALL:
+   #ifdef LUA_HOOKTAILCALL
    case LUA_HOOKTAILCALL:
+   #endif
       LuaHookCall (lua);
       break;
    case LUA_HOOKRET:
