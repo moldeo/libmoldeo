@@ -38,87 +38,89 @@
 #include "moValue.h"
 
 enum moParamType {
-	MO_PARAM_ALPHA,			//value type: NUM or FUNCTION
-	MO_PARAM_COLOR,			//value type: NUM[4] or FUNCTION[4] or
-	MO_PARAM_BLENDING,		//value type: NUM or TEXT (to script or shader for chroma???)
-	MO_PARAM_POLYGONMODE,	//value type: NUM or TEXT ( 0:FILL 1:LINE 2:POINT)
-	MO_PARAM_SYNC,			//value type: NUM or FUNCTION
-	MO_PARAM_PHASE,			//value type: NUM or FUNCTION
-	MO_PARAM_TEXT,			//value type: TXT or LNK
-	MO_PARAM_TEXTURE,		//value type: TXT or LNK
-	MO_PARAM_TEXTUREFOLDER,	//value type: TXT or LNK
-	MO_PARAM_FONT,          //value type: TXT or LNK
-	MO_PARAM_3DMODEL,		//value type: TXT or LNK
-	MO_PARAM_FILE,		    //value type: TXT or LNK
-	MO_PARAM_OBJECT,		//value type: TXT or LNK
-    MO_PARAM_VIDEO,			//value type: TXT or LNK
-	MO_PARAM_SOUND,			//value type: TXT or LNK
-	MO_PARAM_NUMERIC,		//value type: NUM
-	MO_PARAM_FUNCTION,		//value type: NUM or FUNCTION
-	MO_PARAM_TRANSLATEX,    //value type: NUM or FUNCTION
-	MO_PARAM_TRANSLATEY,    //value type: NUM or FUNCTION
-	MO_PARAM_TRANSLATEZ,    //value type: NUM or FUNCTION
-	MO_PARAM_SCALEX,		//value type: NUM or FUNCTION
-	MO_PARAM_SCALEY,		//value type: NUM or FUNCTION
-	MO_PARAM_SCALEZ,		//value type: NUM or FUNCTION
-	MO_PARAM_ROTATEX,		//value type: NUM or FUNCTION
-	MO_PARAM_ROTATEY,		//value type: NUM or FUNCTION
-	MO_PARAM_ROTATEZ,		//value type: NUM or FUNCTION
-	MO_PARAM_SCRIPT,		//value type: TXT or LNK
-	MO_PARAM_FILTER,        //value type: TXT or LNK
-	MO_PARAM_COMPOSE,        //any composition of types
-	MO_PARAM_VECTOR,    //vector of one type
-	MO_PARAM_INLET,			//value type: TXT or LNK
-	MO_PARAM_OUTLET,			//value type: TXT or LNK
+	MO_PARAM_ALPHA,			///value type: NUM or FUNCTION
+	MO_PARAM_COLOR,			///value type: NUM[4] or FUNCTION[4] or
+	MO_PARAM_BLENDING,		///value type: NUM or TEXT (to script or shader for chroma???)
+	MO_PARAM_POLYGONMODE,	///value type: NUM or TEXT ( 0:FILL 1:LINE 2:POINT)
+	MO_PARAM_SYNC,			///value type: NUM or FUNCTION
+	MO_PARAM_PHASE,			///value type: NUM or FUNCTION
+	MO_PARAM_TEXT,			///value type: TXT or LNK
+	MO_PARAM_TEXTURE,		///value type: TXT or LNK
+	MO_PARAM_TEXTUREFOLDER,	///value type: TXT or LNK
+	MO_PARAM_FONT,          ///value type: TXT or LNK
+	MO_PARAM_3DMODEL,		///value type: TXT or LNK
+	MO_PARAM_FILE,		    ///value type: TXT or LNK
+	MO_PARAM_OBJECT,		///value type: TXT or LNK
+  MO_PARAM_VIDEO,			///value type: TXT or LNK
+	MO_PARAM_SOUND,			///value type: TXT or LNK
+	MO_PARAM_NUMERIC,		///value type: NUM
+	MO_PARAM_FUNCTION,		///value type: NUM or FUNCTION
+	MO_PARAM_TRANSLATEX,    ///value type: NUM or FUNCTION
+	MO_PARAM_TRANSLATEY,    ///value type: NUM or FUNCTION
+	MO_PARAM_TRANSLATEZ,    ///value type: NUM or FUNCTION
+	MO_PARAM_SCALEX,		///value type: NUM or FUNCTION
+	MO_PARAM_SCALEY,		///value type: NUM or FUNCTION
+	MO_PARAM_SCALEZ,		///value type: NUM or FUNCTION
+	MO_PARAM_ROTATEX,		///value type: NUM or FUNCTION
+	MO_PARAM_ROTATEY,		///value type: NUM or FUNCTION
+	MO_PARAM_ROTATEZ,		///value type: NUM or FUNCTION
+	MO_PARAM_SCRIPT,		///value type: TXT or LNK
+	MO_PARAM_FILTER,        ///value type: TXT or LNK
+	MO_PARAM_COMPOSE,        ///any composition of types
+	MO_PARAM_VECTOR,    ///vector of one type
+	MO_PARAM_INLET,			///value type: TXT or LNK
+	MO_PARAM_OUTLET,			///value type: TXT or LNK
 	MO_PARAM_UNDEFINED = -1
 };
 
 class LIBMOLDEO_API moParamReference {
 	public:
-	moParamReference() {
-		reference=-1;
-	}
+    moParamReference() {
+      reference=-1;
+    }
 
-	moParamReference(MOint i) {
-		reference= i;
-	}
-	moParamReference(MOuint i) {
-		reference = (MOlong)i;
-	}
+    moParamReference(MOint i) {
+      reference= i;
+    }
+    moParamReference(MOuint i) {
+      reference = (MOlong)i;
+    }
 
-	moParamReference( const moParamReference& src) {
-	  (*this) = src;
-	}
-	moParamReference& operator=( const moParamReference& src) {
-	  reference = src.reference;
-	  return (*this);
-	}
+    moParamReference( const moParamReference& src) {
+      (*this) = src;
+    }
+    moParamReference& operator=( const moParamReference& src) {
+      reference = src.reference;
+      return (*this);
+    }
 
-	MOlong reference;
+    MOlong reference;
 };
 
 class LIBMOLDEO_API moParamIndex {
+
 	public:
-	moParamIndex() {
-		index=-1;
-	}
-	moParamIndex(MOint i) {
-		index= i;
-	}
-	moParamIndex(MOuint i) {
-		index = (MOlong)i;
-	}
 
-	moParamIndex( const moParamIndex& src) {
-	  (*this) = src;
-	}
-	moParamIndex& operator=( const moParamIndex& src) {
-	  index = src.index;
-	  return (*this);
-	}
+    moParamIndex() {
+      index=-1;
+    }
+    moParamIndex(MOint i) {
+      index= i;
+    }
+    moParamIndex(MOuint i) {
+      index = (MOlong)i;
+    }
+
+    moParamIndex( const moParamIndex& src) {
+      (*this) = src;
+    }
+    moParamIndex& operator=( const moParamIndex& src) {
+      index = src.index;
+      return (*this);
+    }
 
 
-	MOlong index;
+    MOlong index;
 };
 
 typedef moParamReference moR;
@@ -146,26 +148,74 @@ class LIBMOLDEO_API moParamInterpolation {
     public:
 
         moParamInterpolation();
-		moParamInterpolation(const moParamInterpolation &src);
-		virtual ~moParamInterpolation();
+        moParamInterpolation(const moParamInterpolation &src);
+        virtual ~moParamInterpolation();
 
-		moParamInterpolation &operator = (const moParamInterpolation &src);
+        moParamInterpolation &operator = (const moParamInterpolation &src);
 
-        void StartInterpolation( const moData& p_data_in, const moData& p_data_out );
-        void StopInterpolation();
-        const moTimer& GetTimer() const;
-        bool IsOn() const;
-        void Activate();
+            void StartInterpolation( const moData& p_data_in, const moData& p_data_out );
+            void StopInterpolation();
+            const moTimer& GetTimer() const;
+            bool IsOn() const;
+            void Activate();
 
-		void SetInterpolation(  moParamInterpolationFunction p_interpol_fun,
-                                        moText p_fun_duration = moText("1000"),
-                                        moText p_fun_expression = moText("") );
-		void SetDuration(  MOlong p_fun_duration );
-		MOlong GetDuration();
-        moText GetFunctionToText();
+        void SetInterpolation(  moParamInterpolationFunction p_interpol_fun,
+                                            moText p_fun_duration = moText("1000"),
+                                            moText p_fun_expression = moText("") );
+        void SetDuration(  MOlong p_fun_duration );
+        MOlong GetDuration();
 
-        moData* InterpolateData( const moData& pParamData  );
+        moText GetFunctionToText() {
+            switch(m_Function) {
+                case MO_INTERPOLATION_NONE:
+                    return moText("none");
+                    break;
+                case MO_INTERPOLATION_LINEAR:
+                    return moText("linear");
+                    break;
+                case MO_INTERPOLATION_EASEINOUTQUAD:
+                    return moText("easeinoutquad");
+                    break;
+                case MO_INTERPOLATION_ATSPEED:
+                    return moText("atspeed");
+                    break;
+                case MO_INTERPOLATION_EXPRESSION:
+                    return moText("expression");
+                    break;
+                case MO_INTERPOLATION_EASEINOUTSIN:
+                    return moText("easeinoutsin");
+                    break;
+                default:
+                    return moText("");
+                    break;
+            }
+            return moText("");
+        }
 
+        moData* InterpolateData( moData& pParamData  );
+
+        const moText& ToJSON() {
+
+          moText fieldseparation = ",";
+
+          m_FullJSON = "{";
+          m_FullJSON+= "'interpolation': '" + GetFunctionToText() + "'";
+          m_FullJSON+= fieldseparation + "'duration': '" + IntToStr(GetDuration())+ "'";
+          m_FullJSON+= fieldseparation + "'on': '" + IntToStr(IsOn())+ "'";
+          m_FullJSON+= "}";
+
+          return m_FullJSON;
+        }
+
+        double bezier_x( double t, double Ax, double Bx, double Cx);
+
+        double bezier_y( double t, double Ay, double By, double Cy);
+
+        double bezier_x_der( double t, double Ax, double Bx, double Cx);
+
+        double find_x_for( double t, double Ax, double Bx, double Cx );
+
+        double cubic_bezier( double t, double p1, double p2, double p3, double p4 );
 
     private:
         bool    m_bIsOn;
@@ -177,16 +227,19 @@ class LIBMOLDEO_API moParamInterpolation {
         moData  m_DataOut;
         moData  m_DataInterpolated;
 
+        moText  m_FullJSON;
 };
 
 
 class LIBMOLDEO_API moParamDefinition
 {
+
 	public:
+
 		moParamDefinition();
 		moParamDefinition( const moParamDefinition &src);
 		moParamDefinition( const  moText& p_name, moParamType p_type );
-		moParamDefinition( const  moText& p_name, const moText& p_type, const moText& p_interpolation=moText(""), const moText& p_duration=moText("") );
+		moParamDefinition( const  moText& p_name, const moText& p_type, const moText& p_property=moText(""), const moText& p_group=moText(""), const moText& p_interpolation=moText(""), const moText& p_duration=moText("") );
 		virtual ~moParamDefinition();
 
 		moParamDefinition &operator = (const moParamDefinition &src);
@@ -196,10 +249,17 @@ class LIBMOLDEO_API moParamDefinition
 		const moText& GetName() const {
 			return m_Name;
 		}
+
+		void SetName( const moText& p_Name) {
+        m_Name = p_Name;
+		}
+
 		moParamType GetType() const {
 			return m_Type;
 		}
 		moText GetTypeStr()  const;
+    void  SetType( moParamType p_paramType );
+
 
 		MOint GetIndex()  const {
 			return m_Index;
@@ -208,39 +268,75 @@ class LIBMOLDEO_API moParamDefinition
 			m_Index = p_index;
 		}
 
+    const moText& GetProperty() const {
+			return m_Property;
+		}
+
+		void SetProperty( const moText& p_Property) {
+        m_Property = p_Property;
+		}
+
+    const moText& GetGroup() const {
+			return m_Group;
+		}
+
+		void SetGroup( const moText& p_Group ) {
+        m_Group = p_Group;
+		}
+
 		void SetDefault( moValue& p_defaultvalue) {
-            m_DefaultValue = p_defaultvalue;
-        }
+        m_DefaultValue = p_defaultvalue;
+    }
 
-        moValue& GetDefaultValue() {
-            return m_DefaultValue;
-        }
+    moValue& GetDefaultValue() {
+        return m_DefaultValue;
+    }
 
 
-        void SetOptions( const moTextArray& p_options ) {
-            m_Options = p_options;
-        }
+    void SetOptions( const moTextArray& p_options ) {
+        m_Options = p_options;
+    }
 
-        moTextArray&    GetOptions() {
-                return m_Options;
-        }
+    moTextArray&    GetOptions() {
+            return m_Options;
+    }
 
-        void SetInterpolation( moParamInterpolation& p_Interpolation ) {
-            m_Interpolation = p_Interpolation;
-        }
+    void SetInterpolation( moParamInterpolation& p_Interpolation ) {
+        m_Interpolation = p_Interpolation;
+    }
 
-        moParamInterpolation& GetInterpolation() {
-            return m_Interpolation;
-        }
+    moParamInterpolation& GetInterpolation() {
+        return m_Interpolation;
+    }
+
+    const moText& ToJSON() {
+      moText fieldseparation  = ",";
+
+      m_FullJSON = "{";
+      m_FullJSON+= "'name': '"+ GetName()+"'";
+      m_FullJSON+= fieldseparation + "'type': '"+ GetTypeStr()+"'";
+      m_FullJSON+= fieldseparation + "'index': '"+ IntToStr(GetIndex())+"'";
+      m_FullJSON+= fieldseparation + "'property': '"+ GetProperty()+"'";
+      m_FullJSON+= fieldseparation + "'group': '"+ GetGroup()+"'";
+      m_FullJSON+= fieldseparation + "'interpolation': "+ GetInterpolation().ToJSON();
+      m_FullJSON+= "}";
+
+      return m_FullJSON;
+    }
 
 	private:
-		moText			m_Name;
-		moParamType		m_Type;//type of parameter ()
-		MOint			m_Index;//index of this parameter on moConfig parameters array
 
+		moText			    m_Name;
+		moParamType		  m_Type;//type of parameter ()
+		MOint			      m_Index;//index of this parameter on moConfig parameters array
+
+    moText          m_Property;
+    moText			    m_Group;
 		moValue         m_DefaultValue;
 		moTextArray     m_Options;
 		moParamInterpolation    m_Interpolation;
+
+		moText          m_FullJSON;
 
 };
 
@@ -283,6 +379,26 @@ class LIBMOLDEO_API moParam
 		moData* GetData();
 		void Update();
 		void SetExternData( moData* p_pExternData);
+		const moText& ToJSON() {
+
+          moText fieldSeparation = ",";
+          m_fullJSON = "{";
+          m_fullJSON+= "'paramdefinition': " + GetParamDefinition().ToJSON();
+          m_fullJSON+= fieldSeparation + "'paramvalues': [";
+
+          fieldSeparation = "";
+          for( int vi = 0; vi < (int)m_Values.Count(); vi++ ) {
+            m_fullJSON+= fieldSeparation + m_Values[vi].ToJSON();
+            fieldSeparation = ",";
+          }
+         // m_fullJSON+= fieldSeparation + "'paramvalues': " + ToJSON();
+          m_fullJSON+= "]";
+          m_fullJSON+= "}";
+          return m_fullJSON;
+
+		}
+
+    bool FixType( moParamType m_NewType = MO_PARAM_UNDEFINED );
 
 	private:
 		moParamDefinition	m_ParamDefinition;
@@ -291,6 +407,8 @@ class LIBMOLDEO_API moParam
 
 		moData*			m_pExternData;//Definido cuando el valor del parámetro es intervenido por un Inlet o un Outlet
 		MOboolean		m_bExternDataUpdated;//Marcado cuando un Inlet actualiza este parámetro
+
+		moText        m_fullJSON;
 
 };
 

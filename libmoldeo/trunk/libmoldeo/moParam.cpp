@@ -45,6 +45,7 @@ moParamDefinition::moParamDefinition() {
     m_Name = moText("");
     m_Index = -1;
     m_Type = MO_PARAM_UNDEFINED;
+    m_Property = "";
 }
 
 moParamDefinition::moParamDefinition( const moParamDefinition &src) {
@@ -55,6 +56,7 @@ moParamDefinition::moParamDefinition( const moText& p_name, moParamType p_type )
 		m_Name = p_name;
 		m_Type = p_type;
 		m_Index = -1;
+		m_Property = "";
 }
 
 bool
@@ -78,8 +80,18 @@ MO_PARAM_ALPHA,			//value type: NUM or FUNCTION
 	MO_PARAM_INLET,			//value type: TXT or LNK
 	MO_PARAM_OUTLET			//value type: TXT or LNK
 */
-moParamDefinition::moParamDefinition( const moText& p_name, const moText& p_type,  const moText& p_interpolation, const moText& p_duration) {
+moParamDefinition::moParamDefinition( const moText& p_name,
+                                      const moText& p_type,
+                                      const moText& p_property,
+                                      const moText& p_group,
+                                      const moText& p_interpolation,
+                                      const moText& p_duration) {
+
 		m_Name = p_name;
+
+		m_Property = p_property;
+		m_Group = p_group;
+
 		bool valid_interpolation = false;
 		if ( p_type == moText("ALPHA") ) {
 			m_Type = MO_PARAM_ALPHA;
@@ -196,11 +208,11 @@ moParamDefinition::moParamDefinition( const moText& p_name, const moText& p_type
 
     moParamInterpolation paraminter;
     if (valid_interpolation) {
-            cout << " moParamDefinition(..): function: " << p_interpolation << " duration: " << p_duration << endl;
+            //cout << " moParamDefinition(..): function: " << p_interpolation << " duration: " << p_duration << endl;
             if ( p_interpolation == "linear" ) {
-                cout << " moParamDefinition(..): interpolation recognized: [" << p_interpolation << "]";
+                //cout << " moParamDefinition(..): interpolation recognized: [" << p_interpolation << "]";
                 paraminter.SetInterpolation( MO_INTERPOLATION_LINEAR, p_duration );
-                cout << " saved as:" << paraminter.GetFunctionToText() << endl;
+                //cout << " saved as:" << paraminter.GetFunctionToText() << endl;
                 m_Interpolation = paraminter;
             } else if (p_interpolation==moText("easeinoutquad") ) {
                 paraminter.SetInterpolation( MO_INTERPOLATION_EASEINOUTQUAD, p_duration );
@@ -209,12 +221,12 @@ moParamDefinition::moParamDefinition( const moText& p_name, const moText& p_type
                 paraminter.SetInterpolation( MO_INTERPOLATION_EASEINOUTSIN, p_duration );
                 m_Interpolation = paraminter;
             } else {
-              cout << " moParamDefinition(..): interpolation unrecognized: [" << p_interpolation << "]" << endl;
+              //cout << " moParamDefinition(..): interpolation unrecognized: [" << p_interpolation << "]" << endl;
               paraminter.SetInterpolation( MO_INTERPOLATION_NONE, "0" );
               m_Interpolation = paraminter;
-              cout << "NO INTERPOLATION PARAMETERS: [" << p_interpolation << "] [" << p_duration << "]" << endl;
+              //cout << "NO INTERPOLATION PARAMETERS: [" << p_interpolation << "] [" << p_duration << "]" << endl;
             }
-    } else cout << "INVALID type of parameter: " << p_type << endl;
+    }// else cout << "INVALID type of parameter: " << p_type << endl;
 }
 
 
@@ -228,6 +240,8 @@ moParamDefinition &moParamDefinition::operator = (const moParamDefinition &src)
 		m_Index = src.m_Index;
 		m_DefaultValue = src.m_DefaultValue;
 		m_Interpolation = src.m_Interpolation;
+		m_Property = src.m_Property;
+		m_Group = src.m_Group;
 		return *this;
 }
 
@@ -331,8 +345,21 @@ moParamDefinition::GetTypeStr() const {
         case MO_PARAM_OUTLET:
             return moText("OUTLET");
             break;
+        case MO_PARAM_FILE:
+            return moText("FILE");
+            break;
+        default:
+            break;
     }
     return moText("UNDEFINED");
+}
+
+
+void
+moParamDefinition::SetType( moParamType p_ParamType ) {
+
+  m_Type = p_ParamType;
+
 }
 
 
@@ -405,9 +432,10 @@ moParamInterpolation::SetInterpolation( moParamInterpolationFunction p_interpol_
     m_Function = p_interpol_fun;
     m_Duration = mp_dur->Eval();
 
-    cout << "SetInterpolation: settting duration: " << p_fun_duration << " is finally m_Duration:" << m_Duration << endl;
+//    cout << "SetInterpolation: settting duration: " << p_fun_duration << " is finally m_Duration:" << m_Duration << endl;
+//    cout << " p_fun_expression:" << p_fun_expression << endl;
     Activate();
-    cout << "SetInterpolation: Activated: " << IsOn() << endl;
+//    cout << "SetInterpolation: Activated: " << IsOn() << endl;
 }
 
 bool
@@ -426,33 +454,7 @@ moParamInterpolation::GetTimer() const {
     return m_Timer;
 }
 
-moText
-moParamInterpolation::GetFunctionToText() {
-    switch(m_Function) {
-        case MO_INTERPOLATION_NONE:
-            return moText("none");
-            break;
-        case MO_INTERPOLATION_LINEAR:
-            return moText("linear");
-            break;
-        case MO_INTERPOLATION_EASEINOUTQUAD:
-            return moText("easeinoutquad");
-            break;
-        case MO_INTERPOLATION_ATSPEED:
-            return moText("atspeed");
-            break;
-        case MO_INTERPOLATION_EXPRESSION:
-            return moText("expression");
-            break;
-        case MO_INTERPOLATION_EASEINOUTSIN:
-            return moText("easeinoutsin");
-            break;
-        default:
-            return moText("");
-            break;
-    }
-    return moText("");
-}
+
 
 /*
 
@@ -462,19 +464,19 @@ http://www.gizma.com/easing/#l
 
 */
 
-double bezier_x( double t, double Ax, double Bx, double Cx) {
+double moParamInterpolation::bezier_x( double t, double Ax, double Bx, double Cx) {
    return t * (Cx + t * (Bx + t * Ax));
 }
 
-double bezier_y( double t, double Ay, double By, double Cy) {
+double moParamInterpolation::bezier_y( double t, double Ay, double By, double Cy) {
   return t * (Cy + t * (By + t * Ay));
 }
 
-double bezier_x_der( double t, double Ax, double Bx, double Cx) {
+double moParamInterpolation::bezier_x_der( double t, double Ax, double Bx, double Cx) {
   return Cx + t * (2*Bx + 3*Ax * t);
 }
 
-double find_x_for( double t, double Ax, double Bx, double Cx ) {
+double moParamInterpolation::find_x_for( double t, double Ax, double Bx, double Cx ) {
 
   double x=t, i=0, z;
 
@@ -486,11 +488,11 @@ double find_x_for( double t, double Ax, double Bx, double Cx ) {
     x = x - z/bezier_x_der(x, Ax, Bx, Cx);
     i++;
   }
-
+//xx
   return x;
 }
 
-double cubic_bezier( double t, double p1, double p2, double p3, double p4 ) {
+double moParamInterpolation::cubic_bezier( double t, double p1, double p2, double p3, double p4 ) {
 
   double Cx = 3 * p1;
   double Bx = 3 * (p3 - p1) - Cx;
@@ -504,14 +506,14 @@ double cubic_bezier( double t, double p1, double p2, double p3, double p4 ) {
 }
 
 moData*
-moParamInterpolation::InterpolateData( const moData& pParamData  ) {
+moParamInterpolation::InterpolateData( moData& pParamData  ) {
 
     if (m_Function==MO_INTERPOLATION_NONE) return &pParamData;
 
     //FIRST treat the UNDEFINED... starting
     if (   m_DataIn.Type() == MO_DATA_UNDEFINED
         || m_DataOut.Type() == MO_DATA_UNDEFINED ) {
-        cout << "InterpolateData > datain or out UNDEFINED : resetting " << endl;
+        ///cout << "moParamInterpolation::InterpolateData > datain or out UNDEFINED : resetting " << endl;
         //no in or out are set...
         StopInterpolation();
         //set them...
@@ -524,12 +526,12 @@ moParamInterpolation::InterpolateData( const moData& pParamData  ) {
         if ( m_DataOut.ToText() != pParamData.ToText() ) {
             StopInterpolation();
             StartInterpolation( m_DataInterpolated, pParamData );
-            cout << "StartInterpolation: " << m_DataIn.ToText() << "  --> TO --> m_DataOut: " << m_DataOut.ToText() << endl;
+            ///cout << "moParamInterpolation::InterpolateData > StartInterpolation: " << m_DataIn.ToText() << "  --> TO --> m_DataOut: " << m_DataOut.ToText() << endl;
         }
 
         m_DataIn.Eval();//so it records last val
         m_DataOut.Eval();//so it records his last val
-        cout << "m_DataIn: " << m_DataIn.LastEval() << "  --> TO --> m_DataOut: " << m_DataOut.LastEval() << endl;
+        //cout << "m_DataIn: " << m_DataIn.LastEval() << "  --> TO --> m_DataOut: " << m_DataOut.LastEval() << endl;
 
         double RDouble;
         double differential = 1.0f* m_Timer.Duration() / (1.0f*m_Duration);
@@ -542,32 +544,38 @@ moParamInterpolation::InterpolateData( const moData& pParamData  ) {
 
 
 
-        if (d>0.0f && t<=d && t>0.0f)
-        switch(m_Function) {
+        if (d>=0.0f && t<=d && t>=0.0f) {
+          switch(m_Function) {
 
-            //cases based on http://www.gizma.com/easing/
+              //cases based on http://www.gizma.com/easing/
 
-            case MO_INTERPOLATION_LINEAR:
-                RDouble = c * t/d + b;
-                break;
+              case MO_INTERPOLATION_LINEAR:
+                  RDouble = c * t/d + b;
+                  break;
 
-            case MO_INTERPOLATION_EASEINOUTQUAD:
-                RDouble = c* cubic_bezier( t/d, 0.42, 0.0, 0.58, 1.0 ) + b;
-                break;
+              case MO_INTERPOLATION_EASEINOUTQUAD:
+                  RDouble = c* cubic_bezier( t/d, 0.42, 0.0, 0.58, 1.0 ) + b;
+                  break;
 
-            case MO_INTERPOLATION_EASEINOUTSIN:
-                RDouble = -c/2 * ( moMathd::Cos( moMathd::PI*t/d) - 1) + b;
+              case MO_INTERPOLATION_EASEINOUTSIN:
+                  RDouble = -c/2 * ( moMathd::Cos( moMathd::PI*t/d) - 1) + b;
+                  break;
+              case MO_INTERPOLATION_EXPRESSION:
+                  if (differential<0.0f) differential = 0.0f;
+                  if (differential>1.0f) differential = 1.0f;
+                  RDouble = ( m_DataOut.LastEval() - m_DataIn.LastEval() ) * differential + m_DataIn.LastEval();
+                  break;
+              case MO_INTERPOLATION_ATSPEED:
+                  if (differential<0.0f) differential = 0.0f;
+                  if (differential>1.0f) differential = 1.0f;
+                  RDouble = ( m_DataOut.LastEval() - m_DataIn.LastEval() ) * differential + m_DataIn.LastEval();
+                  break;
+              default:
+                cout << "moParamInterpolation::InterpolateData > nterpolation function doesn't exists for " << m_Function << endl;
                 break;
-            case MO_INTERPOLATION_EXPRESSION:
-                if (differential<0.0f) differential = 0.0f;
-                if (differential>1.0f) differential = 1.0f;
-                RDouble = ( m_DataOut.LastEval() - m_DataIn.LastEval() ) * differential + m_DataIn.LastEval();
-                break;
-            case MO_INTERPOLATION_ATSPEED:
-                if (differential<0.0f) differential = 0.0f;
-                if (differential>1.0f) differential = 1.0f;
-                RDouble = ( m_DataOut.LastEval() - m_DataIn.LastEval() ) * differential + m_DataIn.LastEval();
-                break;
+          }
+        } else {
+          RDouble = m_DataOut.LastEval();
         }
         m_DataInterpolated.SetDouble(RDouble);
 
@@ -576,6 +584,7 @@ moParamInterpolation::InterpolateData( const moData& pParamData  ) {
     return &m_DataInterpolated;
 
 }
+
 
 
 
@@ -830,14 +839,23 @@ moParam::GetData() {
 
     moData* pReturnData  = NULL;
 
-    ///dato modificado externamente
+    ///this Data is connected and updated by an Outlet Connection
 	if (m_pExternData && m_bExternDataUpdated) {
 		pReturnData = m_pExternData;
-	///dato original del config
-	} else pReturnData = GetValue().GetSubValue().GetData();
+    ///dato original del config
+    if (GetParamDefinition().GetName()=="control_roll_angle" ) {
+      ///cout << "control_roll_angle: updated externally val: " + FloatToStr(pReturnData->Eval()) << endl;
+    }
+	}
+	else
+    pReturnData = GetValue().GetSubValue().GetData();
 
+    ///Interpolation code (defined in config using attributes: interpolation="linear" duration="1000"
     if ( m_ParamDefinition.GetInterpolation().IsOn() && pReturnData ) {
+
+        /// Eval Data
         pReturnData->Eval();
+        ///
         pReturnData = m_ParamDefinition.GetInterpolation().InterpolateData( *pReturnData );
     }
 
@@ -848,5 +866,47 @@ void
 moParam::SetExternData( moData* p_pExternData) {
 	m_pExternData = p_pExternData;
 }
+
+bool
+moParam::FixType( moParamType p_NewType ) {
+  unsigned int v = 0, s = 0;
+  bool result = true;
+  if ( p_NewType == MO_PARAM_UNDEFINED ) {
+
+      ///JUST CHECK IF moValues and moParamType are coherent
+      result = true;
+
+  }
+  else
+  ///check every values if they can be translated...
+  if (p_NewType==MO_PARAM_FUNCTION) {
+
+    switch( m_ParamDefinition.GetType() ) {
+
+      case MO_PARAM_NUMERIC:///OK TO CHANGE AND FIX
+        m_ParamDefinition.SetType(p_NewType);
+
+        for( v = 0; v<this->m_Values.Count() ; v++ ) {
+
+          moValue& pValue( this->m_Values.GetRef( v ) );
+          for( s = 0; s< pValue.GetSubValueCount(); s++ ) {
+            moValueBase& vBase( pValue.GetSubValue(s) );
+            result = result && vBase.FixType( MO_VALUE_FUNCTION );
+          }
+
+        }
+        break;
+
+      default:
+          break;
+
+    }
+  }
+
+
+  return result;
+}
+
+
 
 
