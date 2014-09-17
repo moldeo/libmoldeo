@@ -1,7 +1,7 @@
 #ifndef __MO_MODELOS3D_H__
 #define __MO_MODELOS3D_H__
 #include <moTypes.h>
-#include <moResourceManager.h>
+//#include <moResourceManager.h>
 //#include <moConfig.h>
 //#include <moParam.h>
 //#include <moTextureManager.h>
@@ -202,6 +202,7 @@ class LIBMOLDEO_API mo3DModelSceneNode : public moSceneNode {
 * Escena 3D
 *
 */
+/*
 class LIBMOLDEO_API moScene : public moAbstract {
 
     public:
@@ -221,7 +222,7 @@ class LIBMOLDEO_API moScene : public moAbstract {
         void*   SceneImplementation;
 
 };
-
+*/
 /// Administrador de escenas 3D
 /**
 * Administrador de escenas 3D
