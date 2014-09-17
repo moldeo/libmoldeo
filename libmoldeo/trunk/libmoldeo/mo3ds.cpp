@@ -666,7 +666,7 @@ void CLoad3DS::ReadObjectMaterial(mo3dModel *pModel, mo3dObject *pObject, tChunk
 #define Mag(Normal)(sqrt(Normal.x*Normal.x + Normal.y*Normal.y + Normal.z*Normal.z))
 
 // This calculates a vector between 2 points and returns the result
-CVector3 Vector(CVector3 vPoint1, CVector3 vPoint2)
+CVector3 CLoad3DS::Vector(CVector3 vPoint1, CVector3 vPoint2)
 {
     CVector3 vVector;                           // The variable to hold the resultant vector
 
@@ -678,7 +678,7 @@ CVector3 Vector(CVector3 vPoint1, CVector3 vPoint2)
 }
 
 // This adds 2 vectors together and returns the result
-CVector3 AddVector(CVector3 vVector1, CVector3 vVector2)
+CVector3 CLoad3DS::AddVector(CVector3 vVector1, CVector3 vVector2)
 {
     CVector3 vResult;                           // The variable to hold the resultant vector
 
@@ -690,7 +690,7 @@ CVector3 AddVector(CVector3 vVector1, CVector3 vVector2)
 }
 
 // This divides a vector by a single number(scalar) and returns the result
-CVector3 DivideVectorByScaler(CVector3 vVector1, float Scaler)
+CVector3 CLoad3DS::DivideVectorByScaler(CVector3 vVector1, float Scaler)
 {
     CVector3 vResult;                           // The variable to hold the resultant vector
 
@@ -702,7 +702,7 @@ CVector3 DivideVectorByScaler(CVector3 vVector1, float Scaler)
 }
 
 // This returns the cross product between 2 vectors
-CVector3 Cross(CVector3 vVector1, CVector3 vVector2)
+CVector3 CLoad3DS::Cross(CVector3 vVector1, CVector3 vVector2)
 {
     CVector3 vCross;                                // The vector to hold the cross product
                                                 // Get the X value
@@ -716,7 +716,7 @@ CVector3 Cross(CVector3 vVector1, CVector3 vVector2)
 }
 
 // This returns the normal of a vector
-CVector3 Normalize(CVector3 vNormal)
+CVector3 CLoad3DS::Normalize(CVector3 vNormal)
 {
     double Magnitude;                           // This holds the magitude
 
