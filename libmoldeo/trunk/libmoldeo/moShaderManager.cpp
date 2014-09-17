@@ -121,20 +121,27 @@ MOint moShaderManager::AddShader(MOuint p_type, moText p_name)
 		m_shaders_array.Add(pshader);
 		return m_shaders_array.Count() - 1;
 #endif
+		return -1;
 	}
-	else return -1;
+
+	return -1;
 }
 
 MOint moShaderManager::AddShader(moText p_filename)
 {
+
 	moConfig config;
+
 	moText complete_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
 	complete_fn +=  p_filename;
+
 
 	if (config.LoadConfig(complete_fn) != MO_CONFIG_OK) {
         moDebugManager::Error( moText("Couldn´t load shader config :") + complete_fn );
 	    return -1;
 	}
+
+  moFile cfgFile( complete_fn );
 
 	MOint type_idx = config.GetParamIndex("type");
 	if (type_idx == MO_PARAM_NOT_FOUND) {
@@ -162,21 +169,35 @@ MOint moShaderManager::AddShader(moText p_filename)
 	    return -1;
 	}
 
+  moFile vertexFile;
+  moFile fragmentFile;
+
 	moText vertex_fn;
 	moText fragment_fn;
 
 	if (vertex_idx == MO_PARAM_NOT_FOUND) vertex_fn = moText("");
 	else
 	{
-		vertex_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
+		vertex_fn = cfgFile.GetPath() + moText("/");
 		vertex_fn = vertex_fn + config.GetParam(vertex_idx).GetValue().GetSubValue().Text();
+		vertexFile.SetCompletePath( vertex_fn );
+    if (!vertexFile.Exists()) {
+      vertex_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
+      vertex_fn = vertex_fn + config.GetParam(vertex_idx).GetValue().GetSubValue().Text();
+    }
+
 	}
 
 	if (fragment_idx == MO_PARAM_NOT_FOUND) fragment_fn = moText("");
 	else
 	{
-		fragment_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
+		fragment_fn = cfgFile.GetPath() + moText("/");
 		fragment_fn = fragment_fn + config.GetParam(fragment_idx).GetValue().GetSubValue().Text();
+    fragmentFile.SetCompletePath(fragment_fn);
+    if (!fragmentFile.Exists()) {
+      fragment_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
+      fragment_fn = fragment_fn + config.Text(fragment_idx);
+    }
 	}
 
 	MOint grid_idx = config.GetParamIndex("grid");
@@ -184,7 +205,9 @@ MOint moShaderManager::AddShader(moText p_filename)
 	if (grid_idx == MO_PARAM_NOT_FOUND)	tex_grid.Set1QuadGrid();
 	else tex_grid.Init(&config, grid_idx);
 
-	return AddShader(config.GetParam(type_idx).GetValue().GetSubValue().Int(), p_filename, vertex_fn, fragment_fn, tex_grid);
+	return AddShader(config.GetParam(type_idx).GetValue().GetSubValue().Int(),
+                  p_filename,
+                  vertex_fn, fragment_fn, tex_grid);
 }
 
 MOint moShaderManager::AddShader(MOuint p_type, moText p_name, moText p_vert_fn, moText p_frag_fn, moTexturedGrid p_tex_grid)
