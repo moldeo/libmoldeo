@@ -167,14 +167,17 @@ bool moBucketsPool::AddBucket(moBucket *pBucket ) {
 }
 
 bool moBucketsPool::AddBucket( MOlong size , MOubyte *pbuf ) {//take an empty created bucket and fill it with pbuf
-/*	moBucket*	pB = NULL;
+
+  moBucket*	pB = NULL;
 
 	if(!IsFull()) {
 		pB = GetEmptyBucket();
 		if(pB!=NULL) {//EMPTY TO FILL
+
 			if(pB->GetSize() >= size)
 				pB->Copy( size, pbuf );
 			else return false;
+
 		} else {//CREATE
 			pB = new moBucket();
 			if(pB)
@@ -182,9 +185,10 @@ bool moBucketsPool::AddBucket( MOlong size , MOubyte *pbuf ) {//take an empty cr
 			else return false;
 		}
 	} else return false;
+
 	if(pB!=NULL)
 		return AddBucket(pB);
-	else */
+	else
 		return false;
 }
 
@@ -192,17 +196,7 @@ moBucket*	moBucketsPool::GetEmptyBucket() {//get an empty bucket to fill it
 	m_PoolLock.Lock();
 
 	moBucket *emptyone = NULL;
-/*
-	emptyone = m_pFirstEmptyBucket;
 
-	if(m_pFirstEmptyBucket==NULL) {
-		return NULL;
-	} else if(m_pFirstEmptyBucket->GetAttachedBucket()==NULL) {
-		m_pFirstEmptyBucket = NULL;
-		m_pLastEmptyBucket = NULL;
-	} else if(m_pEmptyBuckets->GetAttachedBucket()!=NULL) {
-		m_pFirstEmptyBucket = m_pFirstEmptyBucket->GetAttachedBucket();
-	}*/
 	m_PoolLock.Unlock();
 	return emptyone;
 }
