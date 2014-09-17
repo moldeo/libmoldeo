@@ -28,7 +28,7 @@
 
 
 *******************************************************************************/
-
+#include <string>
 #include <mo3dModelManager.h>
 #include <mo3ds.h>
 #include <moDataManager.h>
@@ -51,7 +51,9 @@ moSceneNode::GetParent() {
 
 void
 moSceneNode::SetParent( moSceneNode* p_SceneNode ) {
-
+  if (p_SceneNode) {
+    p_SceneNode = NULL;
+  }
 }
 
 
@@ -71,7 +73,14 @@ MOboolean moSceneNode::Finish() {
 
 void moSceneNode::Draw( moEffectState *state, GLuint g_ViewMode ) {
 
+  // draw scene node
+  moText json;
 
+  if (state)
+      json = state->ToJSON();
+
+  MODebug2->Message( "moSceneNode::Draw > implement this! g_ViewMode: (" + IntToStr(g_ViewMode) + ") "
+                    + json );
 }
 
 void moSceneNode::Update() {
@@ -285,7 +294,7 @@ mo3dModelManager::Init() {
 		Textures = m_pResourceManager->GetTextureMan();
 	}
 	if (!m_pMoldeoLogo) {
-		mo3dModel* pmodel = Load3dModel("moldeologo.3ds", DATADIR);
+		mo3dModel* pmodel = Load3dModel("moldeologo.3ds", m_pResourceManager->GetDataMan()->GetAppDataPath() );
 		if (pmodel) {
 			m_pMoldeoLogo = new mo3DModelSceneNode();
 			m_pMoldeoLogo->Init(pmodel);
@@ -309,7 +318,7 @@ mo3dModelManager::Load3dModel( moText Tname, moText datapath ) {
         file3ds = m_pResourceManager->GetDataMan()->GetDataPath();
     else
         file3ds = datapath;
-	file3ds+= moText("/");
+	file3ds+= moSlash;
 	file3ds+= Tname;
 
 	Models[nModels] = new(mo3dModel);
@@ -456,9 +465,9 @@ mo3dModelManagerRef::LoadModels(moConfig *cfg,MOuint param,mo3dModelManager*M) {
 		namemodelo =	cfg->GetParam().GetValue().GetSubValue(0).Text();
 		Models[i] = M->Get3dModel(namemodelo);
 		if(Models[i] != MO_3DMODEL_ERROR) {
-			MODebug2->Push(moText("Modelo cargado: ") + (moText)Models[i]->name);
+			MODebug2->Message(moText("Modelo cargado: ") + (moText)Models[i]->name);
 		} else {
-			MODebug2->Push(moText("ERROR! Modelo  no cargado: "));
+			MODebug2->Error(moText("mo3dModelManagerRef::LoadModels > Modelo  no cargado: "));
 		}
 		cfg->NextValue();
 	}
@@ -503,12 +512,12 @@ int mo3dModelManagerRef::Add(moText namemodelo,mo3dModelManager *M) {
         i = nModels - 1 ;
 
         Models[i] = newModel;
-        MODebug2->Push(moText("Modelo cargado: ") + (moText)Models[i]->name);
+        MODebug2->Message(moText("Modelo cargado: ") + (moText)Models[i]->name);
 
         delete [] ModelsAux;
         return i;
 	} else {
-		MODebug2->Push(moText("ERROR! Modelo  no cargado: "));
+		MODebug2->Error(moText("mo3dModelManagerRef::Add > Modelo  no cargado: "));
 	}
 
 	return MO_UNDEFINED;
