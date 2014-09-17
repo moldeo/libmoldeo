@@ -31,7 +31,19 @@
 #include <moConsole.h>
 
 #ifdef MO_WIN32
+
+#define NOSDL
+
+#ifndef NOSDL
   #include <SDL.h>
+#else
+	#define SDL_KEYDOWN 2
+	#define SDL_KEYDOWN_SDL2 0x300
+	#define SDLK_ESCAPE 27
+	#define SDLK_SCANCODE_MASK (1<<30)
+	#define SDLK_F12 ( 69 | SDLK_SCANCODE_MASK )
+#endif
+
 #endif
 
 #ifdef MO_LINUX
@@ -41,7 +53,7 @@
 #ifdef MO_MACOSX
     #include <SDL/SDL.h>
 #endif
-
+#undef main
 #include <moDataManager.h>
 #include <moFileManager.h>
 
@@ -66,6 +78,7 @@ moPresetParamDefinition &moPresetParamDefinition:: operator = (const moPresetPar
     m_ParamIndex = src.m_ParamIndex;
     m_ValueIndex = src.m_ValueIndex;
     m_State = src.m_State;
+	return (*this);
 }
 
 
@@ -82,7 +95,6 @@ moConsole::moConsole() : moMoldeoObject() {
     this->SetName("__console__");
     this->SetLabelName("__console__");
     this->SetType( MO_OBJECT_CONSOLE );
-
 }
 
 moConsole::~moConsole()
@@ -146,6 +158,9 @@ moConsole::RelativeToGeneralIndex( int relativeindex, moMoldeoObjectType p_type 
       mindex+= m_EffectManager.PostEffects().Count();
       mindex+= m_EffectManager.Effects().Count();
       mindex+= m_EffectManager.MasterEffects().Count();
+      break;
+
+    default:
       break;
 
   }
@@ -228,13 +243,14 @@ MOboolean moConsole::Init(
 {
 
 	moText text;
-	int verif;
+	//int verif;
 	//int a,b;
 
 	idebug = -1;
 	iligia = -1;
 	iborrado = -1;
     m_ConsoleScript = moText("");
+  moGetStrType( moText("console") );
 
 	srand( time(NULL) );
 
@@ -349,7 +365,13 @@ MOboolean moConsole::Init(
     ///ya que algunos parametros necesitan de todos los recursos para levantar
     ///ejemplo: moMathFunction....
 
-    if (MODebug2) MODebug2->Message(moText("moConsole::Init > Initializing Resource Manager."));
+    if (MODebug2) MODebug2->Message(moText("moConsole::Init > Initializing Resource Manager. ")
+                                    + moText( " app path: ") + p_apppath
+                                    + moText( " data path: ") + p_datapath
+                                    + moText( " config: ") + m_Config.GetName()
+                                    + moText( " render mode: ") + IntToStr(p_render_to_texture_mode)
+                                    + moText( " screen size: ") + IntToStr(p_screen_width) + moText("x") + IntToStr(p_screen_height)
+                                    + moText( " render size: ") + IntToStr(p_render_width) + moText("x") + IntToStr(p_render_height) );
 
 	InitResources(  p_pResourceManager,
                     p_apppath,
@@ -856,6 +878,9 @@ moConsole::LoadEffects() {
                         m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
                         peffect->SetResourceManager( m_pResourceManager );
                     }
+                    if (MODebug2) {
+                      MODebug2->Message( moText("moConsole::LoadingEffect > ") + completecfname );
+                    }
                 } else {
                     peffect = NULL;
                     m_EffectManager.Effects().Add(peffect);
@@ -1237,7 +1262,7 @@ moConsole::Draw() {
 
 	if (RenderMan==NULL) return;
 
-    ScriptExeRun();
+  if (m_bInitialized) ScriptExeRun();
 
 	MOswitch borrar = MO_ACTIVATED;
     MOboolean pre_effect_on = false;
@@ -1383,11 +1408,11 @@ moConsole::Draw() {
 // 1 sola pantalla:
 // si esta extendida puede usar un canvas que cubra todo, y solo dibuja la interface en la primera y el resultado en la segunda...
 // aqui ganamos velocidad!!!! que perdemos
-    if (1==2) {
+    if (1==1) {
       DrawMasterEffects( RenderMan->RenderWidth(), RenderMan->RenderHeight() );
     }
 
-		ScriptExeDraw();
+		if (m_bInitialized) ScriptExeDraw();
 
 
 		//aca controlamos los fps
@@ -1431,7 +1456,7 @@ moConsole::DrawMasterEffects(int interface_width, int interface_height) {
 			if(pEffect) {
 				if(pEffect->Activated()) {
 					RenderMan->BeginDrawEffect();
-					pEffect->Draw(&m_ConsoleState.tempo);
+					pEffect->Draw( &m_ConsoleState.tempo );
 					RenderMan->EndDrawEffect();
 				}
 			}
@@ -1495,7 +1520,10 @@ moConsole::Interaction() {
 	if (!m_pResourceManager) return -1;
 	moRenderManager* RenderMan = m_pResourceManager->GetRenderMan();
 
-    if (!RenderMan) return -1;
+  if (!RenderMan) {
+    cout << "no renderman!" << endl;
+    return -1;
+  }
 
 	//_IODEVICE ACTUALIZA
 	RenderMan->BeginUpdate();
@@ -1503,21 +1531,28 @@ moConsole::Interaction() {
 		RenderMan->BeginUpdateDevice();
 
 		m_pIODeviceManager->Update();
-
 		moEvent* event = m_pIODeviceManager->GetEvents()->First;
+
 		while(event!=NULL) {
-		    if ( event->deviceid == MO_IODEVICE_KEYBOARD ) {
-                MODebug2->Log("key pressed");
-                if (event->devicecode == SDL_KEYDOWN ) {
-                    MODebug2->Log("key down");
-                    if ( event->reservedvalue0 == SDLK_ESCAPE ) {
-                        MODebug2->Log("ESCAPE pressed");
-                        m_ConsoleState.finish = MO_TRUE;
-                    }
-                }
-            }
-		    event = event->next;
-        }
+      //MODebug2->Message("moConsole::Interaction > event present.");
+      if ( event->deviceid == MO_IODEVICE_KEYBOARD ) {
+              //MODebug2->Message("moConsole::Interaction > KEYBOARD activity (devicecode:" + IntToStr(event->devicecode) + " SDL_KEYDOWN:" + IntToStr(SDL_KEYDOWN));
+              if (event->devicecode == SDL_KEYDOWN || event->devicecode == SDL_KEYDOWN_SDL2 ) {
+                  MODebug2->Message("moConsole::Interaction > KEY DOWN (SDL_KEYDOWN)");
+                  if ( event->reservedvalue0 == SDLK_ESCAPE ) {
+                      MODebug2->Message("moConsole::Interaction > ESCAPE pressed");
+                      m_ConsoleState.finish = MO_TRUE;
+                  }
+
+                  if ( event->reservedvalue0 == SDLK_F12 ) {
+                    //recreate window...
+                    MODebug2->Message("moConsole::Interaction > F12 pressed");
+                    ///m_ConsoleState.fullscreen ???
+                  }
+              }
+          }
+      event = event->next;
+    }
 
 
 		RenderMan->EndUpdateDevice();
@@ -1558,8 +1593,6 @@ moConsole::Interaction() {
 	} else {
       ///MODO DIRECTO!!!!! todos los efectos prendidos reciben Interaccion
 	    for( MOuint all=0;all<m_EffectManager.AllEffects().Count(); all++) {
-	        moEffect* pEffect = NULL;
-
 	        pEffect = m_EffectManager.AllEffects().GetRef(all);
 	        if ( pEffect && pEffect->Activated() ) {
                 pEffect->Interaction( m_pIODeviceManager );
@@ -1577,8 +1610,512 @@ moConsole::Interaction() {
 	}
 
 
-	return m_ConsoleState.finish;
+	return (m_ConsoleState.finish==MO_FALSE);
 }
+
+int moConsole::SendMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
+
+  ///TODO: SendMoldeoAPIMessage > add this message to MoldeoAPIMessagesToSend
+  /// MoldeoAPIMessagesToSend.Add( *p_pDataMessage );
+  /*
+  if (ApiMessage) {
+      ApiMessage->Text();
+  }
+  */
+  MODebug2->Message( "moConsole::SendMoldeoAPIMessage > " );
+
+  m_pIODeviceManager->GetEvents()->Add( MO_IODEVICE_CONSOLE,
+                                        MO_ACTION_MOLDEOAPI_EVENT_SEND,
+                                        -1, 0, 0, MO_DATAMESSAGE, p_pDataMessage );
+
+
+  return 0;
+}
+
+int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
+
+  if (p_pDataMessage==NULL) {
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > DataMessage is NULL");
+      return 1;
+  }
+
+  if (p_pDataMessage->Count()==0) {
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > DataMessage is empty");
+      return 2;
+  }
+  moData MoldeoApiCommandData = p_pDataMessage->Get(0);
+  moText MoldeoAPICommand = p_pDataMessage->Get(0).ToText();
+  std::string skey = (char*)MoldeoAPICommand;
+
+  moMoldeoActionType MappedType = (moMoldeoActionType)m_ReactionListenerManager.m_MapStrToActionType[skey];
+
+  moText fullMessageText = "";
+  for( int k=0;k<p_pDataMessage->Count();k++) {
+    fullMessageText+= " k:" + IntToStr(k);
+    fullMessageText+="[" + p_pDataMessage->Get(k).ToText()+"]";
+  }
+
+  MODebug2->Message( moText("moConsole::ProcessMoldeoAPIMessage > Processing Moldeo API Message: ")
+                    + MoldeoAPICommand
+                    + moText(" count:") + IntToStr(p_pDataMessage->Count())
+                    + moText(" mapped type:") +IntToStr(MappedType)
+                    + moText(" fullmessage:") + fullMessageText  );
+
+
+  moEffect* fxObject;
+  moText arg0;
+  int arg1Int;
+  moText arg1Text;
+  int arg2Int;
+  moText arg2Text;
+  moText arg3Text;
+
+  moText EffectStateJSON = "";
+  moText FullObjectJSON = "";
+  moText fieldSeparation = ",";
+
+  moMobState MobState;
+  moEffectState EffectState;
+  moDataMessage* pMessageToSend;
+  moData pData("PRESENTATION");
+  moMessage* newMessage = NULL;
+
+  int idx = -1;
+
+  switch( MappedType ) {
+
+    case MO_ACTION_OBJECT_ENABLE:
+      return 0;
+      break;
+
+    case MO_ACTION_VALUE_SET:
+      MODebug2->Message("MO_ACTION_VALUE_SET");
+      arg0  = p_pDataMessage->Get(1).ToText();//MOBLABEL
+      MODebug2->Message(arg0);
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+        MODebug2->Message("MO_ACTION_VALUE_SET fxObject ok");
+        arg1Text  = p_pDataMessage->Get(2).ToText();//PARAMNAME
+        arg2Text  = p_pDataMessage->Get(3).ToText();//PARAMVALUEINDEX
+        arg3Text  = p_pDataMessage->Get(4).ToText();//VALUE
+        moParam& rParam( fxObject->GetConfig()->GetParam(arg1Text));
+        arg2Int = atoi( arg2Text );
+        moValue& rValue( rParam.GetValue(arg2Int) );
+        moValueBase& VB( rValue.GetSubValue(0) );
+        MODebug2->Message("MO_ACTION_VALUE_SET settings: arg1Text (param):" + arg1Text
+                          + " arg2Text (preconf): ["+arg2Text+"] arg2Int: "+ IntToStr(arg2Int)
+                          + " arg3Text (val): " + arg3Text
+                          + " VB:" + VB.TypeToText()
+                          );
+        switch(VB.Type()) {
+          case MO_DATA_FUNCTION:
+            idx = -1;
+            VB.SetText(arg3Text);
+            if (m_pResourceManager->GetMathMan())
+              idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
+            if (idx>-1) {
+                VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+                //MODebug2->Message( moText("function defined: ") + VB.Text() );
+            } else {
+                MODebug2->Error(moText("moConsole::ProcessMoldeoAPIMessage > function couldn't be defined: ") + VB.Text()
+                                + " object: "+GetName()
+                                + " config: " + GetConfigName()
+                                + " label:" + GetLabelName() );
+            }
+            return 0;
+            break;
+          case MO_DATA_TEXT:
+          case MO_DATA_IMAGESAMPLE:
+          case MO_DATA_IMAGESAMPLE_FILTERED:
+          case MO_DATA_IMAGESAMPLE_TEXTUREBUFFER:
+
+            switch(rParam.GetParamDefinition().GetType()) {
+              case MO_PARAM_TEXT:
+                VB.SetText(arg3Text);
+                break;
+              case MO_PARAM_TEXTURE:
+
+                if (m_pResourceManager->GetDataMan()->InData(arg3Text)) {
+                  //make relative to datapath
+                  arg3Text = m_pResourceManager->GetDataMan()->MakeRelativeToData(arg3Text);
+                } else {
+                  //try to import file
+                  moFile importFile( arg3Text );
+                  m_pResourceManager->GetDataMan()->ImportFile( importFile.GetAbsolutePath() );
+                  arg3Text = importFile.GetFullName();
+                }
+
+                idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( arg3Text, true);
+                if (idx>-1) {
+                    moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
+                    VB.SetText(arg3Text);
+                    VB.SetTexture( pTexture );
+                    /*
+                    if (pTexture->GetType()!=MO_TYPE_TEXTURE_MULTIPLE && value.GetSubValueCount()>1) {
+                        idx = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->LoadFilter( &value );
+                        moTextureFilter*  pTextureFilter = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->Get(idx-1);
+                        valuebase0.SetTextureFilter( pTextureFilter );
+                    }
+
+                    if (value.GetSubValueCount()==4) {
+                        valuebase0.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
+                    }
+
+                    if (value.GetSubValueCount()>=5) {
+                        //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
+                    }
+                    */
+                } else {
+                  MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > importing image error! "+arg3Text);
+                }
+                break;
+              case MO_PARAM_SOUND:
+                VB.SetText(arg3Text);
+                if (VB.Text()!="") {
+                  moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( VB.Text() );
+                  if (pSound) {
+                      VB.SetSound( pSound );
+                  }
+                }
+                break;
+              default:
+                break;
+            }
+            return 0;
+            break;
+          case MO_DATA_NUMBER:
+            VB.SetInt( (int)atoi(arg3Text) );
+            break;
+          case MO_DATA_NUMBER_INT:
+            VB.SetInt( (int)atoi(arg3Text) );
+            break;
+          case MO_DATA_NUMBER_FLOAT:
+            VB.SetFloat( (float)atof(arg3Text) );
+            break;
+          case MO_DATA_NUMBER_DOUBLE:
+            VB.SetDouble( (double)atof(arg3Text) );
+            break;
+          case MO_DATA_NUMBER_CHAR:
+            VB.SetInt( (char)atoi(arg3Text) );
+            break;
+          case MO_DATA_NUMBER_LONG:
+            VB.SetLong( (long)atoi(arg3Text) );
+            break;
+          default:
+            break;
+        }
+
+      }
+      return 0;
+      break;
+
+    /**
+
+    EFFECTS
+
+    */
+
+    case MO_ACTION_EFFECT_ENABLE:
+      arg0  = p_pDataMessage->Get(1).ToText();
+
+      //buscar este efecto y prenderlo...
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          fxObject->TurnOn();
+
+          /** SEND IT UPDATED!!!*/
+          MoldeoApiCommandData.SetText( "effectgetstate" );
+          p_pDataMessage->Set( 0, MoldeoApiCommandData );
+          p_pDataMessage->Set( 2, moData("") );
+          ProcessMoldeoAPIMessage( p_pDataMessage );
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_ENABLE > [" + arg0+"] not found!" );
+      break;
+
+    case MO_ACTION_EFFECT_DISABLE:
+      arg0  = p_pDataMessage->Get(1).ToText();
+
+      //buscar este efecto y prenderlo...
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          fxObject->TurnOff();
+
+          /** SEND IT UPDATED!!!*/
+          MoldeoApiCommandData.SetText( "effectgetstate" );
+          p_pDataMessage->Set( 0, MoldeoApiCommandData );
+          p_pDataMessage->Set( 2, moData("") );
+          ProcessMoldeoAPIMessage( p_pDataMessage );
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_DISABLE > [" + arg0+"] not found!" );
+      break;
+
+    case MO_ACTION_EFFECT_GETSTATE:
+      ///TODO: SEND FULL STATE OBJECT in JSON Format
+      arg0  = p_pDataMessage->Get(1).ToText();
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          EffectState = fxObject->GetEffectState();
+          EffectStateJSON = EffectState.ToJSON();
+
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("effectgetstate") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( EffectStateJSON ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              /** send it: but we need an id */
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
+
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_GETSTATE > [" + arg0+"] not found!" );
+      break;
+
+    case MO_ACTION_EFFECT_SETSTATE:
+      if (p_pDataMessage->Count()<4) {
+        return -1;
+      }
+      arg0  = p_pDataMessage->Get(1).ToText();
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+        arg1Text  = p_pDataMessage->Get(2).ToText();
+        arg2Text  = p_pDataMessage->Get(3).ToText();
+        /*
+        MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > arg0:" + arg0
+                          + " arg1Text:" + arg1Text
+                          + " arg2Text: " + arg2Text );
+                          */
+        if ( arg1Text == moText("alpha") ) {
+            if ( arg2Text == moText("increment") ) {
+
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > alpha increment" );
+              fxObject->Alpha( 0.01 );
+
+            } else if ( arg2Text == moText("decrement") ) {
+
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > alpha decrement" );
+              fxObject->Alpha( -0.01 );
+
+            } else if( p_pDataMessage->Get(3).Type() != MO_DATA_TEXT ) {
+              EffectState = fxObject->GetEffectState();
+              EffectState.alpha = p_pDataMessage->Get(3).Float();
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating to: " + FloatToStr(EffectState.alpha) );
+              fxObject->SetState( EffectState );
+              EffectState = fxObject->GetEffectState();
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updated: " + FloatToStr(EffectState.alpha) );
+            }
+        }
+
+        if ( arg1Text == moText("tempo") ) {
+            if ( arg2Text == moText("increment") ) {
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo increment" );
+              fxObject->TempoDelta( 0.01 );
+            } else if ( arg2Text == moText("decrement") ) {
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo decrement" );
+              fxObject->TempoDelta( -0.01 );
+            } else if ( arg2Text == moText("beatpulse") ) {
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo beatpulse" );
+              fxObject->BeatPulse();
+            } else if( p_pDataMessage->Get(3).Type() != MO_DATA_TEXT ) {
+              EffectState = fxObject->GetEffectState();
+
+              EffectState.tempo.delta = p_pDataMessage->Get(3).Float();
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating to: " + FloatToStr(EffectState.tempo.delta) );
+              fxObject->SetState( EffectState );
+
+              EffectState = fxObject->GetEffectState();
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updated: " + FloatToStr(EffectState.tempo.delta) );
+            }
+        }
+
+
+
+        /** SEND IT UPDATED!!!*/
+        MoldeoApiCommandData.SetText( "effectgetstate" );
+        p_pDataMessage->Set( 0, MoldeoApiCommandData );
+        p_pDataMessage->Set( 2, moData("") );
+        ProcessMoldeoAPIMessage( p_pDataMessage );
+        return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_SETSTATE > [" + arg0+"] not found!" );
+      break;
+
+    case MO_ACTION_EFFECT_PLAY:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          fxObject->Play();
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PLAY > [" + arg0+"] not found!" );
+      break;
+
+    case MO_ACTION_EFFECT_PAUSE:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          fxObject->Pause();
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PAUSE > [" + arg0+"] not found!" );
+      break;
+
+    case MO_ACTION_EFFECT_STOP:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          fxObject->Stop();
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_STOP > [" + arg0+"] not found!" );
+      break;
+
+    /**
+
+    PRECONFIGS
+
+    */
+
+    case MO_ACTION_PRECONFIG_SET:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      arg1Int = p_pDataMessage->Get(2).Int();
+
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > effectenable > MO_ACTION_EFFECT_ENABLE > [" + arg0+"] not found!" );
+      break;
+
+  /** OBJECTS
+
+  */
+
+    case MO_ACTION_OBJECT_GET:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          FullObjectJSON = fxObject->ToJSON();
+          MODebug2->Message(FullObjectJSON);
+
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("objectget") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( FullObjectJSON ) );
+              //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              // send it: but we need an id
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
+
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GET > [" + arg0+"] not found!" );
+      break;
+
+
+  /** CONSOLE
+
+  */
+
+    case MO_ACTION_CONSOLE_PRESENTATION:
+      //m_pIODeviceManager->GetEvents()->Add( 7878, SDL_KEYDOWN, SDLK_F12 );
+
+      newMessage = new moMessage( 999 /**PLAYER*/,
+                                    999 /**TO PLAYER PRESENTATION*/,
+                                    -1,
+                                     pData );
+      m_pIODeviceManager->GetEvents()->Add( (moEvent*) newMessage );
+      MODebug2->Message("MO_ACTION_CONSOLE_PRESENTATION");
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_SCREENSHOT:
+      //ScreenShot();
+      m_pResourceManager->GetRenderMan()->Screenshot(moText(""));
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_SAVE:
+      //ScreenShot();
+      ///SAVING ALL
+      MODebug2->Message("moConsole::Processing > Saving ALL");
+      for( int fx=0; fx<m_MoldeoObjects.Count(); fx++ ) {
+        m_MoldeoObjects[fx]->GetConfig()->SaveConfig();
+      }
+
+      pMessageToSend = new moDataMessage();
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consolesave") );
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_PLAY:
+      ConsolePlay();
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_STOP:
+      ConsoleStop();
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_PAUSE:
+      ConsolePause();
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_GET:
+
+      FullObjectJSON = "{";
+      FullObjectJSON+= moText("'datapath': '")+m_pResourceManager->GetDataMan()->GetDataPath()+"'";
+      FullObjectJSON+= fieldSeparation+"'apppath': '"+m_pResourceManager->GetDataMan()->GetAppPath()+"'";
+      FullObjectJSON+= fieldSeparation+"'appdatapath': '"+m_pResourceManager->GetDataMan()->GetAppDataPath()+"'";
+      FullObjectJSON+= fieldSeparation+"'configname': '"+m_pResourceManager->GetDataMan()->GetConsoleConfigName()+"'";
+      FullObjectJSON+= "}";
+
+      pMessageToSend = new moDataMessage();
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consoleget") );
+          pMessageToSend->Add( moData("__console__") ); /// identifier for last message
+          pMessageToSend->Add( moData( FullObjectJSON ) );
+          //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+          //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+          // send it: but we need an id
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
+
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_GETSTATE:
+      /** must return console state */
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_SETSTATE:
+      /** must set the new actual console state */
+      return 0;
+      break;
+
+    default:
+
+      break;
+
+  }
+
+  return -1; /*PROCESS NOT OK*/
+}
+
 
 void
 moConsole::ProcessConsoleMessage( moMessage* p_pMessage ) {
@@ -1588,18 +2125,28 @@ moConsole::ProcessConsoleMessage( moMessage* p_pMessage ) {
     moText position;
     moText param_label;
     moText value_index;
-    int valueidx = -1;
+    //int valueidx = -1;
 
-    int objectid = 0;
-    int paramid = 0;
-    moMoldeoObject* Object = NULL;
-    moEffect* pEffect = NULL;
+    //int objectid = 0;
+    //int paramid = 0;
+    //moMoldeoObject* Object = NULL;
+    //moEffect* pEffect = NULL;
     moParam pParam;
 
     if (p_pMessage) {
+
         moText actions = p_pMessage->m_Data.ToText();
-        cout << "Console receiving message: " << actions << endl;
-        moTextArray exploded = actions.Explode( moText(",") );
+
+        //cout << "Console receiving message: " << actions << endl;
+        //moTextArray exploded = actions.Explode( moText(",") );
+
+        MODebug2->Message( moText("moConsole::ProcessConsoleMessage > Actions:  ")
+                          + actions );
+
+
+
+/*
+
 
         switch(exploded.Count()) {
             case 2:
@@ -1615,9 +2162,11 @@ moConsole::ProcessConsoleMessage( moMessage* p_pMessage ) {
                         pEffect = (moEffect*)Object;
                         pEffect->Enable();
                         pEffect->TurnOn();
-                        MODebug2->Message( moText("moConsole::ProcessConsoleMessage > show ")+Object->GetLabelName() );
+                        MODebug2->Message( moText("moConsole::ProcessConsoleMessage > show ")
+                                          +Object->GetLabelName() );
                     } else {
-                        MODebug2->Error( moText("moConsole::ProcessConsoleMessage > show : object not founded : id:")+(moText)IntToStr(objectid) + " label:" + object_label );
+                        MODebug2->Error( moText("moConsole::ProcessConsoleMessage > show : object not founded : id:")
+                                        +(moText)IntToStr(objectid) + " label:" + object_label );
                     }
                 }
 
@@ -1659,7 +2208,7 @@ moConsole::ProcessConsoleMessage( moMessage* p_pMessage ) {
             cout << "Console received message: action: " << action << " object: " << object_label << " position:" << position << " param:" << param_label << " value:" << value_index << " valueidx:" << valueidx << endl;
         }
 
-
+*/
     }
 
 }
@@ -1672,7 +2221,7 @@ moConsole::Update() {
 
     m_ScreenshotInterval = m_Config.Int(moR(CONSOLE_SCREENSHOTS));
 
-    if (m_ScreenshotInterval>0) {
+    if (m_ScreenshotInterval>30) {
         if (!m_ScreenshotTimer.Started()) {
             m_ScreenshotTimer.Start();
         } else {
@@ -1686,8 +2235,11 @@ moConsole::Update() {
         }
     }
 
+  ///TODO: each Object see all events and process a few... can and should be optimized
+  /// optimization: only send a partial event list to every object, filtered by
+  /// moMoldeoObject->GetMobDefinition()->GetMoldeoId()
 	RenderMan->BeginUpdate();
-	if (m_pIODeviceManager)
+	if (m_pIODeviceManager) {
 		for(MOuint i = 0; i<m_MoldeoObjects.Count(); i++) {
 			RenderMan->BeginUpdateObject();
 			moMoldeoObject* pMOB = m_MoldeoObjects[i];
@@ -1697,23 +2249,59 @@ moConsole::Update() {
 			}
 			RenderMan->EndUpdateObject();
 		}
+
+		m_pIODeviceManager->PurgeEvents();
+	}
 	RenderMan->EndUpdate();
 
+  moEventList* pEvents = m_pIODeviceManager->GetEvents();
+  if (pEvents) {
+      moEvent *actual=NULL,*tmp;
+     // moMessage *pmessage;
 
-    //Procesamos aquellos Mensajes enviados con acciones
-    moEvent* actual = m_pIODeviceManager->GetEvents()->First;
-    moEvent* tmp = NULL;
-    while(actual!=NULL) {
+      if (pEvents) actual = pEvents->First;
 
-        if ( actual->deviceid==-1 && actual->reservedvalue3 == MO_MESSAGE ) {
-            cout << "Console rec message!" << endl;
-            moMessage* ConsoleMessage = (moMessage*)actual;
-            this->ProcessConsoleMessage(ConsoleMessage);
+      ///Procesamos los eventos recibidos de los MoldeoObject Outlets
+      while(actual!=NULL) {
+        tmp = actual->next;
+        ///procesamos aquellos Outlet q estan dirigidos a este objeto
+        if (  actual->deviceid==MO_IODEVICE_CONSOLE
+            && actual->devicecode == MO_ACTION_MOLDEOAPI_EVENT_SEND
+            && actual->reservedvalue3 == MO_DATAMESSAGE) {
+                moDataMessage* mpDataMessage = (moDataMessage*) actual->pointer;
+                delete mpDataMessage;
+                actual->pointer = NULL;
+                pEvents->Delete(actual);
         }
+        actual = tmp;
+      }
 
-        tmp = actual;
-        actual = tmp->next;
-    }
+  }
+
+  //Procesamos aquellos Mensajes enviados con acciones
+  moEvent* actual = m_pIODeviceManager->GetEvents()->First;
+  moEvent* tmp = NULL;
+  while(actual!=NULL) {
+
+      if ( actual->deviceid==MO_IODEVICE_CONSOLE
+        &&
+           actual->reservedvalue3 == MO_MESSAGE ) {
+
+          moMessage* ConsoleMessage = (moMessage*)actual;
+          this->ProcessConsoleMessage(ConsoleMessage);
+      }
+
+      if ( ( actual->deviceid == MO_IODEVICE_CONSOLE )
+            && ( actual->devicecode == MO_ACTION_MOLDEOAPI_EVENT_RECEIVE )
+            && ( actual->reservedvalue3 == MO_DATAMESSAGE ) ) {
+
+          moDataMessage* MoldeoAPIMessage = (moDataMessage*)actual->pointer;
+          this->ProcessMoldeoAPIMessage( MoldeoAPIMessage );
+     }
+
+      tmp = actual;
+      actual = tmp->next;
+  }
 
 	moMoldeoObject::Update( m_pIODeviceManager->GetEvents() );
 }
@@ -1828,13 +2416,14 @@ int moConsole::GetPreset() {
 }
 
 void moConsole::SetPreset( int presetid ) {
-
-
+  //
+  m_PresetParams.Get( presetid );
 }
 
 int moConsole::GetPreconf( int objectid ) {
-
-        return 0;
+    moMoldeoObject* MOB;
+    MOB = m_MoldeoObjects.Get(objectid);
+    return 0;
 }
 
 void moConsole::SetPreconf( int objectid, int preconfid ) {
@@ -1859,7 +2448,7 @@ int moConsole::GetObjectId( moText p_objectlabelname ) {
 }
 
 int moConsole::GetDirectoryFileCount( moText p_path ) {
-    int i;
+
     moDirectory* pDir;
     pDir = NULL;
     moText completepath;
@@ -2039,8 +2628,8 @@ int moConsole::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
 int moConsole::luaPlay( moLuaVirtualMachine& vm ) {
 
     lua_State *state = (lua_State *) vm;
-
-    ConsolePlay();
+    if (state)
+      ConsolePlay();
 
     return 0;
 }
@@ -2048,8 +2637,8 @@ int moConsole::luaPlay( moLuaVirtualMachine& vm ) {
 int moConsole::luaPause( moLuaVirtualMachine& vm ) {
 
     lua_State *state = (lua_State *) vm;
-
-    ConsolePause();
+    if (state)
+      ConsolePause();
 
     return 0;
 }
@@ -2058,7 +2647,8 @@ int moConsole::luaStop( moLuaVirtualMachine& vm ) {
 
     lua_State *state = (lua_State *) vm;
 
-    ConsoleStop();
+    if (state)
+      ConsoleStop();
 
     return 0;
 }
@@ -2297,7 +2887,7 @@ int moConsole::luaSetObjectCurrentValue(moLuaVirtualMachine& vm) {
 
         moParam pParam = Object->GetConfig()->GetParam(paramid);
 
-        MODebug2->Message( moText("in lua console script: SetObjectCurrentValue")+Object->GetLabelName() + " Param:" + pParam.GetParamDefinition().GetName() );
+        //MODebug2->Message( moText("in lua console script: SetObjectCurrentValue")+Object->GetLabelName() + " Param:" + pParam.GetParamDefinition().GetName() );
     } else {
         MODebug2->Error( moText("in console script: SetObjectCurrentValue : object not founded : id:")+(moText)IntToStr(objectid) );
     }
@@ -2488,7 +3078,7 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                     case MO_DATA_NUMBER_MIDI:
                         pData->SetLong( (MOlong) lua_tonumber ( state, 3 ) );
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_3DMODELPOINTER:
                     case MO_DATA_FONTPOINTER:
@@ -2496,20 +3086,20 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                     case MO_DATA_IMAGESAMPLE_FILTERED:
                     case MO_DATA_IMAGESAMPLE_TEXTUREBUFFER:
                         //pData->SetLong( (MOlong) lua_tonumber ( state, 3 ) );
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_VECTOR2I:
                         (*pData->Vector2i()) = moVector2i(  (MOlong) lua_tonumber ( state, 3 ),
                                                             (MOlong) lua_tonumber ( state, 4 ) );
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_VECTOR3I:
                         (*pData->Vector3i()) = moVector3i(  (MOlong) lua_tonumber ( state, 3 ),
                                                             (MOlong) lua_tonumber ( state, 4 ),
                                                             (MOlong) lua_tonumber ( state, 5 ) );
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_VECTOR4I:
                         (*pData->Vector4i()) = moVector4i(  (MOlong) lua_tonumber ( state, 3 ),
@@ -2517,20 +3107,20 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                                                             (MOlong) lua_tonumber ( state, 5 ),
                                                             (MOlong) lua_tonumber ( state, 6 ) );
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_VECTOR2F:
                         (*pData->Vector2d()) = moVector2d(  (MOdouble) lua_tonumber ( state, 3 ),
                                                             (MOdouble) lua_tonumber ( state, 4 ));
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_VECTOR3F:
                         (*pData->Vector3d()) = moVector3d(  (MOdouble) lua_tonumber ( state, 3 ),
                                                             (MOdouble) lua_tonumber ( state, 4 ),
                                                             (MOdouble) lua_tonumber ( state, 5 ));
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_VECTOR4F:
                         (*pData->Vector4d()) = moVector4d(  (MOdouble) lua_tonumber ( state, 3 ),
@@ -2538,25 +3128,27 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
                                                             (MOdouble) lua_tonumber ( state, 5 ),
                                                             (MOdouble) lua_tonumber ( state, 6 ) );
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_MESSAGE:
                     case MO_DATA_MESSAGES:
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_NUMBER_DOUBLE:
                     case MO_DATA_NUMBER_FLOAT:
                         deluavalor = (MOdouble) lua_tonumber ( state, 3 );
                         pData->SetDouble( deluavalor );
                         pInlet->Update(true);
-                        return 0;
+                        return 0;break;
 
                     case MO_DATA_TEXT:
                         //lua_pushstring(state, pData->Text() );
                         pData->SetText( lua_tostring ( state, 3 ) );
                         pInlet->Update(true);
                         return 0;
-
+                        break;
+                    default:
+                      break;
                 }
             }
         } else {
@@ -2747,7 +3339,7 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
 
     char *pathname = (char *) lua_tostring (state, 1);
 
-    int filecount = -1;
+    int res = -1;
 
     //filecount = this->GetDirectoryFileCount( pathname );
 
@@ -2757,10 +3349,16 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
         MODebug2->Error( moText("console lua script: GetDirectoryFileCount > Directory doesn't exist") );
     }
 */
-    int res = this->m_pResourceManager->GetRenderMan()->Screenshot( moText(pathname) );
+    res = this->m_pResourceManager->GetRenderMan()->Screenshot( moText(pathname) );
 
     lua_pushnumber(state, (lua_Number) res );
 
     return 1;
 
 }
+/*
+const moText& moConsole::ToJSON() {
+  return moMoldeoObject::ToJSON();
+}
+*/
+
