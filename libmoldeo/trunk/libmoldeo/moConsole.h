@@ -82,6 +82,8 @@
 #define MO_SCREEN_HEIGHT 600
 #define MO_SCREEN_DEPTH	32
 
+
+
 class LIBMOLDEO_API moPresetParamDefinition {
 
     public:
@@ -373,12 +375,19 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         void ProcessConsoleMessage( moMessage* p_pMessage );
 
+        int ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage );
+        int SendMoldeoAPIMessage( moDataMessage* p_pDataMessage );
+
         ///============================
         ///SCRIPTED in LUA
         ///============================
         void ScriptExeDraw();
         int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
         void RegisterFunctions();
+
+        const moText& ToJSON() {
+          return moMoldeoObject::ToJSON();
+        }
 
     protected:
 
@@ -470,6 +479,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         moIODeviceManager*		m_pIODeviceManager;
         moMoldeoObjects			m_MoldeoObjects;
         moEffectManager			m_EffectManager;
+        moReactionListenerManager m_ReactionListenerManager;
 
         moText                  m_ConsoleScript;
 
@@ -516,5 +526,6 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         MOint ConvertKeyNameToIdx(moText& name);
 
+        moPresetParams m_PresetParams;
 };
 #endif

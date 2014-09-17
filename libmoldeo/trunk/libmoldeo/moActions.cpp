@@ -30,3 +30,119 @@
 
 #include "moActions.h"
 
+moDefineDynamicArray( moReactionListeners )
+
+/** ======================================= */
+
+moAction::moAction() {
+  m_ActionType = MO_ACTION_UNDEFINED;
+}
+
+moAction::moAction( moMoldeoActionType p_ActionType ) {
+  m_ActionType = p_ActionType;
+}
+
+moAction::~moAction() {
+
+}
+
+/** ======================================= */
+
+moReaction::moReaction() {
+  m_ReactionType = MO_REACTION_UNDEFINED;
+}
+
+moReaction::moReaction( moMoldeoReactionType p_ReactionType ) {
+  m_ReactionType = p_ReactionType;
+}
+
+moReaction::~moReaction() {
+
+}
+
+/** ======================================= */
+
+moReactionListener::moReactionListener() {
+  m_hostname = "MO_ACTION_LISTENER_HOST_UNDEFINED";
+  m_port = MO_ACTION_LISTENER_PORT_UNDEFINED;
+}
+
+moReactionListener::moReactionListener( const moText &p_host, int p_port) {
+  m_hostname = p_host;
+  m_port = p_port;
+}
+
+moReactionListener::~moReactionListener() {
+
+}
+
+/** ======================================= */
+
+
+moReactionListenerManager::moReactionListenerManager() {
+  //m_ReactionListeners
+
+  /** values map actions*/
+  m_MapStrToActionType["valueadd"] = MO_ACTION_VALUE_ADD;
+  m_MapStrToActionType["valuedelete"] = MO_ACTION_VALUE_DELETE;
+  m_MapStrToActionType["valuesave"] = MO_ACTION_VALUE_SAVE;
+  m_MapStrToActionType["valuedelete"] = MO_ACTION_VALUE_DELETE;
+  m_MapStrToActionType["valueget"] = MO_ACTION_VALUE_GET;
+  m_MapStrToActionType["valueset"] = MO_ACTION_VALUE_SET;
+  m_MapStrToActionType["valuegetcomputed"] = MO_ACTION_VALUE_GETCOMPUTED;
+
+  /** preconfigs map actions*/
+  m_MapStrToActionType["preconfigadd"] = MO_ACTION_PRECONFIG_ADD;
+  m_MapStrToActionType["preconfigdelete"] = MO_ACTION_PRECONFIG_DELETE;
+  m_MapStrToActionType["preconfigsave"] = MO_ACTION_PRECONFIG_SAVE;
+  m_MapStrToActionType["preconfigset"] = MO_ACTION_PRECONFIG_SET;
+
+  /** parameters map actions*/
+  m_MapStrToActionType["paramget"] = MO_ACTION_PARAM_GET;
+  m_MapStrToActionType["paramset"] = MO_ACTION_PARAM_SET;
+  m_MapStrToActionType["paramsave"] = MO_ACTION_PARAM_SAVE;
+
+
+  /** object map actions*/
+  m_MapStrToActionType["objectadd"] = MO_ACTION_OBJECT_ADD;
+  m_MapStrToActionType["objectget"] = MO_ACTION_OBJECT_GET;
+  m_MapStrToActionType["objectgetstate"] = MO_ACTION_OBJECT_GETSTATE;
+  m_MapStrToActionType["objectsave"] = MO_ACTION_OBJECT_SAVE;
+  m_MapStrToActionType["objectset"] = MO_ACTION_OBJECT_SET;
+  m_MapStrToActionType["objectdelete"] = MO_ACTION_OBJECT_DELETE;
+  m_MapStrToActionType["objectmove"] = MO_ACTION_OBJECT_MOVE;
+
+  /** effect map actions */
+  m_MapStrToActionType["effectsetstate"] = MO_ACTION_EFFECT_SETSTATE;
+  m_MapStrToActionType["effectgetstate"] = MO_ACTION_EFFECT_GETSTATE;
+  m_MapStrToActionType["effectenable"] = MO_ACTION_EFFECT_ENABLE;
+  m_MapStrToActionType["effectdisable"] = MO_ACTION_EFFECT_DISABLE;
+  m_MapStrToActionType["effectplay"] = MO_ACTION_EFFECT_PLAY;
+  m_MapStrToActionType["effectpause"] = MO_ACTION_EFFECT_PAUSE;
+  m_MapStrToActionType["effectstop"] = MO_ACTION_EFFECT_STOP;
+
+  /** console map actions  */
+  m_MapStrToActionType["consoleplay"] = MO_ACTION_CONSOLE_PLAY;
+  m_MapStrToActionType["consolepause"] = MO_ACTION_CONSOLE_PAUSE;
+  m_MapStrToActionType["consolestop"] = MO_ACTION_CONSOLE_STOP;
+  m_MapStrToActionType["consolesave"] = MO_ACTION_CONSOLE_SAVE;
+  m_MapStrToActionType["consolesaveas"] = MO_ACTION_CONSOLE_SAVEAS;
+  m_MapStrToActionType["consolescreenshot"] = MO_ACTION_CONSOLE_SCREENSHOT;
+  m_MapStrToActionType["consolepresentation"] = MO_ACTION_CONSOLE_PRESENTATION;
+  m_MapStrToActionType["consolefullscreen"] = MO_ACTION_CONSOLE_FULLSCREEN;
+  m_MapStrToActionType["consolefullscreensecondary"] = MO_ACTION_CONSOLE_FULLSCREEN_SECONDARY;
+  m_MapStrToActionType["consolewindowed"] = MO_ACTION_CONSOLE_WINDOWED;
+  m_MapStrToActionType["consoleget"] = MO_ACTION_CONSOLE_GET;
+  m_MapStrToActionType["consolegetstate"] = MO_ACTION_CONSOLE_GETSTATE;
+  m_MapStrToActionType["consolesetstate"] = MO_ACTION_CONSOLE_SETSTATE;
+  /** console presets map actions*/
+  m_MapStrToActionType["consolepresetadd"] = MO_ACTION_CONSOLE_PRESET_ADD;
+  m_MapStrToActionType["consolepresetdelete"] = MO_ACTION_CONSOLE_PRESET_DELETE;
+  m_MapStrToActionType["consolepresetsave"] = MO_ACTION_CONSOLE_PRESET_SAVE;
+  m_MapStrToActionType["consolepresetset"] = MO_ACTION_CONSOLE_PRESET_SET;
+
+}
+
+moReactionListenerManager::~moReactionListenerManager() {
+
+}
