@@ -105,11 +105,29 @@ struct tChunk
 // This class handles all of the loading code
 class LIBMOLDEO_API CLoad3DS
 {
-	public:CLoad3DS ();			 // This inits the data members
+	public:
 
-	// This is the function that you call to load the 3DS
-	bool Import3DS (mo3dModel * pModel, char *strFileName);
+	  CLoad3DS ();			 // This inits the data members
+
+    // This is the function that you call to load the 3DS
+    bool Import3DS (mo3dModel * pModel, char *strFileName);
+
 	private:
+
+    CVector3 Vector(CVector3 vPoint1, CVector3 vPoint2);
+
+    // This adds 2 vectors together and returns the result
+    CVector3 AddVector(CVector3 vVector1, CVector3 vVector2);
+
+    // This divides a vector by a single number(scalar) and returns the result
+    CVector3 DivideVectorByScaler(CVector3 vVector1, float Scaler);
+
+    // This returns the cross product between 2 vectors
+    CVector3 Cross(CVector3 vVector1, CVector3 vVector2);
+
+    // This returns the normal of a vector
+    CVector3 Normalize(CVector3 vNormal);
+
 		// This reads in a string and saves it in the char array passed in
 		int GetString (char *);
 
