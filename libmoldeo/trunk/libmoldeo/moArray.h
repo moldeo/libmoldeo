@@ -207,7 +207,6 @@ void name::Remove(int x) {\
 \
 	MOuint i,j;\
 	T* arrayaux;\
-	bool founded = false;\
 \
 	if ( (MOint)0<=x && x<(MOint)n && array!=NULL) {\
 	\
