@@ -29,6 +29,7 @@
 *******************************************************************************/
 
 #include "moAbstract.h"
+using namespace std;
 
 moTextHeap *moAbstract::MODebug = new moTextHeap();
 
@@ -42,7 +43,6 @@ moDebug::moDebug() {
     #ifdef MO_WIN32XX
     psbuf = moStdOut.rdbuf();   // get file's streambuf
     cout.rdbuf( psbuf );         // assign streambuf to cout
-
     freopen("stdout.txt", "w", stdout);
     #endif
 }

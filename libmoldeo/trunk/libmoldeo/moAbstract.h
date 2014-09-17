@@ -127,7 +127,7 @@ public:
 
     /// Devuelve la cantidad de mensajes almacenados
     MOint       Count() {
-        return m_Debug.count;
+        return m_Debug.Count();
     }
 
     /// Devuelve una referencia a la pila de mensajes
