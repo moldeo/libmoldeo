@@ -217,6 +217,22 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         */
 		void		Update( bool force = true );
 
+    /**
+      Devuelve verdadero si no está asociado a un parámetro.
+      Es un conector independiente (personalizado).
+    */
+    bool    IsIndependent() {
+      return (m_pParam==NULL);
+    }
+
+    /**
+      Devuelve verdadero si está asociado a un parámetro
+      Su estado depende del parámetro asociado.
+    */
+    bool    IsParameterDependent() {
+      return (m_pParam!=NULL);
+    }
+
 	protected:
 		//Type and Data, it may be a pointer to the plugins data...:-D
         /**
@@ -230,7 +246,9 @@ class LIBMOLDEO_API moConnector : public moAbstract {
         moDataMessages     m_DataMessages;//historical data for streaming
 
         /**
-        * For synchronization betweem internal parameter's config (edited in real time), and inlets (reciever), and outlets (emitter).
+        * For synchronization between internal parameter's config ( edited in real time ),
+          and inlets ( receivers ),
+          and outlets ( emitters ).
         */
         moParam		*m_pParam;
 

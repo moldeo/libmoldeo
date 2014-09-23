@@ -220,29 +220,32 @@ moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moParam* p_pa
 	m_pParam = p_param;
 
 	///fix numeric!!! and value!!!
-	if (m_pData)
-	if ( p_param->GetParamDefinition().GetType() == MO_PARAM_NUMERIC ) {
-	    moValueBase& firstvalue( p_param->GetValue().GetSubValue() );
-	    switch(firstvalue.GetType()) {
-	        case MO_DATA_NUMBER_DOUBLE:
-                m_pData->SetDouble( firstvalue.Double() );
-                break;
-	        case MO_DATA_NUMBER_FLOAT:
-                m_pData->SetFloat( firstvalue.Float() );
-                break;
-	        case MO_DATA_NUMBER_CHAR:
-                m_pData->SetChar( firstvalue.Char() );
-                break;
-	        case MO_DATA_NUMBER_INT:
-                m_pData->SetInt( firstvalue.Int() );
-                break;
-	        case MO_DATA_NUMBER_LONG:
-	        case MO_DATA_NUMBER:
-                m_pData->SetLong( firstvalue.Long() );
-                break;
-        }
+	if (m_pData) {
+    if ( p_param->GetParamDefinition().GetType() == MO_PARAM_NUMERIC ) {
+        moValueBase& firstvalue( p_param->GetValue().GetSubValue() );
+        switch(firstvalue.GetType()) {
+            case MO_DATA_NUMBER_DOUBLE:
+                  m_pData->SetDouble( firstvalue.Double() );
+                  break;
+            case MO_DATA_NUMBER_FLOAT:
+                  m_pData->SetFloat( firstvalue.Float() );
+                  break;
+            case MO_DATA_NUMBER_CHAR:
+                  m_pData->SetChar( firstvalue.Char() );
+                  break;
+            case MO_DATA_NUMBER_INT:
+                  m_pData->SetInt( firstvalue.Int() );
+                  break;
+            case MO_DATA_NUMBER_LONG:
+            case MO_DATA_NUMBER:
+                  m_pData->SetLong( firstvalue.Long() );
+                  break;
+            default:
+              break;
+          }
 
-    }
+      }
+	}
 
 	return true;
 }
