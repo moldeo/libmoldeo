@@ -28,21 +28,20 @@
 
 
 *******************************************************************************/
+
+#ifndef __MOEFFECTMANAGER_H
+#define __MOEFFECTMANAGER_H
+
 #include "moTypes.h"
 #include "moArray.h"
 #include "moEffect.h"
 #include "moPostEffect.h"
 #include "moPreEffect.h"
 #include "moMasterEffect.h"
-#include "moSceneEffect.h"
-#include "moSequenceEffect.h"
 #include "moPlugin.h"
 #include "moPostPlugin.h"
 #include "moPrePlugin.h"
 #include "moMasterPlugin.h"
-
-#ifndef __MOEFFECTMANAGER_H
-#define __MOEFFECTMANAGER_H
 
 /// Administrador de efectos
 /**
