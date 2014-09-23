@@ -211,10 +211,9 @@ void moFBManager::SetDrawTexturesByGLId(MOuint p_num_glids, MOuint *p_glid_list,
 {
 	if (-1 < m_current_fbo)
 	{
-		int i;
 		GLsizei n = p_num_glids;
 
-		for (i = 0; i < n; i++)
+		for (int i = 0; i < n; i++)
 		    m_fbo_array[m_current_fbo]->SetDrawTexture(p_glid_list[i], p_width, p_height, p_param, i);
 
 		for (int i = 0; i < n; i++) m_color_buffers[i] = m_fbo_array[m_current_fbo]->GetColorAttachPoint(i);
@@ -255,10 +254,9 @@ MOint moFBManager::SetDrawTextures(moTextureArray &p_tex_array)
 	MOint result = 1;
 	if (-1 < m_current_fbo)
 	{
-		int i;
 		GLsizei n = p_tex_array.Count();
 
-		for (i = 0; i < n; i++)
+		for (int i = 0; i < n; i++)
 			if (p_tex_array[i] != NULL)
 				m_fbo_array[m_current_fbo]->SetDrawTexture(p_tex_array[i]->GetGLId(), p_tex_array[i]->GetWidth(), p_tex_array[i]->GetHeight(), p_tex_array[i]->GetTexParam(), i);
 
