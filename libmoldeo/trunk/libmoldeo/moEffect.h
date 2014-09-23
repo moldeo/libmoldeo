@@ -190,6 +190,20 @@ public:
 
     virtual moTimerState State();
 
+    virtual const moText& ToJSON() {
+
+      moText fieldSeparation = ",";
+      moEffectState EffectState = GetEffectState();
+      moText objectJSON = moMoldeoObject::ToJSON();
+      m_FullJSON = "{";
+      m_FullJSON+= "'effectstate': " + EffectState.ToJSON();
+      m_FullJSON+= fieldSeparation + "'object': " + objectJSON;
+      m_FullJSON+= "}";
+
+      return m_FullJSON;
+
+    }
+
 	public:
 
 		moPresets			presets;
