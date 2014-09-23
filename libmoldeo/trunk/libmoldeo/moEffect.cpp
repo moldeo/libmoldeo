@@ -782,8 +782,8 @@ int moEffect::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
 int moEffect::luaPlay( moLuaVirtualMachine& vm ) {
 
     lua_State *luastate = (lua_State *) vm;
-
-    Play();
+    if (luastate)
+      Play();
 
     return 0;
 }
@@ -791,8 +791,8 @@ int moEffect::luaPlay( moLuaVirtualMachine& vm ) {
 int moEffect::luaPause( moLuaVirtualMachine& vm ) {
 
     lua_State *luastate = (lua_State *) vm;
-
-    Pause();
+    if (luastate)
+      Pause();
 
     return 0;
 }
@@ -800,8 +800,8 @@ int moEffect::luaPause( moLuaVirtualMachine& vm ) {
 int moEffect::luaStop( moLuaVirtualMachine& vm ) {
 
     lua_State *luastate = (lua_State *) vm;
-
-    Stop();
+    if (luastate)
+      Stop();
 
     return 0;
 }
@@ -823,7 +823,7 @@ int moEffect::luaSetTicks(moLuaVirtualMachine& vm)
 
     MOint ticksint = (MOint) lua_tonumber (luastate, 1);
 
-    //this->SetTicks(ticksint);
+    m_EffectState.tempo.SetDuration( ticksint );
 
     return 0;
 }
@@ -841,6 +841,8 @@ int moEffect::luaEnable(moLuaVirtualMachine& vm)
 {
     lua_State *luastate = (lua_State *) vm;
 
+    luastate = NULL;
+
     TurnOn();
 
     return 0;
@@ -849,8 +851,8 @@ int moEffect::luaEnable(moLuaVirtualMachine& vm)
 int moEffect::luaDisable(moLuaVirtualMachine& vm)
 {
     lua_State *luastate = (lua_State *) vm;
-
-    TurnOff();
+    if (luastate)
+      TurnOff();
 
     return 0;
 }
