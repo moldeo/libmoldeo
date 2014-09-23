@@ -79,6 +79,8 @@ public:
 };
 
 #define MO_MESSAGE 0xFABC05
+#define MO_DATAMESSAGE 0xFABFAB
+
 /// Clase Mensaje
 /**
 * Clase Mensaje
