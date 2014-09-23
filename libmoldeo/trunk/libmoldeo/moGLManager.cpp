@@ -137,7 +137,7 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(60.0f, screen_ratio, 0.1f, 4096.0f);
+	gluPerspective(60.0f, screen_ratio, 0.01f, 1000.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -400,6 +400,8 @@ void moGLManager::RestoreFBOState()
 
 int
 moGLManager::CreateContext( int p_width, int p_height ) {
+
+    MODebug2->Message( "moGLManager::CreateContext > p_width: " + IntToStr(p_width) + " p_height: " + IntToStr(p_height) );
 
     #ifdef MO_WIN
 
