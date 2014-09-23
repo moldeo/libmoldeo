@@ -41,7 +41,7 @@
 
 moLock BuildLock;
 
-
+#define MO_GSTREAMER
 #ifdef MO_GSTREAMER
 
     #ifdef MO_MACOSX
@@ -53,6 +53,7 @@ moLock BuildLock;
 static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
 {
     //cout << "bus_call: new message" << endl;
+    bus = NULL;
     moGsGraph* pGsGraph = (moGsGraph*) user_data;
 
     if (true) {
@@ -159,15 +160,15 @@ moGsGraph::cb_buffer_disconnected (
     }
 
     //moAbstract::MODebug2->Error(moText("moGsGraph::cb_buffer_disconnected !!!"));
-
+	return false;
 }
 
 
 moGBoolean
 moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_data)
 {
-  moGsGraph* pGsGraph;
-
+    moGsGraph* pGsGraph;
+    pad = NULL;
     GstStructure* str;
     GstBuffer* Gbuffer = (GstBuffer*)buffer;
     str = gst_caps_get_structure ( Gbuffer->caps, 0);
@@ -215,35 +216,47 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 
   if (Gbuffer ) {
 
-    if (isvideo)
-    if ( Gbuffer->size>0 && (int)Gbuffer->size<=(h*w*4) ) {
-      //g_passing buffer to bucketpool
-      moBucket *pbucket=NULL;
+    if (isvideo) {
+      if ( Gbuffer->size>0 && (int)Gbuffer->size<=(h*w*4) ) {
+        //g_passing buffer to bucketpool
+        moBucket *pbucket=NULL;
 
-      if (pGsGraph->m_pBucketsPool)
-      if(!pGsGraph->m_pBucketsPool->IsFull()) {
-          pbucket = new moBucket();
-          if(pbucket!=NULL) {
+        if (pGsGraph->m_pBucketsPool)
+        if(!pGsGraph->m_pBucketsPool->IsFull()) {
 
-              //pGsGraph->m_VideoFormat.m_BufferSize = Gbuffer->size;
-              //pGsGraph->m_VideoFormat.m_TimePerFrame = Gbuffer->duration;
-              gint value_numerator, value_denominator;
-              gst_structure_get_fraction( str, "framerate", &value_numerator, &value_denominator );
-              MOuint frate = (value_numerator * 100) / value_denominator;
-              //MODebug2->Push( " frate: "+ IntToStr(frate) + " timeperframe: " + IntToStr(Gbuffer->duration));
-              pbucket->SetBuffer( Gbuffer->size,(MOubyte*)Gbuffer->data );
+              //pGsGraph->MODebug2->Message(moText("Bucket receiving size: ") + IntToStr(Gbuffer->size) );
 
-              if(!pGsGraph->m_pBucketsPool->AddBucket( pbucket )) {
-                  pGsGraph->MODebug2->Error(moText("Bucket error"));
-              }
-              // else cout << "bucket passed!!" << buffer->size << "timestamp:" << buffer->timestamp << endl;
-          }
+            pbucket = new moBucket();
+            if(pbucket!=NULL) {
+
+                //pGsGraph->m_VideoFormat.m_BufferSize = Gbuffer->size;
+                //pGsGraph->m_VideoFormat.m_TimePerFrame = Gbuffer->duration;
+
+                gint value_numerator, value_denominator;
+                gst_structure_get_fraction( str, "framerate", &value_numerator, &value_denominator );
+
+                //MOuint frate = (value_numerator * 100) / value_denominator;
+                //MODebug2->Push( " frate: "+ IntToStr(frate) + " timeperframe: " + IntToStr(Gbuffer->duration));
+
+                pbucket->SetBuffer( Gbuffer->size,(MOubyte*)Gbuffer->data );
+                //pbucket->BuildBucket( w*h*4, 100 );
+                //MODebug2->Push("bucket created.");
+                //gst_buffer_extract( Gbuffer, 0, pbucket->GetBuffer(), Gbuffer->size );
+
+
+                if(!pGsGraph->m_pBucketsPool->AddBucket( pbucket )) {
+                    pGsGraph->MODebug2->Error(moText("Bucket error"));
+                }// else MODebug2->Push("bucket Added.");
+                // else cout << "bucket passed!!" << buffer->size << "timestamp:" << buffer->timestamp << endl;
+            }
+
+        }
+
+      } else {
+        pGsGraph->MODebug2->Error( moText(" moGsGraph:: cb_have_data error: wrong buffer size:")
+                + IntToStr(Gbuffer->size));
+
       }
-
-    } else {
-      pGsGraph->MODebug2->Error( moText(" moGsGraph:: cb_have_data error: wrong buffer size:")
-              + IntToStr(Gbuffer->size));
-
     }
   } else {
     pGsGraph->MODebug2->Error( moText(" moGsGraph:: cb_have_data error: no Gbuffer data!!") );
@@ -256,6 +269,7 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 void
 moGsGraph::on_rtsppadd_added( moGstElement *rtspsrc, moGstPad *pad, moGPointer u_data ) {
 
+    rtspsrc = NULL;///unused
     GstCaps *caps = NULL;
     GstPadLinkReturn padlink;
     gchar* padname = NULL;
@@ -312,6 +326,9 @@ moGsGraph::on_rtsppadd_added( moGstElement *rtspsrc, moGstPad *pad, moGPointer u
 void
 moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, moGPointer u_data)
 {
+  decodebin = NULL; ///unused
+  last = false; ///unused
+
   GstCaps *caps = NULL;
   GstPad  *videopad = NULL;
 //  GstPad  *audiopad = NULL;
@@ -420,6 +437,7 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
 void
 moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_data)
 {
+  decodebin = NULL;
   GstCaps *caps = NULL;
   GstPad  *videopad = NULL;
 //  GstPad  *audiopad = NULL;
@@ -461,11 +479,12 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
             //pGsGraph->BuildAudioFilters();
 
             if (pGsGraph->m_pAudioConverter && 1==2) {
+                /*
                 gboolean link_audioresult = gst_element_link_many( (GstElement*)pGsGraph->m_pAudioConverter,
                                       (GstElement*)pGsGraph->m_pAudioVolume,
                                       (GstElement*)pGsGraph->m_pAudioPanorama,
                                       (GstElement*)pGsGraph->m_pAudioSink, NULL );
-                /*if (link_audioresult) {
+                if (link_audioresult) {
                     audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
                     padlink = gst_pad_link (Gpad, audiopadinconverter);
 
@@ -475,7 +494,7 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
                         pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
                     }
                 }*/
-            } else if (pGsGraph->m_pAudioSink && 1==2) {
+            } else if (pGsGraph->m_pAudioSink && 1==1) {
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioSink, "sink");
                 padlink = gst_pad_link (Gpad, audiopadinconverter);
             }
@@ -543,7 +562,8 @@ moGsGraph::cb_handoff (moGstElement *fakesrc,
     GstElement* Gfakesrc = (GstElement*)fakesrc;
     GstBuffer* Gbuffer = (GstBuffer*)buffer;
     GstPad* Gpad = (GstPad*)pad;
-
+    Gpad = NULL;///unused
+    Gfakesrc = NULL;///unused
     moGsGraph* pGsGraph;
 
 
@@ -842,7 +862,8 @@ moCaptureDevices* moGsFramework::UpdateCaptureDevices() {
 
 bool
 moGsFramework::CheckCaptureDevice( int i ) {
-
+  /// TODO: implement CheckCaptureDevice
+  i = 0;///unused
 
 	return false;
 
@@ -885,6 +906,7 @@ moGsGraph::moGsGraph() {
     m_pRTSPSource = NULL;
     m_pRTSPDepay = NULL;
     m_pHTTPSource = NULL;
+    m_pMultipartDemux = NULL;
     m_pJpegDecode = NULL;
     m_pDecoderBin = NULL;
     m_pEncoder = NULL;
@@ -972,7 +994,7 @@ moGsGraph::InitGraph() {
 
     MODebug2->Message( moText("Initializing GStreamer"));
     //bool init_result = gst_init_check (NULL, NULL, &errores);
-    //gst_init(NULL,NULL);
+
     //gst_init(NULL, NULL);
     //init_result = init_result && gst_controller_init(NULL,NULL);
 
@@ -1074,6 +1096,11 @@ moGsGraph::FinishGraph() {
     if (m_pJpegDecode) {
         gst_object_unref( (GstElement*) m_pJpegDecode);
         m_pJpegDecode = NULL;
+    }
+
+    if (m_pMultipartDemux) {
+        gst_object_unref( (GstElement*) m_pMultipartDemux);
+        m_pMultipartDemux = NULL;
     }
 
     if (m_pHTTPSource) {
@@ -1198,7 +1225,9 @@ moGsGraph::SetEOS(bool iseos) {
 bool
 moGsGraph::SetCaptureDevice( moText deviceport, MOint idevice) {
 
-
+  /// TODO: implement SetCaptureDevice
+  deviceport = "";
+  idevice = 0;
 	return false;
 }
 
@@ -1256,7 +1285,9 @@ gst-launch -m udpsrc port=19790 !  rtppcmadepay ! alawdec ! queue ! amrnbenc ! r
 */
 bool
 moGsGraph::BuildLiveStreamingGraph( moBucketsPool *pBucketsPool, moText p_location ) {
-
+    /// TODO: implement BuildLiveStreamingGraph
+    p_location = "";
+    pBucketsPool = NULL;
     return false;
 }
 
@@ -1267,13 +1298,14 @@ gst-launch-0.10 v4l2src ! queue ! ffmpegcolorspace ! theoraenc quality=1 ! queue
 */
 bool
 moGsGraph::BuildRecordGraph( moText filename, moBucketsPool *pBucketsPool ) {
-
+    /// TODO: implement BuildRecordGraph
     m_pBucketsPool = pBucketsPool;
     bool link_result = false;
-
+    /*
     bool b_sourceselect = false;
     bool b_forcevideoscale = false;
     bool b_forcevideoflip = false;
+    */
     //gchar* checkval;
     bool res = false;
 
@@ -1363,7 +1395,9 @@ moGsGraph::BuildRecordGraph( moText filename, moBucketsPool *pBucketsPool ) {
 bool
 moGsGraph::BuildLiveDVGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p_capdev ) {
 
-
+  /// TODO: no need to implement ?!
+  moCaptureDevice pp = p_capdev;
+  pBucketsPool = NULL;
 	return true;
 }
 
@@ -1401,7 +1435,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
     //gchar* checkval;
     bool res = false;
-    GstPadLinkReturn ret_padlink;
+    //GstPadLinkReturn ret_padlink;
 
     moGstElement* m_pColorSpaceSource = NULL;
 
@@ -1459,8 +1493,10 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
             }
         } else if (codename==moText("HTTP")) {
             m_pHTTPSource = gst_element_factory_make ("souphttpsrc", "source");
-            if ( m_pHTTPSource ) {
-                //signal_rtsppad_added_id = g_signal_connect (m_pHTTPSource, "pad-added", G_CALLBACK (on_rtsppadd_added), (gpointer)this);
+            //needed for decodebin2 TODO: check this in gstreamer 1.0
+            //m_pMultipartDemux = gst_element_factory_make ("multipartdemux", "demux");
+            if ( m_pHTTPSource && m_pMultipartDemux ) {
+                //signal_rtsppad_added_id = g_signal_connect ( m_pMultipartDemux, "pad-added", G_CALLBACK (on_rtsppadd_added), (gpointer)this);
             }
         } else {
 
@@ -1510,7 +1546,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
         }
 
         ///SOUP HTTP source (MJPEG/HTTP)   videofeed
-        if (m_pHTTPSource) {
+        if ( m_pHTTPSource /*&& m_pMultipartDemux*/ ) {
 
             g_object_set (G_OBJECT (m_pHTTPSource), "location", (char*)devicename, NULL);
             g_object_set (G_OBJECT (m_pHTTPSource), "automatic-redirect", TRUE, NULL);
@@ -1521,14 +1557,20 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
 
             res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pHTTPSource );
-
+            //needed for decoderbin2 (version 2) not for version 1
+            //res = res && gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pMultipartDemux );
+            link_result  = false;
             if (res) {
+                //link_result = gst_element_link_many( (GstElement*) m_pHTTPSource, (GstElement*) m_pMultipartDemux, NULL );
                 link_result = true;
             }
 
-            if (link_result) {
+            if ( link_result ) {
+                //m_pFinalSource = m_pMultipartDemux;
                 m_pFinalSource = m_pHTTPSource;
+                m_pDecoderBin = gst_element_factory_make ( "decodebin", "decoder");
             } else {
+                MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > SOUP HTTP source failed linking with MultipartDemux"));
                 m_pFinalSource = NULL;
             }
 
@@ -1562,7 +1604,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
            m_pFinalSource = m_pFileSource;
        }
 
-        if (m_pFinalSource) {
+       if (m_pFinalSource) {
            //g_object_get (G_OBJECT (m_pFileSource), "location", &checkval, NULL);
            //GstElement *filter = gst_element_factory_make ("capsfilter", "filter");
            //g_object_set (G_OBJECT (m_pFileSource), "pattern", GST_VIDEO_TEST_SRC_SNOW, NULL);
@@ -1575,7 +1617,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
            GstCaps* itemcaps = NULL;
 
            GstPad* srcpad = NULL;
-           GstPad* sinkpad = NULL;
+           //GstPad* sinkpad = NULL;
 
            moText padname;
            moText icapsstr;
@@ -1686,7 +1728,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
                m_pVideoDeinterlace = gst_element_factory_make ("ffdeinterlace", "deinterlace");
                if (m_pVideoDeinterlace) {
-                    int  tff = 2;//bottom field first
+                    //int  tff = 2;//bottom field first
                     //g_object_set (G_OBJECT (m_pVideoDeinterlace), "tff", &tff, NULL);
                     res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pVideoDeinterlace );
                }
@@ -1721,7 +1763,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
            */
 
 
-            m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
+            if (m_pDecoderBin==NULL) m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
             if (m_pDecoderBin) {
                 signal_newpad_id = g_signal_connect (m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pDecoderBin );
@@ -1787,7 +1829,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                 event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
             }
         } else {
-            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > file source failed"));
+            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > final source failed"));
             event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
         }
         return false;
@@ -2052,7 +2094,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
 
 void moGsGraph::BuildAudioFilters() {
 
-    BuildLock.Lock();
+    //BuildLock.Lock();
     bool res = false;
 
     if (m_pGstPipeline) {
@@ -2080,7 +2122,7 @@ void moGsGraph::BuildAudioFilters() {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioSink );
            }
     }
-    BuildLock.Unlock();
+    //BuildLock.Unlock();
 
 }
 
@@ -2143,7 +2185,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            //RetreivePads( m_pFileSource );
 
           ///SOUND...
-            //BuildAudioFilters();
+            BuildAudioFilters();
 
            ///FIN SOUND
 
@@ -2362,7 +2404,8 @@ moGsGraph::SetAudioFormat( moGstCaps* caps, moGstBuffer* buffer ) {
     if (g_strrstr( sstr, "channels" )) {
 
         //to calculate framerate
-        gint width, depth, value_numerator, value_denominator;
+        gint width, depth;
+        //gint value_numerator, value_denominator;
         gint channels, rate;
 
         gst_structure_get_int( str, "width", &width);
@@ -2704,7 +2747,7 @@ moGsGraph::Seek( MOuint frame, float rate ) {
 
   gint64     time_nanoseconds;
   bool        res;
-
+  rate = 1.0; /// TODO: unused rate!!!
   //MODebug2->Message(moText("moGsGraph :: Seeking:") + IntToStr(frame) );
 
   if (m_VideoFormat.m_TimePerFrame!=0 && m_FramesLength>0 && m_FramesLength<(MOulong)MO_INFINITE) {
@@ -2923,7 +2966,8 @@ void  moGsGraph::SetSaturation( float saturation ) {
 
 MObyte *
 moGsGraph::GetFrameBuffer( MOlong *size )  {
-
+  /// TODO: ??  GetFrameBuffer
+  size = NULL;
 	return NULL;
 }
 

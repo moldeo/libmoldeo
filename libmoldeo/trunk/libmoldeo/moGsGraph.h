@@ -284,6 +284,7 @@ private:
     moGstElement          *m_pRTSPSource;/** "rtsp depay" */
     moGstElement          *m_pRTSPDepay;/** "rtsp depay" */
     moGstElement          *m_pHTTPSource;/** "http source" */
+    moGstElement          *m_pMultipartDemux;/** "multipardemux for souphttpsrc" */
     moGstElement          *m_pJpegDecode;/** "jpeg decode" */
     moGstElement          *m_pFinalSource;/** "finalsource" */
     moGstElement          *m_pColorSpace;/** "ffmpegcolorspace" */
