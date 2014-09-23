@@ -153,6 +153,7 @@ MOboolean moDecoderManager::Init()
 }
 
 MOboolean moDecoderManager::OpenVideo( moText filename ) {
+      MODebug2->Message("moDecoderManager::OpenVideo > filename: " + filename );
 #ifdef MO_VDPAU
       avcodec_init();
       avcodec_register_all();
@@ -167,6 +168,7 @@ MOboolean moDecoderManager::OpenVideo( moText filename ) {
           MODebug2->Message("Error");
       }
 #endif
+    return false;
 }
 
 
