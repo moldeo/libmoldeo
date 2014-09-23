@@ -104,7 +104,11 @@ moGUIManager::Finish() {
 moWindow*
 moGUIManager::NewWindow( MOfloat x, MOfloat y, MOfloat width, MOfloat height, moTextHeap &textheap ) {
 
-
+  MODebug2->Message("moGUIManager::NewWindow NOT IMPLEMENTED > x: " + FloatToStr(x)
+                    + " y: " + FloatToStr(y)
+                    + " width: " + FloatToStr(width)
+                    + " height: " + FloatToStr(height) );
+  textheap.Push("NewWindow");
 	return NULL;
 }
 
