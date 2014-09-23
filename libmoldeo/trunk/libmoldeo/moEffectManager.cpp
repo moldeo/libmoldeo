@@ -30,7 +30,8 @@
 *******************************************************************************/
 
 #include "moEffectManager.h"
-
+#include "moSceneEffect.h"
+#include "moSequenceEffect.h"
 
 //===========================================
 //
@@ -248,6 +249,9 @@ moEffectManager::GetEffectByLabel( moText p_label_name, moMoldeoObjectType p_mob
       if (  ( label_name==p_label_name ) &&
             ( p_mob_type==peffect->GetType() ) ) {
           return peffect;
+      } else if (MO_OBJECT_UNDEFINED==p_mob_type &&
+                 ( label_name==p_label_name ) ) {
+        return peffect;
       }
     } else {
         MODebug2->Error("moEffectManager::GetEffectByLabel >> Effect is null.");
