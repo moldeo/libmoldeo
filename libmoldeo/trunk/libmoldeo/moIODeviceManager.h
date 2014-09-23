@@ -103,7 +103,7 @@ class LIBMOLDEO_API moIODevice : public moMoldeoObject {
         /**
          * constructor genérico de la clase.
          */
-        virtual MOint GetValue( MOdevcode) = 0;//get the actual value of the specific devicecode
+        virtual MOint GetValue( MOdevcode devcode ) = 0;//get the actual value of the specific devicecode
 
         /**
          * constructor genérico de la clase.
@@ -191,7 +191,7 @@ class LIBMOLDEO_API moIODeviceManager : public moAbstract {
 
 
         /**
-         * constructor genérico de la clase.
+         * TODO:
          */
         moIODevicesArray&	IODevices();
 
@@ -201,34 +201,41 @@ class LIBMOLDEO_API moIODeviceManager : public moAbstract {
         void Update();
 
         /**
-         * constructor genérico de la clase.
+         * TODO:
          */
         virtual MOboolean Init();
 
         /**
-         * constructor genérico de la clase.
+         * TODO:
          */
         virtual MOboolean Finish();
 
         /**
-         * constructor genérico de la clase.
+         * TODO:
          */
         MOswitch GetStatus(MOdevcode);
 
         /**
-         * constructor genérico de la clase.
+         * TODO:
          */
         MOswitch SetStatus( MOdevcode,MOswitch);
 
         /**
-         * constructor genérico de la clase.
+         * TODO:
          */
         MOdevcode GetCode( char*);
 
         /**
-         * constructor genérico de la clase.
+         * TODO:
          */
         moEventList*	GetEvents();
+
+        /**
+         * Eliminar aquellos eventos que no son de la clase derivada de moEvent: moMessage
+         * moEvent es un evento sin destinatario definido. Todos lo leen,
+         * moMessage en cambio tiene un emisor y un destinatario
+         */
+        void PurgeEvents();
 
 	private:
 

@@ -43,38 +43,47 @@ moIODevice::~moIODevice() {
 }
 
 void moIODevice::SetValue( MOdevcode cd, MOint vl ) {
-
+  MODebug2->Message(  " moIODevice::SetValue [NI] > cd: " + IntToStr(cd)
+                    + " vl: " + IntToStr(vl) );
 }
 
 void moIODevice::SetValue( MOdevcode cd, MOfloat vl ) {
-
+  MODebug2->Message(  " moIODevice::SetValue [NI] > cd: " + IntToStr(cd)
+                    + " vl: " + FloatToStr(vl) );
 }
 
 void moIODevice::SetValue( MOdevcode cd , moData data ) {
-
+  MODebug2->Message(  " moIODevice::SetValue [NI] > cd: " + IntToStr(cd)
+                    + " data: " + data.ToText() );
 }
 
 void moIODevice::SetValue( MOdevcode cd, MOlong s, MOpointer pt ) {
-
+  MODebug2->Message(  " moIODevice::SetValue [NI] > cd: " + IntToStr(cd)
+                    + " s: " + IntToStr(s)
+                    + " pointer: " + IntToStr((long)pt) );
 }
 
 moData
 moIODevice::GetValue( MOdevcode cd, moDataType p_type ) {
-
+  MODebug2->Message(  " moIODevice::GetValue [NI] > cd: " + IntToStr(cd)
+                    + " p_type: " + IntToStr((int)p_type) );
 	return moData();
 
 }
 
 MOint moIODevice::GetValue(MOdevcode devcode, MOint i) {
+    MODebug2->Message(  " moIODevice::GetValue [NI] > devcode: " + IntToStr(devcode)
+                    + " i: " + IntToStr((int)i) );
     return 0;
 }
 
 MOint moIODevice::GetNValues(MOdevcode devcode) {
+    MODebug2->Message(  " moIODevice::GetNValues [NI] > devcode: " + IntToStr(devcode));
     return 0;
 }
 
-MOpointer moIODevice::GetPointer( MOdevcode) {
-
+MOpointer moIODevice::GetPointer( MOdevcode devcode) {
+  MODebug2->Message(  " moIODevice::GetPointer [NI] > devcode: " + IntToStr(devcode));
 	return NULL;
 }
 
@@ -152,22 +161,8 @@ moIODeviceManager::RemoveIODevice( MOint p_ID ) {
 void
 moIODeviceManager::Update() {
 
-  //delete all events before poll new ones...
-  //that means Devices dont need to delete their events anymore
-
-  //Events->Finish();
-    moEvent* actual = Events->First;
-    moEvent* tmp = NULL;
-
-    while(actual) {
-        tmp = actual;
-        actual = tmp->next;
-        //if (tmp->reservedvalue3!=MO_MESSAGE) {
-            //deleting events that are note messages!!!
-            //cout << "moIODeviceManager::Update > Deleting events, not messages: deviceid: " << tmp->deviceid << endl;
-            Events->Delete(tmp);
-        //}
-    }
+  ///delete all events before poll new ones...
+  ///that means Devices dont need to delete their events anymore
 
 	PollEvents();
 
@@ -175,9 +170,11 @@ moIODeviceManager::Update() {
 		moIODevice* piodevice = m_IODevices.GetRef(i);
 		if(piodevice!=NULL) piodevice->Update(Events);
 	}
+
+
 }
 
-/*This function must be rewritten for direct access to OS events for each platform*/
+/**This function must be rewritten for direct access to OS events for each platform*/
 void
 moIODeviceManager::PollEvents() {
 
@@ -226,6 +223,33 @@ moIODeviceManager::PollEvents() {
 */
 }
 
+/**
+ERASE ANY EVENT THAT IS NOT A MESSAGE
+
+An event has no destination (BROADCAST): IODeviceManager must purge this events so they do not propagate indefinitly
+A message has a destination (UNICAST / MULTICAST): IODeviceManager doesnt purge them,
+*/
+void
+moIODeviceManager::PurgeEvents() {
+
+	moEvent *actual=NULL,*tmp;
+	///moMessage *pmessage;
+
+	if (Events) actual = Events->First;
+
+	///Procesamos los eventos recibidos de los MoldeoObject Outlets
+	while(actual!=NULL) {
+		tmp = actual->next;
+		///procesamos aquellos Outlet q estan dirigidos a este objeto
+		if (actual->reservedvalue3 != MO_MESSAGE
+        && actual->reservedvalue3 != MO_DATAMESSAGE) {
+						Events->Delete(actual);
+
+		}
+		actual = tmp;
+	}
+}
+
 moEventList*
 moIODeviceManager::GetEvents() {
 	return Events;
@@ -233,19 +257,20 @@ moIODeviceManager::GetEvents() {
 
 MOdevcode
 moIODeviceManager::GetCode(char *n) {
-//as	asasd
+  MODebug2->Message( "moIODeviceManager::GetCode > n: " + moText(n) );
 	return 0;
 }
 
 MOswitch
 moIODeviceManager::GetStatus(MOdevcode a) {
-//asdasd
+  MODebug2->Message( "moIODeviceManager::GetStatus > MOdevcode a: " + IntToStr(a) );
 	return 0;
 }
 
 MOswitch
 moIODeviceManager::SetStatus(MOdevcode a,MOswitch b) {
-//sdsdadf
+  MODebug2->Message( "moIODeviceManager::GetStatus > MOdevcode a: " + IntToStr(a)
+                    +" MOswitch b: " + IntToStr(b) );
 	return 0;
 }
 
