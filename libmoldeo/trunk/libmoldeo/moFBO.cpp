@@ -268,40 +268,40 @@ void moFBO::ClearAttachements()
 
 MOuint moFBO::CheckStatus()  const
 {
-	if (MODebug2 != NULL) MODebug2->Push("Framebuffer status: ");
+	if (MODebug2 != NULL) MODebug2->Message("moFBO::CheckStatus > Framebuffer status: ");
 	GLenum status;
 	status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	switch (status)
 	{
 		case GL_FRAMEBUFFER_COMPLETE_EXT:
-			if (MODebug2 != NULL) MODebug2->Message("GL_FRAMEBUFFER_COMPLETE_EXT");
+			if (MODebug2 != NULL) MODebug2->Message("moFBO::CheckStatus > GL_FRAMEBUFFER_COMPLETE_EXT");
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-			if (MODebug2 != NULL) MODebug2->Error("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT");
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-			if (MODebug2 != NULL) MODebug2->Error("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT");
 			break;
 //		case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
 //			if (MODebug2 != NULL) MODebug2->Push("GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT");
 //			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-			if (MODebug2 != NULL) MODebug2->Error("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT");
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-			if (MODebug2 != NULL) MODebug2->Error("GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT");
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-			if (MODebug2 != NULL) MODebug2->Error("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT");
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-			if (MODebug2 != NULL) MODebug2->Error("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT");
    			break;
 		case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-			if (MODebug2 != NULL) MODebug2->Error("GL_FRAMEBUFFER_UNSUPPORTED_EXT");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_UNSUPPORTED_EXT");
 			break;
 		default:
-			if (MODebug2 != NULL) MODebug2->Error("Unknown error");
+			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > Unknown error");
 			break;
 	}
 	return status;
