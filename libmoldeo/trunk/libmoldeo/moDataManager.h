@@ -112,6 +112,7 @@ class LIBMOLDEO_API moDataSessionConfig {
 
 		moText GetDataPath();
 		moText GetAppPath();
+		moText GetAppDataPath();
 		moText GetConsoleConfigName();
 		moText GetVideoFileName();
 		moText GetSessionFileName();
@@ -135,10 +136,10 @@ class LIBMOLDEO_API moDataSessionConfig {
 
 	private:
 
-        moText m_AppPath;/// Directorio de ejecución de la aplicación
+    moText m_AppPath;/// Directorio de ejecución de la aplicación
 		moText m_DataPath;/// Directorio de datos de la sesión
 		moText m_ConsoleConfigName;///archivo de definición de la consola (*.mol)
-
+    moText m_AppDataPath;
         /*
         MO_DATASESSION_MODE_SAVETOMEMORY
         */
@@ -265,15 +266,18 @@ class LIBMOLDEO_API moDataManager : public moResource
 		moText GetDataPath();
 		moText GetConsoleConfigName();
 		moText GetAppPath();
+		moText GetAppDataPath();
 
-        void StartRecordingSession(  );
-        void StartPlayinbackSession(  );
+    void StartRecordingSession(  );
+    void StartPlayinbackSession(  );
 
-        moDataSession*  GetSession();
+    moDataSession*  GetSession();
 
-        bool Export( moText _export_path_, moText _from_config_console_ = "" );
-        bool IteratedExport( moText _from_config_file_ );
-
+    bool Export( const moText& p_export_path , moText p_from_config_console = moText("") );
+    bool IteratedExport( const moText& p_from_config_file_ );
+    bool ImportFile( const moText& p_import_file_full_path  );
+    bool InData( const moText& p_file_full_path  );
+    moText MakeRelativeToData( const moText& p_file_full_path  );
 
 	protected:
 
