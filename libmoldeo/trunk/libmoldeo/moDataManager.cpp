@@ -85,12 +85,28 @@ moDataSession::Set(   moText p_Name,
 bool
 moDataSession::SaveToFile( moText p_filename ) {
 
+  bool result = false;
+  //
+  if (p_filename == "") {
+      MODebug2->Error("moDataSession::SaveToFile > p_filename undefined.");
+      result = false;
+  } else {
+  }
 
+	return result;
 }
 
 bool
 moDataSession::LoadFromFile( moText p_filename ) {
+  bool result = false;
+  //
+  if (p_filename == "") {
+      MODebug2->Error("moDataSession::LoadFromFile > p_filename undefined.");
+      result = false;
+  } else {
+  }
 
+	return result;
 }
 
 
@@ -98,23 +114,26 @@ bool
 moDataSession::AddKey( moDataSessionKey* p_key ) {
 
     m_Keys.Add( p_key );
-
+	return true;
 }
 
 bool
 moDataSession::AddEventKey( moDataSessionEventKey* p_eventkey ) {
     m_EventKeys.Add( p_eventkey );
+	return true;
 }
 
 bool
 moDataSession::Playback() {
     m_SessionPlaybackMode = MO_DATASESSION_PLAY_LIVETOCONSOLE;
+	return true;
 }
 
 bool
 moDataSession::Record() {
 
     m_SessionRecordMode = MO_DATASESSION_RECORD_DIRECTTOFILE;
+	return true;
 
 }
 
@@ -125,6 +144,69 @@ moDataSession::RecordLive( moResourceManager* pRM ) {
     if (m_pVideoGraph && m_pDataSessionConfig) {
         m_pVideoGraph->BuildRecordGraph( m_pDataSessionConfig->GetVideoFileName(), pRM->GetRenderMan()->GetFramesPool() );
     }
+	return true;
+}
+
+
+//===========================================
+//
+//   moDataSessionKey
+//
+//===========================================
+
+moDataSessionKey::moDataSessionKey() {
+}
+
+moDataSessionKey::moDataSessionKey(		long p_Timecode,
+										moMoldeoActionType p_ActionType,
+										moValue& p_Value,
+										long p_MoldeoObjectId,
+										long p_ParamId,
+										long p_ValueId ) {
+  p_Timecode = 0;
+  p_ActionType = MO_ACTION_UNDEFINED;
+  moValue& mvalue(p_Value);
+  mvalue.GetSubValueCount();
+  p_MoldeoObjectId = 0;
+  p_ParamId = 0;
+  p_ValueId = 0;
+
+}
+
+moDataSessionKey::~moDataSessionKey() {
+
+}
+
+moValue& moDataSessionKey::GetValue() {
+	return m_Value;
+}
+
+moMoldeoActionType moDataSessionKey::GetActionType() {
+	return m_ActionType;
+}
+
+
+
+moDataSessionEventKey::moDataSessionEventKey() {
+
+}
+
+moDataSessionEventKey::moDataSessionEventKey(  long p_Timecode,
+	moMessage& event ) {
+  p_Timecode = 0;
+  moMessage msg(event);
+  moDebugManager::Message( " Message Id:" + IntToStr( msg.deviceid ) );
+}
+
+moDataSessionEventKey::~moDataSessionEventKey() {
+}
+
+long    moDataSessionEventKey::GetTimecode() {
+	return 0;
+}
+
+moMessage&    moDataSessionEventKey::GetMessage() {
+	return m_Message;
 }
 
 //===========================================
@@ -147,13 +229,73 @@ moDataSessionConfig::moDataSessionConfig(   moText p_apppath,
                                             long p_MaxTimecode,
                                             long p_Port,
                                             long p_Address ) {
-    m_AppPath = p_apppath;
+  m_AppPath = p_apppath;
 	m_DataPath = p_datapath;
 	m_ConsoleConfigName = p_consoleconfig;
 	m_SessionFileName = p_SessionFileName;
 	m_VideoFileName = p_VideoFileName;
 	m_MaxKeys = p_MaxKeys;
 	m_MaxTimecode = p_MaxTimecode;
+
+  if ( m_AppPath==moText("") ) {
+
+    moFile fileMol( p_apppath );
+    moText workPath = moFileManager::GetWorkPath();
+    m_AppPath = workPath;
+    moDebugManager::Message(  moText(" moDataSessionConfig() > m_AppPath empty, setting to Work Path: ")
+                            + m_AppPath
+                            + " p_Port: " + IntToStr( p_Port )
+                            + " p_Address: " + IntToStr( p_Address ) );
+  }
+
+  moDebugManager::Message(  moText(" moDataSessionConfig() > m_AppPath: ") + m_AppPath );
+  moDebugManager::Message(  moText(" moDataSessionConfig() > m_ConsoleConfigName: ") + m_ConsoleConfigName );
+
+  moFile molFile(  m_ConsoleConfigName );
+
+  if ( molFile.GetPath()==moText("") ) {
+    m_ConsoleConfigName = m_DataPath + moSlash + m_ConsoleConfigName;
+    moDebugManager::Message(  moText(" moDataSessionConfig() > m_ConsoleConfigName fixed to: ") + m_ConsoleConfigName );
+  }
+
+	///check if DATADIR exists
+	/// a) in linux: just take the datadir
+	/// b) in windows: depends
+	m_AppDataPath = DATADIR;
+
+	if ( m_AppDataPath == moText("../../data") ) {
+
+    moDirectory mDir( m_AppDataPath );
+    moDebugManager::Message(  moText(" moDataSessionConfig() > m_AppDataPath: ") + m_AppDataPath
+                            + moText(" Exists: ") + IntToStr( mDir.Exists() ) );
+
+    if (!mDir.Exists()) {
+      /// check if
+      /// moFile mFile(
+
+      #ifdef MO_WIN32
+
+      moDebugManager::Message(  moText(" moDataSessionConfig() > exeFile Path: ") + moFileManager::GetExePath() );
+      moFile exeFile( moFileManager::GetExePath() );
+      m_AppDataPath = exeFile.GetPath() + moSlash + m_AppDataPath;
+
+      moDebugManager::Message( m_AppDataPath + moText(" doesn't exists > adding absolute path: ") + m_AppDataPath );
+      #else
+      moDebugManager::Error( moText(" moDataSessionConfig() > App Data Path doesn't exists: ")  + m_AppDataPath );
+      moDebugManager::Error( moText(" please check libmoldeo DATADIR settings (configure.ac) > DATADIR is: ")  + DATADIR );
+      #endif
+    }
+
+	}
+
+
+  if ( m_DataPath == moText("") ) {
+      m_DataPath = m_AppPath;
+      moDebugManager::Message(  moText(" moDataSessionConfig() > m_DataPath set to: ") + m_DataPath );
+  } else moDebugManager::Message(  moText(" moDataSessionConfig() > m_DataPath: ") + m_DataPath );
+
+
+
 }
 
 moDataSessionConfig::~moDataSessionConfig() {
@@ -168,6 +310,12 @@ moText
 moDataSessionConfig::GetDataPath() {
 	return m_DataPath;
 }
+
+moText
+moDataSessionConfig::GetAppDataPath() {
+  return m_AppDataPath;
+}
+
 
 moText
 moDataSessionConfig::GetConsoleConfigName() {
@@ -251,6 +399,13 @@ moDataManager::GetDataPath() {
 	return moText("");
 }
 
+moText
+moDataManager::GetAppDataPath() {
+	//m_DataSessionIndex
+	if (m_pDataSessionConfig)
+		return m_pDataSessionConfig->GetAppDataPath();
+	return moText("");
+}
 
 moText
 moDataManager::GetConsoleConfigName() {
@@ -281,28 +436,30 @@ moDataSession*  moDataManager::GetSession() {
 
 
 bool
-moDataManager::Export( moText _export_path_, moText _from_config_console_ ) {
+moDataManager::Export( const moText& p_export_path_, moText p_from_config_console ) {
 
 
     /** OPENING CONSOLE PROJECT */
 
     moConfig from_console;
 
-    if ( m_pDataSessionConfig && _from_config_console_ == "") {
+    MODebug2->Message( "moDataManager::Export > p_export_path_: " + p_export_path_ );
 
-        _from_config_console_ = m_pDataSessionConfig->GetDataPath() + moSlash + m_pDataSessionConfig->GetConsoleConfigName();
+    if ( m_pDataSessionConfig && p_from_config_console == "") {
+
+        p_from_config_console = m_pDataSessionConfig->GetDataPath() + moSlash + m_pDataSessionConfig->GetConsoleConfigName();
 
     }
 
-    if ( _from_config_console_ != "" ) {
+    if ( p_from_config_console != "" ) {
 
-        if ( from_console.LoadConfig( _from_config_console_ ) != MO_CONFIG_OK ) {
+        if ( from_console.LoadConfig( p_from_config_console ) != MO_CONFIG_OK ) {
 
-            MODebug2->Error( moText("moDataManager::Export > Couldn't load config from ") + _from_config_console_ );
+            MODebug2->Error( moText("moDataManager::Export > Couldn't load config from ") + p_from_config_console );
             return false;
 
         } else {
-            MODebug2->Push( moText("moDataManager::Export > Exporting moldeo console project: ") + _from_config_console_  );
+            MODebug2->Push( moText("moDataManager::Export > Exporting moldeo console project: ") + p_from_config_console  );
         }
 
     } else {
@@ -344,22 +501,22 @@ moDataManager::Export( moText _export_path_, moText _from_config_console_ ) {
 
     }
 
-    result&= IteratedExport( _from_config_console_ );
+    result&= IteratedExport( p_from_config_console );
 
     return result;
 
 }
 
-bool moDataManager::IteratedExport( moText _from_config_file_ ) {
+bool moDataManager::IteratedExport( const moText& p_from_config_file ) {
 
 
     moConfig config;
 
-    if ( _from_config_file_ != "" ) {
+    if ( p_from_config_file != "" ) {
 
-        if ( config.LoadConfig( _from_config_file_ ) != MO_CONFIG_OK ) {
+        if ( config.LoadConfig( p_from_config_file ) != MO_CONFIG_OK ) {
 
-            MODebug2->Error( moText("moDataManager::IteratedExport > error loading config file ") + _from_config_file_ );
+            MODebug2->Error( moText("moDataManager::IteratedExport > error loading config file ") + p_from_config_file );
             return false;
 
         }
@@ -383,5 +540,72 @@ bool moDataManager::IteratedExport( moText _from_config_file_ ) {
 
 
     return false;
+
+}
+
+moText moDataManager::MakeRelativeToData( const moText& p_file_full_path  ) {
+
+  moText filerelative_Data = "";
+  moFile filetoImport( p_file_full_path );
+
+  if (InData(p_file_full_path)) {
+
+    moText fileabs = filetoImport.GetAbsolutePath();
+    fileabs.ReplaceChar( "\\","/");
+
+    moText datapath = GetDataPath();
+    datapath.ReplaceChar( "\\","/");
+
+    filerelative_Data = fileabs.Right( fileabs.Length() - datapath.Length() );
+    MODebug2->Message( "moDataManager::MakeRelativeToData > fileabs: " + fileabs + " datapath:" + datapath
+                    + " filerelative_Data: " + filerelative_Data );
+  }
+
+  return filerelative_Data;
+}
+
+bool moDataManager::InData( const moText& p_file_full_path  ) {
+
+  //check if p_file_full_path is in the folder...
+  moFile filetoImport( p_file_full_path );
+  moText fileabs = filetoImport.GetAbsolutePath();
+  fileabs.ReplaceChar( "\\","/");
+
+  moText datapath = GetDataPath();
+  datapath.ReplaceChar( "\\","/");
+
+  MODebug2->Message( "moDataManager::InData > fileabs: " + fileabs + " datapath:" + datapath );
+
+  if (fileabs.Length()>datapath.Length()) {
+
+    moText fileabs_Data = fileabs.Left( datapath.Length()-1 );
+    MODebug2->Message( "moDataManager::InData > fileabs_Data:" + fileabs_Data );
+    if (fileabs_Data==datapath) {
+      return true;
+    }
+  }
+  MODebug2->Message( "moDataManager::InData > not InData! Copy file please!");
+  return false;
+
+}
+
+bool moDataManager::ImportFile( const moText& p_import_file_full_path  ) {
+
+  bool result = false;
+  /// Check extension ( if it is a CFG > try to import internal files associated to it )
+
+  /// Copy file to project data folder: DIRECT COPY TO DATA FOLDER root...
+
+  moFile importFile( p_import_file_full_path );
+  moText  file_destination_path;
+  if (importFile.Exists()) {
+    file_destination_path = GetDataPath() + importFile.GetFullName();
+    MODebug2->Message("moDataManager::ImportFile > p_import_file_full_path: " + p_import_file_full_path
+                      + " to " + file_destination_path );
+    result = moFileManager::CopyFile( p_import_file_full_path, file_destination_path );
+
+  }
+
+  return result;
 
 }
