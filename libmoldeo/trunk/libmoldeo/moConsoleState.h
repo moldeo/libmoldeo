@@ -34,7 +34,7 @@
 #include "moTypes.h"
 #include "moAbstract.h"
 #include "moTempo.h"
-#include "moEffect.h"
+#include "moEffectState.h"
 
 
 /// Estado de la consola
