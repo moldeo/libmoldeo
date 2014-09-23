@@ -73,7 +73,7 @@ moFontManager::Init() {
 		moText	completepath;
 
 		//completepath = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
-		completepath = moText(DATADIR "/fonts/Tuffy.ttf");
+		completepath = m_pResourceManager->GetDataMan()->GetAppDataPath() + "/fonts/Tuffy.ttf";
 
 		pFont->Init( MO_FONT_OUTLINE, completepath, 16 );
 
@@ -417,7 +417,8 @@ moFont::SetHorizontalJustification( int p_horizontal_justification) {
 
     //FTFont* FF = (FTFont*) m_pFace;
     //if (FF) FF->
-
+    MODebug2->Message("moFont::SetHorizontalJustification > p_horizontal_justification NOT IMPLEMENTED : "
+                      + IntToStr( p_horizontal_justification ) );
 }
 
 void
@@ -425,14 +426,15 @@ moFont::SetStringRotation( MOfloat p_string_rotation ) {
 
     //FTFont* FF = (FTFont*) m_pFace;
     //if (FF) FF->
-
+    MODebug2->Message("moFont::SetStringRotation > p_string_rotation NOT IMPLEMENTED: "
+                      + FloatToStr( p_string_rotation ) );
 }
 
 void
 moFont::Draw( MOfloat x, MOfloat y, moText& text) {
 	Draw( x, y, text, m_FontSize );
 }
-
+/**
 const wchar_t *GetWC(const char *c)
 {
     const size_t cSize = strlen(c)+1;
@@ -441,6 +443,7 @@ const wchar_t *GetWC(const char *c)
 
     return wc;
 }
+*/
 
 void
 moFont::Draw( MOfloat x, MOfloat y, moText& text, moFontSize p_fontsize, MOint set, MOfloat sx, MOfloat sy, MOfloat rt ) {
@@ -449,8 +452,8 @@ moFont::Draw( MOfloat x, MOfloat y, moText& text, moFontSize p_fontsize, MOint s
     if (FF) {
         SetSize(p_fontsize);
 
-        //FF->Render( text, text.Length(), FTPoint(x,y) );
-        FF->Render( GetWC( text ), text.Length(), FTPoint(x,y) );
+        FF->Render( text, text.Length(), FTPoint(x,y) );
+        //FF->Render( GetWC( text ), text.Length(), FTPoint(x,y) );
     }
 
     else {
