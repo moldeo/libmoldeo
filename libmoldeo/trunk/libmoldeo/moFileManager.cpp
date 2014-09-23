@@ -524,7 +524,7 @@ moDirectory::Update() {
                 bool founded = false;
 
                 for( int i=0; i<(int)m_Files.Count(); i++) {
-                    moFile* pFile = m_Files[i];
+                    pFile = m_Files[i];
                     if  (pFile->GetCompletePath()==pCompletePathFilename) {
                         founded = true;
                     }
@@ -764,6 +764,17 @@ moFile::GetCompletePath() {
 }
 
 moText
+moFile::GetAbsolutePath() {
+  char *path;
+  path = m_CompletePath;
+  bfs::path abspath = bfs::canonical( path );
+	moText absolutePath((char*)abspath.string().c_str());
+	return absolutePath;
+}
+
+
+
+moText
 moFile::GetExtension() {
 	return m_Extension;
 }
@@ -892,15 +903,37 @@ moFileManager::GetDirectory( moText p_Path ) {
 moText
 moFileManager::GetExePath() {
 
-    return moText("");
+    #ifdef MO_WIN32
+
+    char ownPth[MAX_PATH];
+
+    // Will contain exe path
+    HMODULE hModule = GetModuleHandle(NULL);
+    if (hModule != NULL)
+    {
+    // When passing NULL to GetModuleHandle, it returns handle of exe itself
+      GetModuleFileNameA( hModule, ownPth, (sizeof(ownPth)));
+    }
+    moFile exeFile( ownPth );
+    return exeFile.GetCompletePath();
+
+    #endif
+    return moText("[ WARNING -- function not implemented ]");
 
 }
+#ifdef MO_USING_VC
+#include <direct.h>
+#endif
 
 moText
 moFileManager::GetWorkPath() {
     char lbuf[1024];
 
-    getcwd( lbuf , sizeof( lbuf ) );
+	#ifdef MO_USING_VC
+		_getcwd( lbuf , sizeof( lbuf ) );
+	#else
+		getcwd( lbuf , sizeof( lbuf ) );
+	#endif
 
     moText workpath = lbuf;
 

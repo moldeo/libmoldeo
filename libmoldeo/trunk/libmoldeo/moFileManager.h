@@ -112,6 +112,7 @@ class LIBMOLDEO_API moFile : public moAbstract {
 		moText	GetPath();
     moText  GetFolderName();
 		moText	GetCompletePath();
+		moText	GetAbsolutePath();
 		moText	GetExtension();
 		moText	GetProtocol();
 
