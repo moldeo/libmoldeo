@@ -94,6 +94,7 @@ moTrackerInstanceRecord & moTrackerInstanceRecord::operator = (const moTrackerIn
   m_Tick = src.m_Tick;
   m_ValidFeatures = src.m_ValidFeatures;
   m_DeltaValidFeatures = src.m_DeltaValidFeatures;
+  return(*this);
 }
 
 moTrackerSystemHistory::moTrackerSystemHistory() {
@@ -209,11 +210,13 @@ moTrackerSystemHistory::Reset() {
 
 bool
 moTrackerSystemHistory::SaveToFile( moText filename ) {
+    MODebug2->Message("moTrackerSystemHistory::SaveToFile > not implemented! argument: " + filename);
     return false;
 }
 
 bool
 moTrackerSystemHistory::SaveToXML( moText filename ) {
+  MODebug2->Message("moTrackerSystemHistory::SaveToXML > not implemented! argument: " + filename);
   return false;
 }
 
@@ -889,12 +892,16 @@ moVector2f& pos
 
 void moTrackerSystemData::SetPositionMatrix( float x, float y, int nfeatures ) {
     int pos = PositionToZone(x,y);
-    if ( pos >=0 && pos <m_Zones ) m_PositionMatrix[pos]+=1;
+    if ( pos >=0 && pos <m_Zones ) {
+        m_PositionMatrix[pos]+=nfeatures;
+    }
 }
 
 void moTrackerSystemData::SetPositionMatrix( moVector2f pos, int nfeatures ) {
     int posi = PositionToZone(pos.X(),pos.Y());
-    if ( posi >=0 && posi <m_Zones ) m_PositionMatrix[posi]+=1;
+    if ( posi >=0 && posi <m_Zones ) {
+      m_PositionMatrix[posi]+=nfeatures;
+    }
 }
 
 
@@ -917,7 +924,7 @@ int moTrackerSystemData::GetPositionMatrix( moVector2f pos ) {
 
 void moTrackerSystemData::SetMotionMatrix( float x, float y, int nfeatures ) {
     int pos = PositionToZone(x,y);
-    if ( pos >=0 && pos <m_Zones ) m_MotionMatrix[pos]+=1;
+    if ( pos >=0 && pos <m_Zones ) m_MotionMatrix[pos]+=nfeatures;
 }
 
 int moTrackerSystemData::GetMotionMatrix( float x, float y ) {
@@ -928,7 +935,7 @@ int moTrackerSystemData::GetMotionMatrix( float x, float y ) {
 
 void moTrackerSystemData::SetMotionMatrix( moVector2f pos, int nfeatures ) {
     int posi = PositionToZone(pos.X(),pos.Y());
-    if ( posi >=0 && posi <m_Zones ) m_MotionMatrix[posi]+=1;
+    if ( posi >=0 && posi <m_Zones ) m_MotionMatrix[posi]+=nfeatures;
 }
 
 int moTrackerSystemData::GetMotionMatrix( moVector2f pos ) {
@@ -943,7 +950,7 @@ int moTrackerSystemData::GetMotionMatrix( moVector2f pos ) {
 
 void moTrackerSystemData::SetAccelerationMatrix( float x, float y, int nfeatures ) {
     int pos = PositionToZone(x,y);
-    if ( pos >=0 && pos <m_Zones ) m_AccelerationMatrix[pos]+=1;
+    if ( pos >=0 && pos <m_Zones ) m_AccelerationMatrix[pos]+=nfeatures;
 }
 
 int moTrackerSystemData::GetAccelerationMatrix( float x, float y ) {
@@ -954,7 +961,7 @@ int moTrackerSystemData::GetAccelerationMatrix( float x, float y ) {
 
 void moTrackerSystemData::SetAccelerationMatrix( moVector2f pos, int nfeatures ) {
     int posi = PositionToZone(pos.X(),pos.Y());
-    if ( posi >=0 && posi <m_Zones ) m_AccelerationMatrix[posi]+=1;
+    if ( posi >=0 && posi <m_Zones ) m_AccelerationMatrix[posi]+=nfeatures;
 }
 
 int moTrackerSystemData::GetAccelerationMatrix( moVector2f pos ) {
@@ -970,7 +977,7 @@ int moTrackerSystemData::GetAccelerationMatrix( moVector2f pos ) {
 
 void moTrackerSystemData::SetPositionMatrixC( float x, float y, int nfeatures ) {
     int pos = PositionToZoneC(x,y);
-    if ( pos >=0 && pos <m_ZonesC ) m_CircularPositionMatrix[pos]+=1;
+    if ( pos >=0 && pos <m_ZonesC ) m_CircularPositionMatrix[pos]+=nfeatures;
 }
 
 int moTrackerSystemData::GetPositionMatrixC( float x, float y ) {
@@ -993,7 +1000,7 @@ int moTrackerSystemData::GetPositionMatrixC( int zone ) {
 
 void moTrackerSystemData::SetMotionMatrixC( float x, float y, int nfeatures ) {
     int pos = PositionToZoneC(x,y);
-    if ( pos >=0 && pos <m_ZonesC ) m_CircularMotionMatrix[pos]+=1;
+    if ( pos >=0 && pos <m_ZonesC ) m_CircularMotionMatrix[pos]+=nfeatures;
 }
 
 int moTrackerSystemData::GetMotionMatrixC( float x, float y ) {
@@ -1053,11 +1060,11 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                 float y = (pF->y) - offsety;
                 float tr_x = (pF->tr_x) - offsetx;
                 float tr_y = (pF->tr_y) - offsety;
-                float v_x = (pF->v_x);
-                float v_y = (pF->v_y);
-                float vel = sqrtf( v_x*v_x+v_y*v_y );
+                ///float v_x = (pF->v_x);
+                ///float v_y = (pF->v_y);
+                ///float vel = sqrtf( v_x*v_x+v_y*v_y );
                 int v = pF->val;
-                int is_parent = pF->is_parent;
+                ///int is_parent = pF->is_parent;
 
                 //MODebug2->Log(moText("    x:")+FloatToStr(pF->x) + moText(" y:")+FloatToStr(pF->y) );
 
@@ -1455,7 +1462,7 @@ moTrackerFeature & moTrackerFeature::operator = (const moTrackerFeature &src) {
   sframe = src.sframe;
   utime = src.utime;
   uframe = src.uframe;
-
+  return (*this);
 }
 
 /*!
@@ -1489,6 +1496,9 @@ void moTrackerFeature::printTracks()
 */
 int moTrackerFeature::updatePos(float kltConvergeThreshold, float kltSSDthresh, int kltborder, float delta, float res, float d1, float d2, float w, float h)
 {
+
+  kltConvergeThreshold = 0.0; ///unused
+  delta = 0.0; ///unused
 
 	double delx, dely;
 	bool  discardFlag;
