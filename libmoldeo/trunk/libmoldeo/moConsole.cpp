@@ -293,85 +293,73 @@ MOboolean moConsole::Init(
   if (MODebug2) MODebug2->Message(moText("moConsole::Init > mol project opening....success "));
 
 
-    //if () {
-        moText mode = m_Config.Text("outputmode");
+  //if () {
+      moText mode = m_Config.Text("outputmode");
 
-        moText rendermode = m_Config.Text("rendermode");
+      moText rendermode = m_Config.Text("rendermode");
 
-        if ( rendermode != moText("") ) {
-            if (rendermode==moText("RENDERMANAGER_MODE_NORMAL")) {
-                MODebug2->Message("moConsole :: Render Mode forced to RENDERMANAGER_MODE_NORMAL");
-                p_render_to_texture_mode = RENDERMANAGER_MODE_NORMAL;
-            } else if (rendermode==moText("RENDERMANAGER_MODE_FRAMEBUFFER")) {
-                MODebug2->Message("moConsole :: Render Mode forced to RENDERMANAGER_MODE_FRAMEBUFFER");
-                p_render_to_texture_mode = RENDERMANAGER_MODE_FRAMEBUFFER;
-            } else if (rendermode==moText("RENDERMANAGER_MODE_VDPAU")) {
-                MODebug2->Message("moConsole :: Render Mode forced to RENDERMANAGER_MODE_VDPAU");
-                p_render_to_texture_mode = RENDERMANAGER_MODE_VDPAU;
-            }
-        }
+      if ( rendermode != moText("") ) {
+          if (rendermode==moText("RENDERMANAGER_MODE_NORMAL")) {
+              MODebug2->Message("moConsole :: Render Mode forced to RENDERMANAGER_MODE_NORMAL");
+              p_render_to_texture_mode = RENDERMANAGER_MODE_NORMAL;
+          } else if (rendermode==moText("RENDERMANAGER_MODE_FRAMEBUFFER")) {
+              MODebug2->Message("moConsole :: Render Mode forced to RENDERMANAGER_MODE_FRAMEBUFFER");
+              p_render_to_texture_mode = RENDERMANAGER_MODE_FRAMEBUFFER;
+          } else if (rendermode==moText("RENDERMANAGER_MODE_VDPAU")) {
+              MODebug2->Message("moConsole :: Render Mode forced to RENDERMANAGER_MODE_VDPAU");
+              p_render_to_texture_mode = RENDERMANAGER_MODE_VDPAU;
+          }
+      }
 
-        moText renderwidth = m_Config.GetParam("renderresolution").GetValue().GetSubValue(0).Text();
-        moText renderheight = m_Config.GetParam("renderresolution").GetValue().GetSubValue(1).Text();
+      moText renderwidth = m_Config.GetParam("renderresolution").GetValue().GetSubValue(0).Text();
+      moText renderheight = m_Config.GetParam("renderresolution").GetValue().GetSubValue(1).Text();
 
-        moText screenwidth = m_Config.GetParam("outputresolution").GetValue().GetSubValue(0).Text();
-        moText screenheight = m_Config.GetParam("outputresolution").GetValue().GetSubValue(1).Text();
+      moText screenwidth = m_Config.GetParam("outputresolution").GetValue().GetSubValue(0).Text();
+      moText screenheight = m_Config.GetParam("outputresolution").GetValue().GetSubValue(1).Text();
 
 
-        if (renderwidth!=moText("") && renderheight!=moText("")) {
-            int i_render_width = atoi(renderwidth);
-            int i_render_height = atoi(renderheight);
+      if (renderwidth!=moText("") && renderheight!=moText("")) {
+          int i_render_width = atoi(renderwidth);
+          int i_render_height = atoi(renderheight);
 
-            if ( 0<i_render_width && i_render_width<6144 ) {
-                p_render_width = i_render_width;
-            }
+          if ( 0<i_render_width && i_render_width<6144 ) {
+              p_render_width = i_render_width;
+          }
 
-            if ( 0<i_render_height && i_render_height<6144 ) {
-                p_render_height = i_render_height;
-            }
-        }
+          if ( 0<i_render_height && i_render_height<6144 ) {
+              p_render_height = i_render_height;
+          }
+      }
 
-        if (screenwidth!=moText("") && screenheight!=moText("")) {
-            int i_screenwidth = atoi(screenwidth);
-            int i_screenheight = atoi(screenheight);
+      if (screenwidth!=moText("") && screenheight!=moText("")) {
+          int i_screenwidth = atoi(screenwidth);
+          int i_screenheight = atoi(screenheight);
 
-            if ( 0<i_screenwidth && i_screenwidth<6144 ) {
-                p_screen_width = i_screenwidth;
-            }
+          if ( 0<i_screenwidth && i_screenwidth<6144 ) {
+              p_screen_width = i_screenwidth;
+          }
 
-            if ( 0<i_screenheight && i_screenheight<6144 ) {
-                p_screen_height = i_screenheight;
-            }
-        }
-/*
-        moText clip1_p1_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][0].Text();
-        moText clip1_p1_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][1].Text();
+          if ( 0<i_screenheight && i_screenheight<6144 ) {
+              p_screen_height = i_screenheight;
+          }
+      }
 
-        moText clip1_p2_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][2].Text();
-        moText clip1_p2_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][3].Text();
 
-        moText clip1_p3_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][4].Text();
-        moText clip1_p3_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][5].Text();
-
-        moText clip1_p4_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][6].Text();
-        moText clip1_p4_x = m_Config[moR(CONSOLE_CLIP1)][MO_SELECTED][7].Text();
-*/
-
-    //}
+  //}
 
 	// Verificar que el nro de version sea correcto //
-    //...
-    ///los recursos se cargan antes que el moMoldeoObject::Init
-    ///ya que algunos parametros necesitan de todos los recursos para levantar
-    ///ejemplo: moMathFunction....
+  //...
+  ///los recursos se cargan antes que el moMoldeoObject::Init
+  ///ya que algunos parametros necesitan de todos los recursos para levantar
+  ///ejemplo: moMathFunction....
 
-    if (MODebug2) MODebug2->Message(moText("moConsole::Init > Initializing Resource Manager. ")
-                                    + moText( " app path: ") + p_apppath
-                                    + moText( " data path: ") + p_datapath
-                                    + moText( " config: ") + m_Config.GetName()
-                                    + moText( " render mode: ") + IntToStr(p_render_to_texture_mode)
-                                    + moText( " screen size: ") + IntToStr(p_screen_width) + moText("x") + IntToStr(p_screen_height)
-                                    + moText( " render size: ") + IntToStr(p_render_width) + moText("x") + IntToStr(p_render_height) );
+  if (MODebug2) MODebug2->Message(moText("moConsole::Init > Initializing Resource Manager. ")
+                                  + moText( " app path: ") + p_apppath
+                                  + moText( " data path: ") + p_datapath
+                                  + moText( " config: ") + m_Config.GetName()
+                                  + moText( " render mode: ") + IntToStr(p_render_to_texture_mode)
+                                  + moText( " screen size: ") + IntToStr(p_screen_width) + moText("x") + IntToStr(p_screen_height)
+                                  + moText( " render size: ") + IntToStr(p_render_width) + moText("x") + IntToStr(p_render_height) );
 
 	InitResources(  p_pResourceManager,
                     p_apppath,
