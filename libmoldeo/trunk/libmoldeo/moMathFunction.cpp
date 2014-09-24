@@ -481,7 +481,7 @@ void moTautInterpolant::OnParamUpdate()
 
 	double gamma = m_Parameters[6]->GetValue();
 
-    double diff, delta, s0, s1;
+    double diff, s0, s1;
     double zeta2;
     double d1, d2, a, b;
 
@@ -660,7 +660,7 @@ void moParserFunction::AddMathFunctions()
 {
     mu::Parser* pParser = (mu::Parser*) m_pParser;
     if (pParser) {
-        pParser->DefineFun("UnitRandom", (mu::fun_type1) moMathd::UnitRandom, false);
+        pParser->DefineFun( "UnitRandom", (mu::fun_type1) moMathd::UnitRandom, false);
         pParser->DefineFun("SymmetricRandom", (mu::fun_type1) moMathd::SymmetricRandom, false);
         pParser->DefineFun("IntervalRandom", (mu::fun_type3) moMathd::IntervalRandom, false);
 

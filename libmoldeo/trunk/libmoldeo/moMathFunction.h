@@ -454,7 +454,7 @@ protected:
 
 	void OnParamUpdate() {}
 	double OnFuncEval();
-	double OnDerivEval(int n) { return 0; }
+	double OnDerivEval(int n) { return n; }
 
 	void BuildParamList() {}
 	void BuildVarList() {}
