@@ -497,6 +497,10 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
 	m_glman = p_glman;
 	m_renderman = p_renderman;
 
+  if (p_shader) {
+
+  }
+
 	m_use_screen_tex = false;
 	for (i = 0; i < p_src_tex.Count(); i++)
 	{
