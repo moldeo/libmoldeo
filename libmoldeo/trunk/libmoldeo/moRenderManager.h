@@ -36,6 +36,7 @@
 
 #include <moBuckets.h>
 
+class moEffect;
 class moBucketPool;
 
 #define MO_RENDER_RESOLUTION 0
@@ -356,6 +357,7 @@ class LIBMOLDEO_API moRenderManager : public moResource
          */
 		MOboolean ShadersSupported();
 
+    MOboolean IsTextureNonPowerOf2Disabled();
 
 		void    SetOutputConfiguration( moRenderOutputConfiguration p_output_configuration );
 
@@ -364,6 +366,9 @@ class LIBMOLDEO_API moRenderManager : public moResource
 		moBucketsPool*  GetFramesPool() {
                 return m_pFramesPool;
         }
+
+    int   CreateLayer( moEffect* p_scene_effect );
+    void   RenderLayer( int layer_id );
 
 	protected:
 
@@ -394,6 +399,7 @@ class LIBMOLDEO_API moRenderManager : public moResource
 		MOboolean ValidSourceTexNum(MOint p_tex_num) { return (0 <= p_tex_num) && (p_tex_num < 4); }
 		MOboolean ValidDestTexNum(MOint p_tex_num) { return (0 < p_tex_num) && (p_tex_num < 4); }
 };
+
 
 #endif
 

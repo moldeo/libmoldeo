@@ -94,6 +94,15 @@ moRenderOutputConfiguration& moRenderManager::GetOutputConfiguration() {
 
 }
 
+int   moRenderManager::CreateLayer( moEffect* p_scene_effect ) {
+  p_scene_effect = NULL;
+  return 0;
+}
+
+void   moRenderManager::RenderLayer( int layer_id ) {
+  layer_id = 0;
+}
+
 MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 						   MOint p_screen_width, MOint p_screen_height,
 						   MOint p_render_width, MOint p_render_height)
@@ -155,7 +164,6 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + moText(IntToStr(GLEW_ARB_shading_language_100))) ;
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + moText(IntToStr(GLEW_EXT_framebuffer_object))) ;
 
-
 	if (m_render_tex_moid[0]==-1) {
 	    m_render_tex_moid[0] = m_pTextureManager->AddTexture("render_texture", m_render_width, m_render_height);
 	} else {
@@ -214,7 +222,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 /// && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU)
 
-	if (GLEW_EXT_framebuffer_object && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER) )
+	if (GLEW_EXT_framebuffer_object /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
 	{
 	    m_pGLManager->SetFrameBufferObjectActive();
         MODebug2->Message( moText("moRenderManager::Init > Using framebuffer_object: creating one fbo per predefined textures (4). ") );
@@ -432,7 +440,7 @@ bool moRenderManager::Screenshot( moText pathname ) {
                 struct tm * timeinfo;
 
                 srand(2);
-                int randcode = rand();
+                //int randcode = rand();
                 screenshots_c+= 1;
 
                 time(&rawtime);
@@ -520,6 +528,10 @@ MOboolean moRenderManager::FramebufferObjectSupported()
 MOboolean moRenderManager::ShadersSupported()
 {
 	return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
+}
+
+MOboolean moRenderManager::IsTextureNonPowerOf2Disabled() {
+  return !(GLEW_ARB_texture_non_power_of_two);
 }
 
 MOint moRenderManager::ScreenWidth() {
