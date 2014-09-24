@@ -38,9 +38,33 @@
 class LIBMOLDEO_API moPreconfigParamIndex {
 
     public:
-        moText  m_ParamName;
-        MOint	m_ParamIndex;
-        MOint	m_ValueIndex;
+
+      moPreconfigParamIndex() {
+          m_ParamName = "";
+          m_ParamIndex = -1;
+          m_ValueIndex = -1;
+      }
+
+      moPreconfigParamIndex( const moPreconfigParamIndex& src ) {
+        (*this) = src;
+      }
+
+      ~moPreconfigParamIndex() {
+        //
+      }
+
+
+      moPreconfigParamIndex& operator = ( const moPreconfigParamIndex& src) {
+        m_ParamName = src.m_ParamName;
+        m_ParamIndex = src.m_ParamIndex;
+        m_ValueIndex = src.m_ValueIndex;
+        return (*this);
+      }
+
+
+      moText  m_ParamName;
+      MOint	m_ParamIndex;
+      MOint	m_ValueIndex;
 };
 
 moDeclareExportedDynamicArray( moPreconfigParamIndex, moPreconfigIndexes );
@@ -49,18 +73,49 @@ class LIBMOLDEO_API moPreConfig {
 
 	public:
 	    moPreConfig();
+	    moPreConfig( const moPreConfig& src ) {
+	      (*this) = src;
+	    }
 	    moPreConfig( moPreconfigIndexes& preconfindexes );
-	    moPreConfig( moValueIndexes& valueindexes );
+	    //moPreConfig( moValueIndexes& valueindexes );
 	    virtual ~moPreConfig();
 		virtual MOboolean Init();
 		virtual MOboolean Finish();
 
-		moValueIndex operator [] ( const MOint paramindex); //devuelve el indice del valor para el parametro elegido
+		moPreconfigParamIndex operator [] ( MOint paramindex); //devuelve el indice del valor para el parametro elegido
 		moPreConfig& operator = ( const moPreConfig& preconf);
 
-		moValueIndexes	m_ValueIndexes;
+    const moText& ToJSON() {
+
+      moText fieldseparation = ",";
+      m_FullJSON = "{ 'name': '" + m_Name +"'";
+      m_FullJSON+= fieldseparation
+                   + "'valueindexes': {";
+      fieldseparation  = "";
+      for( int vi = 0; vi< (int)m_PreconfIndexes.Count(); vi++ ) {
+
+        moPreconfigParamIndex vindex = m_PreconfIndexes[vi];
+
+        m_FullJSON+= fieldseparation
+              + "'" + vindex.m_ParamName + "': {";
+        fieldseparation = ",";
+
+        m_FullJSON+= "'paramindex': " + IntToStr(vindex.m_ParamIndex);
+        m_FullJSON+= fieldseparation + "'valueindex': " + IntToStr(vindex.m_ValueIndex);
+        m_FullJSON+=  "}";
+      }
+      m_FullJSON+=  "}";///fin valueindexes
+      m_FullJSON+=  "}";///fin Preconfig
+      return  m_FullJSON;
+    }
+
+    moText              m_Name;
+		//moValueIndexes	    m_ValueIndexes;
 		moPreconfigIndexes  m_PreconfIndexes;
 
+		private:
+      moText              m_FullJSON;
+      moPreconfigParamIndex m_pindex;
 };
 
 moDeclareExportedDynamicArray( moPreConfig, moPreConfigs );
