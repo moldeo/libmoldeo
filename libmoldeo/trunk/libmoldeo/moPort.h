@@ -39,11 +39,12 @@
 inline int
 getch (void)
 {
-	int ch, charactr;
+	int ch=0, charactr=0;
 	while ((ch = getchar ()) != '\n')
 	{
 		charactr = ch;
 	}
+	return charactr;
 }
 
 
@@ -52,7 +53,9 @@ itoa (int value, char *str, int radix)
 {
 	char buffer[100];
 	char *res;
-								 // Memory-safe version of sprintf.
+	str = NULL;
+	radix = 0;
+  // Memory-safe version of sprintf.
 	snprintf (buffer, 100, "%i", value);
 	res = buffer;
 	return res;
