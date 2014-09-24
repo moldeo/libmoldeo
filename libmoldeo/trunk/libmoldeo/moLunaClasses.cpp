@@ -49,15 +49,20 @@
 IMPLEMENT_SCRIPT_CLASS(moLuaSoundManager)
 
 DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaSoundManager)
+  SCRIPT_FUNCTION( moLuaSoundManager, GetSoundCount ),
+  SCRIPT_FUNCTION( moLuaSoundManager, GetSound ),
+  {0,0}
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaSoundManager)
+  {0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaSoundManager)
 {
   m_pSoundMan = NULL;
+  MODebug2->Message("moLuaSoundManager > constructor L: " + IntToStr( (long)(L) ) );
 }
 
 void moLuaSoundManager::Set( moSoundManager* p_pSoundManager) {
@@ -106,16 +111,19 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaTextureManager)
       SCRIPT_FUNCTION( moLuaTextureManager, AddTextureBuffer),
       SCRIPT_FUNCTION( moLuaTextureManager, DeleteTextureBuffer),
       SCRIPT_FUNCTION( moLuaTextureManager, GetGLId),
-      SCRIPT_FUNCTION( moLuaTextureManager, ValidTexture)
+      SCRIPT_FUNCTION( moLuaTextureManager, ValidTexture),
+      { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaTextureManager)
+{0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaTextureManager)
 {
   m_pTextureMan = NULL;
+  MODebug2->Message("moLuaTextureManager > constructor L: " + IntToStr( (long)L ) );
 }
 
 void moLuaTextureManager::Set( moTextureManager* p_pTextureMan) {
@@ -180,6 +188,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, GetTextureBuffer )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, AddTexture )
 {
+    MODebug2->Message("moLuaTextureManager::AddTexture > TODO implement L: " + IntToStr( (long)L ) );
     /*
     int moid = -1;
     if (m_pTextureMan)
@@ -190,6 +199,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, AddTexture )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, DeleteTexture )
 {
+    MODebug2->Message("moLuaTextureManager::DeleteTexture > TODO implement L: " + IntToStr( (long)L ) );
     /*
     int moid = -1;
     if (m_pTextureMan)
@@ -200,6 +210,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, DeleteTexture )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, AddTextureBuffer )
 {
+    MODebug2->Message("moLuaTextureManager::AddTextureBuffer > TODO implement L: " + IntToStr( (long)L ) );
     /*
     int moid = -1;
     if (m_pTextureMan)
@@ -210,6 +221,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, AddTextureBuffer )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaTextureManager, DeleteTextureBuffer )
 {
+    MODebug2->Message("moLuaTextureManager::DeleteTextureBuffer > TODO implement L: " + IntToStr( (long)L ) );
     /*
     int moid = -1;
     if (m_pTextureMan)
@@ -269,17 +281,20 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaCircularVideoBuffer)
       SCRIPT_FUNCTION( moLuaCircularVideoBuffer, StopRecording),
       SCRIPT_FUNCTION( moLuaCircularVideoBuffer, GetRecordPosition),
       SCRIPT_FUNCTION( moLuaCircularVideoBuffer, GetFrameCount),
-      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, IsRecording)
+      SCRIPT_FUNCTION( moLuaCircularVideoBuffer, IsRecording),
+      { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaCircularVideoBuffer)
+  {0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaCircularVideoBuffer)
 {
   m_pCircularVideoBuffer = NULL;
+  MODebug2->Message("moLuaCircularVideoBuffer constructor > L: " + IntToStr( (long)L ) );
 }
 
 void moLuaCircularVideoBuffer::Set( moCircularVideoBuffer* p_pCircularVideoBuffer) {
@@ -298,6 +313,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, StartRecording )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, PauseRecording )
 {
+  MODebug2->Message("moLuaCircularVideoBuffer::PauseRecording > L: " + IntToStr( (long)L ) );
   if (m_pCircularVideoBuffer)
     m_pCircularVideoBuffer->PauseRecording();
   return 0;
@@ -306,6 +322,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, PauseRecording )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, ContinueRecording )
 {
+  MODebug2->Message("moLuaCircularVideoBuffer::ContinueRecording > L: " + IntToStr( (long)L ) );
   if (m_pCircularVideoBuffer)
     m_pCircularVideoBuffer->ContinueRecording();
   return 0;
@@ -313,6 +330,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, ContinueRecording )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, StopRecording )
 {
+  MODebug2->Message("moLuaCircularVideoBuffer::StopRecording > L: " + IntToStr( (long)L ) );
   if (m_pCircularVideoBuffer)
     m_pCircularVideoBuffer->StopRecording();
   return 0;
@@ -320,6 +338,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, StopRecording )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, GetRecordPosition )
 {
+
   int recp = -1;
   if (m_pCircularVideoBuffer)
     recp = m_pCircularVideoBuffer->GetRecordPosition();
@@ -358,17 +377,20 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaCircularVideoBuffer, IsRecording )
 IMPLEMENT_SCRIPT_CLASS(moLuaVideoBuffer)
 
 DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoBuffer)
-    SCRIPT_FUNCTION( moLuaVideoBuffer, GetFrameCount)
+    SCRIPT_FUNCTION( moLuaVideoBuffer, GetFrameCount),
+    { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoBuffer)
+{0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaVideoBuffer)
 {
   m_pVideoBuffer = NULL;
+  MODebug2->Message("moLuaVideoBuffer constructor > L: " + IntToStr( (long)L ) );
 }
 
 void moLuaVideoBuffer::Set( moVideoBuffer* p_pVideoBuffer) {
@@ -404,17 +426,20 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoBufferPath)
       SCRIPT_FUNCTION( moLuaVideoBufferPath, GetCompletePath),
       SCRIPT_FUNCTION( moLuaVideoBufferPath, GetTotalFiles),
       SCRIPT_FUNCTION( moLuaVideoBufferPath, GetImagesProcessed),
-      SCRIPT_FUNCTION( moLuaVideoBufferPath, LoadCompleted)
+      SCRIPT_FUNCTION( moLuaVideoBufferPath, LoadCompleted),
+      { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoBufferPath)
+  {0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaVideoBufferPath)
 {
   m_pVideoBufferPath = NULL;
+  MODebug2->Message("moLuaVideoBufferPath constructor > L: " + IntToStr( (long)L ) );
 }
 
 void moLuaVideoBufferPath::Set( moVideoBufferPath* p_pVideoBufferPath) {
@@ -500,15 +525,18 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaVideoManager)
     SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBufferCount ),
     SCRIPT_FUNCTION( moLuaVideoManager, GetCircularVideoBuffer ),
     SCRIPT_FUNCTION( moLuaVideoManager, GetVideoBufferPathCount ),
-    SCRIPT_FUNCTION( moLuaVideoManager, GetVideoBufferPath )
+    SCRIPT_FUNCTION( moLuaVideoManager, GetVideoBufferPath ),
+    { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaVideoManager)
+{0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaVideoManager)
 {
   m_pVideoMan = NULL;
+  MODebug2->Message("moLuaVideoManager constructor > L: " + IntToStr( (long)L ) );
 }
 
 void moLuaVideoManager::Set( moVideoManager* p_pVideoManager) {
@@ -624,17 +652,20 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaResourceManager)
 
     SCRIPT_FUNCTION( moLuaResourceManager, GetTextureMan),
     SCRIPT_FUNCTION( moLuaResourceManager, GetVideoMan),
-    SCRIPT_FUNCTION( moLuaResourceManager, GetSoundMan)
+    SCRIPT_FUNCTION( moLuaResourceManager, GetSoundMan),
+    { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaResourceManager)
+{0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaResourceManager)
 {
   m_pResourceManager = NULL;
+  MODebug2->Message("moLuaResourceManager constructor > L: " + IntToStr( (long)L ) );
 }
 
 void moLuaResourceManager::Set( moResourceManager* p_pResourceManager) {
@@ -685,7 +716,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetResourceByType)
     id = -1;
 
     if (lua_isnumber(L,1)) {
-      int typei = (int) lua_tonumber(L, 1);
+      ///int typei = (int) lua_tonumber( L, 1);
       ///chequear validez del indice...
     } else if (lua_isstring(L,1)) {
       moText typestr = (moText) lua_tostring (L, 1);
@@ -1160,10 +1191,12 @@ SCRIPT_FUNCTION(moLuaP5, PPI),
 END_SCRIPT_CLASS_FUNCTIONS
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaP5)
+{0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaP5) : moP5()
 {
+  MODebug2->Message("moLuaP5 constructor > L: " + IntToStr( (long)L ) );
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, triangle)
@@ -1349,7 +1382,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION( moLuaP5, rect )
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, strokeWeight)
 {
-    int n = lua_pindexes(L);
+    //int n = lua_pindexes(L);
     MOfloat width = (MOfloat) lua_tonumber (L, lua_pindex(1) );
 
     //MODebug2->Push( "strokeWeight > width:" + FloatToStr(width) );
@@ -1392,6 +1425,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, background)
       moP5::background( 1.0, 1.0, 1.0, 1.0 );
       break;
   }
+  return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, colorMode)
@@ -1441,6 +1475,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, stroke)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, noFill)
 {
+    MODebug2->Message("moLuaP5::noFill > L: " + IntToStr( (long)L ) );
 
     moP5::noFill();
 
@@ -1449,6 +1484,8 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, noFill)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, noStroke)
 {
+
+    MODebug2->Message("moLuaP5::noStroke > L: " + IntToStr( (long)L ) );
 
     moP5::noStroke();
 
@@ -1492,16 +1529,20 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, fill)
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, pushMatrix)
 {
+    MODebug2->Message("moLuaP5::pushMatrix > L: " + IntToStr( (long)L ) );
+
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, popMatrix)
 {
+    MODebug2->Message("moLuaP5::popMatrix > L: " + IntToStr( (long)L ) );
     return 0;
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, resetMatrix)
 {
+    MODebug2->Message("moLuaP5::resetMatrix > L: " + IntToStr( (long)L ) );
     return 0;
 }
 

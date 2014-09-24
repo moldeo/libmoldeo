@@ -453,7 +453,7 @@ public:
 
           lua_pushvalue(L, 3);
 
-          const PropertyType *_properties = (*obj)->T::Properties;
+          //const PropertyType *_properties = (*obj)->T::Properties;
 
         int result = ((*obj)->*(T::Properties[_index].getter)) (L);
 
@@ -499,7 +499,7 @@ public:
 
           lua_pushvalue(L, 3);
 
-          const PropertyType *_properties = (*obj)->T::Properties;
+          //const PropertyType *_properties = (*obj)->T::Properties;
 
           return ((*obj)->*(T::Properties[_index].setter)) (L);
 
@@ -617,7 +617,7 @@ private:
 	moLuna<ClassName>::FunctionType ClassName::Functions[] = {
 
 #define SCRIPT_FUNCTION(ClassName, FunctionName) { #FunctionName, &ClassName::FunctionName }
-
+/** LIST MUST END WITH NULL VALUE: LIKE { 0, 0 }*/
 #define END_SCRIPT_CLASS_FUNCTIONS };
 
 
