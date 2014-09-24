@@ -170,26 +170,45 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 		}
 	}
 
+  moMathd Mathd;
+
 	if (m_pImage != NULL)
 	{
 	    MOuint p_width;
 	    MOuint p_height;
 	    FIBITMAP* pImageScaled = NULL;
 
-	    p_width = FreeImage_GetWidth(m_pImage);
-        p_height = FreeImage_GetHeight(m_pImage);
+      p_width = FreeImage_GetWidth(m_pImage);
+      p_height = FreeImage_GetHeight(m_pImage);
 
-        if ( ( FreeImage_GetWidth(m_pImage) % 4 ) != 0 || ( FreeImage_GetHeight(m_pImage) % 4) == 0 ) {
+	    bool size_mult_4 = ( p_width % 4 ) != 0 || ( p_height % 4) == 0;
+      bool size_power_2 = ( !Mathd.IsPowerOfTwo( (int)p_width ) || !Mathd.IsPowerOfTwo( (int)p_height ) );
+      bool resize_image = false;
+      bool no_power = m_pResourceManager->GetRenderMan()->IsTextureNonPowerOf2Disabled();
 
-            p_width= FreeImage_GetWidth(m_pImage) / 4;
-            p_width=p_width * 4;
+      if (size_power_2
+          &&
+          no_power ) {
+        if (!Mathd.IsPowerOfTwo(p_width)) p_width = NextPowerOf2( p_width );
+        if (!Mathd.IsPowerOfTwo(p_height)) p_height = NextPowerOf2( p_height );
+        resize_image = true;
+      }
 
-            p_height = FreeImage_GetHeight(m_pImage) / 4;
-            p_height = p_height* 4;
+      if ( size_mult_4 ) {
 
+          p_width = p_width / 4;
+          p_width = p_width * 4;
+
+          p_height = p_height / 4;
+          p_height = p_height* 4;
+          resize_image = true;
+      }
+
+
+      if (resize_image) {
             pImageScaled = FreeImage_Rescale( m_pImage, p_width, p_height, FILTER_BICUBIC );
             if (pImageScaled) {
-                FreeImage_Unload(m_pImage);
+                FreeImage_Unload( m_pImage );
                 m_pImage = pImageScaled;
             }
         }
@@ -271,8 +290,12 @@ MOboolean moTexture::SetBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_
 	glBindTexture(m_param.target, m_glid);
 
 	// Aqui hay que destruir la textura si los nuevos alto y anchos son diferentes de los actuales!!!!
+  moMathi mathi;
 
-	if ((m_gl != NULL) && m_gl->MipMapTexture(m_param.min_filter))
+	if ((m_gl != NULL) && m_gl->MipMapTexture(m_param.min_filter)
+     && ( mathi.IsPowerOfTwo( p_width ) )
+      && ( mathi.IsPowerOfTwo( p_height ) )
+     )
 		gluBuild2DMipmaps(m_param.target, m_param.internal_format, p_width, p_height, p_format, p_type, p_buffer);
 	else
         glTexSubImage2D(m_param.target, 0, 0, 0, p_width, p_height, p_format, p_type, p_buffer);
@@ -289,8 +312,8 @@ MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
     /** Atamos la textura (propia) retenida por this->m_glid*/
 	glBindTexture(m_param.target, this->m_glid);
 	/**  Copiamos los bytes de la textura al buffer*/
-	glGetTexImage(m_param.target, 0, p_format, p_type, p_buffer);
-	glBindTexture(m_param.target, 0);
+	glGetTexImage( m_param.target, 0, p_format, p_type, p_buffer);
+	glBindTexture( m_param.target, 0);
 
 	//if (m_gl != NULL) return !m_gl->CheckErrors("copying texture to buffer");
 	//else return true;
@@ -394,7 +417,7 @@ bool moTexture::CalculateLuminanceAndConstrast( int x0, int y0, int x1, int y1 )
     } else MODebug2->Error( moText("moTexture::CalculateLuminanceAndConstrast Histogram error"));
 
     if (fbitmap) FreeImage_Unload( fbitmap );
-
+	return true;
 }
 
 MOuint moTexture::SetFBOandAttachPoint(moFBO* p_fbo)
@@ -491,6 +514,7 @@ void moTexture::SetParam()
 	glTexParameteri(m_param.target, GL_TEXTURE_MAG_FILTER, m_param.mag_filter);
 	glTexParameteri(m_param.target, GL_TEXTURE_WRAP_S, m_param.wrap_s);
 	glTexParameteri(m_param.target,	GL_TEXTURE_WRAP_T, m_param.wrap_t);
+	/*glTexParameteri(m_param.target, GL_GENERATE_MIPMAP, GL_TRUE );*/
 }
 
 void moTexture::CalculateSize(MOuint p_width, MOuint p_height)
@@ -509,12 +533,15 @@ void moTexture::CalculateSize(MOuint p_width, MOuint p_height)
 		m_max_coord_s = 1.0;
 		m_max_coord_t = 1.0;
 	}*/
-	else if (!GLEW_ARB_texture_non_power_of_two)
+	else if (m_pResourceManager->GetRenderMan()->IsTextureNonPowerOf2Disabled())
 	{
         m_width = NextPowerOf2(p_width);
-		m_height = NextPowerOf2(p_height);
-		m_max_coord_s = (float)p_width / (float)m_width;
-		m_max_coord_t = (float)p_height / (float)m_height;
+        m_height = NextPowerOf2(p_height);
+        m_max_coord_s = (float)p_width / (float)m_width;
+        m_max_coord_t = (float)p_height / (float)m_height;
+        moDebugManager::Message(" moTexture::CalculateSize  of texture: " + GetName() + " from "
+                                + IntToStr(p_width) + "x" + IntToStr(p_height)
+                                + " to " + IntToStr(m_width) + "x" + IntToStr(m_height) );
     }
 	else
 	{
@@ -527,7 +554,7 @@ void moTexture::CalculateSize(MOuint p_width, MOuint p_height)
 
 }
 
-MOuint moTexture::NextPowerOf2(MOuint p_seed)
+MOuint moTexture::NextPowerOf2( MOuint p_seed )
 {
 	MOuint i;
 	for (i = 1; i < p_seed; i *= 2);
@@ -538,7 +565,41 @@ MOboolean moTexture::Build()
 {
 	glBindTexture(m_param.target, m_glid);
 	SetParam();
-	glTexImage2D(m_param.target, 0, m_param.internal_format, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+  GLenum pixel_format = GL_RGBA;
+	GLenum pixel_type_format = GL_UNSIGNED_BYTE;
+
+	switch(m_param.internal_format) {
+    case GL_RGBA:
+      pixel_format = GL_RGBA;
+      pixel_type_format = GL_UNSIGNED_BYTE;
+      break;
+    case GL_RGB:
+      pixel_format = GL_RGBA;
+      pixel_type_format = GL_UNSIGNED_BYTE;
+      break;
+    case GL_RGBA32I:
+    case GL_RGBA16I:
+      pixel_format = GL_RGBA_INTEGER;
+      pixel_type_format = GL_INT;
+      break;
+    case GL_RGBA32F:
+    case GL_RGBA16F:
+      pixel_format = GL_RGBA;
+      pixel_type_format = GL_FLOAT;
+      break;
+    default:
+      pixel_format = GL_RGBA;
+      pixel_type_format = GL_UNSIGNED_BYTE;
+      break;
+  }
+
+	glTexImage2D( m_param.target, 0,
+                m_param.internal_format,
+                m_width, m_height, 0,
+                pixel_format,
+                pixel_type_format,
+                NULL );
 	glGetTexLevelParameteriv(m_param.target, 0, GL_TEXTURE_COMPONENTS, &m_components);
 	//if (m_gl != NULL) return !m_gl->CheckErrors("texture build");
 	//else return true;
@@ -711,7 +772,7 @@ moTextureMemory::~moTextureMemory() {
 
 MOboolean moTextureMemory::Init( moText p_name, MOuint p_moid, moResourceManager* p_res, moTexParam p_param ) {
 
-    moTexture::Init( p_name, p_moid, p_res, p_param );
+    return moTexture::Init( p_name, p_moid, p_res, p_param );
 
 }
 
@@ -1045,7 +1106,8 @@ void moTextureAnimated::Stop() {
 
 
 bool moTextureAnimated::IsPlaying() {
-  m_bIsPlaying = true;
+  //m_bIsPlaying = true;
+  return m_bIsPlaying;
 }
 
 void
@@ -1508,9 +1570,9 @@ void moMovie::Seek( long frame, float rate ) {
 }
 
 MOulong moMovie::GetPosition() {
-  if (m_pGraph) {
+  if (m_pGraph)
     return m_pGraph->GetPosition();
-  }
+  return 0;
 }
 
 moStreamState moMovie::State()  {
