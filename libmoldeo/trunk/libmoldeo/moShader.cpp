@@ -273,7 +273,7 @@ moText moShader::LoadShaderSource(moText p_fn)
 	{
 		moText errstr = "Shader source file ";
 		errstr += p_fn + moText(" not found") ;
-		if (MODebug != NULL) MODebug2->Push(errstr);
+		if (MODebug2 != NULL) MODebug2->Error(errstr);
 		src_text = moText("");
 	}
 
