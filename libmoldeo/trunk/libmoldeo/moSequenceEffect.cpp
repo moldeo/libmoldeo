@@ -145,8 +145,8 @@ MOboolean moSequenceEffect::Finish()
 }
 
 void moSequenceEffect::Interaction(moIODeviceManager *consolaes) {
-/**/
-
+/** TODO: */
+  consolaes = NULL;///unused
 }
 
 
