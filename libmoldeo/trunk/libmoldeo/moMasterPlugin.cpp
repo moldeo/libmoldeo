@@ -59,11 +59,10 @@ void moMasterPlugin::Load(moText plugin_file)
 	#else
 		CHAR szBuf[80];
 		DWORD dw = GetLastError();
-		sprintf(szBuf, "%s failed: GetLastError returned %u\n",
-			(char*)plugin_file, dw);
-		//MessageBox(NULL, szBuf, "Error", MB_OK);
+		sprintf(szBuf, "%s failed: GetLastError returned %i\n",
+			(char*)plugin_file, (int)dw);
+		moDebugManager::Error( "moMasterPlugin::Load > Cannot open library: " + moText(szBuf) );
 
-		cerr << "Cannot open library: " << szBuf <<'\n';
 	#endif
     }
 
