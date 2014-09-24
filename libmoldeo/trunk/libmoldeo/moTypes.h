@@ -81,7 +81,7 @@
 #include <string.h>
 #include <float.h>
 #include <time.h>
-#include <string>
+#include <string.h>
 #include <vector>
 #include <fstream>
 
@@ -156,7 +156,7 @@ using namespace std;
 
     #undef assert
     #define assert(ignore)((void) 0)
-   
+
 
 #endif
 
@@ -241,7 +241,11 @@ using namespace std;
     // all your member data and functions have been defined and implemented.
     #pragma warning( disable : 4661 )
 
-    #define MO_DIRECTSHOW
+	//#define MO_DIRECTSHOW
+	#define MO_GSTREAMER
+	#undef MO_USING_ALFW
+	//precompiled headers:
+	//#include "StdAfx.h"
   #endif
 
 	#define WIN32_LEAN_AND_MEAN
@@ -487,10 +491,10 @@ const moTexParam MODefTex2DParams =
 {
     GL_TEXTURE_2D, /// textura 2d
     GL_RGBA, /// 32 bits, rojo, verde, azul, opacidad
-	GL_LINEAR, /// interpolación de filtro lineal para el achicamiento
-	GL_LINEAR, /// interpolación de filtro lineal para el agrandamiento
-	GL_REPEAT, /// modo de repetición en el orden horizontal
-	GL_REPEAT /// modo de repetición en el orden vertical
+    GL_LINEAR, /// (GL_NEAREST_MIPMAP_LINEAR) interpolación de filtro lineal para el achicamiento
+    GL_LINEAR, /// (GL_NEAREST_MIPMAP_LINEAR) interpolación de filtro lineal para el agrandamiento
+    GL_REPEAT, /// modo de repetición en el orden horizontal
+    GL_REPEAT /// modo de repetición en el orden vertical
 };
 
 
@@ -503,7 +507,7 @@ const moTexParam MODefTex2DParams =
 */
 const moTexParam MOUndefinedTex =
 {
-    MO_UNDEFINED,
+    0,
     MO_UNDEFINED,
 	MO_UNDEFINED,
 	MO_UNDEFINED,
