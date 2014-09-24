@@ -223,6 +223,13 @@ moData::SetSize( MOulong p_DataSize  ) {
 }
 
 void
+moData::SetFun( const moText& p_functionExpression ) {
+  m_DataType = MO_DATA_FUNCTION;
+  m_Text = p_functionExpression;
+  m_Number.m_Pointer = (MOpointer) NULL;
+}
+
+void
 moData::SetFun( moMathFunction*	p_Function ) {
 	m_DataType = MO_DATA_FUNCTION;
 	m_Number.m_Pointer = (MOpointer) p_Function;
@@ -908,7 +915,7 @@ moData::GetData() {
 GLint
 moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
 
-    moTexture*	Texture = NULL;
+    moTexture*	pTexture = NULL;
 
     if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
         moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
@@ -925,20 +932,20 @@ moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterpar
             pTF->Apply( p_cycle, p_fade, p_filterparam);
             moTextureIndex* PTI = pTF->GetDestTex();
             if (PTI) {
-                Texture = PTI->GetTexture(0);
+                pTexture = PTI->GetTexture(0);
             }
         }
-    } else Texture = this->Texture();
+    } else pTexture = this->Texture();
 
-    if (Texture) {
-        if ((p_cycle >= 0.0) && ((Texture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
-								(Texture->GetType() == MO_TYPE_MOVIE) ||
-								(Texture->GetType() == MO_TYPE_VIDEOBUFFER)))
+    if (pTexture) {
+        if ((p_cycle >= 0.0) && ((pTexture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
+								(pTexture->GetType() == MO_TYPE_MOVIE) ||
+								(pTexture->GetType() == MO_TYPE_VIDEOBUFFER)))
 		{
-			moTextureAnimated* ptex_anim = (moTextureAnimated*)Texture;
+			moTextureAnimated* ptex_anim = (moTextureAnimated*)pTexture;
 			return ptex_anim ->GetGLId((MOfloat)p_cycle);
 		}
-		else return Texture->GetGLId();
+		else return pTexture->GetGLId();
 
     } else return 0;
 }
@@ -946,7 +953,7 @@ moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterpar
 GLint
 moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
 
-    moTexture*	Texture = NULL;
+    moTexture*	pTexture = NULL;
 
     if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
         moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
@@ -964,20 +971,20 @@ moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterpa
             pTF->Apply( p_tempo, p_fade, p_filterparam);
             moTextureIndex* PTI = pTF->GetDestTex();
             if (PTI) {
-                Texture = PTI->GetTexture(0);
+                pTexture = PTI->GetTexture(0);
             }
         }
-    } else Texture = this->Texture();
+    } else pTexture = this->Texture();
 
-    if (Texture) {
-        if ( (p_tempo != NULL) && ((Texture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
-								(Texture->GetType() == MO_TYPE_MOVIE) ||
-								(Texture->GetType() == MO_TYPE_VIDEOBUFFER)))
+    if (pTexture) {
+        if ( (p_tempo != NULL) && ((pTexture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
+								(pTexture->GetType() == MO_TYPE_MOVIE) ||
+								(pTexture->GetType() == MO_TYPE_VIDEOBUFFER)))
 		{
-			moTextureAnimated* ptex_anim = (moTextureAnimated*)Texture;
+			moTextureAnimated* ptex_anim = (moTextureAnimated*)pTexture;
 			return ptex_anim ->GetGLId((moTempo *) p_tempo);
 		}
-		else return Texture->GetGLId();
+		else return pTexture->GetGLId();
 
     } else return 0;
 }
@@ -985,7 +992,7 @@ moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterpa
 GLint
 moData::GetGLId( MOuint p_i , MOfloat p_fade, moTextFilterParam *p_filterparam ) {
 
-    moTexture*	Texture = NULL;
+    moTexture*	pTexture = NULL;
 
     if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
         moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
@@ -1004,28 +1011,28 @@ moData::GetGLId( MOuint p_i , MOfloat p_fade, moTextFilterParam *p_filterparam )
             pTF->Apply( p_i, p_fade, p_filterparam);
             moTextureIndex* PTI = pTF->GetDestTex();
             if (PTI) {
-                Texture = PTI->GetTexture(0);
+                pTexture = PTI->GetTexture(0);
             }
         }
-    } else Texture = this->Texture();
+    } else pTexture = this->Texture();
 
-    if (Texture) {
-        if ( ((Texture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
-								(Texture->GetType() == MO_TYPE_MOVIE) ||
-								(Texture->GetType() == MO_TYPE_VIDEOBUFFER)))
+    if (pTexture) {
+        if ( ((pTexture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
+								(pTexture->GetType() == MO_TYPE_MOVIE) ||
+								(pTexture->GetType() == MO_TYPE_VIDEOBUFFER)))
 		{
-			moTextureAnimated* ptex_anim = (moTextureAnimated*)Texture;
+			moTextureAnimated* ptex_anim = (moTextureAnimated*)pTexture;
 			return ptex_anim ->GetGLId( (MOuint) p_i);
 		}
-		else return Texture->GetGLId();
+		else return pTexture->GetGLId();
 
     } else return 0;
 }
 
 GLint
-moData::GetGLId(MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moData::GetGLId( MOfloat p_fade, moTextFilterParam *p_filterparam ) {
 
-    moTexture*	Texture = NULL;
+    moTexture*	pTexture = NULL;
 
     if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
         moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
@@ -1045,13 +1052,13 @@ moData::GetGLId(MOfloat p_fade, moTextFilterParam *p_filterparam ) {
 
             moTextureIndex* PTI = pTF->GetDestTex();
             if (PTI) {
-                Texture = PTI->GetTexture(0);
+                pTexture = PTI->GetTexture(0);
             }
         }
-    } else Texture = this->Texture();
+    } else pTexture = this->Texture();
 
-    if (Texture)
-        return Texture->GetGLId();
+    if (pTexture)
+        return pTexture->GetGLId();
     else return 0;
 }
 
@@ -1186,6 +1193,8 @@ moValueDefinition::IsValid() const {
     return (m_Type!=MO_VALUE_UNDEFINED);
 }
 
+
+
 //================================================================
 //	moValueBase
 //================================================================
@@ -1238,6 +1247,37 @@ moValueBase::SetType( moValueType p_type ) {
 	m_ValueDefinition.SetType(p_type);
 }
 
+bool moValueBase::FixType( moValueType p_ValueType ) {
+
+  moText datavalue;
+  bool result = true;
+
+  if (p_ValueType==MO_VALUE_FUNCTION) {
+    switch(m_ValueDefinition.GetType()) {
+
+      case MO_VALUE_NUM:
+      case MO_VALUE_NUM_CHAR:
+      case MO_VALUE_NUM_DOUBLE:
+      case MO_VALUE_NUM_FLOAT:
+      case MO_VALUE_NUM_INT:
+      case MO_VALUE_NUM_LONG:
+        datavalue = moData::ToText();
+        SetFun( datavalue );
+        this->m_ValueDefinition.SetType( p_ValueType );
+        result = true;
+        break;
+
+      case MO_VALUE_FUNCTION:
+        result = true;
+        break;
+      default:
+        result = false;
+        break;
+    }
+  }
+  return result;
+}
+
 void
 moValueBase::SetIndex( MOint	p_index ) {
 	m_ValueDefinition.SetIndex(p_index);
@@ -1267,6 +1307,7 @@ void
 moValueBase::SetCodeName( moText p_codename ) {
     m_ValueDefinition.SetCodeName( p_codename );
 }
+
 
 //================================================================
 //	moValue
@@ -1404,6 +1445,9 @@ moValue::AddSubValue(const  moText &strvalue,  moValueType p_valuetype ) {
     case MO_VALUE_NUM_DOUBLE:
       sscanf( moText(strvalue), "%lf", &tmpDouble);
       valuebase.SetDouble( tmpDouble );
+      break;
+
+    default:
       break;
 
   }

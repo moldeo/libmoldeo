@@ -175,6 +175,7 @@ class LIBMOLDEO_API moData {
 		void		SetNumber( moNumber p_number );
 		void		SetType( moDataType	p_DataType  );
 		void		SetSize( MOulong p_DataSize );
+		void		SetFun( const moText& p_functionExpression );
 
 		/// Fija el dato a una textura
 		/**
@@ -191,12 +192,12 @@ class LIBMOLDEO_API moData {
 		void        SetFont( moFont*	p_Font );
 		void        SetModel( mo3DModelSceneNode*    p_Model );
 		void        SetSound( moSound*	p_Sound );
-    void        SetVector( moVector2d *p_vector2d );
-    void        SetVector( moVector3d *p_vector3d );
-    void        SetVector( moVector4d *p_vector4d );
-    void        SetVector( moVector2i *p_vector2i );
-    void        SetVector( moVector3i *p_vector3i );
-    void        SetVector( moVector4i *p_vector4i );
+		void        SetVector( moVector2d *p_vector2d );
+		void        SetVector( moVector3d *p_vector3d );
+		void        SetVector( moVector4d *p_vector4d );
+		void        SetVector( moVector2i *p_vector2i );
+		void        SetVector( moVector3i *p_vector3i );
+		void        SetVector( moVector4i *p_vector4i );
 
 		void        SetMessage( moDataMessage*  p_datamessage );
 		void        SetMessages( moDataMessages*  p_datamessages );
@@ -217,9 +218,9 @@ class LIBMOLDEO_API moData {
 		MOulong                 Size() const;
 		MOdouble                Eval();
 		MOdouble                Eval( double x );
-        MOdouble                LastEval() const;
+		MOdouble                LastEval() const;
 
-    ///referencias a clases
+		///referencias a clases
 		moMathFunction*         Fun();
 		moFont*                 Font();
 		moTextureBuffer*        TextureBuffer();
@@ -258,10 +259,11 @@ class LIBMOLDEO_API moData {
 		bool            m_bFilteredAlpha;
 		bool            m_bFilteredParams;
 		MOfloat         m_AlphaFilter;
-        moTextFilterParam*  m_pFilterParam;
-        moData*         m_pAlphaFilter;
+		moTextFilterParam*  m_pFilterParam;
+		moData*         m_pAlphaFilter;
 
-        MOdouble        m_LastEval;
+		MOdouble        m_LastEval;
+
 };
 
 
@@ -341,6 +343,17 @@ class LIBMOLDEO_API moValueDefinition
 		void        SetAttribute( moText p_attribute );
 
 		bool        IsValid()  const;
+    const moText& ToJSON() {
+      moText fieldSeparation = ",";
+
+      m_FullJSON = "{";
+      m_FullJSON+= "'codename': '" + m_CodeName + "'";
+      m_FullJSON+= fieldSeparation + "'type': '" + GetTypeStr() + "'";
+      m_FullJSON+= fieldSeparation + "'min': " + FloatToStr(m_Min);
+      m_FullJSON+= fieldSeparation + "'max': " + FloatToStr(m_Max);
+      m_FullJSON+= "}";
+      return m_FullJSON;
+    }
 
 	private:
 		moValueType		m_Type;
@@ -349,6 +362,7 @@ class LIBMOLDEO_API moValueDefinition
 		MOfloat         m_Min,m_Max;
 
 		moText          m_Attribute; //for future use
+		moText          m_FullJSON;
 
 };
 
@@ -446,11 +460,21 @@ class LIBMOLDEO_API moValueBase : public moData
 		moText      GetAttribute()  const;
 		void        SetAttribute( moText p_attribute );
 
+    const moText& ToJSON() {
+      moText fieldSeparation =",";
+      m_FullJSON = "{";
+      m_FullJSON+= "'valuedefinition':" + m_ValueDefinition.ToJSON();
+      m_FullJSON+= fieldSeparation + "'value':" + "'" + ToText() + "'";
+      m_FullJSON+= "}";
+      return m_FullJSON;
+    }
+
+    bool FixType( moValueType p_ValueType );
 	private:
 
         /// Este miembro es lo que diferencia un Valor (moValueBase) de un Dato ( moData ).
 		moValueDefinition	m_ValueDefinition;
-
+    moText m_FullJSON;
 };
 
 
@@ -518,9 +542,20 @@ class LIBMOLDEO_API moValue
 		    return *this;
         }
 
+    const moText& ToJSON() {
+      moText fieldSeparation  = "";
+      m_FullJSON = "[";
+      for( int vbase; vbase < (int)m_List.Count(); vbase++) {
+        m_FullJSON+= fieldSeparation + m_List[vbase].ToJSON();
+        fieldSeparation = ",";
+      }
+      m_FullJSON+= "]";
+      return m_FullJSON;
+    }
+
 	private:
 		moValueBases	m_List;
-
+    moText m_FullJSON;
 };
 
 
