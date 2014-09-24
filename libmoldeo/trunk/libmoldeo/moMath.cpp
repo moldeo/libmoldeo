@@ -37,7 +37,7 @@
 
 #include "moMath.h"
 
-#ifndef MO_USING_VC
+#ifndef MO_USING_VCX
 template<> const MOlong moMath<MOlong>::EPSILON = FLT_EPSILON;
 template<> const MOlong moMath<MOlong>::ZERO_TOLERANCE = 1e-06f;
 template<> const MOlong moMath<MOlong>::MAX_REAL = (MOlong)FLT_MAX;
