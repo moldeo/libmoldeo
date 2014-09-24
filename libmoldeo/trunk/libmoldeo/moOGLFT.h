@@ -29,6 +29,10 @@
     #define OGLFT_NO_SOLID 1
 #endif
 
+#ifdef MO_USING_VC
+	#define OGLFT_NO_SOLID 1
+#endif
+
 #include <iostream>
 #include <iomanip>
 
