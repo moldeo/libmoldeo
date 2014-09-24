@@ -143,8 +143,10 @@ private:
 };
 
 #ifndef MO_MACOSX
+#ifndef MO_WIN32
 template class LIBMOLDEO_API moMinimize1<MOfloat>;
 template class LIBMOLDEO_API moMinimize1<MOdouble>;
+#endif
 #endif
 
 typedef moMinimize1<MOfloat> moMinimize1f;

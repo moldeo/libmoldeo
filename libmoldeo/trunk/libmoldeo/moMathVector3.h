@@ -135,7 +135,7 @@ public:
 
     // arithmetic updates
 
-    moVector3<Real>& operator+= (const moVector3& rkV)
+    moVector3& operator+= (const moVector3& rkV)
     {
         m_afTuple[0] += rkV.m_afTuple[0];
         m_afTuple[1] += rkV.m_afTuple[1];
@@ -143,7 +143,7 @@ public:
         return *this;
     }
 
-    moVector3<Real>& operator-= (const moVector3& rkV)
+    moVector3& operator-= (const moVector3& rkV)
     {
         m_afTuple[0] -= rkV.m_afTuple[0];
         m_afTuple[1] -= rkV.m_afTuple[1];
