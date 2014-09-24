@@ -27,7 +27,7 @@
   Fabricio Costa
 
 *******************************************************************************/
-
+#undef generic
 #include "moSoundManager.h"
 
 #include "moArray.h"
@@ -73,7 +73,8 @@ MOboolean moSound::Finish() {
     delete m_pAudioGraph;
     m_pAudioGraph = NULL;
   }
-
+  moAbstract::m_bInitialized=false;
+  return (m_pAudioGraph == NULL);
 }
 
 MOboolean moSound::Init() {
@@ -118,6 +119,13 @@ MOboolean moSound::LoadFromFile( moText filename ) {
 }
 
 MOboolean moSound::SupportedFile(moText p_filename) {
+  moFile soundFile(p_filename);
+  if ( soundFile.GetExtension()==".mp3"
+      || soundFile.GetExtension()==".wav"
+      || soundFile.GetExtension()==".m4a"
+      || soundFile.GetExtension()==".ogg" ) {
+        return true;
+  }
   return true;
 }
 
@@ -183,17 +191,20 @@ void moSound::Update()  {
 MOulong moSound::GetPosition() {
   if (m_pAudioGraph)
     return m_pAudioGraph->GetPositionMS();
+  return 0;
 }
 
 MOulong moSound::GetSampleCount() {
   if (m_pAudioGraph)
     return m_pAudioGraph->GetSamplesLength();
+  return 0;
 }
 
 
 MOulong moSound::GetDuration() {
   if (m_pAudioGraph)
     return m_pAudioGraph->GetDuration();
+  return 0;
 }
 void  moSound::Seek( int position, float rate ) {
   if (m_pAudioGraph)
@@ -336,12 +347,14 @@ moSound3D::BuildEmpty( MOuint p_size ) {
 	// Generate a Source to playback the Buffer
 	alGenSources( 1, &m_SourceId );
 */
+  p_size = 0;
 	return true;
 }
 
 MOboolean
 moSound3D::BuildFromBuffer( MOuint p_size, GLvoid* p_buffer ) {
 	BuildEmpty(p_size);
+	p_buffer = NULL;
 	return true;
 }
 
@@ -354,7 +367,7 @@ moSound3D::BuildFromFile( moText p_filename ) {
 		case MO_SOUNDTYPE_WAV:
 			// Load Wave file into OpenAL Buffer
 			#ifdef MO_WIN32
-      #if defined(_MSC_VER)
+      #ifdef MO_USING_ALFW
 			if (!ALFWLoadWaveToBuffer((char*)ALFWaddMediaPath(p_filename), m_BufferId))
 			{
 				ALFWprintf("Failed to load %s\n", ALFWaddMediaPath(p_filename));
@@ -378,7 +391,7 @@ moSound3D::BuildFromFile( moText p_filename ) {
 	/*
 	alSourcei( m_SourceId, AL_BUFFER, m_BufferId );
 	*/
-
+  p_filename = "";
 	return true;
 
 }
@@ -407,6 +420,7 @@ void moSound3D::PlaySample( MOint sampleid ) {
 	alGetError();
 	alSourcePlay(m_SourceId);
 */
+  sampleid = 0;
 }
 
 void moSound3D::Pause() {
@@ -437,15 +451,16 @@ void moSound3D::Final() {
 
 void moSound3D::Frame(int frame) {
 	Update();
+	frame = 0;
 }
 
 void moSound3D::Repeat(int repeat) {
-
+  repeat = 0;
 }
 
 moStreamState moSound3D::State() {
 	// Get Source State
-	int m_iAlState;
+	//int m_iAlState;
 	/*
 	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_iAlState);
 	switch(m_iAlState) {
@@ -480,24 +495,34 @@ void moSound3D::SetPosition( float x, float y, float z ) {
 /*
 	alSource3f( m_SourceId, AL_POSITION, x, y, z );
 */
+  x = 0;
+  y = 0;
+  z = 0;
 }
 
 void moSound3D::SetVelocity( float x, float y, float z ) {
 /*
 	alSource3f( m_SourceId, AL_VELOCITY, x, y, z );
 */
+  x = 0;
+  y = 0;
+  z = 0;
 }
 
 void moSound3D::SetDirection( float x, float y, float z ) {
 /*
 	alSource3f( m_SourceId, AL_DIRECTION, x, y, z );
 */
+  x = 0;
+  y = 0;
+  z = 0;
 }
 
 void moSound3D::SetVolume( float volume ) {
     /*
 	alSourcef( m_SourceId, AL_GAIN, volume );
 	*/
+  volume = 0;
 }
 
 float moSound3D::GetVolume() {
@@ -513,6 +538,7 @@ void moSound3D::SetPitch( float pitch )  {
     /*
     alSourcef(m_SourceId, AL_PITCH, pitch);
     */
+    pitch = 0;
 }
 
 
@@ -531,14 +557,16 @@ void moSoundEffect::SetParameterF( MOint param, MOfloat flValue ) {
 #ifdef MO_WIN32
 	//alEffectf( m_EffectId, param, flValue );
 #endif
-
+  param = 0;
+  flValue = 0;
 }
 
 void moSoundEffect::GetParameterF( MOint param, MOfloat *pflValue ) {
 #ifdef MO_WIN32
 	//alGetEffectf( m_EffectId, param,  pflValue );
 #endif
-
+  param = 0;
+  pflValue = NULL;
 }
 
 moSoundManager::moSoundManager() {
@@ -562,7 +590,7 @@ MOboolean moSoundManager::Init() {
   moResource::Init();
 
 #ifdef MO_WIN32
-    #ifdef MO_USING_VC
+    #ifdef MO_USING_ALFW
 	ALenum			eBufferFormat = 0;
 
 	ALFWInit();
@@ -700,6 +728,7 @@ moSoundManager::GetSoundId( moText p_name ) {
 	  idnuevo = 65535;
 	}
 	//si es superior a 65535 es un error
+	stype = MO_SOUNDTYPE_UNDEFINED;
 	return(idnuevo);
 }
 
@@ -753,7 +782,7 @@ MOboolean moSoundManager::Finish() {
 	m_effects_array.Empty();
 
 	#ifdef MO_WIN32
-    #ifdef MO_USING_VC
+    #ifdef MO_USING_ALFW
     if (m_bInitialized) {
           ALFWShutdownOpenAL();
           ALFWShutdown();
