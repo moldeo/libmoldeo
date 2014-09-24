@@ -150,8 +150,12 @@ if (H>=360)
 	H-=360;
 
 */
-
+#ifdef MO_USING_VC
+#define PACKAGE_VERSION "0.7.9.8"
+#else
 #include "config.h"
+#endif
+
 moText moGetVersionStr() {
 
     return moText(PACKAGE_VERSION);
