@@ -38,6 +38,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
+#include "moDebugManager.h"
 
 //============================================================================
 // int printMessage
@@ -125,6 +126,9 @@ moLuaVirtualMachine::~moLuaVirtualMachine (void)
 //============================================================================
 void moLuaVirtualMachine::Panic (lua_State *lua)
 {
+   lua_Debug ar;
+   lua_getstack (lua, 0, &ar);
+   moDebugManager::Error("moLuaVirtualMachine::Panic > " );
 }
 
 //============================================================================
@@ -331,7 +335,7 @@ static void LuaHookCall (lua_State *lua)
 
 static void LuaHookRet (lua_State *lua)
 {
-
+  printMessage( lua );
 }
 
 static void LuaHookLine (lua_State *lua)
