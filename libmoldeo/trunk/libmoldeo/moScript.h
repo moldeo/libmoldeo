@@ -192,7 +192,7 @@ public:
      * Devuelve una referencia a la máquina virtual utilizada por este script.
 	 * @return referencia a la máquina virtual.
      */
-   moLuaVirtualMachine& vm (void) { return m_vm; }
+   moLuaVirtualMachine& mvm (void) { return m_vm; }
 protected:
    bool m_initialized;
    int m_nMethods;
