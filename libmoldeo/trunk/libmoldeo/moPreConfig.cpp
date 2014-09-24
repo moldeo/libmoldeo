@@ -35,6 +35,26 @@
 moDefineDynamicArray( moPreConfigs )
 moDefineDynamicArray( moPreconfigIndexes )
 
+/*
+ moPreconfigParamIndex::moPreconfigParamIndex() {
+    m_ParamName = "";
+    m_ParamIndex = -1;
+    m_ValueIndex = -1;
+}
+*/
+/*
+moPreconfigParamIndex::~moPreconfigParamIndex() {
+  //nothing
+  m_ParamName = "";
+  m_ParamIndex = -1;
+  m_ValueIndex = -1;
+}
+*/
+
+/**
+  PRECONFIG
+*/
+
 moPreConfig::moPreConfig() {
 }
 
@@ -43,8 +63,20 @@ moPreConfig::~moPreConfig()
 	Finish();
 }
 
+
+
+moPreConfig&
+moPreConfig::operator = ( const moPreConfig& preconf) {
+
+	//m_ValueIndexes = preconf.m_ValueIndexes;
+	m_PreconfIndexes = preconf.m_PreconfIndexes;
+	m_Name = preconf.m_Name;
+	return (*this);
+}
+
 moPreConfig::moPreConfig( moPreconfigIndexes& preconfindexes ) {
     m_PreconfIndexes = preconfindexes;
+    /*
     m_ValueIndexes.Empty();
     for( MOuint i=0; i<m_PreconfIndexes.Count(); i++ ) {
 
@@ -54,8 +86,9 @@ moPreConfig::moPreConfig( moPreconfigIndexes& preconfindexes ) {
 
         m_ValueIndexes.Add( PIndex );
     }
+    */
 }
-
+/*
 moPreConfig::moPreConfig( moValueIndexes& valueindexes ) {
     m_ValueIndexes = valueindexes;
     m_PreconfIndexes.Empty();
@@ -68,6 +101,7 @@ moPreConfig::moPreConfig( moValueIndexes& valueindexes ) {
         m_PreconfIndexes.Add( PIndex );
     }
 }
+*/
 
 MOboolean
 moPreConfig::Init() {
@@ -78,26 +112,22 @@ moPreConfig::Init() {
 
 MOboolean
 moPreConfig::Finish() {
-	m_ValueIndexes.Empty();
+	//m_ValueIndexes.Empty();
+	m_PreconfIndexes.Empty();
 	return true;
 }
 
-moPreConfig&
-moPreConfig::operator = ( const moPreConfig& preconf) {
 
-	m_ValueIndexes = preconf.m_ValueIndexes;
-	return (*this);
+moPreconfigParamIndex
+moPreConfig::operator [] ( MOint paramindex) {
+	moPreconfigParamIndex vindex;
+	if ( 0<=paramindex && paramindex< (MOint) this->m_PreconfIndexes.Count() ) {
+		vindex = this->m_PreconfIndexes[paramindex];
+	}
+	return vindex;
 }
 
-moValueIndex
-moPreConfig::operator [] ( const MOint paramindex) {
-	moValueIndex vindex;
-	vindex.m_ParamIndex = -1;
-	vindex.m_ValueIndex = -1;
-	if ( 0<=paramindex && paramindex<(MOint)m_ValueIndexes.Count()) {
-		return m_ValueIndexes[paramindex];
-	} else return vindex;
-}
+
 
 /*
 void  moPreConfig::Init( moConfig* conf)
