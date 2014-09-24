@@ -144,7 +144,7 @@ moTextureFilterIndex::MakeTextureFilterLabelName( moValue* p_value ) {
 
     moText  TextureFilterLabelName = "";
     moText sep = "";
-    for(int i=0; i < 3; i++) {
+    for(MOuint i=0; i < p_value->GetSubValueCount(); i++) {
         TextureFilterLabelName+= (moText)sep + (moText)p_value->GetSubValue(i).Text();
         sep = moText("::");
     }
@@ -271,9 +271,9 @@ MOuint moTextureFilterIndex::LoadFilters(moParam* p_param)
 	MOboolean reading_src_tex;
 	moParam* param = p_param;
 
-	moTextureFilter *pfilter;
+	moTextureFilter *pfilter = NULL;
 	moTextureArray src_tex, dest_tex;
-	moShader *pshader;
+	moShader *pshader = NULL;
 
 	MOuint dest_width, dest_height;
 	moText name, extension, left;
@@ -317,10 +317,13 @@ MOuint moTextureFilterIndex::LoadFilters(moParam* p_param)
 			}
 		}
 
+		if (pshader==NULL) error_code = 1;
+
 		if (error_code == 0)
 		{
 			pfilter = new moTextureFilter();
 			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+      pfilter->SetTextureFilterLabelName( MakeTextureFilterLabelName( &param->GetValue() ) );
 			Add(pfilter);
 		}
 		else
@@ -356,9 +359,9 @@ MOuint moTextureFilterIndex::LoadFilters(moConfig* p_cfg, MOuint p_param_idx)
 	MOboolean reading_src_tex;
 	moParam* param;
 
-	moTextureFilter *pfilter;
+	moTextureFilter *pfilter = NULL;
 	moTextureArray src_tex, dest_tex;
-	moShader *pshader;
+	moShader *pshader = NULL;
 
 	MOuint dest_width, dest_height;
 	moText name, extension, left;
@@ -403,10 +406,13 @@ MOuint moTextureFilterIndex::LoadFilters(moConfig* p_cfg, MOuint p_param_idx)
 			}
 		}
 
+		if (pshader==NULL) error_code = 1;
+
 		if (error_code == 0)
 		{
 			pfilter = new moTextureFilter();
 			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+      pfilter->SetTextureFilterLabelName( MakeTextureFilterLabelName( &param->GetValue() ) );
 			Add(pfilter);
 		}
 		else
@@ -440,9 +446,9 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 
 	MOboolean reading_src_tex;
 
-	moTextureFilter *pfilter;
+	moTextureFilter *pfilter = NULL;
 	moTextureArray src_tex, dest_tex;
-	moShader *pshader;
+	moShader *pshader = NULL;
 
 	MOuint dest_width, dest_height;
 	moText name, extension, left, tmp;
@@ -451,7 +457,7 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 	for (i = 0; i < nFilters; i++)
 	{
 		reading_src_tex = true;
-
+    moValue pValue;
 		error_code = 0;
 		src_tex.Empty();
 		dest_tex.Empty();
@@ -461,6 +467,8 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 		{
 			name = tmp.Scan(moText(" "));
 			name = name.Trim();
+
+      if (name!="") pValue.AddSubValue( name, "TXT" );
 
 			extension = name;
 			extension.Right(3);
@@ -485,10 +493,13 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 			}
 		}
 
+		if (pshader==NULL) error_code = 1;
+
 		if (error_code == 0)
 		{
 			pfilter = new moTextureFilter();
 			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+      pfilter->SetTextureFilterLabelName( MakeTextureFilterLabelName( &pValue ) );
 			Add(pfilter);
 		}
 		else

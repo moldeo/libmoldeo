@@ -115,7 +115,7 @@ moTextureBuffer::Init( moText p_foldername, moTextureBufferFormat p_bufferformat
 
     }
 
-    Init( p_foldername, str_format, p_pResourceManager );
+    return Init( p_foldername, str_format, p_pResourceManager );
 }
 
 MOboolean
@@ -495,6 +495,7 @@ moTextureMemory* moTextureBuffer::GetTexture( MOuint p_i ) {
 		moTextureMemory* pTextureMemory = m_Frames[p_i];
 		return pTextureMemory;
     }
+	return NULL;
 }
 
 
@@ -533,7 +534,7 @@ MOboolean moTextureManager::Init()
 		m_fbmanager = m_pResourceManager->GetFBMan();
 	} else return false;
 
-	m_textures_array.Init(0, NULL);
+	m_textures_array.Init( 0, NULL );
 
 	m_preview_texture_idx = AddTexture("preview_texture", 1024, 1024);
 	//AddTexture("texture_clip1", 1024, 768);
@@ -543,7 +544,7 @@ MOboolean moTextureManager::Init()
 	int m_id_default = AddTexture( "default", 256, 256);
 	moTexture* DefaultTexture =  GetTexture(m_id_default);
     if (DefaultTexture) DefaultTexture->BuildFromFile(
-        moText(DATADIR) +
+        m_pResourceManager->GetDataMan()->GetAppDataPath() +
         moSlash +
         moText("icons") +
         moSlash +
@@ -858,37 +859,37 @@ moTexture* moTextureManager::CreateTexture(MOuint p_type, moText p_name, moTexPa
 
   if ( p_name.Trim().Length() == 0 ) {
     ///atencion una textura sin nombre....
-    MODebug2->Error( moText("tratando de crear una textura sin nombre") );
+    MODebug2->Error( moText("moTextureManager::CreateTexture > untitled texture name.") );
     return NULL;
   }
 
 	if (p_type == MO_TYPE_TEXTURE)
 	{
-		ptex = new moTexture;
+		ptex = new moTexture();
 	}
 	else if (p_type == MO_TYPE_TEXTUREMEMORY)
 	{
-	    ptex_mem = new moTextureMemory;
+	    ptex_mem = new moTextureMemory();
 		ptex = (moTexture*)ptex_mem;
 	}
 	else if (p_type == MO_TYPE_TEXTURE_MULTIPLE)
 	{
-		ptex_mult = new moTextureMultiple;
+		ptex_mult = new moTextureMultiple();
 		ptex = (moTexture*)ptex_mult;
 	}
 	else if (p_type == MO_TYPE_MOVIE)
 	{
-		ptex_movie = new moMovie;
+		ptex_movie = new moMovie();
 		ptex = (moTexture*)ptex_movie;
 	}
 	else if (p_type == MO_TYPE_VIDEOBUFFER)
 	{
-		ptex_videobuffer = new moVideoBuffer;
+		ptex_videobuffer = new moVideoBuffer();
 		ptex = (moTexture*)ptex_videobuffer;
 	}
 	else if (p_type == MO_TYPE_CIRCULARVIDEOBUFFER)
 	{
-		ptex_circularvideobuffer = new moCircularVideoBuffer;
+		ptex_circularvideobuffer = new moCircularVideoBuffer();
 		ptex = (moTexture*)ptex_circularvideobuffer;
 	}
 	else return NULL;
