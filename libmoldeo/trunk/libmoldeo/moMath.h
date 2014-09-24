@@ -837,16 +837,18 @@ public:
 };
 
 #ifndef MO_MACOSX
+#ifndef MO_WIN32
 template class LIBMOLDEO_API moMath<long>;
 template class LIBMOLDEO_API moMath<double>;
 template class LIBMOLDEO_API moMath<float>;
+#endif
 #endif
 
 typedef moMath<long> moMathi;
 typedef moMath<double> moMathd;
 typedef moMath<float> moMathf;
 
-#ifdef MO_USING_VC
+#ifdef MO_USING_VCXX
 	template<> const MOlong moMath<MOlong>::EPSILON = FLT_EPSILON;
 	template<> const MOlong moMath<MOlong>::ZERO_TOLERANCE = 1e-06f;
 	template<> const MOlong moMath<MOlong>::MAX_REAL = FLT_MAX;
