@@ -180,7 +180,10 @@ void moShaderGLSL::compileFragShader(moText frag_source)
 
 		glGetShaderInfoLog(m_FragmentShader, maxLength, &maxLength, fragmentInfoLog);
 
-        if (MODebug2 != NULL) MODebug2->Error(moText("Shader compile error:") + moText(fragmentInfoLog) );
+    if (MODebug2 != NULL)
+      MODebug2->Error(moText("Shader compile error:")
+                      + "("+GetName()+")"
+                      + moText(fragmentInfoLog) );
 
 		/* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
 		/* In this simple program, we'll just leave */
