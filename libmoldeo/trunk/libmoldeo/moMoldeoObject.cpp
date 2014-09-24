@@ -41,54 +41,257 @@
 moDefineDynamicArray(moMoldeoObjects)
 
 
+/**
+ MOB STATE
+*/
+moMobState::moMobState() {
+    m_Activated = MO_OFF;
+    m_Selected = MO_OFF;
+}
+
+moMobState::~moMobState() {
+}
+
+moMobState::moMobState( const moMobState& p_MobState ) {
+    (*this) = p_MobState;
+}
+
+moMobState&
+moMobState::operator=( const moMobState& src) {
+    m_Activated = src.m_Activated;
+    m_Selected = src.m_Selected;
+    return (*this);
+}
+
+void moMobState::Activate() {
+    m_Activated = MO_ON;
+
+}
+
+void moMobState::Deactivate() {
+    m_Activated = MO_OFF;
+}
+
+bool moMobState::Activated() const {
+    return (m_Activated==MO_ON);
+}
 
 
-    moMobState::moMobState() {
-        m_Activated = MO_OFF;
-        m_Selected = MO_OFF;
+void moMobState::Select() {
+    m_Selected = MO_ON;
+}
+
+void moMobState::Unselect() {
+    m_Selected = MO_OFF;
+}
+
+bool moMobState::Selected() const {
+    return (m_Selected==MO_ON);
+}
+
+
+
+/**
+
+  MOB DEFINITION
+
+*/
+
+moMobDefinition::moMobDefinition() {
+
+  m_Name = moText("");
+  m_ConfigName = moText("");
+  m_MoldeoLabelName = moText("");
+  m_MoldeoId = -1;
+  m_Type = MO_OBJECT_UNDEFINED;
+
+}
+
+moMobDefinition::moMobDefinition(const moMobDefinition& mb) {
+  (*this) = mb;
+}
+
+/// Destructor
+moMobDefinition::~moMobDefinition() {
+
+}
+
+/// Operador de asignación
+moMobDefinition&
+moMobDefinition::operator = ( const moMobDefinition& mb) {
+  m_Name = mb.m_Name;
+  m_ConfigName = mb.m_ConfigName;
+  m_Type = mb.m_Type;
+  m_MoldeoLabelName = mb.m_MoldeoLabelName;
+  m_MoldeoId = mb.m_MoldeoId;
+  m_MobIndex = mb.m_MobIndex;
+  return(*this);
+}
+
+
+/// Nombre del objeto
+const moText&
+moMobDefinition::GetName() const {
+    return m_Name;
+}
+
+/// Fijar el nombre del objeto
+
+void
+moMobDefinition::SetName( moText p_name ) {
+    m_Name = p_name;
+}
+
+/// Nombre del archivo de configuración
+const moText&
+moMobDefinition::GetConfigName() const {
+    return m_ConfigName;
+}
+
+/// Fijar el nombre del archivo de configuración
+void
+moMobDefinition::SetConfigName( moText p_configname ) {
+    m_ConfigName = p_configname;
+}
+
+/// Nombre del archivo de configuración
+moMoldeoObjectType
+moMobDefinition::GetType() const {
+    return m_Type;
+}
+
+/// Transforma una cadena de caracteres en su correspondiente moMoldeoObjectType
+moMoldeoObjectType
+moMobDefinition::GetStrType( const moText& p_Str ) const {
+
+    if (p_Str == moText("effect") || p_Str == moText("moEffect")) {
+        return MO_OBJECT_EFFECT;
+    } else if (p_Str == moText("mastereffect") || p_Str == moText("moMasterEffect")) {
+        return MO_OBJECT_MASTEREFFECT;
+    } else if (p_Str == moText("posteffect") || p_Str == moText("moPostEffect")) {
+        return MO_OBJECT_POSTEFFECT;
+    } else if (p_Str == moText("preeffect") || p_Str == moText("moPreEffect")) {
+        return MO_OBJECT_PREEFFECT;
+    } else if (p_Str == moText("iodevice") || p_Str == moText("moIODevice")) {
+        return MO_OBJECT_IODEVICE;
+    } else if (p_Str == moText("resource") || p_Str == moText("moResource")) {
+        return MO_OBJECT_RESOURCE;
+    } else if (p_Str == moText("console") || p_Str == moText("moConsole")) {
+        return MO_OBJECT_CONSOLE;
     }
 
-    moMobState::~moMobState() {
+    return MO_OBJECT_UNDEFINED;
+
+}
+
+/// Transforma un moMoldeoObjectType en el nombre de su correspondiente clase base
+moText
+moMobDefinition::GetTypeStr( moMoldeoObjectType p_Type ) const {
+    if ( ! ( p_Type == MO_OBJECT_UNDEFINED ) ) {
+        return moText("MOB class undefined");
     }
-
-    moMobState::moMobState( const moMobState& p_MobState ) {
-        (*this) = p_MobState;
+    switch(m_Type) {
+        case MO_OBJECT_EFFECT:
+            return moText("moEffect");
+            break;
+        case MO_OBJECT_MASTEREFFECT:
+            return moText("moMasterEffect");
+            break;
+        case MO_OBJECT_POSTEFFECT:
+            return moText("moPostEffect");
+            break;
+        case MO_OBJECT_PREEFFECT:
+            return moText("moPreEffect");
+            break;
+        case MO_OBJECT_IODEVICE:
+            return moText("moIODevice");
+            break;
+        case MO_OBJECT_RESOURCE:
+            return moText("moResource");
+            break;
+        case MO_OBJECT_CONSOLE:
+            return moText("moConsole");
+            break;
+        case MO_OBJECT_UNDEFINED:
+            return moText("MOB class undefined");
+            break;
+        default:
+            return moText("MOB class undefined");
+            break;
     }
+}
 
-    moMobState&
-    moMobState::operator=( const moMobState& src) {
-        m_Activated = src.m_Activated;
-        m_Selected = src.m_Selected;
-        return (*this);
-    }
+/// Fija el tipo de moMoldeoObject o moMoldeoObjectType
+void
+moMobDefinition::SetType( moMoldeoObjectType p_type ) {
+    m_Type = p_type;
+}
 
-    void moMobState::Activate() {
-        m_Activated = MO_ON;
-
-    }
-
-    void moMobState::Deactivate() {
-        m_Activated = MO_OFF;
-    }
-
-    bool moMobState::Activated() const {
-        return (m_Activated==MO_ON);
-    }
+/// Devuelve la dupla de índices para el archivo de configuración
+const moMobIndex&
+moMobDefinition::GetMobIndex() const {
+    return m_MobIndex;
+}
 
 
-    void moMobState::Select() {
-        m_Selected = MO_ON;
-    }
+/// Fija la etiqueta de este objeto
+void
+moMobDefinition::SetLabelName( moText p_labelname ) {
+    m_MoldeoLabelName = p_labelname;
+}
 
-    void moMobState::Unselect() {
-        m_Selected = MO_OFF;
-    }
+/// Devuelve la etiqueta de este objeto
 
-    bool moMobState::Selected() const {
-        return (m_Selected==MO_ON);
-    }
+const moText&
+moMobDefinition::GetLabelName() const {
+    return m_MoldeoLabelName;
+}
 
+/// Fija el identificador de este objeto
+/**
+*   Este identificador debe ser único
+*/
+void
+moMobDefinition::SetMoldeoId( MOint p_moldeoid ) {
+    m_MoldeoId  = p_moldeoid;
+}
 
+/// Devuelve el identificador de este objeto
+/**
+*   Este identificador debe ser único
+*/
+MOint
+moMobDefinition::GetMoldeoId() const {
+    return m_MoldeoId;
+}
+
+/// Devuelve al descripción del objeto
+/**
+*   La descripción describe la funcionalidad de este objeto
+*/
+/*
+const moText&
+moMobDefinition::GetDescription() const {
+    return m_Description;
+}
+*/
+
+/// Fija la descripción de este objeto
+void
+moMobDefinition::SetDescription( const moText& p_Description ) {
+    m_Description  = p_Description;
+}
+
+void
+moMobDefinition::SetConsoleParamIndex( MOint p_paramindex ) {
+    m_MobIndex.SetParamIndex(p_paramindex);
+
+}
+
+void
+moMobDefinition::SetConsoleValueIndex(MOint p_valueindex) {
+    m_MobIndex.SetValueIndex(p_valueindex);
+}
 
 //===========================================
 //
@@ -324,7 +527,7 @@ moMoldeoObject::CreateConnectors() {
   MODebug2->Message("moMoldeoObject::CreateConnectors > Calling once. object: "+GetName()+ " config: " + GetConfigName() + " label:" + GetLabelName() );
 
 
-	///Levanta los Inlets adicionales a los parámetros....
+	///crea los Inlets adicionales a los parámetros: definidos en el parámetro "inlet"
 	moParam& pinlets = m_Config[moText("inlet")];
 
 	for( MOuint i=0; i<pinlets.GetValuesCount(); i++ ) {
@@ -332,10 +535,10 @@ moMoldeoObject::CreateConnectors() {
 		if (Inlet) {
 			Inlet->SetMoldeoLabelName( GetLabelName() );
 			moText InletName = pinlets[i][MO_INLET_NAME].Text();
-			///lo creamos si y solo si no existe como parametro....
+			///lo creamos si y solo si no existe como parámetro....
 			if ( m_Config.GetParamIndex(InletName)==-1 ) {
 				((moConnector*)Inlet)->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
-				m_Inlets.Add( Inlet );
+        m_Inlets.Add( Inlet );
 			}
 		}
 	}
@@ -347,7 +550,7 @@ moMoldeoObject::CreateConnectors() {
 
 		moParam	&param( m_Config[p] );
 
-		MODebug2->Message( moText("moMoldeoObject:: Init param type ") + param.GetParamDefinition().GetTypeStr() + moText(" name: ") + param.GetParamDefinition().GetName() );
+		MODebug2->Log( moText("moMoldeoObject::CreateConnectors > Init param type ") + param.GetParamDefinition().GetTypeStr() + moText(" name: ") + param.GetParamDefinition().GetName() );
 
 
         ///CREAMOS UN INLET POR CADA PARAMETRO
@@ -379,7 +582,10 @@ moMoldeoObject::CreateConnectors() {
                         VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
                         //MODebug2->Message( moText("function defined: ") + VB.Text() );
                     } else {
-                        MODebug2->Error(moText("function couldn't be defined: ") + VB.Text() );
+                        MODebug2->Error(moText("moMoldeoObject::CreateConnectors > function couldn't be defined: ") + VB.Text()
+                                        + " object: "+GetName()
+                                        + " config: " + GetConfigName()
+                                        + " label:" + GetLabelName() );
                     }
                 }
             }
@@ -389,22 +595,22 @@ moMoldeoObject::CreateConnectors() {
 
 			if (value.GetSubValueCount()>0) {
 
-                moValueBase& valuebase(value.GetSubValue(0));
+                moValueBase& valuebase0(value.GetSubValue(0));
 
                 switch((int)param.GetParamDefinition().GetType() ) {
 
                     case MO_PARAM_TEXTUREFOLDER:
                         ///es una carpeta pero puede tener otros parametros
                         ///
-                        if ( ! (valuebase.Text().Trim() == moText("")) ) {
+                        if ( ! (valuebase0.Text().Trim() == moText("")) ) {
 
                             ///si tenemos un segundo parametro deberia ser el formato del buffer (JPG o PNG)
 
-                            idx = m_pResourceManager->GetTextureMan()->GetTextureBuffer( valuebase.Text(), true, "PNG" );
+                            idx = m_pResourceManager->GetTextureMan()->GetTextureBuffer( valuebase0.Text(), true, "PNG" );
                             if (idx>-1) {
 
                                 moTextureBuffer*  pTextureBuffer = m_pResourceManager->GetTextureMan()->GetTextureBuffer(idx);
-                                valuebase.SetTextureBuffer( pTextureBuffer );
+                                valuebase0.SetTextureBuffer( pTextureBuffer );
 
                             }
 
@@ -421,20 +627,20 @@ moMoldeoObject::CreateConnectors() {
 
                     case MO_PARAM_TEXTURE:
                     case MO_PARAM_FILTER:
-                        if ( ! (valuebase.Text().Trim() == moText("")) ) {
-                            idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( valuebase.Text(), true);
+                        if ( ! (valuebase0.Text().Trim() == moText("")) ) {
+                            idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( valuebase0.Text(), true);
                             if (idx>-1) {
                                 moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
-                                valuebase.SetTexture( pTexture );
+                                valuebase0.SetTexture( pTexture );
 
                                 if (pTexture->GetType()!=MO_TYPE_TEXTURE_MULTIPLE && value.GetSubValueCount()>1) {
                                     idx = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->LoadFilter( &value );
                                     moTextureFilter*  pTextureFilter = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->Get(idx-1);
-                                    valuebase.SetTextureFilter( pTextureFilter );
+                                    valuebase0.SetTextureFilter( pTextureFilter );
                                 }
 
                                 if (value.GetSubValueCount()==4) {
-                                    valuebase.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
+                                    valuebase0.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
                                 }
 
                                 if (value.GetSubValueCount()>=5) {
@@ -442,7 +648,8 @@ moMoldeoObject::CreateConnectors() {
                                 }
                             }
                         } else {
-                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: ")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: ") + valuebase0.Text()
+                                            + moText(" Param name:") +param.GetParamDefinition().GetName() );
                         }
                         break;
 
@@ -453,9 +660,9 @@ moMoldeoObject::CreateConnectors() {
                         moFontSize  fontsize;
 
                         if ( value.GetSubValueCount()==3 ) {
-                            if ( valuebase.Text().Trim() == moText("Default") ) {
+                            if ( valuebase0.Text().Trim() == moText("Default") ) {
                               pFont = m_pResourceManager->GetFontMan()->GetFont(0);
-                            } else if ( ! (valuebase.Text().Trim() == moText("")) ) {
+                            } else if ( ! (valuebase0.Text().Trim() == moText("")) ) {
 
                                 if ( value.GetSubValue(1).GetType()==MO_VALUE_TXT) {
                                     moText fonttypeT = value.GetSubValue(1).Text();
@@ -470,21 +677,21 @@ moMoldeoObject::CreateConnectors() {
                                     fontsize = 12;
                                 }
 
-                                pFont = m_pResourceManager->GetFontMan()->AddFont( valuebase.Text(), fonttype, fontsize);
+                                pFont = m_pResourceManager->GetFontMan()->AddFont( valuebase0.Text(), fonttype, fontsize);
                                 if (pFont==NULL) {
-                                  MODebug2->Error( moText("moMoldeoObject::CreateConnectors > FONT NOT FOUND: Using Default")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                                  MODebug2->Error( moText("moMoldeoObject::CreateConnectors > FONT NOT FOUND: Using Default")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
                                   pFont = m_pResourceManager->GetFontMan()->GetFont(0);
                                 }
                             } else {
-                                MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: Using Default")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                                MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: Using Default")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
                                 pFont = m_pResourceManager->GetFontMan()->GetFont(0);
                             }
 
                             if (pFont) {
-                                valuebase.SetFont( pFont );
+                                valuebase0.SetFont( pFont );
                             }
                         } else {
-                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > MISSING VALUES: ")+ valuebase.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > MISSING VALUES: ")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
                         }
                         break;
 
@@ -492,27 +699,25 @@ moMoldeoObject::CreateConnectors() {
                     case MO_PARAM_OBJECT:
                         if (value.GetSubValueCount()>0) {
                             //PROBAR!!!!!
-
-                            moValueBase& valuebase(value.GetSubValue(0));
-                            mo3dModel* pModel = m_pResourceManager->GetModelMan()->Get3dModel( valuebase.Text() );
+                            //PROBAR!!!!!
+                            mo3dModel* pModel = m_pResourceManager->GetModelMan()->Get3dModel( valuebase0.Text() );
                             if (pModel) {
                                 mo3DModelSceneNode *newSceneNode;
                                 newSceneNode = new mo3DModelSceneNode();
                                 if (newSceneNode) {
                                     newSceneNode->Init(pModel);
                                 }
-                                valuebase.SetModel( newSceneNode );
+                                valuebase0.SetModel( newSceneNode );
                             }
                         }
                         break;
 
                     case MO_PARAM_SOUND:
                         if (value.GetSubValueCount()>0) {
-                          moValueBase& valuebase(value.GetSubValue(0));
-                          if (valuebase.Text()!="") {
-                            moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( valuebase.Text() );
+                          if (valuebase0.Text()!="") {
+                            moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( valuebase0.Text() );
                             if (pSound) {
-                                valuebase.SetSound( pSound );
+                                valuebase0.SetSound( pSound );
                             }
                           }
                         }
@@ -531,7 +736,8 @@ moMoldeoObject::CreateConnectors() {
     Solo se crean los outlets declarados en el xml.
     */
 
-    ///Levanta Outlets definidos en el config
+    /// Crea aquellos Outlets definidos dentro del parámetro "outlet"
+    /// y conecta aquellos nombrados que ya existen como parámetros de este config
 	moParam& poutlets = m_Config[moText("outlet")];
 
 	for( MOuint i=0; i<poutlets.GetValuesCount(); i++ ) {
@@ -542,9 +748,9 @@ moMoldeoObject::CreateConnectors() {
 			///para asociar un parametro a un outlet debe simplemente tener el mismo nombre...
 			moText OutletName = poutlets[i][MO_OUTLET_NAME].Text();
 
-			if ( m_Config.GetParamIndex(OutletName)>-1 ) {
+			if ( m_Config.GetParamIndex(OutletName) > -1 ) {
 			  ///CREAMOS UN OUTLET nuevo para este parametro....
-			  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet automatic to param.") + OutletName  );
+			  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter \"") + OutletName + "\""  );
 				Outlet->Init( OutletName, i, m_Config.GetParam(OutletName).GetPtr());
 			} else {
 			  ///CREAMOS UN OUTLET desde el .cfg, teniendo en cuenta los tipos...
@@ -552,6 +758,9 @@ moMoldeoObject::CreateConnectors() {
 				Outlet->Init( OutletName, i, poutlets[i][MO_OUTLET_TYPE].Text() );
 			}
 			m_Outlets.Add( Outlet );
+
+			/// Creamos sus conecciones
+			/// las conecciones viene de a pares: object label name + object inlet name
 			for( MOuint j=MO_OUTLET_INLETS_OFFSET; j<poutlets[i].GetSubValueCount(); j+=2 ) {
 				moText objectname = poutlets[i][j].Text();
 				moText inletname = poutlets[i][j+1].Text();
@@ -720,7 +929,20 @@ moMoldeoObject::GetOutletIndex( moText p_connector_name ) const {
 
 }
 
+/**
+Procesa la lista de eventos
 
+MO_MESSAGE -> mensajes que van de un objeto a otro, de un outlet a un inlet
+  Caso de procesar mensajes direccionados a inlets:
+    si son mensajes emitidos hacia este objeto
+      [SON MENSAJES EMERGENTES DE OTROS OUTLETS] => LOS PROCESAMOS
+    si son mensajes emitidos por este objeto
+      [SON MENSAJES EMERGENTES DE OUTLETS PROPIOS] => LOS BORRAMOS!
+
+ATENCION: NO PUEDEN ENVIARSE MENSAJES DE UN PROPIO OUTLET A UN PROPIO INLET (nunca serian borrados)
+
+
+*/
 void
 moMoldeoObject::Update( moEventList* p_EventList ) {
 
@@ -742,12 +964,25 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 			///process message:
 			MOint inletid = pmessage->m_InletIdDest;
 			moData pdata = pmessage->m_Data;
-
+      //MODebug2->Message("Receiving outlet message to inlet: ");
 			///buscar el inlet...
 			if (inletid>=0 && inletid<(int)m_Inlets.Count() ) {
 				moInlet* pinlet = m_Inlets[inletid];
-				if (pinlet->GetData()==NULL) pinlet->NewData();
-				pinlet->GetData()->Copy(pdata);
+        //MODebug2->Message("Updating inlet: object: " + GetLabelName() + " inlet: " + pinlet->GetConnectorLabelName()
+        //                  + " outlet_data: " + pdata.ToText() );
+
+				///Only create Data if this is a custom Inlet
+				if (pinlet->GetData()==NULL)
+          pinlet->NewData();
+
+        ///si tiene un dato (por ejemplo es el dato referencia de un moParam)
+        /// copia directamente (ya que se refleja directamente en: pinlet->m_pParam->Data
+        /// sin embargo al estar interpolado
+				if (pinlet->GetConnectorLabelName()=="control_roll_angle") pinlet->GetInternalData()->Copy(pdata);
+				else if (pinlet->IsParameterDependent()) pinlet->GetInternalData()->Copy(pdata);
+				else pinlet->GetData()->Copy(pdata);
+
+
 				pinlet->Update();///notifica al inlet que ya esta actualizado...
 			}
 
@@ -771,24 +1006,42 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 	for( MOuint i=0; i<m_Outlets.Count() ; i++) {
 		moOutlet* poutlet = m_Outlets[i];
 
-        if (poutlet)
-		if (poutlet->Updated()) {
-		  ///solo notificamos a los inlets si los outlets estan Updated() importante revisar esto...
-		  ///puede  deba ser algo condicional
+    if (poutlet) {
 
-		  //MODebug2->Message( poutlet->GetConnectorLabelName() + moText(" outlet updated. MOB : ") + this->GetLabelName() );
 
-			moData pdata = (*(poutlet->GetData()));
-			moConnections* pconnections = poutlet->GetConnections();
-			for(MOuint j=0; j<pconnections->Count(); j++) {
-				moConnection* pconnection = pconnections->Get(j);
-				pmessage = new moMessage( pconnection->GetDestinationMoldeoId(), pconnection->GetDestinationConnectorId(), GetId(), pdata);
-				p_EventList->Add( (moEvent*) pmessage );
-				//if (pmessage) delete pmessage;
-			}
-		}
+      bool forcingParameterEmition = false;
+      if (  poutlet->IsParameterDependent()
+            &&
+            poutlet->GetConnections()->Count()>0) {
+          ///TODO: chequear encadenamiento
+          /// ( outlet (object2) >> inlet (thisobject) (translatex)
+          /// outlet (thisobject) (translatex) >> inlet (object3)
+          forcingParameterEmition = true;
+      }
+
+      ///Emit the internal Outlet's data
+      if ( poutlet->Updated() || forcingParameterEmition ) {
+        ///solo notificamos a los inlets si los outlets estan Updated() importante revisar esto...
+        ///puede  deba ser algo condicional: claramente lo es, sobre todo para los Outlets que asociados a
+        ///parámetros, por ejemplo el alpha.. o el translatex
+
+        //MODebug2->Message( poutlet->GetConnectorLabelName() + moText(" outlet updated. MOB : ") + this->GetLabelName() );
+
+        moData pdata = (*(poutlet->GetData()));
+        moConnections* pconnections = poutlet->GetConnections();
+        for(MOuint j=0; j<pconnections->Count(); j++) {
+          moConnection* pconnection = pconnections->Get(j);
+          pmessage = new moMessage( pconnection->GetDestinationMoldeoId(),
+                                    pconnection->GetDestinationConnectorId(),
+                                    GetId(),
+                                    pdata );
+          p_EventList->Add( (moEvent*) pmessage );
+          //if (pmessage) delete pmessage;
+          //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())  );
+        }
+      }
+    }
 	}
-
   moMoldeoObject::ScriptExeUpdate();
 
 }
@@ -1034,11 +1287,13 @@ int moMoldeoObject::luaPushDebugString(moLuaVirtualMachine& vm) {
 int moMoldeoObject::luaGetResourceManager(moLuaVirtualMachine& vm) {
 
   lua_State *state = (lua_State *) vm;
+  state = NULL; //unused
   if (GetResourceManager()) {
     if (GetResourceManager()->GetScriptMan()) {
       GetResourceManager()->GetScriptMan()->PushLuaResourceManager();
     }
   }
+
   return 1;
 }
 
@@ -1123,8 +1378,6 @@ int moMoldeoObject::luaGetInletIndex(moLuaVirtualMachine& vm) {
 
     char *inletlabelname = (char *) lua_tostring (state, 1);
 
-    int inletid = -1;
-
     for( MOuint i=0; i<m_Inlets.Count(); i++ ) {
         moInlet* pInlet = m_Inlets[i];
         if (pInlet) {
@@ -1154,9 +1407,9 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
     unsigned int i;
     moData MData;
     moDataMessage* pDataMessage;
-    moDataMessages* pDataMessages;
+    ///moDataMessages* pDataMessages;
 
-    void* pv;
+    ///void* pv;
 
 
     int inletindex = (int) lua_tonumber (state, 1);
@@ -1305,7 +1558,7 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
             moData* pData = pInlet->GetInternalData();
             if (pData) {
                 moDataType pType = pData->Type();
-                switch(pData->Type()) {
+                switch( pType ) {
                     case MO_DATA_NUMBER:
                     case MO_DATA_NUMBER_CHAR:
                     case MO_DATA_NUMBER_INT:
@@ -2163,6 +2416,7 @@ int moMoldeoObject::luaGetHistoryMinMax(moLuaVirtualMachine& vm) {
     return 4;
 
 }
+
 
 
 
