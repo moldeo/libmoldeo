@@ -59,11 +59,11 @@
 #ifndef __MO_SCENE_EFFECT_H__
 #define __MO_SCENE_EFFECT_H__
 
+//#include "moEffect.h"
+//#include "moPlugin.h"
+
 #include "moConsole.h"
-#include "moPlugin.h"
-#include "moMasterEffect.h"
-
-
+#include "moEffectManager.h"
 /**
  * moSceneEffect
  * el efecto escena permite encapsular varios efectos en uno solo, sin necesidad de generar un efecto a tal punto
@@ -75,31 +75,39 @@
  */
 
  enum moSceneParamIndex {
+   SCENE_INLET,
+   SCENE_OUTLET,
+   SCENE_SCRIPT,
+   SCENE_ALPHA,
+   SCENE_COLOR,
+   SCENE_SYNC,
+   SCENE_PHASE,
+   SCENE_PREEFFECTS,
    SCENE_EFFECTS,
-   SCENE_SCENES
+   SCENE_POSTEFFECTS,
+   SCENE_SCENE_STATES,
+   SCENE_CREATE_LAYER
  };
 
 class LIBMOLDEO_API moSceneEffect : public moMasterEffect
 {
-public:
-    //config
-    MOint idp_effects;//indice del parametro escena
-    MOint idp_alpha;//indice del parametro alpha
-    MOint idp_scenes;//indice del parametro escenas
+  public:
 
-    //Arrays
-    moEffectsArray effects;
-    moPluginsArray plugins;
+      moSceneEffect();
+      moSceneEffect(char*);
+      virtual ~moSceneEffect();
 
-    moSceneEffect();
-    moSceneEffect(char*);
-    virtual ~moSceneEffect();
-    MOboolean Init();
-    void Draw(moTempo*,moEffectState* parentstate=NULL);
-    MOboolean Finish();
-    void Interaction(moIODeviceManager *);
-    void LoadCodes(moIODeviceManager *);
-    moConfigDefinition *GetDefinition( moConfigDefinition *p_configdefinition );
+      MOboolean Init();
+      void Draw(moTempo*,moEffectState* parentstate=NULL);
+      MOboolean Finish();
+
+      void Interaction(moIODeviceManager *);
+      void LoadCodes(moIODeviceManager *);
+      moConfigDefinition *GetDefinition( moConfigDefinition *p_configdefinition );
+
+  private:
+
+      moEffectManager m_EffectManager;
 };
 
 #endif
