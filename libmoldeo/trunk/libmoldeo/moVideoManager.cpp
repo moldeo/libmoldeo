@@ -1263,7 +1263,7 @@ void moVideoManager::Update(moEventList * p_EventList)
             pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
 
             ///procesamos el GetState para que ejecute la iteracion del loop interno...obligatorio!!
-            //pLS->GetVideoGraph()->GetState();
+            pLS->GetVideoGraph()->GetState();
 
             if( pSample!=NULL ) {
               moTexture * ts =(moTexture*)Images[i];
@@ -1273,7 +1273,7 @@ void moVideoManager::Update(moEventList * p_EventList)
                 if ((ts->GetGLId() == 0) || (ts->GetWidth() != pSample->m_VideoFormat.m_Width))
                 {
                   if (ts->GetGLId() != 0) ts->Finish();
-                  ts->BuildEmpty(pSample->m_VideoFormat.m_Width,  pSample->m_VideoFormat.m_Height);
+                  ts->BuildEmpty( pSample->m_VideoFormat.m_Width,  pSample->m_VideoFormat.m_Height );
                 }
 
                 pbuffer = pbucket->GetBuffer();
@@ -1302,10 +1302,14 @@ void moVideoManager::Update(moEventList * p_EventList)
               }
 
               //post to other moldeo objects
-              p_EventList->Add( GetId(), i, -1, (unsigned char*)pSample);
+
+              //p_EventList->Add( GetId(), i, -1, (unsigned char*)pSample);
+              delete pSample;
+
               //MODebug2->Push( moText("moVideoManager::Update Video Sample") );
 
             }
+            pBucketsPool->DestroyRetreivedBucket();
 
 					} ///finish with pbucket
 
