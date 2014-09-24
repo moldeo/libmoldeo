@@ -34,15 +34,14 @@
 #define SDLTHREADS 1
 
 #ifdef MO_WIN32
-  //#include "boost/thread/mutex.hpp"
-  //#include "boost/thread/locks.hpp"
-  //using namespace boost;
+  //we use plain WINAPI code: CreateMutex, ReleaseMutex, WaitForSingleObject, ...
 #endif
 
 #ifdef MO_LINUX
 	#ifdef SDLTHREADS
 		#include "SDL/SDL_thread.h"
 	#endif
+
   #include "pthread.h"
 #endif
 
