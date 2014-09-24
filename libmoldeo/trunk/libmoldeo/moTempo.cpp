@@ -80,7 +80,7 @@ MOboolean moTempo::Init() {
 	beatpulsecount = 0;
 	m_pFromTempo = NULL;
 
-    ///TODO: siempre iniciamos encendiendo el timer
+  // siempre iniciamos encendiendo el timer
 	Start();
 
 	return true;
@@ -142,7 +142,9 @@ MOdouble moTempo::getPrincipalAngle() {
 }
 
 long moTempo::Duration() {
-    return moTimer::Duration();
+    //return moTimer::Duration();
+    long duration = moTimer::Duration();
+    return duration;
 }
 
 
