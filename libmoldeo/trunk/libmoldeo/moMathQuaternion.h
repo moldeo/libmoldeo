@@ -327,8 +327,10 @@ inline moQuaternion<Real> operator* (Real fScalar, const moQuaternion<Real>& rkQ
 }
 
 #ifndef MO_MACOSX
+#ifndef MO_WIN32
 template class LIBMOLDEO_API moQuaternion<MOfloat>;
 template class LIBMOLDEO_API moQuaternion<MOdouble>;
+#endif
 #endif
 
 typedef moQuaternion<MOfloat> moQuaternionf;

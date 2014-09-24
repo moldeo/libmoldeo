@@ -417,7 +417,6 @@ template class LIBMOLDEO_API moVector2<MOfloat>;
 template class LIBMOLDEO_API moVector2<MOdouble>;
 #endif
 
-
 typedef moVector2<MOlong> moVector2i;
 typedef moVector2<MOfloat> moVector2f;
 typedef moVector2<MOdouble> moVector2d;
