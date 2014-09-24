@@ -436,7 +436,7 @@ m_pNewConnection(NULL) {
             p_acceptor->bind( endpoint );
             p_acceptor->listen();
 
-            tcp::socket* p_socket = (tcp::socket*) m_pNewConnection->Socket();
+            ///tcp::socket* p_socket = (tcp::socket*) m_pNewConnection->Socket();
 
             /*
             p_acceptor->async_accept(   *p_socket,
