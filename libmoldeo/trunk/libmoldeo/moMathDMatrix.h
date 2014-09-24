@@ -196,12 +196,16 @@ private:
 };
 
 #ifndef MO_MACOSX
+#ifndef MO_WIN32
 template class LIBMOLDEO_API moDBandedMatrix<MOfloat>;
+#endif
 #endif
 typedef moDBandedMatrix<MOfloat> moDBandedMatrixf;
 
 #ifndef MO_MACOSX
+#ifndef MO_WIN32
 template class LIBMOLDEO_API moDBandedMatrix<MOdouble>;
+#endif
 #endif
 typedef moDBandedMatrix<MOdouble> moDBandedMatrixd;
 
