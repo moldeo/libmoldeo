@@ -300,19 +300,32 @@ typedef moText0 moText;
  * lista tipo FIFO para textos.
  */
 class LIBMOLDEO_API moTextHeap {
-public:
-	moText *array;
-	int n;
-	int count;
 
-	moTextHeap();
-	moTextHeap(int);
-	~moTextHeap();
+  public:
+    moTextHeap();
+    moTextHeap( int max_heap );
+    moTextHeap( const moTextHeap& p_copy );
+    moTextHeap& operator =( const moTextHeap& p_src );
+    virtual ~moTextHeap();
 
-	void Push(moText);
-	moText Pop();
-	moText Get( int x );
-	void Set(int,moText);
+    void Init( int max_heap = MO_MAX_DEBUG );
+    void Push( const moText& p_text ) {
+    	if ( n>=1 && (n-1-count)>=0 ) {array[n-1-count] = p_text;}
+      count++;
+    }
+    moText Pop();
+    const moText& Get( int x ) const;
+    int  Count() const { return count; }
+    int  GetMaxHeap() const { return n; }
+    void Set( int p_position , const moText& p_text  );
+    void Clean();
+
+  private:
+    	moText *array;
+      int n;
+      int count;
+      moText m_NULL;
+
 };
 
 moDeclareExportedDynamicArray( moText, moTextArray );
