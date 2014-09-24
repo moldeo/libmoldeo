@@ -179,7 +179,7 @@ class LIBMOLDEO_API moTimerAbsolute {
     moTimerAbsolute( const moTimerAbsolute &src);
     virtual ~moTimerAbsolute();
 
-	moTimerAbsolute &operator = (const moTimerAbsolute &src);
+    moTimerAbsolute &operator = (const moTimerAbsolute &src);
 
 
 
@@ -261,6 +261,23 @@ class LIBMOLDEO_API moTimerAbsolute {
 
 
     virtual moTimerState State() const;
+    virtual const moText& StateToStr() {
+
+      state_str = "unknown";
+
+      switch(State()) {
+        case MO_TIMERSTATE_PAUSED:
+          state_str = "paused";
+          break;
+        case MO_TIMERSTATE_PLAYING:
+          state_str = "playing";
+          break;
+        case MO_TIMERSTATE_STOPPED:
+          state_str = "stopped";
+          break;
+      }
+      return state_str;
+    }
 
 protected:
         bool on;
@@ -272,6 +289,7 @@ protected:
         long duration;
 
         long last_duration;
+        moText state_str;
 
 };
 

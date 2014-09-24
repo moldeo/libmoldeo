@@ -56,6 +56,7 @@ moTimeManager::~moTimeManager() {
 }
 
 MOboolean moTimeManager::Init() {
+  m_Timers.Init( 0, NULL );
 	return true;
 }
 
