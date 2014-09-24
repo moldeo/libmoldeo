@@ -153,7 +153,9 @@ void moText0::txtcopy( const char* txt, MOuint pos, MOuint com, MOuint fin)
     MOuint i;
     char *finaltxt;
 
-	if (txt==NULL) txt = ""; //cadena vacia
+	if (txt==NULL) {
+      txt = ""; //cadena vacia
+	}
 
     if(pos >= length)               // si pide copyr mas all�al final concatena
         pos = length;
@@ -944,29 +946,62 @@ void moString::ToLower()
 //===========================================
 
 moTextHeap::moTextHeap() {
-	n = MO_MAX_DEBUG;
+  n = MO_MAX_DEBUG;
+  count = 0;
+	array = new moText [n];
+	m_NULL = "";
+}
+
+moTextHeap::moTextHeap( int max_heap ) {
+  m_NULL = "";
+  n = max_heap;
+  count = 0;
+	array = new moText [n];
+}
+
+void
+moTextHeap::Init( int max_heap ) {
+
+  Clean();
+
+	n = max_heap;
 	array = new moText [n];
 	count = 0;
 }
 
-moTextHeap::moTextHeap(int m) {
-	n = m;
-	array = new moText [n];
+moTextHeap::moTextHeap( const moTextHeap& p_copy ) {
+  (*this) = p_copy;
 }
 
+moTextHeap&
+moTextHeap::operator =( const moTextHeap& p_src ) {
+
+  Init( p_src.GetMaxHeap() );
+
+  for( int i=0; i<p_src.Count(); i++ ) {
+    Push( p_src.Get( i ) );
+  }
+
+  return (*this);
+}
 
 moTextHeap::~moTextHeap() {
-	if(array!=NULL) delete[] array;
-	array = NULL;
+  Clean();
 }
 
 
 void
-moTextHeap::Push(moText T) {
-	if ( n>=1 && (n-1-count)>=0 ) {array[n-1-count] = T;}
+moTextHeap::Clean() {
+  if(array!=NULL) delete[] array;
+	array = NULL;
+}
+/*
+void
+moTextHeap::Push( const moText& p_text) {
+	if ( n>=1 && (n-1-count)>=0 ) {array[n-1-count] = p_text;}
 	count++;
 }
-
+*/
 
 moText
 moTextHeap::Pop() {
@@ -979,21 +1014,19 @@ moTextHeap::Pop() {
 }
 
 
-moText
-moTextHeap::Get(int x) {
-    moText ret;
-	if(0<=x && x<n) {
-	    ret = array[x];
-	    return ret;
+const moText&
+moTextHeap::Get( int p_position ) const {
+	if ( 0<=p_position && p_position<n ) {
+	    return array[p_position];
 	}
-	else printf("moTextHeap:: Error");
-	return moText("");
+	return m_NULL;
 }
 
 void
-moTextHeap::Set( int x, moText T) {
-	if(x<n)  { array[x] = T; }
-	else printf("moTextHeap:: Error");
+moTextHeap::Set( int p_position, const moText& p_text ) {
+	if( p_position<n )  {
+      array[p_position] = p_text;
+	}
 }
 
 //===========================================
