@@ -714,6 +714,9 @@ moSoundManager::GetSoundId( moText p_name ) {
 	moText namefull = m_pResourceManager->GetDataMan()->GetDataPath();
 	namefull +=  moSlash + (const moText)p_name;
 
+	moFile fileSound(namefull);
+    namefull = fileSound.GetCompletePath();
+
 	moSoundParam sparam = MODefSoundParams ;
 	moSound* pSound = CreateSound( p_name );
 
