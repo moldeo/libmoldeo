@@ -39,7 +39,7 @@
 			<Target title="Debug Static">
 				<Option output="../../../../binaries/lib/linux/libmoldeod" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="Debug/" />
+				<Option object_output="Debug Static/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -53,7 +53,7 @@
 			<Target title="Release Static">
 				<Option output="../../../../binaries/lib/linux/libmoldeo" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="Release/" />
+				<Option object_output="Release Static/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -75,11 +75,13 @@
 			<Add alias="All" targets="Debug;Release;Debug Static;Release Static;" />
 		</VirtualTargets>
 		<Compiler>
-			<Add option="-Wall" />
+			<Add option="-w" />
 			<Add option="`freetype-config --cflags`" />
 			<Add option="`pkg-config gstreamer-0.10 --cflags`" />
 			<Add option="`pkg-config muparser --cflags`" />
 			<Add option="`pkg-config lua5.1 --cflags`" />
+			<Add option="`pkg-config gtk+-2.0 --cflags`" />
+			<Add option="-fPIC" />
 			<Add option='-DDATADIR=\\&quot;$(prefix)/data\\&quot;' />
 			<Add option='-DMODULESDIR=\\&quot;$(libdir)\\&quot;' />
 			<Add option="-DMO_GSTREAMER" />
@@ -92,9 +94,12 @@
 			<Add option="`pkg-config gstreamer-0.10 --libs`" />
 			<Add option="`pkg-config lua5.1 --libs`" />
 			<Add option="`pkg-config muparser --libs`" />
+			<Add option="`pkg-config gtk+-2.0 --libs`" />
+			<Add option="`pkg-config sdl --libs`" />
 			<Add library="freeimage" />
 			<Add library="libboost_filesystem-mt" />
 			<Add library="GLEW" />
+			<Add library="SDL" />
 		</Linker>
 		<Unit filename="../../config.h" />
 		<Unit filename="../../libmoldeo/mo3dModelManager.cpp" />
@@ -103,6 +108,8 @@
 		<Unit filename="../../libmoldeo/mo3ds.h" />
 		<Unit filename="../../libmoldeo/moAbstract.cpp" />
 		<Unit filename="../../libmoldeo/moAbstract.h" />
+		<Unit filename="../../libmoldeo/moActions.cpp" />
+		<Unit filename="../../libmoldeo/moActions.h" />
 		<Unit filename="../../libmoldeo/moArcBall.cpp" />
 		<Unit filename="../../libmoldeo/moArcBall.h" />
 		<Unit filename="../../libmoldeo/moArray.h" />
@@ -267,6 +274,8 @@
 		<Unit filename="../../libmoldeo/moThread.h" />
 		<Unit filename="../../libmoldeo/moTimeManager.cpp" />
 		<Unit filename="../../libmoldeo/moTimeManager.h" />
+		<Unit filename="../../libmoldeo/moTimer.cpp" />
+		<Unit filename="../../libmoldeo/moTimer.h" />
 		<Unit filename="../../libmoldeo/moTypes.cpp" />
 		<Unit filename="../../libmoldeo/moTypes.h" />
 		<Unit filename="../../libmoldeo/moValue.cpp" />
