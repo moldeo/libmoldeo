@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="moldeo">
-		<Project filename="libmoldeo.cbp" active="1" />
+		<Project filename="libmoldeo.cbp" />
+		<Project filename="../../../../plugins/trunk/PostEffects/PostProcess2d/postprocess2d_linux.cbp" />
+		<Project filename="../../../../moldeodirector/trunk/build/linux/moldeodirectorlinux.cbp" />
+		<Project filename="../../../../wxMoldeoControls/trunk/build/linux/wxMoldeoControls.cbp" />
+		<Project filename="../../../../wxMoldeoControlsTest/trunk/build/win/wxMoldeoControlsTest.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
