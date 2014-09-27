@@ -1,4 +1,4 @@
-INCLUDES                    = @CHECK_CFLAGS@ -I../libmoldeo
+INCLUDES                    = @CHECK_CFLAGS@ -I../libmoldeo -Ilibmoldeo -I../../libmoldeo
 TESTS                       = check_libmoldeo
 noinst_PROGRAMS             = $(TESTS)
 check_libmoldeo_SOURCES     = check_libmoldeo.cpp
