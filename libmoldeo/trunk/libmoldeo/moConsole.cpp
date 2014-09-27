@@ -30,12 +30,22 @@
 
 #include <moConsole.h>
 
-#ifdef MO_WIN32
-
-#define NOSDL
+#define NOSDL 1
 
 #ifndef NOSDL
-  #include <SDL.h>
+
+    #ifdef MO_WIN32
+        #include <SDL.h>
+    #endif
+
+    #ifdef MO_LINUX
+        #include <SDL/SDL.h>
+    #endif
+
+    #ifdef MO_MACOSX
+        #include <SDL/SDL.h>
+    #endif
+
 #else
 	#define SDL_KEYDOWN 2
 	#define SDL_KEYDOWN_SDL2 0x300
@@ -44,15 +54,8 @@
 	#define SDLK_F12 ( 69 | SDLK_SCANCODE_MASK )
 #endif
 
-#endif
 
-#ifdef MO_LINUX
-    #include <SDL/SDL.h>
-#endif
 
-#ifdef MO_MACOSX
-    #include <SDL/SDL.h>
-#endif
 #undef main
 #include <moDataManager.h>
 #include <moFileManager.h>
