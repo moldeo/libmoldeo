@@ -1,1 +1,3965 @@
 # depslib dependency file v1.0
+1355367559 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/mo3dModelManager.cpp
+	<mo3dModelManager.h>
+	<mo3ds.h>
+	<moDataManager.h>
+	<moTextureManager.h>
+	"moArray.h"
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/mo3dModelManager.h
+	<moTypes.h>
+	<moResourceManager.h>
+	<moEffectState.h>
+	"moMathVector.h"
+	"moMathVector3.h"
+
+1362866586 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTypes.h
+	<math.h>
+	<limits.h>
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<float.h>
+	<time.h>
+	<string>
+	<vector>
+	<fstream>
+	"SDL.h"
+	"SDL_thread.h"
+	"SDL_mutex.h"
+	"SDL_net.h"
+	"SDL_image.h"
+	<GL/glew.h>
+	"OpenGL/gl.h"
+	"OpenGL/glu.h"
+	"OpenGL/glext.h"
+	"GLUT/glut.h"
+	"X11/X.h"
+	"X11/Xlib.h"
+	"X11/Xutil.h"
+	<SDL/SDL.h>
+	<SDL/SDL_thread.h>
+	<SDL/SDL_mutex.h>
+	<SDL/SDL_net.h>
+	<SDL/SDL_image.h>
+	<SDL/SDL_syswm.h>
+	<GL/glew.h>
+	<GL/glx.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glext.h>
+	<GL/glx.h>
+	<GL/glut.h>
+	<windows.h>
+	<SDL.h>
+	<SDL_thread.h>
+	<SDL_mutex.h>
+	<SDL_syswm.h>
+	<GL/glew.h>
+	"GL/gl.h"
+	"GL/glu.h"
+	"GL/glext.h"
+	"GL/glut.h"
+	"moPort.h"
+	"port/stricmp.h"
+	"moText.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPort.h
+	<stdio.h>
+	<cstdio>
+	<string>
+
+1369719000 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moText.h
+	"moTypes.h"
+	"moArray.h"
+	<stdio.h>
+	<string.h>
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moArray.h
+	"moArrayH.h"
+	<stdarg.h>
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moArrayH.h
+	"moTypes.h"
+	"moArray.h"
+	"moArray.cpp"
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moArray.cpp
+	"moArray.h"
+
+1355367525 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moResourceManager.h
+	"moTypes.h"
+	"moArray.h"
+	"moMoldeoObject.h"
+	"moResourcePlugin.h"
+
+1355367523 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMoldeoObject.h
+	"moTypes.h"
+	"moText.h"
+	"moAbstract.h"
+	"moScript.h"
+	"moEventList.h"
+	"moConfig.h"
+	"moArray.h"
+	"moConnectors.h"
+	"moResourceManager.h"
+
+1363392684 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moAbstract.h
+	"moTypes.h"
+	"moText.h"
+	"moLock.h"
+
+1355367517 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moLock.h
+	"moTypes.h"
+
+1355367526 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moScript.h
+	"moLuaBase.h"
+
+1355367517 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moLuaBase.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moText.h"
+	<lua.h>
+	<lauxlib.h>
+	<lualib.h>
+
+1326486980 /usr/include/lua5.1/lua.h
+	<stdarg.h>
+	<stddef.h>
+	"luaconf.h"
+
+1344011723 /usr/include/lua5.1/luaconf.h
+	<limits.h>
+	<stddef.h>
+	"lua5.1-deb-multiarch.h"
+	<unistd.h>
+	<io.h>
+	<stdio.h>
+	<stdio.h>
+	<readline/readline.h>
+	<readline/history.h>
+	<assert.h>
+	<math.h>
+	<unistd.h>
+
+1198760545 /usr/include/lua5.1/lauxlib.h
+	<stddef.h>
+	<stdio.h>
+	"lua.h"
+
+1198760545 /usr/include/lua5.1/lualib.h
+	"lua.h"
+
+1362728853 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEventList.h
+	"moValue.h"
+	"moLock.h"
+
+1355367528 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moValue.h
+	"moTypes.h"
+	"moTempo.h"
+	"moText.h"
+	"moArray.h"
+	"moMathFunction.h"
+	"moMathVector.h"
+	"moMathVector3.h"
+	"moMathVector4.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTempo.h
+	"moTimer.h"
+
+1355367527 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTimer.h
+	"moTypes.h"
+
+1355367520 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathFunction.h
+	"moTypes.h"
+	"moArray.h"
+	"moAbstract.h"
+	"moMath.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMath.h
+	"moTypes.h"
+	"moAbstract.h"
+
+1355367523 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathVector.h
+	"moMath.h"
+
+1355367523 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathVector3.h
+	"moMath.h"
+
+1355367523 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathVector4.h
+	"moMath.h"
+
+1362866062 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConfig.h
+	"moTypes.h"
+	"moText.h"
+	"moParam.h"
+	"moArray.h"
+	"moPreConfig.h"
+
+1355367520 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moParam.h
+	"moTypes.h"
+	"moText.h"
+	"moValue.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPreConfig.h
+	"moTypes.h"
+	"moValue.h"
+
+1362731488 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConnectors.h
+	"moTypes.h"
+	"moText.h"
+	"moAbstract.h"
+	"moEventList.h"
+	"moConfig.h"
+	"moArray.h"
+
+1355367525 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moResourcePlugin.h
+	"moBasePlugin.h"
+	"moResourceManager.h"
+
+1364217610 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moBasePlugin.h
+	"moText.h"
+	<windows.h>
+	<dlfcn.h>
+
+1355367516 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEffectState.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moTempo.h"
+	"moMoldeoObject.h"
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/mo3ds.h
+	"mo3dModelManager.h"
+
+1355367515 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDataManager.h
+	<moActions.h>
+	<moValue.h>
+	<moParam.h>
+	<moEventList.h>
+	<moResourceManager.h>
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moActions.h
+	"moTypes.h"
+
+1355367527 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureManager.h
+	"moTexture.h"
+	"moResourceManager.h"
+	<moFileManager.h>
+
+1355367522 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTexture.h
+	"moTypes.h"
+	"moText.h"
+	"moParam.h"
+	"moBuckets.h"
+	"moVideoGraph.h"
+	"moGsGraph.h"
+	"moDsGraph.h"
+	"moMathVector3.h"
+	"moTextureIndex.h"
+	"moFBO.h"
+	"moGLManager.h"
+	"moTextureFilter.h"
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moBuckets.h
+	"moTypes.h"
+	"moLock.h"
+
+1355367528 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moVideoGraph.h
+	"moTypes.h"
+	"moText.h"
+	"moBuckets.h"
+	"moArray.h"
+	"moAbstract.h"
+
+1355367516 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moGsGraph.h
+	"moConfig.h"
+	"moTypes.h"
+	"moThread.h"
+	"moBuckets.h"
+	"moVideoGraph.h"
+
+1369753993 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moThread.h
+	"moTypes.h"
+	"moLock.h"
+
+1355367515 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDsGraph.h
+	"moTypes.h"
+	"streams.h"
+	"qedit.h"
+	"dvdmedia.h"
+	"moVideoGraph.h"
+
+1355367527 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureIndex.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moConfig.h"
+	"moParam.h"
+
+1355367516 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFBO.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moGLManager.h"
+
+1362866062 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moGLManager.h
+	"moTypes.h"
+	"moText.h"
+	"moFBO.h"
+	"moResourceManager.h"
+
+1355367522 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureFilter.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moConfig.h"
+	"moParam.h"
+	"moShader.h"
+	"moShaderGLSL.h"
+	"moTextFilterParam.h"
+	"moVideoManager.h"
+	"moVideoManager.h"
+	"moShaderManager.h"
+	"moTextureManager.h"
+	"moGLManager.h"
+	"moRenderManager.h"
+
+1355367526 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShader.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moConfig.h"
+	"moArray.h"
+
+1355367526 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShaderGLSL.h
+	"moShader.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextFilterParam.h
+	"moShader.h"
+	"moShaderCG.h"
+	"moShaderGLSL.h"
+
+1355367526 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShaderCG.h
+	"moShader.h"
+	<cg.h>
+	<cgGL.h>
+	<Cg/cg.h>
+	<Cg/cgGL.h>
+
+1355367528 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moVideoManager.h
+	<moGsGraph.h>
+	<moDsGraph.h>
+	<moFBO.h>
+	<moTexture.h>
+	<moVideoGraph.h>
+	<moDebugManager.h>
+	<moDataManager.h>
+	<moTimeManager.h>
+	"moIODeviceManager.h"
+	"moResourceManager.h"
+
+1355367515 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDebugManager.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moText.h"
+	"moParam.h"
+	"moResourceManager.h"
+
+1355367527 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTimeManager.h
+	"moTimer.h"
+	"moText.h"
+	"moConfig.h"
+	"moLock.h"
+	"moResourceManager.h"
+
+1355367517 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moIODeviceManager.h
+	"moTypes.h"
+	"moText.h"
+	"moMoldeoObject.h"
+	"moDeviceCode.h"
+	"moEventList.h"
+	"moRenderManager.h"
+	"moIODevicePlugin.h"
+
+1355367515 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDeviceCode.h
+	"moTypes.h"
+	"moAbstract.h"
+
+1362866062 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moRenderManager.h
+	<moTextureManager.h>
+	<moBuckets.h>
+
+1355367517 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moIODevicePlugin.h
+	"moTypes.h"
+	"moArray.h"
+	"moBasePlugin.h"
+	"moIODeviceManager.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShaderManager.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moText.h"
+	"moParam.h"
+	"moConfig.h"
+	"moShader.h"
+	"moShaderGLSL.h"
+	"moShaderCG.h"
+	"moResourceManager.h"
+	"moGLManager.h"
+	"moFBManager.h"
+
+1355367516 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFBManager.h
+	"moTypes.h"
+	"moText.h"
+	"moLock.h"
+	"moFBO.h"
+	"moTexture.h"
+	"moResourceManager.h"
+	"moGLManager.h"
+
+1364218301 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFileManager.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moText.h"
+	"moResourceManager.h"
+	"moBuckets.h"
+	"moParam.h"
+	"io.h"
+
+1355367529 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moArcBall.cpp
+	"moTypes.h"
+	<stdio.h>
+	"math.h"
+	"moArcBall.h"
+
+1355367529 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moArcBall.h
+	"moTypes.h"
+
+1355367529 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moBuckets.cpp
+	"moBuckets.h"
+
+1362866062 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConfig.cpp
+	"moConfig.h"
+	<tinyxml.h>
+	"moFileManager.h"
+	"moFontManager.h"
+	"moTextureManager.h"
+	"mo3dModelManager.h"
+	"moSoundManager.h"
+	"moDebugManager.h"
+
+1355367516 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFontManager.h
+	"moTypes.h"
+	"moResourceManager.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moSoundManager.h
+	<moTypes.h>
+	<moText.h>
+	<moConfig.h>
+	<moResourceManager.h>
+	<moFileManager.h>
+	<moDataManager.h>
+	<moGsGraph.h>
+
+1355367514 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConsoleState.cpp
+	"moConsoleState.h"
+
+1355367514 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConsoleState.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moTempo.h"
+	"moEffect.h"
+
+1355367515 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEffect.h
+	"moAbstract.h"
+	"moTempo.h"
+	"moArray.h"
+	"moMathFunctionIndex.h"
+	"moIODeviceManager.h"
+	"moConfig.h"
+	"moEffectState.h"
+	"moPreConfig.h"
+	"moPresets.h"
+	"moMotion.h"
+	"moText.h"
+	"moMoldeoObject.h"
+	"moResourceManager.h"
+	"moRenderManager.h"
+	"moMathManager.h"
+	"moTextureManager.h"
+	"moFontManager.h"
+	"moSoundManager.h"
+	"moScriptManager.h"
+	"mo3dModelManager.h"
+	"moRenderManager.h"
+	"moGUIManager.h"
+
+1355367520 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathFunctionIndex.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moConfig.h"
+	"moParam.h"
+	"moMathManager.h"
+
+1355367520 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathManager.h
+	"moTypes.h"
+	"moText.h"
+	"moConfig.h"
+	"moLock.h"
+	"moResourceManager.h"
+	"moMath.h"
+	"moMathFunction.h"
+
+1355367525 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPresets.h
+	"moTypes.h"
+	"moConfig.h"
+	"moEffectState.h"
+
+1355367523 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMotion.h
+	"moParam.h"
+	"moTypes.h"
+
+1355367526 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moScriptManager.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moText.h"
+	"moParam.h"
+	"moLunaClasses.h"
+	"moResourceManager.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moLunaClasses.h
+	"moLuna.h"
+	"moMath.h"
+	"moMathFunction.h"
+	"moP5.h"
+	"moSoundManager.h"
+	"moVideoManager.h"
+	"moResourceManager.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moLuna.h
+	"moTypes.h"
+	<string>
+	<vector>
+	<list>
+	"lua.h"
+	"lauxlib.h"
+	"lualib.h"
+
+1355367524 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moP5.h
+	"moAbstract.h"
+
+1355367517 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moGUIManager.h
+	<mo3dModelManager.h>
+
+1355367515 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDataManager.cpp
+	"moDataManager.h"
+	<moArray.h>
+	<moVideoGraph.h>
+	<moGsGraph.h>
+	<moResourceManager.h>
+	<moRenderManager.h>
+
+1355367515 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDebugManager.cpp
+	"moDebugManager.h"
+
+1355367515 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDecoderManager.cpp
+	"moDecoderManager.h"
+
+1355367515 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDecoderManager.h
+	<moTypes.h>
+	<moTempo.h>
+	<moText.h>
+	<moLock.h>
+	<moFBO.h>
+	<moTexture.h>
+	<moVideoGraph.h>
+	<moResourceManager.h>
+	"moVdpauGraph.h"
+	"vdpau/vdpau.h"
+	"vdpau/vdpau_x11.h"
+	"GL/glx.h"
+	"moGLManager.h"
+
+1355367528 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moVdpauGraph.h
+	"moConfig.h"
+	"moTypes.h"
+	"moThread.h"
+	"moBuckets.h"
+	"moVideoGraph.h"
+
+1355367515 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDeviceCode.cpp
+	"moDeviceCode.h"
+
+1355367515 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moDsGraph.cpp
+	"moDsGraph.h"
+
+1362866062 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEffect.cpp
+	"moEffect.h"
+	<moArray.h>
+	<moDataManager.h>
+	<moFileManager.h>
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEffectManager.cpp
+	"moEffectManager.h"
+
+1355367515 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEffectManager.h
+	"moTypes.h"
+	"moArray.h"
+	"moEffect.h"
+	"moPostEffect.h"
+	"moPreEffect.h"
+	"moMasterEffect.h"
+	"moSceneEffect.h"
+	"moSequenceEffect.h"
+	"moPlugin.h"
+	"moPostPlugin.h"
+	"moPrePlugin.h"
+	"moMasterPlugin.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPostEffect.h
+	"moEffect.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPreEffect.h
+	"moEffect.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMasterEffect.h
+	"moEffect.h"
+	"moConsoleState.h"
+	"moEffectManager.h"
+
+1355367526 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moSceneEffect.h
+	"moConsole.h"
+	"moPlugin.h"
+	"moMasterEffect.h"
+
+1363018117 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConsole.h
+	<moTypes.h>
+	<moText.h>
+	<moResourceManager.h>
+	<moEffectManager.h>
+	<moConfig.h>
+	<moPresets.h>
+	<moConsoleState.h>
+	<moIODevicePlugin.h>
+	<moIODeviceManager.h>
+	<moTimeManager.h>
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPlugin.h
+	"moBasePlugin.h"
+	"moEffect.h"
+
+1355367526 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moSequenceEffect.h
+	"moConsole.h"
+	"moPlugin.h"
+	"moMasterEffect.h"
+
+1355367521 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPostPlugin.h
+	"moBasePlugin.h"
+	"moPostEffect.h"
+
+1355367525 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPrePlugin.h
+	"moBasePlugin.h"
+	"moPreEffect.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMasterPlugin.h
+	"moBasePlugin.h"
+	"moMasterEffect.h"
+
+1355367515 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEffectState.cpp
+	"moEffectState.h"
+
+1362727854 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moEventList.cpp
+	"moEventList.h"
+	"moArray.h"
+
+1355367516 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFBManager.cpp
+	"moFBManager.h"
+
+1355367516 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFBO.cpp
+	"moFBO.h"
+	"moArray.h"
+
+1355367516 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFilterManager.cpp
+	"moFilterManager.h"
+	"moArray.h"
+	"moDebugManager.h"
+
+1355367516 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFilterManager.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moText.h"
+	"moVideoGraph.h"
+	"moResourceManager.h"
+	"moBuckets.h"
+	"moParam.h"
+	"moMathVector.h"
+	<TUIO/TuioObject.h>
+	<TUIO/TuioCursor.h>
+	"moTimeManager.h"
+
+1355367516 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFontManager.cpp
+	"moFontManager.h"
+	<moDataManager.h>
+	<moFileManager.h>
+	<moTextureManager.h>
+	"FTGL/ftgl.h"
+	"moArray.h"
+
+1369188587 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/mo3ds.cpp
+	"mo3ds.h"
+
+1369764241 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moAbstract.cpp
+	"moAbstract.h"
+
+1363544341 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConnectors.cpp
+	"moConnectors.h"
+	"moArray.h"
+
+1369992442 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moConsole.cpp
+	<moConsole.h>
+	<SDL.h>
+	<SDL/SDL.h>
+	<SDL/SDL.h>
+	<moDataManager.h>
+	<moFileManager.h>
+	"moArray.h"
+
+1364215584 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moFileManager.cpp
+	"moFileManager.h"
+	"moArray.h"
+	<boost/version.hpp>
+	<boost/filesystem.hpp>
+	<set>
+
+1363554204 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moGLManager.cpp
+	"moGLManager.h"
+	"moRenderManager.h"
+	"gtk/gtk.h"
+	"gdk/gdk.h"
+	"gdk/gdkx.h"
+
+1348586462 /usr/include/gtk-2.0/gtk/gtk.h
+	<gdk/gdk.h>
+	<gtk/gtkaboutdialog.h>
+	<gtk/gtkaccelgroup.h>
+	<gtk/gtkaccellabel.h>
+	<gtk/gtkaccelmap.h>
+	<gtk/gtkaccessible.h>
+	<gtk/gtkaction.h>
+	<gtk/gtkactiongroup.h>
+	<gtk/gtkactivatable.h>
+	<gtk/gtkadjustment.h>
+	<gtk/gtkalignment.h>
+	<gtk/gtkarrow.h>
+	<gtk/gtkaspectframe.h>
+	<gtk/gtkassistant.h>
+	<gtk/gtkbbox.h>
+	<gtk/gtkbin.h>
+	<gtk/gtkbindings.h>
+	<gtk/gtkbox.h>
+	<gtk/gtkbuildable.h>
+	<gtk/gtkbuilder.h>
+	<gtk/gtkbutton.h>
+	<gtk/gtkcalendar.h>
+	<gtk/gtkcelleditable.h>
+	<gtk/gtkcelllayout.h>
+	<gtk/gtkcellrenderer.h>
+	<gtk/gtkcellrendereraccel.h>
+	<gtk/gtkcellrenderercombo.h>
+	<gtk/gtkcellrendererpixbuf.h>
+	<gtk/gtkcellrendererprogress.h>
+	<gtk/gtkcellrendererspin.h>
+	<gtk/gtkcellrendererspinner.h>
+	<gtk/gtkcellrenderertext.h>
+	<gtk/gtkcellrenderertoggle.h>
+	<gtk/gtkcellview.h>
+	<gtk/gtkcheckbutton.h>
+	<gtk/gtkcheckmenuitem.h>
+	<gtk/ubuntumenuproxy.h>
+	<gtk/ubuntumenuproxymodule.h>
+	<gtk/gtkclipboard.h>
+	<gtk/gtkcolorbutton.h>
+	<gtk/gtkcolorsel.h>
+	<gtk/gtkcolorseldialog.h>
+	<gtk/gtkcombobox.h>
+	<gtk/gtkcomboboxentry.h>
+	<gtk/gtkcomboboxtext.h>
+	<gtk/gtkcontainer.h>
+	<gtk/gtkdebug.h>
+	<gtk/gtkdialog.h>
+	<gtk/gtkdnd.h>
+	<gtk/gtkdrawingarea.h>
+	<gtk/gtkeditable.h>
+	<gtk/gtkentry.h>
+	<gtk/gtkentrybuffer.h>
+	<gtk/gtkentrycompletion.h>
+	<gtk/gtkenums.h>
+	<gtk/gtkeventbox.h>
+	<gtk/gtkexpander.h>
+	<gtk/gtkfixed.h>
+	<gtk/gtkfilechooser.h>
+	<gtk/gtkfilechooserbutton.h>
+	<gtk/gtkfilechooserdialog.h>
+	<gtk/gtkfilechooserwidget.h>
+	<gtk/gtkfilefilter.h>
+	<gtk/gtkfontbutton.h>
+	<gtk/gtkfontsel.h>
+	<gtk/gtkframe.h>
+	<gtk/gtkgc.h>
+	<gtk/gtkhandlebox.h>
+	<gtk/gtkhbbox.h>
+	<gtk/gtkhbox.h>
+	<gtk/gtkhpaned.h>
+	<gtk/gtkhruler.h>
+	<gtk/gtkhscale.h>
+	<gtk/gtkhscrollbar.h>
+	<gtk/gtkhseparator.h>
+	<gtk/gtkhsv.h>
+	<gtk/gtkiconfactory.h>
+	<gtk/gtkicontheme.h>
+	<gtk/gtkiconview.h>
+	<gtk/gtkimage.h>
+	<gtk/gtkimagemenuitem.h>
+	<gtk/gtkimcontext.h>
+	<gtk/gtkimcontextsimple.h>
+	<gtk/gtkimmulticontext.h>
+	<gtk/gtkinfobar.h>
+	<gtk/gtkinvisible.h>
+	<gtk/gtkitem.h>
+	<gtk/gtklabel.h>
+	<gtk/gtklayout.h>
+	<gtk/gtklinkbutton.h>
+	<gtk/gtkliststore.h>
+	<gtk/gtkmain.h>
+	<gtk/gtkmenu.h>
+	<gtk/gtkmenubar.h>
+	<gtk/gtkmenuitem.h>
+	<gtk/gtkmenushell.h>
+	<gtk/gtkmenutoolbutton.h>
+	<gtk/gtkmessagedialog.h>
+	<gtk/gtkmisc.h>
+	<gtk/gtkmodules.h>
+	<gtk/gtkmountoperation.h>
+	<gtk/gtknotebook.h>
+	<gtk/gtkobject.h>
+	<gtk/gtkoffscreenwindow.h>
+	<gtk/gtkorientable.h>
+	<gtk/gtkpagesetup.h>
+	<gtk/gtkpapersize.h>
+	<gtk/gtkpaned.h>
+	<gtk/gtkplug.h>
+	<gtk/gtkprintcontext.h>
+	<gtk/gtkprintoperation.h>
+	<gtk/gtkprintoperationpreview.h>
+	<gtk/gtkprintsettings.h>
+	<gtk/gtkprogressbar.h>
+	<gtk/gtkradioaction.h>
+	<gtk/gtkradiobutton.h>
+	<gtk/gtkradiomenuitem.h>
+	<gtk/gtkradiotoolbutton.h>
+	<gtk/gtkrange.h>
+	<gtk/gtkrc.h>
+	<gtk/gtkrecentaction.h>
+	<gtk/gtkrecentchooser.h>
+	<gtk/gtkrecentchooserdialog.h>
+	<gtk/gtkrecentchoosermenu.h>
+	<gtk/gtkrecentchooserwidget.h>
+	<gtk/gtkrecentfilter.h>
+	<gtk/gtkrecentmanager.h>
+	<gtk/gtkruler.h>
+	<gtk/gtkscale.h>
+	<gtk/gtkscalebutton.h>
+	<gtk/gtkscrollbar.h>
+	<gtk/gtkscrolledwindow.h>
+	<gtk/gtkselection.h>
+	<gtk/gtkseparator.h>
+	<gtk/gtkseparatormenuitem.h>
+	<gtk/gtkseparatortoolitem.h>
+	<gtk/gtksettings.h>
+	<gtk/gtkshow.h>
+	<gtk/gtksizegroup.h>
+	<gtk/gtksocket.h>
+	<gtk/gtkspinbutton.h>
+	<gtk/gtkspinner.h>
+	<gtk/gtkstatusbar.h>
+	<gtk/gtkstatusicon.h>
+	<gtk/gtkstock.h>
+	<gtk/gtkstyle.h>
+	<gtk/gtktable.h>
+	<gtk/gtktearoffmenuitem.h>
+	<gtk/gtktextbuffer.h>
+	<gtk/gtktextbufferrichtext.h>
+	<gtk/gtktextchild.h>
+	<gtk/gtktextiter.h>
+	<gtk/gtktextmark.h>
+	<gtk/gtktexttag.h>
+	<gtk/gtktexttagtable.h>
+	<gtk/gtktextview.h>
+	<gtk/gtktoggleaction.h>
+	<gtk/gtktogglebutton.h>
+	<gtk/gtktoggletoolbutton.h>
+	<gtk/gtktoolbar.h>
+	<gtk/gtktoolbutton.h>
+	<gtk/gtktoolitem.h>
+	<gtk/gtktoolitemgroup.h>
+	<gtk/gtktoolpalette.h>
+	<gtk/gtktoolshell.h>
+	<gtk/gtktooltip.h>
+	<gtk/gtktestutils.h>
+	<gtk/gtktreednd.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtktreemodelfilter.h>
+	<gtk/gtktreemodelsort.h>
+	<gtk/gtktreeselection.h>
+	<gtk/gtktreesortable.h>
+	<gtk/gtktreestore.h>
+	<gtk/gtktreeview.h>
+	<gtk/gtktreeviewcolumn.h>
+	<gtk/gtktypeutils.h>
+	<gtk/gtkuimanager.h>
+	<gtk/gtkvbbox.h>
+	<gtk/gtkvbox.h>
+	<gtk/gtkversion.h>
+	<gtk/gtkviewport.h>
+	<gtk/gtkvolumebutton.h>
+	<gtk/gtkvpaned.h>
+	<gtk/gtkvruler.h>
+	<gtk/gtkvscale.h>
+	<gtk/gtkvscrollbar.h>
+	<gtk/gtkvseparator.h>
+	<gtk/gtkwidget.h>
+	<gtk/gtkwindow.h>
+	<gtk/gtktext.h>
+	<gtk/gtktree.h>
+	<gtk/gtktreeitem.h>
+	<gtk/gtkclist.h>
+	<gtk/gtkcombo.h>
+	<gtk/gtkctree.h>
+	<gtk/gtkcurve.h>
+	<gtk/gtkfilesel.h>
+	<gtk/gtkgamma.h>
+	<gtk/gtkinputdialog.h>
+	<gtk/gtkitemfactory.h>
+	<gtk/gtklist.h>
+	<gtk/gtklistitem.h>
+	<gtk/gtkoldeditable.h>
+	<gtk/gtkoptionmenu.h>
+	<gtk/gtkpixmap.h>
+	<gtk/gtkpreview.h>
+	<gtk/gtkprogress.h>
+	<gtk/gtksignal.h>
+	<gtk/gtktipsquery.h>
+	<gtk/gtktooltips.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdk.h
+	<gdk/gdkapplaunchcontext.h>
+	<gdk/gdkcairo.h>
+	<gdk/gdkcolor.h>
+	<gdk/gdkcursor.h>
+	<gdk/gdkdisplay.h>
+	<gdk/gdkdisplaymanager.h>
+	<gdk/gdkdnd.h>
+	<gdk/gdkdrawable.h>
+	<gdk/gdkenumtypes.h>
+	<gdk/gdkevents.h>
+	<gdk/gdkfont.h>
+	<gdk/gdkgc.h>
+	<gdk/gdkimage.h>
+	<gdk/gdkinput.h>
+	<gdk/gdkkeys.h>
+	<gdk/gdkpango.h>
+	<gdk/gdkpixbuf.h>
+	<gdk/gdkpixmap.h>
+	<gdk/gdkproperty.h>
+	<gdk/gdkregion.h>
+	<gdk/gdkrgb.h>
+	<gdk/gdkscreen.h>
+	<gdk/gdkselection.h>
+	<gdk/gdkspawn.h>
+	<gdk/gdktestutils.h>
+	<gdk/gdktypes.h>
+	<gdk/gdkvisual.h>
+	<gdk/gdkwindow.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkapplaunchcontext.h
+	<gio/gio.h>
+	<gdk/gdkscreen.h>
+
+1348741508 /usr/include/glib-2.0/gio/gio.h
+	<gio/giotypes.h>
+	<gio/gaction.h>
+	<gio/gactiongroup.h>
+	<gio/gactiongroupexporter.h>
+	<gio/gactionmap.h>
+	<gio/gappinfo.h>
+	<gio/gapplication.h>
+	<gio/gapplicationcommandline.h>
+	<gio/gasyncinitable.h>
+	<gio/gasyncresult.h>
+	<gio/gbufferedinputstream.h>
+	<gio/gbufferedoutputstream.h>
+	<gio/gcancellable.h>
+	<gio/gcharsetconverter.h>
+	<gio/gcontenttype.h>
+	<gio/gconverter.h>
+	<gio/gconverterinputstream.h>
+	<gio/gconverteroutputstream.h>
+	<gio/gcredentials.h>
+	<gio/gdatainputstream.h>
+	<gio/gdataoutputstream.h>
+	<gio/gdbusaddress.h>
+	<gio/gdbusauthobserver.h>
+	<gio/gdbusconnection.h>
+	<gio/gdbuserror.h>
+	<gio/gdbusintrospection.h>
+	<gio/gdbusmessage.h>
+	<gio/gdbusmethodinvocation.h>
+	<gio/gdbusnameowning.h>
+	<gio/gdbusnamewatching.h>
+	<gio/gdbusproxy.h>
+	<gio/gdbusserver.h>
+	<gio/gdbusutils.h>
+	<gio/gdrive.h>
+	<gio/gemblemedicon.h>
+	<gio/gfileattribute.h>
+	<gio/gfileenumerator.h>
+	<gio/gfile.h>
+	<gio/gfileicon.h>
+	<gio/gfileinfo.h>
+	<gio/gfileinputstream.h>
+	<gio/gfileiostream.h>
+	<gio/gfilemonitor.h>
+	<gio/gfilenamecompleter.h>
+	<gio/gfileoutputstream.h>
+	<gio/gfilterinputstream.h>
+	<gio/gfilteroutputstream.h>
+	<gio/gicon.h>
+	<gio/ginetaddress.h>
+	<gio/ginetaddressmask.h>
+	<gio/ginetsocketaddress.h>
+	<gio/ginitable.h>
+	<gio/ginputstream.h>
+	<gio/gioenums.h>
+	<gio/gioenumtypes.h>
+	<gio/gioerror.h>
+	<gio/giomodule.h>
+	<gio/gioscheduler.h>
+	<gio/giostream.h>
+	<gio/gloadableicon.h>
+	<gio/gmemoryinputstream.h>
+	<gio/gmemoryoutputstream.h>
+	<gio/gmount.h>
+	<gio/gmountoperation.h>
+	<gio/gnativevolumemonitor.h>
+	<gio/gnetworkaddress.h>
+	<gio/gnetworkmonitor.h>
+	<gio/gnetworkservice.h>
+	<gio/goutputstream.h>
+	<gio/gpermission.h>
+	<gio/gpollableinputstream.h>
+	<gio/gpollableoutputstream.h>
+	<gio/gpollableutils.h>
+	<gio/gproxy.h>
+	<gio/gproxyaddress.h>
+	<gio/gproxyaddressenumerator.h>
+	<gio/gproxyresolver.h>
+	<gio/gresolver.h>
+	<gio/gresource.h>
+	<gio/gseekable.h>
+	<gio/gsettingsschema.h>
+	<gio/gsettings.h>
+	<gio/gsimpleaction.h>
+	<gio/gsimpleactiongroup.h>
+	<gio/gsimpleasyncresult.h>
+	<gio/gsimplepermission.h>
+	<gio/gsocketaddressenumerator.h>
+	<gio/gsocketaddress.h>
+	<gio/gsocketclient.h>
+	<gio/gsocketconnectable.h>
+	<gio/gsocketconnection.h>
+	<gio/gsocketcontrolmessage.h>
+	<gio/gsocket.h>
+	<gio/gsocketlistener.h>
+	<gio/gsocketservice.h>
+	<gio/gsrvtarget.h>
+	<gio/gtcpconnection.h>
+	<gio/gtcpwrapperconnection.h>
+	<gio/gtestdbus.h>
+	<gio/gthemedicon.h>
+	<gio/gthreadedsocketservice.h>
+	<gio/gtlsbackend.h>
+	<gio/gtlscertificate.h>
+	<gio/gtlsclientconnection.h>
+	<gio/gtlsconnection.h>
+	<gio/gtlsdatabase.h>
+	<gio/gtlsfiledatabase.h>
+	<gio/gtlsinteraction.h>
+	<gio/gtlsserverconnection.h>
+	<gio/gtlspassword.h>
+	<gio/gvfs.h>
+	<gio/gvolume.h>
+	<gio/gvolumemonitor.h>
+	<gio/gzlibcompressor.h>
+	<gio/gzlibdecompressor.h>
+	<gio/gdbusinterface.h>
+	<gio/gdbusinterfaceskeleton.h>
+	<gio/gdbusobject.h>
+	<gio/gdbusobjectskeleton.h>
+	<gio/gdbusobjectproxy.h>
+	<gio/gdbusobjectmanager.h>
+	<gio/gdbusobjectmanagerclient.h>
+	<gio/gdbusobjectmanagerserver.h>
+	<gio/gdbusactiongroup.h>
+	<gio/gremoteactiongroup.h>
+	<gio/gmenumodel.h>
+	<gio/gmenu.h>
+	<gio/gmenuexporter.h>
+	<gio/gdbusmenumodel.h>
+
+1348741508 /usr/include/glib-2.0/gio/giotypes.h
+	<gio/gioenums.h>
+
+1348741508 /usr/include/glib-2.0/gio/gioenums.h
+	<glib-object.h>
+
+1348741506 /usr/include/glib-2.0/glib-object.h
+	<gobject/gbinding.h>
+	<gobject/gboxed.h>
+	<gobject/genums.h>
+	<gobject/gobject.h>
+	<gobject/gparam.h>
+	<gobject/gparamspecs.h>
+	<gobject/gsignal.h>
+	<gobject/gsourceclosure.h>
+	<gobject/gtype.h>
+	<gobject/gtypemodule.h>
+	<gobject/gtypeplugin.h>
+	<gobject/gvalue.h>
+	<gobject/gvaluearray.h>
+	<gobject/gvaluetypes.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gbinding.h
+	<glib.h>
+	<gobject/gobject.h>
+
+1348741506 /usr/include/glib-2.0/glib.h
+	<glib/galloca.h>
+	<glib/garray.h>
+	<glib/gasyncqueue.h>
+	<glib/gatomic.h>
+	<glib/gbacktrace.h>
+	<glib/gbase64.h>
+	<glib/gbitlock.h>
+	<glib/gbookmarkfile.h>
+	<glib/gbytes.h>
+	<glib/gcharset.h>
+	<glib/gchecksum.h>
+	<glib/gconvert.h>
+	<glib/gdataset.h>
+	<glib/gdate.h>
+	<glib/gdatetime.h>
+	<glib/gdir.h>
+	<glib/genviron.h>
+	<glib/gerror.h>
+	<glib/gfileutils.h>
+	<glib/ggettext.h>
+	<glib/ghash.h>
+	<glib/ghmac.h>
+	<glib/ghook.h>
+	<glib/ghostutils.h>
+	<glib/giochannel.h>
+	<glib/gkeyfile.h>
+	<glib/glist.h>
+	<glib/gmacros.h>
+	<glib/gmain.h>
+	<glib/gmappedfile.h>
+	<glib/gmarkup.h>
+	<glib/gmem.h>
+	<glib/gmessages.h>
+	<glib/gnode.h>
+	<glib/goption.h>
+	<glib/gpattern.h>
+	<glib/gpoll.h>
+	<glib/gprimes.h>
+	<glib/gqsort.h>
+	<glib/gquark.h>
+	<glib/gqueue.h>
+	<glib/grand.h>
+	<glib/gregex.h>
+	<glib/gscanner.h>
+	<glib/gsequence.h>
+	<glib/gshell.h>
+	<glib/gslice.h>
+	<glib/gslist.h>
+	<glib/gspawn.h>
+	<glib/gstrfuncs.h>
+	<glib/gstring.h>
+	<glib/gstringchunk.h>
+	<glib/gtestutils.h>
+	<glib/gthread.h>
+	<glib/gthreadpool.h>
+	<glib/gtimer.h>
+	<glib/gtimezone.h>
+	<glib/gtrashstack.h>
+	<glib/gtree.h>
+	<glib/gtypes.h>
+	<glib/gunicode.h>
+	<glib/gurifuncs.h>
+	<glib/gutils.h>
+	<glib/gvarianttype.h>
+	<glib/gvariant.h>
+	<glib/gversion.h>
+	<glib/gversionmacros.h>
+	<glib/gwin32.h>
+	<glib/deprecated/gallocator.h>
+	<glib/deprecated/gcache.h>
+	<glib/deprecated/gcompletion.h>
+	<glib/deprecated/gmain.h>
+	<glib/deprecated/grel.h>
+	<glib/deprecated/gthread.h>
+
+1348741506 /usr/include/glib-2.0/glib/galloca.h
+	<glib/gtypes.h>
+	<alloca.h>
+	<malloc.h>
+
+1348741506 /usr/include/glib-2.0/glib/gtypes.h
+	<glibconfig.h>
+	<glib/gmacros.h>
+	<glib/gversionmacros.h>
+	<time.h>
+
+1348741506 /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h
+	<glib/gmacros.h>
+	<limits.h>
+	<float.h>
+
+1348741506 /usr/include/glib-2.0/glib/gmacros.h
+	<stddef.h>
+
+1348741506 /usr/include/glib-2.0/glib/gversionmacros.h
+
+1348741506 /usr/include/glib-2.0/glib/garray.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gasyncqueue.h
+	<glib/gthread.h>
+
+1348741506 /usr/include/glib-2.0/glib/gthread.h
+	<glib/gatomic.h>
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/gatomic.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gerror.h
+	<stdarg.h>
+	<glib/gquark.h>
+
+1348741506 /usr/include/glib-2.0/glib/gquark.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gbacktrace.h
+	<glib/gtypes.h>
+	<signal.h>
+
+1348741506 /usr/include/glib-2.0/glib/gbase64.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gbitlock.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gbookmarkfile.h
+	<glib/gerror.h>
+	<time.h>
+
+1348741506 /usr/include/glib-2.0/glib/gbytes.h
+	<glib/gtypes.h>
+	<glib/garray.h>
+
+1348741506 /usr/include/glib-2.0/glib/gcharset.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gchecksum.h
+	<glib/gtypes.h>
+	<glib/gbytes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gconvert.h
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/gdataset.h
+	<glib/gquark.h>
+
+1348741506 /usr/include/glib-2.0/glib/gdate.h
+	<time.h>
+	<glib/gtypes.h>
+	<glib/gquark.h>
+
+1348741506 /usr/include/glib-2.0/glib/gdatetime.h
+	<glib/gtimezone.h>
+
+1348741506 /usr/include/glib-2.0/glib/gtimezone.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gdir.h
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/genviron.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gfileutils.h
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/ggettext.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/ghash.h
+	<glib/gtypes.h>
+	<glib/glist.h>
+
+1348741506 /usr/include/glib-2.0/glib/glist.h
+	<glib/gmem.h>
+	<glib/gnode.h>
+
+1348741506 /usr/include/glib-2.0/glib/gmem.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gnode.h
+	<glib/gmem.h>
+
+1348741506 /usr/include/glib-2.0/glib/ghmac.h
+	<glib/gtypes.h>
+	"gchecksum.h"
+
+1348741506 /usr/include/glib-2.0/glib/ghook.h
+	<glib/gmem.h>
+
+1348741506 /usr/include/glib-2.0/glib/ghostutils.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/giochannel.h
+	<glib/gconvert.h>
+	<glib/gmain.h>
+	<glib/gstring.h>
+
+1348741506 /usr/include/glib-2.0/glib/gmain.h
+	<glib/gpoll.h>
+	<glib/gslist.h>
+	<glib/gthread.h>
+
+1348741506 /usr/include/glib-2.0/glib/gpoll.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gslist.h
+	<glib/gmem.h>
+	<glib/gnode.h>
+
+1348741506 /usr/include/glib-2.0/glib/gstring.h
+	<glib/gtypes.h>
+	<glib/gunicode.h>
+	<glib/gbytes.h>
+	<glib/gutils.h>
+
+1348741506 /usr/include/glib-2.0/glib/gunicode.h
+	<glib/gerror.h>
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gutils.h
+	<glib/gtypes.h>
+	<stdarg.h>
+
+1348741506 /usr/include/glib-2.0/glib/gkeyfile.h
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/gmappedfile.h
+	<glib/gbytes.h>
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/gmarkup.h
+	<stdarg.h>
+	<glib/gerror.h>
+	<glib/gslist.h>
+
+1348741506 /usr/include/glib-2.0/glib/gmessages.h
+	<stdarg.h>
+	<glib/gtypes.h>
+	<glib/gmacros.h>
+
+1348741506 /usr/include/glib-2.0/glib/goption.h
+	<glib/gerror.h>
+	<glib/gquark.h>
+
+1348741506 /usr/include/glib-2.0/glib/gpattern.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gprimes.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gqsort.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gqueue.h
+	<glib/glist.h>
+
+1348741506 /usr/include/glib-2.0/glib/grand.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gregex.h
+	<glib/gerror.h>
+	<glib/gstring.h>
+
+1348741506 /usr/include/glib-2.0/glib/gscanner.h
+	<glib/gdataset.h>
+	<glib/ghash.h>
+
+1348741506 /usr/include/glib-2.0/glib/gsequence.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gshell.h
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/gslice.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gspawn.h
+	<glib/gerror.h>
+
+1348741506 /usr/include/glib-2.0/glib/gstrfuncs.h
+	<stdarg.h>
+	<glib/gmacros.h>
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gstringchunk.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gtestutils.h
+	<glib/gmessages.h>
+	<glib/gstring.h>
+	<glib/gerror.h>
+	<glib/gslist.h>
+
+1348741506 /usr/include/glib-2.0/glib/gthreadpool.h
+	<glib/gthread.h>
+
+1348741506 /usr/include/glib-2.0/glib/gtimer.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gtrashstack.h
+	<glib/gutils.h>
+
+1348741506 /usr/include/glib-2.0/glib/gtree.h
+	<glib/gnode.h>
+
+1348741506 /usr/include/glib-2.0/glib/gurifuncs.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gvarianttype.h
+	<glib/gmessages.h>
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gvariant.h
+	<glib/gvarianttype.h>
+	<glib/gstring.h>
+
+1348741506 /usr/include/glib-2.0/glib/gversion.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/gwin32.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/deprecated/gallocator.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/deprecated/gcache.h
+	<glib/glist.h>
+
+1348741506 /usr/include/glib-2.0/glib/deprecated/gcompletion.h
+	<glib/glist.h>
+
+1348741506 /usr/include/glib-2.0/glib/deprecated/gmain.h
+	<glib/gmain.h>
+
+1348741506 /usr/include/glib-2.0/glib/deprecated/grel.h
+	<glib/gtypes.h>
+
+1348741506 /usr/include/glib-2.0/glib/deprecated/gthread.h
+	<glib/gthread.h>
+	<pthread.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gobject.h
+	<gobject/gtype.h>
+	<gobject/gvalue.h>
+	<gobject/gparam.h>
+	<gobject/gclosure.h>
+	<gobject/gsignal.h>
+	<gobject/gboxed.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gtype.h
+	<glib.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gvalue.h
+	<gobject/gtype.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gparam.h
+	<gobject/gvalue.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gclosure.h
+	<gobject/gtype.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gsignal.h
+	<gobject/gclosure.h>
+	<gobject/gvalue.h>
+	<gobject/gparam.h>
+	<gobject/gmarshal.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gmarshal.h
+
+1348741507 /usr/include/glib-2.0/gobject/gboxed.h
+	<gobject/gtype.h>
+	<gobject/glib-types.h>
+
+1348741507 /usr/include/glib-2.0/gobject/glib-types.h
+	<glib.h>
+
+1348741507 /usr/include/glib-2.0/gobject/genums.h
+	<gobject/gtype.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gparamspecs.h
+	<gobject/gvalue.h>
+	<gobject/genums.h>
+	<gobject/gboxed.h>
+	<gobject/gobject.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gsourceclosure.h
+	<gobject/gclosure.h>
+	<gobject/glib-types.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gtypemodule.h
+	<gobject/gobject.h>
+	<gobject/genums.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gtypeplugin.h
+	<gobject/gtype.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gvaluearray.h
+	<gobject/gvalue.h>
+
+1348741507 /usr/include/glib-2.0/gobject/gvaluetypes.h
+	<gobject/gvalue.h>
+
+1348741508 /usr/include/glib-2.0/gio/gaction.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gactiongroup.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gactiongroupexporter.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gactionmap.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gappinfo.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gapplication.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gapplicationcommandline.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gasyncinitable.h
+	<gio/giotypes.h>
+	<gio/ginitable.h>
+
+1348741508 /usr/include/glib-2.0/gio/ginitable.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gasyncresult.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gbufferedinputstream.h
+	<gio/gfilterinputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfilterinputstream.h
+	<gio/ginputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/ginputstream.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gbufferedoutputstream.h
+	<gio/gfilteroutputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfilteroutputstream.h
+	<gio/goutputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/goutputstream.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gcancellable.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gcharsetconverter.h
+	<gio/gconverter.h>
+
+1348741508 /usr/include/glib-2.0/gio/gconverter.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gcontenttype.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gconverterinputstream.h
+	<gio/gfilterinputstream.h>
+	<gio/gconverter.h>
+
+1348741508 /usr/include/glib-2.0/gio/gconverteroutputstream.h
+	<gio/gfilteroutputstream.h>
+	<gio/gconverter.h>
+
+1348741508 /usr/include/glib-2.0/gio/gcredentials.h
+	<gio/giotypes.h>
+	<unistd.h>
+	<sys/types.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdatainputstream.h
+	<gio/gbufferedinputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdataoutputstream.h
+	<gio/gfilteroutputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusaddress.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusauthobserver.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusconnection.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbuserror.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusintrospection.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusmessage.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusmethodinvocation.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusnameowning.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusnamewatching.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusproxy.h
+	<gio/giotypes.h>
+	<gio/gdbusintrospection.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusserver.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusutils.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdrive.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gemblemedicon.h
+	<gio/gicon.h>
+	<gio/gemblem.h>
+
+1348741508 /usr/include/glib-2.0/gio/gicon.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gemblem.h
+	<gio/gioenums.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfileattribute.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfileenumerator.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfile.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfileicon.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfileinfo.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfileinputstream.h
+	<gio/ginputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfileiostream.h
+	<gio/giostream.h>
+
+1348741508 /usr/include/glib-2.0/gio/giostream.h
+	<gio/ginputstream.h>
+	<gio/goutputstream.h>
+	<gio/gcancellable.h>
+	<gio/gioerror.h>
+
+1348741508 /usr/include/glib-2.0/gio/gioerror.h
+	<glib.h>
+	<gio/gioenums.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfilemonitor.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfilenamecompleter.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gfileoutputstream.h
+	<gio/goutputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/ginetaddress.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/ginetaddressmask.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/ginetsocketaddress.h
+	<gio/gsocketaddress.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketaddress.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gioenumtypes.h
+	<glib-object.h>
+
+1348741508 /usr/include/glib-2.0/gio/giomodule.h
+	<gio/giotypes.h>
+	<gmodule.h>
+
+1348741506 /usr/include/glib-2.0/gmodule.h
+	<glib.h>
+
+1348741508 /usr/include/glib-2.0/gio/gioscheduler.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gloadableicon.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gmemoryinputstream.h
+	<gio/ginputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gmemoryoutputstream.h
+	<gio/goutputstream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gmount.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gmountoperation.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gnativevolumemonitor.h
+	<gio/gvolumemonitor.h>
+
+1348741508 /usr/include/glib-2.0/gio/gvolumemonitor.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gnetworkaddress.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gnetworkmonitor.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gnetworkservice.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gpermission.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gpollableinputstream.h
+	<gio/gio.h>
+
+1348741508 /usr/include/glib-2.0/gio/gpollableoutputstream.h
+	<gio/gio.h>
+
+1348741508 /usr/include/glib-2.0/gio/gpollableutils.h
+	<gio/gio.h>
+
+1348741508 /usr/include/glib-2.0/gio/gproxy.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gproxyaddress.h
+	<gio/ginetsocketaddress.h>
+
+1348741508 /usr/include/glib-2.0/gio/gproxyaddressenumerator.h
+	<gio/gsocketaddressenumerator.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketaddressenumerator.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gproxyresolver.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gresolver.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gresource.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gseekable.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsettingsschema.h
+	<glib-object.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsettings.h
+	<gio/gsettingsschema.h>
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsimpleaction.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsimpleactiongroup.h
+	"gactiongroup.h"
+	"gactionmap.h"
+
+1348741508 /usr/include/glib-2.0/gio/gsimpleasyncresult.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsimplepermission.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketclient.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketconnectable.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketconnection.h
+	<glib-object.h>
+	<gio/gsocket.h>
+	<gio/giostream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocket.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketcontrolmessage.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketlistener.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsocketservice.h
+	<gio/gsocketlistener.h>
+
+1348741508 /usr/include/glib-2.0/gio/gsrvtarget.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtcpconnection.h
+	<gio/gsocketconnection.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtcpwrapperconnection.h
+	<gio/gtcpconnection.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtestdbus.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gthemedicon.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gthreadedsocketservice.h
+	<gio/gsocketservice.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlsbackend.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlscertificate.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlsclientconnection.h
+	<gio/gtlsconnection.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlsconnection.h
+	<gio/giostream.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlsdatabase.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlsfiledatabase.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlsinteraction.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlsserverconnection.h
+	<gio/gtlsconnection.h>
+
+1348741508 /usr/include/glib-2.0/gio/gtlspassword.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gvfs.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gvolume.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gzlibcompressor.h
+	<gio/gconverter.h>
+	<gio/gfileinfo.h>
+
+1348741508 /usr/include/glib-2.0/gio/gzlibdecompressor.h
+	<gio/gconverter.h>
+	<gio/gfileinfo.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusinterface.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusinterfaceskeleton.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusobject.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusobjectskeleton.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusobjectproxy.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusobjectmanager.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusobjectmanagerclient.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusobjectmanagerserver.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusactiongroup.h
+	"giotypes.h"
+
+1348741508 /usr/include/glib-2.0/gio/gremoteactiongroup.h
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gmenumodel.h
+	<glib-object.h>
+	<gio/giotypes.h>
+
+1348741508 /usr/include/glib-2.0/gio/gmenu.h
+	<gio/gmenumodel.h>
+
+1348741508 /usr/include/glib-2.0/gio/gmenuexporter.h
+	<gio/gdbusconnection.h>
+	<gio/gmenumodel.h>
+
+1348741508 /usr/include/glib-2.0/gio/gdbusmenumodel.h
+	<gio/gdbusconnection.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkscreen.h
+	<cairo.h>
+	"gdk/gdktypes.h"
+	"gdk/gdkdisplay.h"
+
+1354220248 /usr/include/cairo/cairo.h
+	"cairo-version.h"
+	"cairo-features.h"
+	"cairo-deprecated.h"
+
+1354220248 /usr/include/cairo/cairo-version.h
+
+1354220248 /usr/include/cairo/cairo-features.h
+
+1354220248 /usr/include/cairo/cairo-deprecated.h
+
+1348586458 /usr/include/gtk-2.0/gdk/gdktypes.h
+	<glib.h>
+	<pango/pango.h>
+	<glib-object.h>
+	<gdkconfig.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango.h
+	<pango/pango-attributes.h>
+	<pango/pango-bidi-type.h>
+	<pango/pango-break.h>
+	<pango/pango-context.h>
+	<pango/pango-coverage.h>
+	<pango/pango-engine.h>
+	<pango/pango-enum-types.h>
+	<pango/pango-features.h>
+	<pango/pango-font.h>
+	<pango/pango-fontmap.h>
+	<pango/pango-fontset.h>
+	<pango/pango-glyph.h>
+	<pango/pango-glyph-item.h>
+	<pango/pango-gravity.h>
+	<pango/pango-item.h>
+	<pango/pango-layout.h>
+	<pango/pango-matrix.h>
+	<pango/pango-renderer.h>
+	<pango/pango-script.h>
+	<pango/pango-tabs.h>
+	<pango/pango-types.h>
+	<pango/pango-utils.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-attributes.h
+	<pango/pango-font.h>
+	<glib-object.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-font.h
+	<pango/pango-coverage.h>
+	<pango/pango-types.h>
+	<glib-object.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-coverage.h
+	<glib.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-types.h
+	<glib.h>
+	<glib-object.h>
+	<pango/pango-gravity.h>
+	<pango/pango-language.h>
+	<pango/pango-matrix.h>
+	<pango/pango-script.h>
+	<pango/pango-bidi-type.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-gravity.h
+	<glib.h>
+	<pango/pango-matrix.h>
+	<pango/pango-script.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-matrix.h
+	<glib.h>
+	<glib-object.h>
+	<pango/pango-types.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-script.h
+	<glib.h>
+	<pango/pango-language.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-language.h
+	<glib.h>
+	<glib-object.h>
+	<pango/pango-script.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-bidi-type.h
+	<glib.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-break.h
+	<glib.h>
+	<pango/pango-item.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-item.h
+	<pango/pango-types.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-context.h
+	<pango/pango-font.h>
+	<pango/pango-fontmap.h>
+	<pango/pango-attributes.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-fontmap.h
+	<pango/pango-font.h>
+	<pango/pango-fontset.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-fontset.h
+	<pango/pango-coverage.h>
+	<pango/pango-types.h>
+	<glib-object.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-engine.h
+	<pango/pango-types.h>
+	<pango/pango-item.h>
+	<pango/pango-font.h>
+	<pango/pango-glyph.h>
+	<pango/pango-script.h>
+	<gmodule.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-glyph.h
+	<pango/pango-types.h>
+	<pango/pango-item.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-enum-types.h
+	<glib-object.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-features.h
+
+1339637529 /usr/include/pango-1.0/pango/pango-glyph-item.h
+	<pango/pango-attributes.h>
+	<pango/pango-break.h>
+	<pango/pango-item.h>
+	<pango/pango-glyph.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-layout.h
+	<pango/pango-attributes.h>
+	<pango/pango-context.h>
+	<pango/pango-glyph-item.h>
+	<pango/pango-tabs.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-tabs.h
+	<pango/pango-types.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-renderer.h
+	<pango/pango-layout.h>
+
+1339637529 /usr/include/pango-1.0/pango/pango-utils.h
+	<stdio.h>
+	<glib.h>
+	<pango/pango-font.h>
+
+1348586458 /usr/lib/x86_64-linux-gnu/gtk-2.0/include/gdkconfig.h
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkdisplay.h
+	<gdk/gdktypes.h>
+	<gdk/gdkevents.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkevents.h
+	<gdk/gdkcolor.h>
+	<gdk/gdktypes.h>
+	<gdk/gdkdnd.h>
+	<gdk/gdkinput.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkcolor.h
+	<cairo.h>
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkdnd.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkinput.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkcairo.h
+	<gdk/gdkcolor.h>
+	<gdk/gdkpixbuf.h>
+	<pango/pangocairo.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkpixbuf.h
+	<cairo.h>
+	<gdk/gdktypes.h>
+	<gdk/gdkrgb.h>
+	<gdk-pixbuf/gdk-pixbuf.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkrgb.h
+	<gdk/gdktypes.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf.h
+	<glib.h>
+	<gdk-pixbuf/gdk-pixbuf-features.h>
+	<glib-object.h>
+	<gdk-pixbuf/gdk-pixbuf-core.h>
+	<gdk-pixbuf/gdk-pixbuf-transform.h>
+	<gdk-pixbuf/gdk-pixbuf-animation.h>
+	<gdk-pixbuf/gdk-pixbuf-simple-anim.h>
+	<gdk-pixbuf/gdk-pixbuf-io.h>
+	<gdk-pixbuf/gdk-pixbuf-loader.h>
+	<gdk-pixbuf/gdk-pixbuf-enum-types.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-features.h
+	<glib.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-core.h
+	<glib.h>
+	<glib-object.h>
+	<gio/gio.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-transform.h
+	<glib.h>
+	<gdk-pixbuf/gdk-pixbuf-core.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-animation.h
+	<glib-object.h>
+	<gdk-pixbuf/gdk-pixbuf-core.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-simple-anim.h
+	<gdk-pixbuf/gdk-pixbuf-animation.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-io.h
+	<stdio.h>
+	<glib.h>
+	<gmodule.h>
+	<gdk-pixbuf/gdk-pixbuf-core.h>
+	<gdk-pixbuf/gdk-pixbuf-animation.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-loader.h
+	<glib.h>
+	<glib-object.h>
+	<gdk-pixbuf/gdk-pixbuf-core.h>
+	<gdk-pixbuf/gdk-pixbuf-animation.h>
+	<gdk-pixbuf/gdk-pixbuf-io.h>
+
+1347945213 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-enum-types.h
+	<glib-object.h>
+
+1339637529 /usr/include/pango-1.0/pango/pangocairo.h
+	<pango/pango.h>
+	<cairo.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkcursor.h
+	<gdk/gdktypes.h>
+	<gdk-pixbuf/gdk-pixbuf.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkdisplaymanager.h
+	<gdk/gdktypes.h>
+	<gdk/gdkdisplay.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkdrawable.h
+	<gdk/gdktypes.h>
+	<gdk/gdkgc.h>
+	<gdk/gdkrgb.h>
+	<gdk-pixbuf/gdk-pixbuf.h>
+	<cairo.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkgc.h
+	<gdk/gdkcolor.h>
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkenumtypes.h
+	<glib-object.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkfont.h
+	<gdk/gdktypes.h>
+	<pango/pango.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkimage.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkkeys.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkpango.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkpixmap.h
+	<gdk/gdktypes.h>
+	<gdk/gdkdrawable.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkproperty.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkregion.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkselection.h
+	<gdk/gdktypes.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkspawn.h
+	<gdk/gdkscreen.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdktestutils.h
+	<gdk/gdkwindow.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkwindow.h
+	<gdk/gdkdrawable.h>
+	<gdk/gdktypes.h>
+	<gdk/gdkevents.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkvisual.h
+	<gdk/gdktypes.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkaboutdialog.h
+	<gtk/gtkdialog.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkdialog.h
+	<gtk/gtkwindow.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkwindow.h
+	<gtk/gtkaccelgroup.h>
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkaccelgroup.h
+	<gdk/gdk.h>
+	<gtk/gtkenums.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkenums.h
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkbin.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcontainer.h
+	<gtk/gtkwidget.h>
+	<gtk/gtkadjustment.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkwidget.h
+	<gdk/gdk.h>
+	<gtk/gtkaccelgroup.h>
+	<gtk/gtkobject.h>
+	<gtk/gtkadjustment.h>
+	<gtk/gtkstyle.h>
+	<gtk/gtksettings.h>
+	<atk/atk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkobject.h
+	<gdkconfig.h>
+	<gtk/gtkenums.h>
+	<gtk/gtktypeutils.h>
+	<gtk/gtkdebug.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktypeutils.h
+	<gtk/gtktypebuiltins.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktypebuiltins.h
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkdebug.h
+	<glib.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkadjustment.h
+	<gdk/gdk.h>
+	<gtk/gtkobject.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkstyle.h
+	<gdk/gdk.h>
+	<gtk/gtkenums.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtksettings.h
+	<gtk/gtkrc.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrc.h
+	<gtk/gtkstyle.h>
+
+1348784791 /usr/include/atk-1.0/atk/atk.h
+	<atk/atkobject.h>
+	<atk/atkaction.h>
+	<atk/atkcomponent.h>
+	<atk/atkdocument.h>
+	<atk/atkeditabletext.h>
+	<atk/atkgobjectaccessible.h>
+	<atk/atkhyperlink.h>
+	<atk/atkhyperlinkimpl.h>
+	<atk/atkhypertext.h>
+	<atk/atkimage.h>
+	<atk/atknoopobject.h>
+	<atk/atknoopobjectfactory.h>
+	<atk/atkobjectfactory.h>
+	<atk/atkplug.h>
+	<atk/atkregistry.h>
+	<atk/atkrelation.h>
+	<atk/atkrelationset.h>
+	<atk/atkrelationtype.h>
+	<atk/atkselection.h>
+	<atk/atksocket.h>
+	<atk/atkstate.h>
+	<atk/atkstateset.h>
+	<atk/atkstreamablecontent.h>
+	<atk/atktable.h>
+	<atk/atktext.h>
+	<atk/atkutil.h>
+	<atk/atkmisc.h>
+	<atk/atkvalue.h>
+	<atk/atkwindow.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkobject.h
+	<glib-object.h>
+	<atk/atkstate.h>
+	<atk/atkrelationtype.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkstate.h
+	<glib-object.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkrelationtype.h
+	<glib.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkaction.h
+	<atk/atkobject.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkcomponent.h
+	<atk/atkobject.h>
+	<atk/atkutil.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkutil.h
+	<atk/atkobject.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkdocument.h
+	<atk/atkobject.h>
+	<atk/atkutil.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkeditabletext.h
+	<atk/atkobject.h>
+	<atk/atktext.h>
+
+1348784791 /usr/include/atk-1.0/atk/atktext.h
+	<glib-object.h>
+	<atk/atkobject.h>
+	<atk/atkutil.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkgobjectaccessible.h
+	<atk/atk.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkhyperlink.h
+	<atk/atkaction.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkhyperlinkimpl.h
+	<atk/atkobject.h>
+	<atk/atkhyperlink.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkhypertext.h
+	<atk/atkobject.h>
+	<atk/atkhyperlink.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkimage.h
+	<atk/atkobject.h>
+	<atk/atkutil.h>
+
+1348784791 /usr/include/atk-1.0/atk/atknoopobject.h
+
+1348784791 /usr/include/atk-1.0/atk/atknoopobjectfactory.h
+	<atk/atkobjectfactory.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkobjectfactory.h
+	<glib-object.h>
+	<atk/atkobject.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkplug.h
+
+1348784791 /usr/include/atk-1.0/atk/atkregistry.h
+	<glib-object.h>
+	"atkobjectfactory.h"
+
+1348784791 /usr/include/atk-1.0/atk/atkrelation.h
+	<glib-object.h>
+	<atk/atkrelationtype.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkrelationset.h
+	<glib-object.h>
+	<atk/atkobject.h>
+	<atk/atkrelation.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkselection.h
+	<atk/atkobject.h>
+
+1348784791 /usr/include/atk-1.0/atk/atksocket.h
+
+1348784791 /usr/include/atk-1.0/atk/atkstateset.h
+	<glib-object.h>
+	<atk/atkobject.h>
+	<atk/atkstate.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkstreamablecontent.h
+	<atk/atkobject.h>
+
+1348784791 /usr/include/atk-1.0/atk/atktable.h
+	<atk/atkobject.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkmisc.h
+	<glib-object.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkvalue.h
+	<atk/atkobject.h>
+
+1348784791 /usr/include/atk-1.0/atk/atkwindow.h
+	<atk/atkobject.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkaccellabel.h
+	<gtk/gtklabel.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtklabel.h
+	<gtk/gtkmisc.h>
+	<gtk/gtkwindow.h>
+	<gtk/gtkmenu.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmisc.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmenu.h
+	<gtk/gtkaccelgroup.h>
+	<gtk/gtkmenushell.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmenushell.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkaccelmap.h
+	<gtk/gtkaccelgroup.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkaccessible.h
+	<atk/atk.h>
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkaction.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkactiongroup.h
+	<gtk/gtkaction.h>
+	<gtk/gtktypeutils.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkactivatable.h
+	<gtk/gtkaction.h>
+	<gtk/gtktypeutils.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkalignment.h
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkarrow.h
+	<gtk/gtkmisc.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkaspectframe.h
+	<gtk/gtkframe.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkframe.h
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkassistant.h
+	<gtk/gtkwindow.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkbbox.h
+	<gtk/gtkbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkbox.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkbindings.h
+	<gdk/gdk.h>
+	<gtk/gtkobject.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkbuildable.h
+	<gtk/gtkbuilder.h>
+	<gtk/gtktypeutils.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkbuilder.h
+	<gdkconfig.h>
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkbutton.h
+	<gtk/gtkbin.h>
+	<gtk/gtkimage.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkimage.h
+	<gio/gio.h>
+	<gtk/gtkmisc.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcalendar.h
+	<gtk/gtkwidget.h>
+	<gtk/gtksignal.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtksignal.h
+	<gtk/gtk.h>
+	<gtk/gtkmarshal.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmarshal.h
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcelleditable.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcelllayout.h
+	<gtk/gtkcellrenderer.h>
+	<gtk/gtktreeviewcolumn.h>
+	<gtk/gtkbuildable.h>
+	<gtk/gtkbuilder.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrenderer.h
+	<gtk/gtkcelleditable.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreeviewcolumn.h
+	<gtk/gtkcellrenderer.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtktreesortable.h>
+	<gtk/gtkobject.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreemodel.h
+	<glib-object.h>
+	<gtk/gtkobject.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreesortable.h
+	<gtk/gtktreemodel.h>
+	<gtk/gtktypeutils.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrendereraccel.h
+	<gtk/gtkcellrenderertext.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrenderertext.h
+	<gtk/gtkcellrenderer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrenderercombo.h
+	<gtk/gtktreemodel.h>
+	<gtk/gtkcellrenderertext.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrendererpixbuf.h
+	<gtk/gtkcellrenderer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrendererprogress.h
+	<gtk/gtkcellrenderer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrendererspin.h
+	<gtk/gtkcellrenderertext.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrendererspinner.h
+	<gtk/gtkcellrenderer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellrenderertoggle.h
+	<gtk/gtkcellrenderer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcellview.h
+	<gtk/gtkwidget.h>
+	<gtk/gtkcellrenderer.h>
+	<gtk/gtktreemodel.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcheckbutton.h
+	<gtk/gtktogglebutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktogglebutton.h
+	<gtk/gtkbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcheckmenuitem.h
+	<gtk/gtkmenuitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmenuitem.h
+	<gtk/gtkitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkitem.h
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/ubuntumenuproxy.h
+	<gtk/gtkwidget.h>
+	<gtk/gtktypeutils.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/ubuntumenuproxymodule.h
+	<glib-object.h>
+	<gmodule.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkclipboard.h
+	<gtk/gtkselection.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkselection.h
+	<gtk/gtkwidget.h>
+	<gtk/gtktextiter.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktextiter.h
+	<gtk/gtktexttag.h>
+	<gtk/gtktextchild.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktexttag.h
+	<gdk/gdk.h>
+	<gtk/gtkenums.h>
+	<gtk/gtkobject.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktextchild.h
+	<gdkconfig.h>
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcolorbutton.h
+	<gtk/gtkbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcolorsel.h
+	<gtk/gtkdialog.h>
+	<gtk/gtkvbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvbox.h
+	<gtk/gtkbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcolorseldialog.h
+	<gtk/gtkdialog.h>
+	<gtk/gtkcolorsel.h>
+	<gtk/gtkvbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcombobox.h
+	<gtk/gtkbin.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtktreeview.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreeview.h
+	<gtk/gtkcontainer.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtktreeviewcolumn.h>
+	<gtk/gtkdnd.h>
+	<gtk/gtkentry.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkdnd.h
+	<gtk/gtkwidget.h>
+	<gtk/gtkselection.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkentry.h
+	<gtk/gtkeditable.h>
+	<gtk/gtkimcontext.h>
+	<gtk/gtkmenu.h>
+	<gtk/gtkentrybuffer.h>
+	<gtk/gtkentrycompletion.h>
+	<gtk/gtkimage.h>
+	<gtk/gtkselection.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkeditable.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkimcontext.h
+	<gdk/gdk.h>
+	<gtk/gtkobject.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkentrybuffer.h
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkentrycompletion.h
+	<gtk/gtktreemodel.h>
+	<gtk/gtkliststore.h>
+	<gtk/gtktreeviewcolumn.h>
+	<gtk/gtktreemodelfilter.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkliststore.h
+	<gdkconfig.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtktreesortable.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreemodelfilter.h
+	<gdkconfig.h>
+	<gtk/gtktreemodel.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcomboboxentry.h
+	<gtk/gtkcombobox.h>
+	<gtk/gtktreemodel.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcomboboxtext.h
+	<gtk/gtkcombobox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkdrawingarea.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkeventbox.h
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkexpander.h
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfixed.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfilechooser.h
+	<gtk/gtkfilefilter.h>
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfilefilter.h
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfilechooserbutton.h
+	<gtk/gtkhbox.h>
+	<gtk/gtkfilechooser.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhbox.h
+	<gtk/gtkbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfilechooserdialog.h
+	<gtk/gtkdialog.h>
+	<gtk/gtkfilechooser.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfilechooserwidget.h
+	<gtk/gtkfilechooser.h>
+	<gtk/gtkvbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfontbutton.h
+	<gtk/gtkbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfontsel.h
+	<gtk/gtkdialog.h>
+	<gtk/gtkvbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkgc.h
+	<gdk/gdk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhandlebox.h
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhbbox.h
+	<gtk/gtkbbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhpaned.h
+	<gtk/gtkpaned.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkpaned.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhruler.h
+	<gtk/gtkruler.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkruler.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhscale.h
+	<gtk/gtkscale.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkscale.h
+	<gtk/gtkrange.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrange.h
+	<gtk/gtkadjustment.h>
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhscrollbar.h
+	<gtk/gtkscrollbar.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkscrollbar.h
+	<gtk/gtkrange.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhseparator.h
+	<gtk/gtkseparator.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkseparator.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkhsv.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkiconfactory.h
+	<gdk/gdk.h>
+	<gtk/gtkrc.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkicontheme.h
+	<gdk-pixbuf/gdk-pixbuf.h>
+	<gdk/gdk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkiconview.h
+	<gtk/gtkcontainer.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtkcellrenderer.h>
+	<gtk/gtkselection.h>
+	<gtk/gtktooltip.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktooltip.h
+	<gtk/gtkwindow.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkimagemenuitem.h
+	<gtk/gtkmenuitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkimcontextsimple.h
+	<gtk/gtkimcontext.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkimmulticontext.h
+	<gtk/gtkimcontext.h>
+	<gtk/gtkmenushell.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkinfobar.h
+	<gtk/gtkhbox.h>
+	<gtk/gtkenums.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkinvisible.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtklayout.h
+	<gtk/gtkcontainer.h>
+	<gtk/gtkadjustment.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtklinkbutton.h
+	<gtk/gtkbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmain.h
+	<gdk/gdk.h>
+	<gtk/gtkwidget.h>
+	<gtk/gtkbox.h>
+	<gtk/gtkwindow.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmenubar.h
+	<gtk/gtkmenushell.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmenutoolbutton.h
+	<gtk/gtkmenu.h>
+	<gtk/gtktoolbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoolbutton.h
+	<gtk/gtktoolitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoolitem.h
+	<gtk/gtkbin.h>
+	<gtk/gtktooltips.h>
+	<gtk/gtkmenuitem.h>
+	<gtk/gtksizegroup.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktooltips.h
+	<gtk/gtkwidget.h>
+	<gtk/gtkwindow.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtksizegroup.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmessagedialog.h
+	<gtk/gtkdialog.h>
+	<gtk/gtkenums.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmodules.h
+	<gtk/gtksettings.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkmountoperation.h
+
+1348586462 /usr/include/gtk-2.0/gtk/gtknotebook.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkoffscreenwindow.h
+	<gtk/gtkwindow.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkorientable.h
+	<gtk/gtkwidget.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkpagesetup.h
+	<gtk/gtkpapersize.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkpapersize.h
+	<gtk/gtkenums.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkplug.h
+	<gtk/gtksocket.h>
+	<gtk/gtkwindow.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtksocket.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkprintcontext.h
+	<pango/pango.h>
+	<gtk/gtkpagesetup.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkprintoperation.h
+	<cairo.h>
+	<gtk/gtkmain.h>
+	<gtk/gtkwindow.h>
+	<gtk/gtkpagesetup.h>
+	<gtk/gtkprintsettings.h>
+	<gtk/gtkprintcontext.h>
+	<gtk/gtkprintoperationpreview.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkprintsettings.h
+	<gtk/gtkpapersize.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkprintoperationpreview.h
+	<cairo.h>
+	<gtk/gtkprintcontext.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkprogressbar.h
+	<gtk/gtkprogress.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkprogress.h
+	<gtk/gtkwidget.h>
+	<gtk/gtkadjustment.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkradioaction.h
+	<gtk/gtktoggleaction.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoggleaction.h
+	<gtk/gtkaction.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkradiobutton.h
+	<gtk/gtkcheckbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkradiomenuitem.h
+	<gtk/gtkcheckmenuitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkradiotoolbutton.h
+	<gtk/gtktoggletoolbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoggletoolbutton.h
+	<gtk/gtktoolbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrecentaction.h
+	<gtk/gtkaction.h>
+	<gtk/gtkrecentmanager.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrecentmanager.h
+	<gdk-pixbuf/gdk-pixbuf.h>
+	<gdk/gdk.h>
+	<time.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrecentchooser.h
+	<gtk/gtkwidget.h>
+	<gtk/gtkrecentmanager.h>
+	<gtk/gtkrecentfilter.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrecentfilter.h
+	<glib-object.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrecentchooserdialog.h
+	<gtk/gtkdialog.h>
+	<gtk/gtkrecentchooser.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrecentchoosermenu.h
+	<gtk/gtkmenu.h>
+	<gtk/gtkrecentchooser.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkrecentchooserwidget.h
+	<gtk/gtkrecentchooser.h>
+	<gtk/gtkvbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkscalebutton.h
+	<gtk/gtkbutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkscrolledwindow.h
+	<gtk/gtkhscrollbar.h>
+	<gtk/gtkvscrollbar.h>
+	<gtk/gtkviewport.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvscrollbar.h
+	<gtk/gtkscrollbar.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkviewport.h
+	<gtk/gtkadjustment.h>
+	<gtk/gtkbin.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkseparatormenuitem.h
+	<gtk/gtkmenuitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkseparatortoolitem.h
+	<gtk/gtktoolitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkshow.h
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkspinbutton.h
+	<gtk/gtkentry.h>
+	<gtk/gtkadjustment.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkspinner.h
+	<gtk/gtkdrawingarea.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkstatusbar.h
+	<gtk/gtkhbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkstatusicon.h
+	<gtk/gtkimage.h>
+	<gtk/gtkmenu.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkstock.h
+	<gdk/gdk.h>
+	<gtk/gtktypeutils.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktable.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktearoffmenuitem.h
+	<gtk/gtkmenuitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktextbuffer.h
+	<gtk/gtkwidget.h>
+	<gtk/gtkclipboard.h>
+	<gtk/gtktexttagtable.h>
+	<gtk/gtktextiter.h>
+	<gtk/gtktextmark.h>
+	<gtk/gtktextchild.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktexttagtable.h
+	<gtk/gtktexttag.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktextmark.h
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktextbufferrichtext.h
+	<gtk/gtktextbuffer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktextview.h
+	<gtk/gtkcontainer.h>
+	<gtk/gtkimcontext.h>
+	<gtk/gtktextbuffer.h>
+	<gtk/gtkmenu.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoolbar.h
+	<gtk/gtkcontainer.h>
+	<gtk/gtktooltips.h>
+	<gtk/gtktoolitem.h>
+	<gtk/gtkpixmap.h>
+	<gtk/gtksignal.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkpixmap.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoolitemgroup.h
+	<gtk/gtkcontainer.h>
+	<gtk/gtktoolitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoolpalette.h
+	<gtk/gtkcontainer.h>
+	<gtk/gtkdnd.h>
+	<gtk/gtktoolitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktoolshell.h
+	<gtk/gtkenums.h>
+	<pango/pango.h>
+	<gtk/gtksizegroup.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktestutils.h
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreednd.h
+	<gtk/gtktreemodel.h>
+	<gtk/gtkdnd.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreemodelsort.h
+	<gdkconfig.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtktreesortable.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreeselection.h
+	<gtk/gtktreeview.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreestore.h
+	<gdkconfig.h>
+	<gtk/gtktreemodel.h>
+	<gtk/gtktreesortable.h>
+	<stdarg.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkuimanager.h
+	<gtk/gtkaccelgroup.h>
+	<gtk/gtkwidget.h>
+	<gtk/gtkaction.h>
+	<gtk/gtkactiongroup.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvbbox.h
+	<gtk/gtkbbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkversion.h
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvolumebutton.h
+	<gtk/gtkscalebutton.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvpaned.h
+	<gtk/gtkpaned.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvruler.h
+	<gtk/gtkruler.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvscale.h
+	<gtk/gtkscale.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkvseparator.h
+	<gtk/gtkseparator.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktext.h
+	<gtk/gtkoldeditable.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkoldeditable.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktree.h
+	<gtk/gtkcontainer.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktreeitem.h
+	<gtk/gtkitem.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkclist.h
+	<gtk/gtksignal.h>
+	<gtk/gtkalignment.h>
+	<gtk/gtklabel.h>
+	<gtk/gtkbutton.h>
+	<gtk/gtkhscrollbar.h>
+	<gtk/gtkvscrollbar.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcombo.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkctree.h
+	<gtk/gtkclist.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkcurve.h
+	<gtk/gtkdrawingarea.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkfilesel.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkgamma.h
+	<gtk/gtkvbox.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkinputdialog.h
+	<gtk/gtkdialog.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkitemfactory.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtklist.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtklistitem.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkoptionmenu.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtkpreview.h
+	<gtk/gtk.h>
+
+1348586462 /usr/include/gtk-2.0/gtk/gtktipsquery.h
+	<gtk/gtk.h>
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkx.h
+	<gdk/gdkprivate.h>
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	"gdkprivate-x11.h"
+	"gdkscreen-x11.h"
+
+1348586458 /usr/include/gtk-2.0/gdk/gdkprivate.h
+	<gdk/gdk.h>
+
+1355367516 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moGUIManager.cpp
+	"moGUIManager.h"
+	<moFontManager.h>
+	"moArray.h"
+
+1363792698 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moGsGraph.cpp
+	"moGsGraph.h"
+	<gst/gst.h>
+	"moFileManager.h"
+	<gst/gst.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gst.h
+	<glib.h>
+	<gst/glib-compat.h>
+	<gst/gstenumtypes.h>
+	<gst/gstversion.h>
+	<gst/gstatomicqueue.h>
+	<gst/gstbin.h>
+	<gst/gstbuffer.h>
+	<gst/gstbufferlist.h>
+	<gst/gstcaps.h>
+	<gst/gstchildproxy.h>
+	<gst/gstclock.h>
+	<gst/gstdatetime.h>
+	<gst/gstdebugutils.h>
+	<gst/gstelement.h>
+	<gst/gsterror.h>
+	<gst/gstevent.h>
+	<gst/gstghostpad.h>
+	<gst/gstindex.h>
+	<gst/gstindexfactory.h>
+	<gst/gstinfo.h>
+	<gst/gstinterface.h>
+	<gst/gstiterator.h>
+	<gst/gstmarshal.h>
+	<gst/gstmessage.h>
+	<gst/gstminiobject.h>
+	<gst/gstobject.h>
+	<gst/gstpad.h>
+	<gst/gstparamspecs.h>
+	<gst/gstpipeline.h>
+	<gst/gstplugin.h>
+	<gst/gstpoll.h>
+	<gst/gstpreset.h>
+	<gst/gstquery.h>
+	<gst/gstregistry.h>
+	<gst/gstsegment.h>
+	<gst/gststructure.h>
+	<gst/gstsystemclock.h>
+	<gst/gsttaglist.h>
+	<gst/gsttagsetter.h>
+	<gst/gsttask.h>
+	<gst/gsttaskpool.h>
+	<gst/gsttrace.h>
+	<gst/gsttypefind.h>
+	<gst/gsttypefindfactory.h>
+	<gst/gsturi.h>
+	<gst/gstutils.h>
+	<gst/gstvalue.h>
+	<gst/gstxml.h>
+	<gst/gstparse.h>
+	<gst/gstcompat.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/glib-compat.h
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstenumtypes.h
+	<glib-object.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstversion.h
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstatomicqueue.h
+	<glib.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstbin.h
+	<gst/gstelement.h>
+	<gst/gstiterator.h>
+	<gst/gstbus.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstelement.h
+	<gst/gstconfig.h>
+	<gst/gstobject.h>
+	<gst/gstpad.h>
+	<gst/gstbus.h>
+	<gst/gstclock.h>
+	<gst/gstelementfactory.h>
+	<gst/gstplugin.h>
+	<gst/gstpluginfeature.h>
+	<gst/gstindex.h>
+	<gst/gstindexfactory.h>
+	<gst/gstiterator.h>
+	<gst/gstmessage.h>
+	<gst/gsttaglist.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstconfig.h
+	<libxml/parser.h>
+
+1354670322 /usr/include/libxml2/libxml/parser.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+	<libxml/hash.h>
+	<libxml/valid.h>
+	<libxml/entities.h>
+	<libxml/xmlerror.h>
+	<libxml/xmlstring.h>
+	<libxml/encoding.h>
+	<libxml/xmlIO.h>
+	<libxml/globals.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlversion.h
+	<libxml/xmlexports.h>
+	<ansidecl.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlexports.h
+
+1354670322 /usr/include/libxml2/libxml/tree.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/xmlstring.h>
+	<libxml/xmlregexp.h>
+	<libxml/xmlmemory.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlstring.h
+	<stdarg.h>
+	<libxml/xmlversion.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlregexp.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/dict.h>
+
+1354670322 /usr/include/libxml2/libxml/dict.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlmemory.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/threads.h>
+	<libxml/globals.h>
+
+1354670322 /usr/include/libxml2/libxml/threads.h
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+
+1354670322 /usr/include/libxml2/libxml/globals.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xmlerror.h>
+	<libxml/SAX.h>
+	<libxml/SAX2.h>
+	<libxml/xmlmemory.h>
+	<libxml/threads.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlerror.h
+	<libxml/parser.h>
+
+1354670322 /usr/include/libxml2/libxml/SAX.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1354670322 /usr/include/libxml2/libxml/xlink.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1354670322 /usr/include/libxml2/libxml/SAX2.h
+	<stdio.h>
+	<stdlib.h>
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/xlink.h>
+
+1354670322 /usr/include/libxml2/libxml/hash.h
+	<libxml/xmlversion.h>
+	<libxml/parser.h>
+	<libxml/dict.h>
+
+1354670322 /usr/include/libxml2/libxml/valid.h
+	<libxml/xmlversion.h>
+	<libxml/xmlerror.h>
+	<libxml/tree.h>
+	<libxml/list.h>
+	<libxml/xmlautomata.h>
+	<libxml/xmlregexp.h>
+
+1354670322 /usr/include/libxml2/libxml/list.h
+	<libxml/xmlversion.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlautomata.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+	<libxml/xmlregexp.h>
+
+1354670322 /usr/include/libxml2/libxml/entities.h
+	<libxml/xmlversion.h>
+	<libxml/tree.h>
+
+1354670322 /usr/include/libxml2/libxml/encoding.h
+	<libxml/xmlversion.h>
+	<iconv.h>
+	<unicode/ucnv.h>
+	<libxml/tree.h>
+
+1354670322 /usr/include/libxml2/libxml/xmlIO.h
+	<stdio.h>
+	<libxml/xmlversion.h>
+	<libxml/globals.h>
+	<libxml/tree.h>
+	<libxml/parser.h>
+	<libxml/encoding.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstobject.h
+	<gst/gstconfig.h>
+	<glib-object.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstpad.h
+	<gst/gstconfig.h>
+	<gst/gstobject.h>
+	<gst/gstbuffer.h>
+	<gst/gstbufferlist.h>
+	<gst/gstcaps.h>
+	<gst/gstevent.h>
+	<gst/gstquery.h>
+	<gst/gsttask.h>
+	<gst/gstpadtemplate.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstbuffer.h
+	<gst/gstminiobject.h>
+	<gst/gstclock.h>
+	<gst/gstcaps.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstminiobject.h
+	<gst/gstconfig.h>
+	<glib-object.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstclock.h
+	<gst/gstobject.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstcaps.h
+	<gst/gstconfig.h>
+	<gst/gststructure.h>
+	<gst/glib-compat.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gststructure.h
+	<gst/gstconfig.h>
+	<glib-object.h>
+	<gst/gstclock.h>
+	<gst/gstdatetime.h>
+	<gst/glib-compat.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstdatetime.h
+	<time.h>
+	<glib.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstbufferlist.h
+	<gst/gstbuffer.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstevent.h
+	<gst/gstminiobject.h>
+	<gst/gstformat.h>
+	<gst/gstobject.h>
+	<gst/gstclock.h>
+	<gst/gststructure.h>
+	<gst/gsttaglist.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstformat.h
+	<glib.h>
+	<gst/gstiterator.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstiterator.h
+	<glib-object.h>
+	<gst/gstconfig.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsttaglist.h
+	<gst/gstdatetime.h>
+	<gst/gstbuffer.h>
+	<gst/gststructure.h>
+	<gst/glib-compat.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstquery.h
+	<glib.h>
+	<gst/gstiterator.h>
+	<gst/gstminiobject.h>
+	<gst/gststructure.h>
+	<gst/gstformat.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsttask.h
+	<gst/gstobject.h>
+	<gst/gsttaskpool.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsttaskpool.h
+	<gst/gstobject.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstpadtemplate.h
+	<gst/gstconfig.h>
+	<gst/gstobject.h>
+	<gst/gstbuffer.h>
+	<gst/gstcaps.h>
+	<gst/gstevent.h>
+	<gst/gstquery.h>
+	<gst/gsttask.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstbus.h
+	<gst/gstmessage.h>
+	<gst/gstclock.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstmessage.h
+	<gst/gstminiobject.h>
+	<gst/gstobject.h>
+	<gst/gstelement.h>
+	<gst/gsttaglist.h>
+	<gst/gststructure.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstelementfactory.h
+	<gst/gstconfig.h>
+	<gst/gstelement.h>
+	<gst/gstobject.h>
+	<gst/gstplugin.h>
+	<gst/gstpluginfeature.h>
+	<gst/gstiterator.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstplugin.h
+	<gst/gstconfig.h>
+	<time.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<gmodule.h>
+	<gst/gstobject.h>
+	<gst/gstmacros.h>
+	<gst/gststructure.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstmacros.h
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstpluginfeature.h
+	<glib-object.h>
+	<gst/gstobject.h>
+	<gst/gstplugin.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstindex.h
+	<gst/gstobject.h>
+	<gst/gstformat.h>
+	<gst/gstpluginfeature.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstindexfactory.h
+	<gst/gstobject.h>
+	<gst/gstformat.h>
+	<gst/gstpluginfeature.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstchildproxy.h
+	<glib-object.h>
+	<gst/gst.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstdebugutils.h
+	<glib.h>
+	<glib-object.h>
+	<gst/gstconfig.h>
+	<gst/gstbin.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsterror.h
+	<glib.h>
+	<glib-object.h>
+	<errno.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstghostpad.h
+	<gst/gstpad.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstinfo.h
+	<glib.h>
+	<glib-object.h>
+	<gst/gstconfig.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstinterface.h
+	<gst/gstelement.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstmarshal.h
+	<glib-object.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstparamspecs.h
+	<gst/gstvalue.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstvalue.h
+	<gst/gstconfig.h>
+	<gst/gstcaps.h>
+	<gst/gststructure.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstpipeline.h
+	<gst/gstbin.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstpoll.h
+	<glib.h>
+	<glib-object.h>
+	<gst/gstclock.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstpreset.h
+	<glib-object.h>
+	<gst/gstconfig.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstregistry.h
+	<gst/gstconfig.h>
+	<gst/gstplugin.h>
+	<gst/gstpluginfeature.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstsegment.h
+	<gst/gstevent.h>
+	<gst/gstformat.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstsystemclock.h
+	<gst/gstclock.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsttagsetter.h
+	<gst/gst.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsttrace.h
+	<glib.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsttypefind.h
+	<gst/gstcaps.h>
+	<gst/gstplugin.h>
+	<gst/gstpluginfeature.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsttypefindfactory.h
+	<gst/gstcaps.h>
+	<gst/gstplugin.h>
+	<gst/gstpluginfeature.h>
+	<gst/gsttypefind.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gsturi.h
+	<glib.h>
+	<gst/gstelement.h>
+	<gst/gstpluginfeature.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstutils.h
+	<glib.h>
+	<gst/gstbin.h>
+	<gst/gstparse.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstparse.h
+	<gst/gstelement.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstxml.h
+	<gst/gstconfig.h>
+	<gst/gstelement.h>
+
+1340706501 /usr/include/gstreamer-0.10/gst/gstcompat.h
+
+1369753264 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moIODeviceManager.cpp
+	"moIODeviceManager.h"
+	"moArray.h"
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moIODevicePlugin.cpp
+	"moIODevicePlugin.h"
+	"moArray.h"
+	<iostream>
+
+1370198598 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moLock.cpp
+	"moLock.h"
+	"SDL/SDL_thread.h"
+	"pthread.h"
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moLuaBase.cpp
+	"moLuaBase.h"
+	<assert.h>
+	<string.h>
+	<stdio.h>
+
+1355367518 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moLunaClasses.cpp
+	"moLunaClasses.h"
+
+1355367518 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMasterEffect.cpp
+	"moMasterEffect.h"
+	"moArray.h"
+
+1355367518 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMasterPlugin.cpp
+	"moMasterPlugin.h"
+	<moPort.h>
+	"moArray.h"
+	<iostream>
+
+1355367518 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMath.cpp
+	"moMath.h"
+
+1355367518 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathCurve.cpp
+	"moMathCurve.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathCurve.h
+	"moMathVector.h"
+	"moMathVector3.h"
+	"moMathVector4.h"
+	"moMathNumericalAnalysis.h"
+
+1355367520 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathNumericalAnalysis.h
+	"moMath.h"
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathDMatrix.cpp
+	"moMathDMatrix.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathDMatrix.h
+	"moMathDVector.h"
+
+1355367518 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathDVector.h
+	"moMath.h"
+
+1355367518 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathDVector.cpp
+	"moMathDVector.h"
+
+1355367518 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathFFT.cpp
+
+1355367520 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathFunction.cpp
+	"muParser.h"
+	<cstdarg>
+	"moConfig.h"
+	"moMoldeoObject.h"
+	"moMathFunction.h"
+	"moArray.h"
+
+1355367520 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathFunctionIndex.cpp
+	"moMathFunctionIndex.h"
+
+1355367520 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathManager.cpp
+	"moMathManager.h"
+	"moMathVector3.h"
+
+1355367520 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathMatrix.cpp
+	"moMathMatrix.h"
+
+1355367520 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathMatrix.h
+	"moMathVector.h"
+	"moMathVector3.h"
+	"moMathVector4.h"
+
+1355367520 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathNumericalAnalysis.cpp
+	"moMathNumericalAnalysis.h"
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathPolynomial.cpp
+	"moMathPolynomial.h"
+
+1355367522 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathPolynomial.h
+	"moMath.h"
+
+1355367522 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathQuaternion.cpp
+	"moMathQuaternion.h"
+
+1355367522 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathQuaternion.h
+	"moMathMatrix.h"
+
+1355367522 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathVector.cpp
+	"moMathVector.h"
+	"moArray.h"
+
+1355367523 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathVector3.cpp
+	"moMathVector3.h"
+	"moArray.h"
+
+1355367523 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMathVector4.cpp
+	"moMathVector4.h"
+	"moArray.h"
+
+1363544605 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMoldeoObject.cpp
+	<moMoldeoObject.h>
+	<moTextureFilterIndex.h>
+	<moScriptManager.h>
+	<moMathManager.h>
+	<moFontManager.h>
+	<mo3dModelManager.h>
+	<moFilterManager.h>
+	"moArray.h"
+
+1355367527 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureFilterIndex.h
+	"moTypes.h"
+	"moAbstract.h"
+	"moConfig.h"
+	"moTextureFilter.h"
+
+1355367523 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moMotion.cpp
+	<stdlib.h>
+	<math.h>
+	"moMotion.h"
+
+1355367524 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moNetManager.cpp
+	"moNetManager.h"
+	"moArray.h"
+	<boost/bind.hpp>
+	"asio.hpp"
+	<boost/asio.hpp>
+	<boost/shared_ptr.hpp>
+
+1355367524 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moNetManager.h
+	"moTypes.h"
+	"moText.h"
+	"moConfig.h"
+	"moLock.h"
+	"moResourceManager.h"
+
+1355367524 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moP5.cpp
+	"moP5.h"
+	"moMath.h"
+
+1355402586 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moParam.cpp
+	"moParam.h"
+	"moArray.h"
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPlugin.cpp
+	"moPlugin.h"
+	<moPort.h>
+	"moArray.h"
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPostEffect.cpp
+	"moPostEffect.h"
+	"moArray.h"
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPostPlugin.cpp
+	"moPostPlugin.h"
+	"moArray.h"
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPreConfig.cpp
+	"moPreConfig.h"
+	"moArray.h"
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPreEffect.cpp
+	"moPreEffect.h"
+	"moArray.h"
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPrePlugin.cpp
+	"moPrePlugin.h"
+	"moArray.h"
+
+1355367525 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moPresets.cpp
+	"moPresets.h"
+
+1369716098 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moRenderManager.cpp
+	<moRenderManager.h>
+	<moEffect.h>
+	"moArray.h"
+
+1362866062 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moResourceManager.cpp
+	"moResourceManager.h"
+	<moDebugManager.h>
+	<moNetManager.h>
+	<moFileManager.h>
+	<moFilterManager.h>
+	<moTimeManager.h>
+	<moDataManager.h>
+	<moMathManager.h>
+	<moShaderManager.h>
+	<moFBManager.h>
+	<moGLManager.h>
+	<moDecoderManager.h>
+	<moSoundManager.h>
+	<mo3dModelManager.h>
+	<moFontManager.h>
+	<moGUIManager.h>
+	<moScriptManager.h>
+	"moArray.h"
+
+1355367525 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moResourcePlugin.cpp
+	"moResourcePlugin.h"
+	<moPort.h>
+	<iostream>
+	"moDebugManager.h"
+	"moArray.h"
+
+1355367525 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moSceneEffect.cpp
+	"moSceneEffect.h"
+
+1355367526 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moScript.cpp
+	<assert.h>
+	"moScript.h"
+	"moScriptManager.h"
+
+1355367526 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moScriptManager.cpp
+	"moScriptManager.h"
+
+1355367526 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moSequenceEffect.cpp
+	"moSequenceEffect.h"
+
+1355367526 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShader.cpp
+	"moShader.h"
+	"moArray.h"
+
+1355367526 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShaderCG.cpp
+	"moShaderCG.h"
+	"moDebugManager.h"
+
+1355367526 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShaderGLSL.cpp
+	"moShaderGLSL.h"
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moShaderManager.cpp
+	<moShaderManager.h>
+	<moTextureFilterIndex.h>
+	<moDataManager.h>
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moSoundManager.cpp
+	"moSoundManager.h"
+	"moArray.h"
+	<AL/alut.h>
+	<AL/al.h>
+	<AL/alut.h>
+	<AL/alext.h>
+	<al.h>
+	<alut.h>
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTempo.cpp
+	"moTempo.h"
+	"moMath.h"
+
+1369718976 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moText.cpp
+	"moText.h"
+	"moArray.h"
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextFilterParam.cpp
+	"moTextFilterParam.h"
+
+1355367521 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTexture.cpp
+	<moTexture.h>
+	<FreeImage.h>
+	<moFileManager.h>
+	<moDataManager.h>
+	"moArray.h"
+
+1355367522 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureFilter.cpp
+	"moTextureFilter.h"
+	"moArray.h"
+
+1355367517 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureFilterIndex.cpp
+	"moTextureFilterIndex.h"
+
+1355367527 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureIndex.cpp
+	"moTextureManager.h"
+	"moTexture.h"
+
+1355367527 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTextureManager.cpp
+	"moTextureManager.h"
+	<FreeImage.h>
+	<moDataManager.h>
+	<moFileManager.h>
+	"moArray.h"
+
+1370046388 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moThread.cpp
+	"moThread.h"
+
+1355367527 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTimeManager.cpp
+	"moTimeManager.h"
+
+1355367527 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTypes.cpp
+	"moTypes.h"
+	"config.h"
+
+1370213696 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk//config.h
+
+1363548448 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moValue.cpp
+	"moValue.h"
+	"moTexture.h"
+	"moTextureFilter.h"
+	"moArray.h"
+	"moText.h"
+
+1355367528 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moVdpauGraph.cpp
+	"moVdpauGraph.h"
+	"vdpau/vdpau.h"
+
+1355367528 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moVideoGraph.cpp
+	"moVideoGraph.h"
+	"moArray.h"
+
+1355367528 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moVideoManager.cpp
+	"moVideoManager.h"
+	"moArray.h"
+	"FreeImage.h"
+	<gst/gst.h>
+
+1355367528 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moXmlConfig.cpp
+	"moXmlConfig.h"
+
+1355367528 /media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moXmlConfig.h
+	<stdlib.h>
+	"moParam.h"
+	"moText.h"
+	"moArray.h"
+	"moConfig.h"
+	"tinyxml.h"
+
+1355367527 source:/media/DATA/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/libmoldeo/trunk/libmoldeo/moTimer.cpp
+	"moTimer.h"
+	"date_time/posix_time/posix_time.hpp"
+	"boost/date_time/posix_time/posix_time.hpp"
+	"moArray.h"
+
