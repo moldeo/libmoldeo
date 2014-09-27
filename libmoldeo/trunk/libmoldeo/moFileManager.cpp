@@ -29,6 +29,8 @@
 
 *******************************************************************************/
 #include "moTypes.h"
+#include "moDebugManager.h"
+
 #include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 
@@ -592,12 +594,6 @@ moFile::moFile( moText p_CompletePath ) {//could be: http://.... or ftp://... or
 
     SetCompletePath( p_CompletePath );
 
-    char *path;
-    path = p_CompletePath;
-
-    if (Exists() && !bfs::is_directory(path)) m_FileSize = (long) bfs::file_size( path );
-    else m_FileSize = 0;
-
 }
 
 moFile::~moFile() {
@@ -628,7 +624,12 @@ moFile::Finish() {
 
 MOboolean
 moFile::Exists() {
-    m_bExists = bfs::exists((char*)m_CompletePath);
+    try {
+        m_bExists = bfs::exists((char*)m_CompletePath);
+    } catch( const bfs::filesystem_error& e ) {
+        moDebugManager::Error("moFile::Exists > m_CompletePath:" + m_CompletePath + " failed.");
+        m_bExists = false;
+    }
 	return m_bExists;
 }
 
@@ -741,14 +742,26 @@ moFile::SetCompletePath( moText p_completepath ) {
 
         for( MOuint d=0; d < m_Dirs.Count(); d++ ) {
           if (m_Dirs[d]!="" && m_Dirs[d]!="/" && m_Dirs[d]!=".")// && m_Dirs[d]!="..")
-            m_Path+= m_Dirs[d] + "/";
+            m_Path+= m_Dirs[d] + moSlash;
+
         }
 
 		m_FileType = MO_FILETYPE_LOCAL;
 		m_bRemote = false;
 
+        m_CompletePath = m_Path + m_FileName + m_Extension;
+
 		m_bExists = bfs::exists((char*)m_CompletePath);
 
+        char *path;
+        path = m_CompletePath;
+        try {
+            if ( Exists() && !bfs::is_directory(path)) m_FileSize = (long) bfs::file_size( path );
+            else m_FileSize = 0;
+        } catch( const bfs::filesystem_error& e ) {
+            moDebugManager::Error("moFile::moFile > error: " + moText( e.what()) );
+            m_FileSize = 0;
+        }
 	}
 
 }
@@ -766,10 +779,26 @@ moFile::GetCompletePath() {
 moText
 moFile::GetAbsolutePath() {
   char *path;
+  moText absolutePath = m_CompletePath;
+
+  if (!m_bExists) {
+    return m_CompletePath;
+  }
+
   path = m_CompletePath;
-  bfs::path abspath = bfs::canonical( path );
-	moText absolutePath((char*)abspath.string().c_str());
-	return absolutePath;
+
+  try {
+
+    bfs::path abspath = bfs::canonical( path );
+    absolutePath = (char*)abspath.string().c_str();
+
+  } catch( const bfs::filesystem_error& e ) {
+
+    moDebugManager::Error( "moFile::GetAbsolutePath failed for " + m_CompletePath + " boost::filesystem error: " + e.what() );
+
+  }
+
+  return absolutePath;
 }
 
 
@@ -825,6 +854,9 @@ MOboolean moFileManager::Finish() {
 MOboolean
 moFileManager::Load( moText p_FileName, MOboolean bWaitForDownload ) {
 
+  moFile pFileName(p_FileName);
+  p_FileName = pFileName.GetCompletePath();
+
 	for(MOuint i = 0; i< m_Files.Count(); i++ ) {
 		if ( m_Files[i]->GetCompletePath() == p_FileName ) {
 			return true;
@@ -849,6 +881,8 @@ moFileManager::Load( moText p_FileName, MOboolean bWaitForDownload ) {
 
 moFile*
 moFileManager::GetFile( moText p_FileName ) {
+  moFile pFileName(p_FileName);
+  p_FileName = pFileName.GetCompletePath();
 
 	if ( Load(p_FileName) ) {
 		for(MOuint i = 0; i< m_Files.Count(); i++ ) {
