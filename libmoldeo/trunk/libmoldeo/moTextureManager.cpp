@@ -543,13 +543,18 @@ MOboolean moTextureManager::Init()
 
 	int m_id_default = AddTexture( "default", 256, 256);
 	moTexture* DefaultTexture =  GetTexture(m_id_default);
-    if (DefaultTexture) DefaultTexture->BuildFromFile(
-        m_pResourceManager->GetDataMan()->GetAppDataPath() +
-        moSlash +
-        moText("icons") +
-        moSlash +
-        moText("moldeologo.png")
-    );
+	moText logoFile = m_pResourceManager->GetDataMan()->GetAppDataPath() +
+                    moSlash +
+                    moText("icons") +
+                    moSlash +
+                    moText("moldeologo.png");
+
+    if (DefaultTexture) {
+        bool loaded = DefaultTexture->BuildFromFile(logoFile);
+        if (!loaded) {
+          MODebug2->Error("moTextureManager::Init > error loading " + logoFile );
+        }
+  }
 
 	return (m_glmanager && m_fbmanager);
 }
@@ -741,10 +746,15 @@ MOint moTextureManager::AddTexture(moText p_filename)
 {
 	moText name = p_filename;
 	MOuint type = GetTypeForFile(name);
+
 	moMovie* ptex_mov;
 
 	moTexture* ptex = CreateTexture(type, name);
 	p_filename = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)p_filename;
+
+  moFile TexFileName( p_filename );
+  p_filename = TexFileName.GetAbsolutePath();
+
 	if (ptex != NULL)
 	{
 		MOboolean res = false;
@@ -767,7 +777,8 @@ MOint moTextureManager::AddTexture(moText p_filename)
 			return ptex->GetMOId();
 
 		}	else {
-			delete ptex;
+      MODebug2->Error("moTextureManager::AddTexture > filename: " + p_filename + " failed BuildFromFile()/LoadMovieFile()");
+			DeleteTexture(ptex->GetMOId());
 			return -1;
 		}
 	}
