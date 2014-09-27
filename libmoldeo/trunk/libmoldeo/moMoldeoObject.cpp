@@ -646,6 +646,9 @@ moMoldeoObject::CreateConnectors() {
                                 if (value.GetSubValueCount()>=5) {
                                     //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
                                 }
+
+                                MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + valuebase0.Text());
+
                             }
                         } else {
                             MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: ") + valuebase0.Text()
