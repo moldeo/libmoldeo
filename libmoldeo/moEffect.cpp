@@ -556,6 +556,21 @@ moEffect::TempoDelta( double p_delta ) {
 }
 
 double
+moEffect::SetTempoDelta( double p_delta ) {
+
+    this->Unsynchronize();
+
+    m_EffectState.tempo.delta = p_delta;
+    if(m_EffectState.tempo.delta>2.0)
+        m_EffectState.tempo.delta = 2.0;
+    else
+    if( m_EffectState.tempo.delta < 0.005 )
+        m_EffectState.tempo.delta = 0.0;
+
+    return m_EffectState.tempo.delta;
+}
+
+double
 moEffect::GetTempoDelta() const {
     return m_EffectState.tempo.delta;
 }

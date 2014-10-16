@@ -168,6 +168,7 @@ public:
     virtual void BeatPulse();
     virtual double TempoDelta( double p_delta );
     virtual double GetTempoDelta() const;
+    double SetTempoDelta( double p_delta );
     virtual double TempoFactor( double p_factor );
     virtual double GetTempoFactor() const;
 
