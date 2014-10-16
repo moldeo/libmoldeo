@@ -371,7 +371,18 @@ MOboolean moDataManager::Init() {
 
 MOboolean moDataManager::Init( moText p_apppath, moText p_datapath, moText p_consoleconfig ) {
 
-	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( p_apppath, p_datapath, p_consoleconfig );
+  if (m_pDataSession) {
+    delete m_pDataSession;
+    m_pDataSession = NULL;
+  }
+  if (m_pDataSessionConfig) {
+      delete m_pDataSessionConfig;
+      m_pDataSessionConfig = NULL;
+  }
+
+	if (!m_pDataSessionConfig) {
+      m_pDataSessionConfig = new moDataSessionConfig( p_apppath, p_datapath, p_consoleconfig );
+	}
 	if (!m_pDataSession) {
         m_pDataSession = new moDataSession();
             m_pDataSession->Set( moText("session 1"),
