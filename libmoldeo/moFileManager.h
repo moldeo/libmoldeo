@@ -246,6 +246,7 @@ class LIBMOLDEO_API moFileManager : public moResource
 
         static bool       CreateDirectory( moDirectory Dir );
         static bool       CopyFile( moText FileSrc, moText FileDst );
+        static bool       CopyDirectory( const moText& DirSrc, const moText& DirDst );
 
 		static moText          GetExePath();
 		static moText          GetWorkPath();
