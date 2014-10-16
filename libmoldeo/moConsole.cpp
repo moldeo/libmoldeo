@@ -1623,6 +1623,10 @@ int moConsole::SendMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   return 0;
 }
 
+
+#include <sstream>
+#include <iostream>
+
 int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
   if (p_pDataMessage==NULL) {
@@ -1661,6 +1665,10 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   moText arg2Text;
   moText arg3Text;
 
+  moText argRed,argGreen,argBlue,argAlpha;
+  std::stringstream sr,sg,sb;
+  unsigned int r,g,b;
+
   moText EffectStateJSON = "";
   moText FullObjectJSON = "";
   moText fieldSeparation = ",";
@@ -1692,108 +1700,152 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         moParam& rParam( fxObject->GetConfig()->GetParam(arg1Text));
         arg2Int = atoi( arg2Text );
         moValue& rValue( rParam.GetValue(arg2Int) );
+
         moValueBase& VB( rValue.GetSubValue(0) );
         MODebug2->Message("MO_ACTION_VALUE_SET settings: arg1Text (param):" + arg1Text
                           + " arg2Text (preconf): ["+arg2Text+"] arg2Int: "+ IntToStr(arg2Int)
                           + " arg3Text (val): " + arg3Text
                           + " VB:" + VB.TypeToText()
                           );
-        switch(VB.Type()) {
-          case MO_DATA_FUNCTION:
-            idx = -1;
-            VB.SetText(arg3Text);
+
+        if (rParam.GetParamDefinition().GetType()==MO_PARAM_COLOR) {
+          argRed = arg3Text;
+          argGreen = arg3Text;
+          argBlue = arg3Text;
+          MODebug2->Message("color");
+          if (arg3Text.Left(0)=="#") {
+            argRed.Mid(1,2);
+            argGreen.Mid(3,2);
+            argBlue.Mid(5,2);
+            MODebug2->Message("color: red: " + argRed + " green:" + argGreen + " blue:" + argBlue);
+
+            sr << std::hex << argRed;
+            sr >> r;
             if (m_pResourceManager->GetMathMan())
-              idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
+                idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)r*1.0/255.0),
+                                                                    (MOboolean)true, this );
             if (idx>-1) {
-                VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
-                //MODebug2->Message( moText("function defined: ") + VB.Text() );
-            } else {
-                MODebug2->Error(moText("moConsole::ProcessMoldeoAPIMessage > function couldn't be defined: ") + VB.Text()
-                                + " object: "+GetName()
-                                + " config: " + GetConfigName()
-                                + " label:" + GetLabelName() );
+                rValue.GetSubValue(0).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
             }
-            return 0;
-            break;
-          case MO_DATA_TEXT:
-          case MO_DATA_IMAGESAMPLE:
-          case MO_DATA_IMAGESAMPLE_FILTERED:
-          case MO_DATA_IMAGESAMPLE_TEXTUREBUFFER:
 
-            switch(rParam.GetParamDefinition().GetType()) {
-              case MO_PARAM_TEXT:
-                VB.SetText(arg3Text);
-                break;
-              case MO_PARAM_TEXTURE:
+            sg << std::hex << argGreen;
+            sg >> g;
+            if (m_pResourceManager->GetMathMan())
+                idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)g*1.0/255.0),
+                                                                    (MOboolean)true, this );
+            if (idx>-1) {
+                rValue.GetSubValue(1).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+            }
 
-                if (m_pResourceManager->GetDataMan()->InData(arg3Text)) {
-                  //make relative to datapath
-                  arg3Text = m_pResourceManager->GetDataMan()->MakeRelativeToData(arg3Text);
-                } else {
-                  //try to import file
-                  moFile importFile( arg3Text );
-                  m_pResourceManager->GetDataMan()->ImportFile( importFile.GetAbsolutePath() );
-                  arg3Text = importFile.GetFullName();
-                }
+            sb << std::hex << argBlue;
+            sb >> b;
+            if (m_pResourceManager->GetMathMan())
+                idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)b*1.0/255.0),
+                                                                    (MOboolean)true, this );
+            if (idx>-1) {
+                rValue.GetSubValue(2).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+            }
 
-                idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( arg3Text, true);
-                if (idx>-1) {
-                    moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
-                    VB.SetText(arg3Text);
-                    VB.SetTexture( pTexture );
-                    /*
-                    if (pTexture->GetType()!=MO_TYPE_TEXTURE_MULTIPLE && value.GetSubValueCount()>1) {
-                        idx = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->LoadFilter( &value );
-                        moTextureFilter*  pTextureFilter = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->Get(idx-1);
-                        valuebase0.SetTextureFilter( pTextureFilter );
-                    }
+            MODebug2->Message("color: red: " + IntToStr(r) + " green:" + IntToStr(g) + " blue:" + IntToStr(b));
+          }
+        } else {
+          switch(VB.Type()) {
+            case MO_DATA_FUNCTION:
+              idx = -1;
+              VB.SetText(arg3Text);
+              if (m_pResourceManager->GetMathMan())
+                idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
+              if (idx>-1) {
+                  VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+                  //MODebug2->Message( moText("function defined: ") + VB.Text() );
+              } else {
+                  MODebug2->Error(moText("moConsole::ProcessMoldeoAPIMessage > function couldn't be defined: ") + VB.Text()
+                                  + " object: "+GetName()
+                                  + " config: " + GetConfigName()
+                                  + " label:" + GetLabelName() );
+              }
+              return 0;
+              break;
+            case MO_DATA_TEXT:
+            case MO_DATA_IMAGESAMPLE:
+            case MO_DATA_IMAGESAMPLE_FILTERED:
+            case MO_DATA_IMAGESAMPLE_TEXTUREBUFFER:
 
-                    if (value.GetSubValueCount()==4) {
-                        valuebase0.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
-                    }
+              switch(rParam.GetParamDefinition().GetType()) {
+                case MO_PARAM_TEXT:
+                  VB.SetText(arg3Text);
+                  break;
+                case MO_PARAM_TEXTURE:
 
-                    if (value.GetSubValueCount()>=5) {
-                        //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
-                    }
-                    */
-                } else {
-                  MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > importing image error! "+arg3Text);
-                }
-                break;
-              case MO_PARAM_SOUND:
-                VB.SetText(arg3Text);
-                if (VB.Text()!="") {
-                  moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( VB.Text() );
-                  if (pSound) {
-                      VB.SetSound( pSound );
+                  if (m_pResourceManager->GetDataMan()->InData(arg3Text)) {
+                    //make relative to datapath
+                    arg3Text = m_pResourceManager->GetDataMan()->MakeRelativeToData(arg3Text);
+                  } else {
+                    //try to import file
+                    moFile importFile( arg3Text );
+                    m_pResourceManager->GetDataMan()->ImportFile( importFile.GetAbsolutePath() );
+                    arg3Text = importFile.GetFullName();
                   }
-                }
-                break;
-              default:
-                break;
-            }
-            return 0;
-            break;
-          case MO_DATA_NUMBER:
-            VB.SetInt( (int)atoi(arg3Text) );
-            break;
-          case MO_DATA_NUMBER_INT:
-            VB.SetInt( (int)atoi(arg3Text) );
-            break;
-          case MO_DATA_NUMBER_FLOAT:
-            VB.SetFloat( (float)atof(arg3Text) );
-            break;
-          case MO_DATA_NUMBER_DOUBLE:
-            VB.SetDouble( (double)atof(arg3Text) );
-            break;
-          case MO_DATA_NUMBER_CHAR:
-            VB.SetInt( (char)atoi(arg3Text) );
-            break;
-          case MO_DATA_NUMBER_LONG:
-            VB.SetLong( (long)atoi(arg3Text) );
-            break;
-          default:
-            break;
+
+                  idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( arg3Text, true);
+                  if (idx>-1) {
+                      moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
+                      VB.SetText(arg3Text);
+                      VB.SetTexture( pTexture );
+                      /*
+                      if (pTexture->GetType()!=MO_TYPE_TEXTURE_MULTIPLE && value.GetSubValueCount()>1) {
+                          idx = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->LoadFilter( &value );
+                          moTextureFilter*  pTextureFilter = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->Get(idx-1);
+                          valuebase0.SetTextureFilter( pTextureFilter );
+                      }
+
+                      if (value.GetSubValueCount()==4) {
+                          valuebase0.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
+                      }
+
+                      if (value.GetSubValueCount()>=5) {
+                          //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
+                      }
+                      */
+                  } else {
+                    MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > importing image error! "+arg3Text);
+                  }
+                  break;
+                case MO_PARAM_SOUND:
+                  VB.SetText(arg3Text);
+                  if (VB.Text()!="") {
+                    moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( VB.Text() );
+                    if (pSound) {
+                        VB.SetSound( pSound );
+                    }
+                  }
+                  break;
+                default:
+                  break;
+              }
+              return 0;
+              break;
+            case MO_DATA_NUMBER:
+              VB.SetInt( (int)atoi(arg3Text) );
+              break;
+            case MO_DATA_NUMBER_INT:
+              VB.SetInt( (int)atoi(arg3Text) );
+              break;
+            case MO_DATA_NUMBER_FLOAT:
+              VB.SetFloat( (float)atof(arg3Text) );
+              break;
+            case MO_DATA_NUMBER_DOUBLE:
+              VB.SetDouble( (double)atof(arg3Text) );
+              break;
+            case MO_DATA_NUMBER_CHAR:
+              VB.SetInt( (char)atoi(arg3Text) );
+              break;
+            case MO_DATA_NUMBER_LONG:
+              VB.SetLong( (long)atoi(arg3Text) );
+              break;
+            default:
+              break;
+          }
         }
 
       }
@@ -1895,7 +1947,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
               EffectState = fxObject->GetEffectState();
               EffectState.alpha = p_pDataMessage->Get(3).Float();
               MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating to: " + FloatToStr(EffectState.alpha) );
-              fxObject->SetState( EffectState );
+              fxObject->SetEffectState( EffectState );
               EffectState = fxObject->GetEffectState();
               MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updated: " + FloatToStr(EffectState.alpha) );
             }
@@ -1912,14 +1964,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
               MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo beatpulse" );
               fxObject->BeatPulse();
             } else if( p_pDataMessage->Get(3).Type() != MO_DATA_TEXT ) {
-              EffectState = fxObject->GetEffectState();
-
-              EffectState.tempo.delta = p_pDataMessage->Get(3).Float();
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating to: " + FloatToStr(EffectState.tempo.delta) );
-              fxObject->SetState( EffectState );
-
-              EffectState = fxObject->GetEffectState();
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updated: " + FloatToStr(EffectState.tempo.delta) );
+              fxObject->SetTempoDelta( p_pDataMessage->Get(3).Float() );
+              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating tempo.delta to: " + FloatToStr(fxObject->GetEffectState().tempo.delta) );
             }
         }
 
@@ -2030,7 +2076,16 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_CONSOLE_SCREENSHOT:
       //ScreenShot();
-      m_pResourceManager->GetRenderMan()->Screenshot(moText(""));
+      if (m_pResourceManager->GetRenderMan()->Screenshot(moText(""), m_LastScreenshot)) {
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolescreenshot") );
+            pMessageToSend->Add( moData("success") );
+            ///JSON INFO
+            pMessageToSend->Add( moData("{\"lastscreenshot\" : \""+m_LastScreenshot + "\"}" ) );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+      }
       return 0;
       break;
 
@@ -2045,9 +2100,49 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       pMessageToSend = new moDataMessage();
       if (pMessageToSend) {
           pMessageToSend->Add( moData("consolesave") );
+          pMessageToSend->Add( moData("success") );
           SendMoldeoAPIMessage( pMessageToSend );
       }
       return 0;
+      break;
+    case MO_ACTION_CONSOLE_SAVEAS:
+      MODebug2->Message("moConsole::Processing > Save As");
+      arg0  = p_pDataMessage->Get(1).ToText();//DIRECTORY
+      ///si no existe ese directorio crearlo!!!
+      MODebug2->Message("moConsole::Processing > Save As: FROM: " + m_pResourceManager->GetDataMan()->GetDataPath()
+                        + " TO: "+ arg0);
+      if ( moFileManager::CopyDirectory( m_pResourceManager->GetDataMan()->GetDataPath(), arg0 ) ) {
+
+        moFile molFile(  m_pResourceManager->GetDataMan()->GetConsoleConfigName() );
+
+        MODebug2->Message("moConsole::Processing > Save As OK!!!");
+        m_pResourceManager->GetDataMan()->Init( m_pResourceManager->GetDataMan()->GetAppPath(),
+                                               arg0,
+                                               molFile.GetFullName() );
+         MODebug2->Message(" changing path: " + m_pResourceManager->GetDataMan()->GetDataPath()
+                          + " mol file:" + molFile.GetFullName() );
+
+        for( int fx=0; fx<m_MoldeoObjects.Count(); fx++ ) {
+          moFile cfgName( m_MoldeoObjects[fx]->GetConfig()->GetName() );
+          m_MoldeoObjects[fx]->GetConfig()->SaveConfig( arg0+moSlash+cfgName.GetFullName() );
+        }
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolesaveas") );
+            pMessageToSend->Add( moData("success") );
+            ///JSON INFO
+            pMessageToSend->Add( moData("{\"projectfullpath\":\""+arg0 + "\"}" ) );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+
+      } else {
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolesaveas") );
+            pMessageToSend->Add( moData("failed") );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+      }
       break;
 
     case MO_ACTION_CONSOLE_PLAY:
@@ -2218,7 +2313,7 @@ moConsole::Update() {
         } else {
 
             if ( m_ScreenshotTimer.Duration()>m_ScreenshotInterval ) {
-                m_pResourceManager->GetRenderMan()->Screenshot(moText(""));
+                m_pResourceManager->GetRenderMan()->Screenshot(moText(""),m_LastScreenshot);
                 m_ScreenshotTimer.Stop();
                 m_ScreenshotTimer.Start();
             }
@@ -3340,7 +3435,7 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
         MODebug2->Error( moText("console lua script: GetDirectoryFileCount > Directory doesn't exist") );
     }
 */
-    res = this->m_pResourceManager->GetRenderMan()->Screenshot( moText(pathname) );
+    res = this->m_pResourceManager->GetRenderMan()->Screenshot( moText(pathname), m_LastScreenshot );
 
     lua_pushnumber(state, (lua_Number) res );
 
