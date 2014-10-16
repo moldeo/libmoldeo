@@ -419,7 +419,7 @@ void moRenderManager::SaveScreen()
 
 int screenshots_c = 0;
 
-bool moRenderManager::Screenshot( moText pathname ) {
+bool moRenderManager::Screenshot( moText pathname, moText& screenshot_result ) {
 
         if (m_render_tex_moid[MO_SCREEN_TEX]) {
 
@@ -460,15 +460,15 @@ bool moRenderManager::Screenshot( moText pathname ) {
                         }
                     }
 
-                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText("_") + IntToStr(screenshots_c) + moText(".png");
+                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText("_") + IntToStr(screenshots_c);
                 } else {
                     screenshot_path = pathname;
                     /** crear directorio ?? */
-                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText(".png");
+                    screenshot_name = screenshot_path + moSlash + moText(datetime);
                 }
 
                 /** Generamos un archivo de imagen a partir de la textura TexScreen actualizada*/
-                TexScreen->CreateThumbnail( "PNG", m_pResourceManager->GetRenderMan()->ScreenWidth(), m_pResourceManager->GetRenderMan()->ScreenHeight(), screenshot_name );
+                screenshot_result = TexScreen->CreateThumbnail( "PNG", m_pResourceManager->GetRenderMan()->ScreenWidth(), m_pResourceManager->GetRenderMan()->ScreenHeight(), screenshot_name );
 
             }
 

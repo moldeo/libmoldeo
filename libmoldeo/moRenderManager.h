@@ -279,7 +279,7 @@ class LIBMOLDEO_API moRenderManager : public moResource
          */
 		void SaveScreen();
 
-		bool Screenshot( moText pathname );
+		bool Screenshot( moText pathname, moText& screenshot_result );
 
 
         /**
