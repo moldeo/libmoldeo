@@ -699,6 +699,10 @@ moData::TextToType( moText texttype ) {
 moText
 moData::ToText() const {
 
+    moText finalMsg = "";
+    moDataMessage *dM  =NULL;
+    moDataMessages *dMs = NULL;
+
     switch((int)m_DataType) {
         case MO_DATA_NUMBER:
             return IntToStr( Int() );
@@ -726,6 +730,29 @@ moData::ToText() const {
             return Text();
             break;
             */
+        case MO_DATA_MESSAGE:
+          dM = (moDataMessage*)m_Number.m_Pointer;
+          if (dM) {
+            for(int c=0;c<dM->Count();c++) {
+              finalMsg+= ";" + dM->Get(c).ToText();
+            }
+          }
+          return finalMsg;
+          break;
+        case MO_DATA_MESSAGES:
+          dMs = (moDataMessages*)m_Number.m_Pointer;
+          if (dMs) {
+            for(int c=0;c<dMs->Count();c++) {
+              moDataMessage dM =  dMs->Get(c);
+              for(int cc=0;cc<dM.Count();cc++) {
+                finalMsg+= ";" + dM.Get(c).ToText();
+              }
+              finalMsg+= "\n";
+
+            }
+          }
+          return finalMsg;
+          break;
         default:
             break;
     }
