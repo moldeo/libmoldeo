@@ -152,17 +152,17 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 	}
 
-  MODebug2->Message( moText("moRenderManager::Init > Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)));
-  MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + moText(IntToStr((int)glActiveTextureARB)) );
-  MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + moText(IntToStr((int)glMultiTexCoord2fARB)) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + moText(IntToStr(GLEW_ARB_texture_non_power_of_two)) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_color_buffer_float: ") + moText(IntToStr(GLEW_ARB_color_buffer_float))) ;
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_multitexture: ") + moText(IntToStr(GLEW_ARB_multitexture))) ;
-  MODebug2->Message( moText("moRenderManager::Init >       GL_EXT_gpu_shader4: ") + moText(IntToStr(GL_EXT_gpu_shader4))) ;
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_geometry_shader4: ") + moText(IntToStr(GLEW_EXT_geometry_shader4))) ;
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + moText(IntToStr(GLEW_ARB_imaging))) ;
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + moText(IntToStr(GLEW_ARB_shading_language_100))) ;
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + moText(IntToStr(GLEW_EXT_framebuffer_object))) ;
+  MODebug2->Message( moText("moRenderManager::Init > Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)) );
+  MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + IntToStr( PtrToInt(glActiveTextureARB)) );
+  MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + IntToStr( PtrToInt(glMultiTexCoord2fARB)) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + IntToStr(GLEW_ARB_texture_non_power_of_two) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_color_buffer_float: ") + IntToStr(GLEW_ARB_color_buffer_float) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_multitexture: ") + IntToStr(GLEW_ARB_multitexture) );
+  MODebug2->Message( moText("moRenderManager::Init >       GL_EXT_gpu_shader4: ") + IntToStr(GL_EXT_gpu_shader4) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_geometry_shader4: ") + IntToStr(GLEW_EXT_geometry_shader4) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + IntToStr(GLEW_ARB_imaging) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + IntToStr(GLEW_ARB_shading_language_100) );
+  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
 
 	if (m_render_tex_moid[0]==-1) {
 	    m_render_tex_moid[0] = m_pTextureManager->AddTexture("render_texture", m_render_width, m_render_height);
