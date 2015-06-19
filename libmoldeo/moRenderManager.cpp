@@ -153,8 +153,8 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 	}
 
   MODebug2->Message( moText("moRenderManager::Init > Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)) );
-  MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + IntToStr( PtrToInt(glActiveTextureARB)) );
-  MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + IntToStr( PtrToInt(glMultiTexCoord2fARB)) );
+  MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + IntToStr( (long)glActiveTextureARB) );
+  MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + IntToStr( (long)glMultiTexCoord2fARB ) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + IntToStr(GLEW_ARB_texture_non_power_of_two) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_color_buffer_float: ") + IntToStr(GLEW_ARB_color_buffer_float) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_multitexture: ") + IntToStr(GLEW_ARB_multitexture) );
