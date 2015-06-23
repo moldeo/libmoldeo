@@ -53,6 +53,7 @@ Example:
 #ifndef __MO_GSGRAPH_H
 #define __MO_GSGRAPH_H
 
+#define MO_GSTREAMER
 #ifdef MO_GSTREAMER
 
 
