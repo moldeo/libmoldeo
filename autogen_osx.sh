@@ -148,4 +148,6 @@ run_or_die ${AUTOCONF} ${AUTOCONF_FLAGS}
 ###############################################################################
 # Run configure
 ###############################################################################
-echo "NOT running ./configure ${CONFIGURE_FLAGS} $@"
+chmod 755 install-sh
+./configure ${CONFIGURE_FLAGS} $@
+#echo "NOT running ./configure ${CONFIGURE_FLAGS} $@"
