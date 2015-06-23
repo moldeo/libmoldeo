@@ -31,12 +31,12 @@
 					<Add library="libtinyxmld" />
 					<Add library="libfreetype235MT_D" />
 					<Add library="opengl32" />
-					<Add directory="../../../../externlibs/tinyxml/Debug" />
+					<Add directory="../../../../../SVNSOURCEFORGE/externlibs/tinyxml/Debug" />
 					<Add directory="c:/mingw/lib" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="cp.exe ../../lib/win/libmoldeod.dll ../../../../binaries/bin/win/" />
-					<Add after="cp.exe ../../lib/win/libmoldeod* ../../../../binaries/lib/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeod.dll ../../../moldeoinstaller/bin/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeod* ../../../moldeoinstaller/lib/win/" />
 				</ExtraCommands>
 			</Target>
 			<Target title="release">
@@ -61,11 +61,11 @@
 					<Add library="glew_staticd" />
 					<Add library="libfreetype235MT" />
 					<Add library="opengl32" />
-					<Add directory="../../../../externlibs/tinyxml/Release" />
+					<Add directory="../../../../../SVNSOURCEFORGE/externlibs/tinyxml/Release" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="cp.exe ../../lib/win/libmoldeo.dll ../../../../binaries/bin/win/" />
-					<Add after="cp.exe ../../lib/win/libmoldeo* ../../../../binaries/lib/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeo.dll ../../../moldeoinstaller/bin/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeo* ../../../moldeoinstaller/lib/win/" />
 				</ExtraCommands>
 			</Target>
 			<Target title="debug ansi">
@@ -86,11 +86,11 @@
 					<Add library="glew_staticdd" />
 					<Add library="libfreetype235MT_D" />
 					<Add library="opengl32" />
-					<Add directory="../../../../externlibs/tinyxml/Debug" />
+					<Add directory="../../../../../SVNSOURCEFORGE/externlibs/tinyxml/Debug" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="cp.exe ../../lib/win/libmoldeod_ansi.dll ../../../../binaries/bin/win/" />
-					<Add after="cp.exe ../../lib/win/libmoldeod* ../../../../binaries/lib/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeod_ansi.dll ../../../moldeoinstaller/bin/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeod* ../../../moldeoinstaller/lib/win/" />
 				</ExtraCommands>
 			</Target>
 			<Target title="release ansi">
@@ -109,11 +109,11 @@
 					<Add library="glew_staticd" />
 					<Add library="libfreetype235MT" />
 					<Add library="opengl32" />
-					<Add directory="../../../../externlibs/tinyxml/Release" />
+					<Add directory="../../../../../SVNSOURCEFORGE/externlibs/tinyxml/Release" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="cp.exe ../../lib/win/libmoldeo_ansi.dll ../../../../binaries/bin/win/" />
-					<Add after="cp.exe ../../lib/win/libmoldeo* ../../../../binaries/lib/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeo_ansi.dll ../../../moldeoinstaller/bin/win/" />
+					<Add after="cp.exe ../../lib/win/libmoldeo* ../../../moldeoinstaller/lib/win/" />
 				</ExtraCommands>
 			</Target>
 		</Build>
@@ -137,16 +137,16 @@
 			<Add option="-DMO_WIN32=1" />
 			<Add directory="../../" />
 			<Add directory="../../libmoldeo" />
-			<Add directory="../../../../externlibs/boost/include/1_48_0" />
-			<Add directory="../../../../externlibs/boost/include/1_48_0/boost" />
-			<Add directory="../../../../externlibs/freeimage/include" />
-			<Add directory="../../../../externlibs/glew/include" />
-			<Add directory="../../../../externlibs/freetype/include" />
-			<Add directory="../../../../externlibs/lua/include" />
-			<Add directory="../../../../externlibs/muparser/include" />
-			<Add directory="../../../../externlibs/SDL/include" />
-			<Add directory="../../../../externlibs/tinyxml" />
-			<Add directory="../../../../externlibs/FTGL/include" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/boost/include/1_48_0" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/boost/include/1_48_0/boost" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/freeimage/include" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/glew/include" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/freetype/include" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/lua/include" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/muparser/include" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/SDL/include" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/tinyxml" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/FTGL/include" />
 			<Add directory="C:/gstreamer-sdk/0.10/x86/include/gstreamer-0.10" />
 			<Add directory="C:/gstreamer-sdk/0.10/x86/include/glib-2.0" />
 			<Add directory="C:/gstreamer-sdk/0.10/x86/include/libxml2" />
@@ -178,20 +178,18 @@
 			<Add library="boost_filesystem-mt" />
 			<Add library="glu32" />
 			<Add directory="C:/gstreamer-sdk/0.10/x86/lib" />
-			<Add directory="D:/_data/proyectos/SINESTESIA/SVNSOURCEFORGE/externlibs/SDL/lib" />
-			<Add directory="../../../../externlibs/boost/lib/1_48_0" />
-			<Add directory="../../../../externlibs/lua/lib" />
-			<Add directory="../../../../externlibs/muparser/lib" />
-			<Add directory="../../../../externlibs/freetype/lib" />
-			<Add directory="../../../../externlibs/FTGL/lib" />
-			<Add directory="../../../../externlibs/glew/lib" />
-			<Add directory="../../../../externlibs/freeimage/lib" />
-			<Add directory="../../../../externlibs/tinyxml" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/boost/lib/1_48_0" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/lua/lib" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/muparser/lib" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/freetype/lib" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/FTGL/lib" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/glew/lib" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/freeimage/lib" />
+			<Add directory="../../../../../SVNSOURCEFORGE/externlibs/tinyxml" />
 			<Add directory="$(OSSBUILD_GSTREAMER_SDK_DIR)/lib" />
 		</Linker>
 		<ExtraCommands>
-			<Add after="cp.exe -u ../../libmoldeo/*.h ../../../../binaries/include/" />
-			<Add after='svn export &quot;../../data&quot; &quot;../../../../binaries/data&quot; --force' />
+			<Add after="cp.exe ../../libmoldeo/*.h ../../../moldeoinstaller/include" />
 		</ExtraCommands>
 		<Unit filename="../../config.h" />
 		<Unit filename="../../libmoldeo/mo3dModelManager.cpp" />
@@ -376,9 +374,7 @@
 		<Unit filename="../../libmoldeo/moVideoManager.h" />
 		<Unit filename="../../libmoldeo/moldeo.h" />
 		<Extensions>
-			<code_completion>
-				<search_path add="..\..\..\..\externlibs\cg\include" />
-			</code_completion>
+			<code_completion />
 			<debugger />
 			<envvars />
 		</Extensions>
