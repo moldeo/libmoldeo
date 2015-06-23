@@ -331,31 +331,64 @@ class LIBMOLDEO_API moCaptureDevice {
 			m_Name = moText("");
 			m_Description = moText("");
 			m_Path  = moText("");
+			m_LabelName = moText("");
 			m_DevicePort = 0;
 			m_bPresent = false;
-		    m_SourceWidth = m_SourceHeight = m_SourceBpp = m_SourceFlipH = m_SourceFlipV = 0;
+			m_bPreferred = false;
+      m_SourceWidth = m_SourceHeight = m_SourceBpp = m_SourceFlipH = m_SourceFlipV = 0;
 		}
 
         /// contructor
 		moCaptureDevice( const moText &p_name, const moText &p_description, const moText &p_path, MOint p_deviceport = 0, MOint p_sourcewidth = 0, MOint p_sourceheight = 0, MOint p_bpp = 0, MOint p_fliph=0, MOint p_flipv=0 ) {
 			m_Name = p_name;
+			m_LabelName = p_name;
 			m_Description = p_description;
 			m_Path  = p_path;
 			m_DevicePort = p_deviceport;
 			m_bPresent = true;
+			m_bPreferred = false;
 			m_SourceWidth = p_sourcewidth;
 			m_SourceHeight = p_sourceheight;
 			m_SourceBpp = p_bpp;
-            m_SourceFlipH = p_fliph;
-            m_SourceFlipV = p_flipv;
+      m_SourceFlipH = p_fliph;
+      m_SourceFlipV = p_flipv;
 		}
 
 		///Copy constructor
 		moCaptureDevice( const moCaptureDevice &src ) {
-			*this = src;
+			(*this) = src;
 		}
 
-        /// Devuelve el nombre del dispositivo
+    /// Operador de copia
+		moCaptureDevice &operator = (const moCaptureDevice &src)
+		{
+			m_bPresent = src.m_bPresent;
+			m_bPreferred = src.m_bPreferred;
+			m_Name = src.m_Name;
+			m_Description = src.m_Description;
+			m_Path = src.m_Path ;
+			m_VideoFormat = src.m_VideoFormat;
+			m_LabelName = src.m_LabelName;
+			m_DevicePort = src.m_DevicePort;
+			m_SourceWidth = src.m_SourceWidth;
+			m_SourceHeight = src.m_SourceHeight;
+			m_SourceBpp = src.m_SourceBpp;
+      m_SourceFlipH = src.m_SourceFlipH;
+      m_SourceFlipV = src.m_SourceFlipV;
+
+			return *this;
+		}
+
+    virtual ~moCaptureDevice() {
+    }
+
+
+
+		void SetName( const moText &p_name ) {
+			m_Name = p_name;
+		}
+
+    /// Devuelve el nombre del dispositivo
 		const moText& GetName() const {
 			return m_Name;
 		}
@@ -399,62 +432,52 @@ class LIBMOLDEO_API moCaptureDevice {
 		}
 
         /// Fija el nombre de código del dispositivo
-		void SetCodeName( const moText &p_codename ) {
-			m_CodeName = p_codename;
+		void SetLabelName( const moText &p_labelname ) {
+			m_LabelName = p_labelname;
 		}
 
         /// Devuelve el nombre de código del dispositivo
-		const moText& GetCodeName() const {
-			return m_CodeName;
+		const moText& GetLabelName() const {
+			return m_LabelName;
 		}
 
-        /// Devuelve el ancho de la imagen de origen
-        int GetSourceWidth() const {
-            return m_SourceWidth;
-        }
+    /// Devuelve el ancho de la imagen de origen
+    int GetSourceWidth() const {
+        return m_SourceWidth;
+    }
 
-        /// Devuelve el alto de la imagen de origen
-        int GetSourceHeight() const {
-            return m_SourceHeight;
-        }
+    /// Devuelve el alto de la imagen de origen
+    int GetSourceHeight() const {
+        return m_SourceHeight;
+    }
 
-        /// Devuelve los bits por pixel de la imagen de origen
-        int GetSourceBpp() const {
-            return m_SourceBpp;
-        }
+    /// Devuelve los bits por pixel de la imagen de origen
+    int GetSourceBpp() const {
+        return m_SourceBpp;
+    }
 
-        /// Devuelve el valor de inversión de imagen horizontal
-        int GetSourceFlipH() const {
-            return m_SourceFlipH;
-        }
+    /// Devuelve el valor de inversión de imagen horizontal
+    int GetSourceFlipH() const {
+        return m_SourceFlipH;
+    }
 
-        /// Devuelve el valor de inversión de imagen vertical
-        int GetSourceFlipV() const {
-            return m_SourceFlipV;
-        }
+    /// Devuelve el valor de inversión de imagen vertical
+    int GetSourceFlipV() const {
+        return m_SourceFlipV;
+    }
 
+    void SetPreffered( bool setpreferred = true) {
+      m_bPreferred = setpreferred;
+    }
 
-        /// Operador de copia
-		moCaptureDevice &operator = (const moCaptureDevice &src)
-		{
-			m_bPresent = src.m_bPresent;
-			m_Name = src.m_Name;
-			m_Description = src.m_Description;
-			m_Path = src.m_Path ;
-			m_VideoFormat = src.m_VideoFormat;
-			m_CodeName = src.m_CodeName;
-			m_DevicePort = src.m_DevicePort;
-			m_SourceWidth = src.m_SourceWidth;
-			m_SourceHeight = src.m_SourceHeight;
-			m_SourceBpp = src.m_SourceBpp;
-            m_SourceFlipH = src.m_SourceFlipH;
-            m_SourceFlipV = src.m_SourceFlipV;
+    bool IsPreferred() {
+      return m_bPreferred;
+    }
 
-			return *this;
-		}
 
 	private:
 		bool			m_bPresent;///Presencia del dispositivo
+		bool      m_bPreferred;///Dispositivo preferido siempre se dan de alta cuando están presentes.
 		moText			m_Name;///Nombre del dispositivo
 		moText			m_Description;///Descripción del dispositivo
 		moText			m_Path;///Camino o clave del dispositivo
@@ -467,7 +490,7 @@ class LIBMOLDEO_API moCaptureDevice {
 		MOint           m_SourceFlipH;
 		MOint           m_SourceFlipV;
 
-		moText			m_CodeName;///Código del dispositivo
+		moText			m_LabelName;///Etiqueta asignada por el usuario al dispositivo: si no se define es el nombre del dispositivo
 
 };
 

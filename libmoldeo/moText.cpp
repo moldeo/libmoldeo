@@ -720,9 +720,31 @@ moText0::Find( const moText0& target ) {
 }
 
 
+using std::string;
+
 void
 moText0::Replace( const moText0& target, const moText0& replacement ) {
 
+string str_src = (char*) (*this);
+string str_search = (char*) target;
+string str_replace = (char*) replacement;
+
+(*this) = "";
+
+for( size_t pos = 0; ; pos += str_replace.length() )
+{
+  pos = str_src.find( str_search, pos );
+  if( pos == string::npos ) break;
+
+  str_src.erase( pos, str_search.length() );
+  str_src.insert( pos, str_replace );
+}
+
+
+(*this) = str_src.c_str();
+
+return;
+/*
     moText0 newone;
     int toreplace,i,j;
     moText0 mLeft;
@@ -764,7 +786,7 @@ moText0::Replace( const moText0& target, const moText0& replacement ) {
 
 
     }
-
+*/
 }
 
 void
@@ -1007,8 +1029,13 @@ moText
 moTextHeap::Pop() {
 	int i;
 	moText ret;
+	if (array==NULL) return ret;
 	if(n>=1) {ret = array[n-1];}
-	if(n>=2) {for(i=(n-1);i>0;i--) array[i] = array[i-1];}
+	if(n>=2) {
+      for(i=(n-1);i>0;i--) {
+        array[i] = array[i-1];
+      }
+	}
 	if (count>0) count--;
 	return ret;
 }
@@ -1049,8 +1076,8 @@ LIBMOLDEO_API moText0 IntToStr(int a)
 LIBMOLDEO_API moText0 IntToStr( int a, int nzeros )
 {
     char buffer[100];
-    nzeros = 2;
-    snprintf(buffer, 100, "%02d", a); // Memory-safe version of sprintf.
+    moText pat = moText("%0") + IntToStr(nzeros) + moText("d");
+    snprintf(buffer, 100, pat, a); // Memory-safe version of sprintf.
 
     moText str = buffer;
     return str;

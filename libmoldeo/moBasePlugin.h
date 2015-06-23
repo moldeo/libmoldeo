@@ -72,4 +72,69 @@ inline void moUnloadPlugin(MOpluginHandle &handle)
     #endif
 }
 
+/// Definición de un plugin
+/**
+*   Se necesitan tres parámetros para reconocer un plugin. Su nombre para ser invocado, su tipo, y la posición del archivo.
+*/
+class LIBMOLDEO_API moPluginDefinition {
+
+  public:
+
+    moPluginDefinition() {
+          m_Name = moText("");
+          m_FullPath = moText("");
+          m_MoldeoObjectType = MO_OBJECT_UNDEFINED;
+    }
+
+    moPluginDefinition( const moPluginDefinition &src ) {
+        *this = src;
+    }
+
+    ///constructor
+    /**
+    * @param p_name el nombre del plugin tal cual se invocará luego
+    * @param p_fullpath el nombre del archivo completo incluyendo la ruta
+    * @param p_type el tipo de objeto que este plugin implementa
+    */
+    moPluginDefinition( const moText& p_name, const moText& p_fullpath, moMoldeoObjectType p_type ) {
+          m_Name = p_name;
+          m_FullPath = p_fullpath;
+          m_MoldeoObjectType = p_type;
+    }
+
+    virtual ~moPluginDefinition() {}
+
+    moPluginDefinition &operator = (const moPluginDefinition &src) {
+       m_Name = src.m_Name;
+       m_FullPath = src.m_FullPath;
+       m_MoldeoObjectType = src.m_MoldeoObjectType;
+       return *this;
+    }
+
+    /// Devuelve el nombre del plugin
+    moText GetName() {
+        return m_Name;
+    }
+
+    /// Devuelve la ruta y nombre completos del archivo del plugin
+    moText GetFullPath() {
+        return m_FullPath;
+    }
+
+    /// Devuelve el tipo de objeto que crea el plugin
+    moMoldeoObjectType GetType() {
+        return m_MoldeoObjectType;
+    }
+
+  protected:
+
+    moText              m_Name;
+    moText              m_FullPath;
+    moMoldeoObjectType  m_MoldeoObjectType;
+
+
+};
+
+moDeclareExportedDynamicArray( moPluginDefinition, moPluginDefinitions );
+
 #endif

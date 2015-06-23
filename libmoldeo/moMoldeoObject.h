@@ -65,10 +65,21 @@
 #define MO_IODEVICE_CONSOLE 20
 #define MO_IODEVICE_ANY -1
 
-//Manteniendo compatibilidad con los id de dispositivos de versiones de 0.6.x
-//los moldeo ID's empiezan en 100...
+///Manteniendo compatibilidad con los id de dispositivos de versiones de 0.6.x
+///los moldeo ID's empiezan en 100...
 #define MO_MOLDEOOBJECTS_OFFSET_ID	100
+///scene objects are recursive sub-scene-fx's
+#define MO_MOLDEOSCENEOBJECTS_OFFSET_ID	10000
+
 #define MO_MOLDEOOBJECT_UNDEFINED_ID -1
+
+#define RenderMan()   m_pResourceManager->GetRenderMan()
+#define TextureMan()  m_pResourceManager->GetTextureMan()
+#define DataMan() m_pResourceManager->GetDataMan()
+#define VideoMan()  m_pResourceManager->GetVideoMan()
+#define SoundMan()  m_pResourceManager->GetSoundMan()
+#define GLMan()  m_pResourceManager->GetGLMan()
+
 
 class moResourceManager;
 
@@ -173,6 +184,8 @@ class LIBMOLDEO_API moMobDefinition
         m_MoldeoLabelName = p_labelname;
         m_MoldeoId = p_moldeoid;
         m_MobIndex = p_MobIndex;
+        m_MoldeoFatherId = -1;
+        m_MoldeoFatherLabelName = "";
     }
 
     /// Destructor
@@ -186,8 +199,10 @@ class LIBMOLDEO_API moMobDefinition
         bool result;
         result = ( m_Type != MO_OBJECT_UNDEFINED
                 && m_MoldeoId!=-1
+                /*
                 && m_MobIndex.GetParamIndex()!=-1
-                && m_MobIndex.GetValueIndex()!=-1 );
+                && m_MobIndex.GetValueIndex()!=-1
+                  */ );
         return result;
     }
 
@@ -195,22 +210,28 @@ class LIBMOLDEO_API moMobDefinition
     const moText& GetName() const;
 
     /// Fijar el nombre del objeto
-    void SetName( moText p_name );
+    void SetName( const moText& p_name );
 
     /// Nombre del archivo de configuración
     const moText& GetConfigName() const;
 
     /// Fijar el nombre del archivo de configuración
-    void SetConfigName( moText p_configname );
+    void SetConfigName( const moText& p_configname );
 
     /// Nombre del archivo de configuración
     moMoldeoObjectType GetType() const;
 
     /// Transforma una cadena de caracteres en su correspondiente moMoldeoObjectType
-    moMoldeoObjectType GetStrType( const moText& p_Str = moText("default") ) const;
+    moMoldeoObjectType GetStrToType( const moText& p_Str = moText("default") ) const;
 
     /// Transforma un moMoldeoObjectType en el nombre de su correspondiente clase base
-    moText GetTypeStr( moMoldeoObjectType p_Type = MO_OBJECT_UNDEFINED ) const;
+    moText GetTypeStr() const;
+
+    /// Transforma un moMoldeoObjectType en el nombre de su correspondiente clase base
+    static moText GetTypeToClass( moMoldeoObjectType p_Type = MO_OBJECT_UNDEFINED );
+
+    /// Transforma un moMoldeoObjectType en el nombre de su correspondiente
+    static moText GetTypeToName( moMoldeoObjectType p_Type = MO_OBJECT_UNDEFINED );
 
     /// Fija el tipo de moMoldeoObject o moMoldeoObjectType
     void SetType( moMoldeoObjectType p_type );
@@ -219,7 +240,7 @@ class LIBMOLDEO_API moMobDefinition
     const moMobIndex& GetMobIndex() const;
 
     /// Fija la etiqueta de este objeto
-    void SetLabelName( moText p_labelname );
+    void SetLabelName( const moText& p_labelname );
     /// Devuelve la etiqueta de este objeto
     const moText& GetLabelName() const;
 
@@ -234,6 +255,37 @@ class LIBMOLDEO_API moMobDefinition
     *   Este identificador debe ser único
     */
     MOint GetMoldeoId() const;
+
+    /// Devuelve el identificador del padre de este objeto
+    /**
+    *   Este identificador debe ser único
+    */
+    MOint GetMoldeoFatherId() const {
+      return m_MoldeoFatherId;
+    }
+
+    /// Fija el identificador del padre de este objeto
+    /**
+    *   Este identificador debe ser único
+    */
+    void SetMoldeoFatherId( MOint p_moldeoid ) {
+        m_MoldeoFatherId  = p_moldeoid;
+    }
+
+    /// Fija la etiqueta del padre de este objeto
+    void SetFatherLabelName( const moText& p_labelname );
+    /// Devuelve la etiqueta del padre de este objeto
+    const moText& GetFatherLabelName() const {
+      return m_MoldeoFatherLabelName;
+    }
+
+    /// Fija la etiqueta del padre de este objeto
+    void SetKeyName( const moText& p_keyname );
+    /// Devuelve la etiqueta del padre de este objeto
+    const moText& GetKeyName() const {
+      return m_KeyName;
+    }
+
 
     /// Devuelve al descripción del objeto
     /**
@@ -254,22 +306,12 @@ class LIBMOLDEO_API moMobDefinition
 
     void SetConsoleValueIndex(MOint p_valueindex);
 
-    const moText& ToJSON() {
-      moText fieldSeparation = ",";
-      m_FullJSON  = "{";
-      m_FullJSON+= "'moldeoid': '" + IntToStr( GetMoldeoId() ) +"'";
-      m_FullJSON+= fieldSeparation + "'name': '" + GetName() + "'";
-      m_FullJSON+= fieldSeparation + "'labelname': '" + GetLabelName() + "'";
-      m_FullJSON+= fieldSeparation + "'configname': '" + GetConfigName() + "'";
-      m_FullJSON+= fieldSeparation + "'type': '" + this->GetTypeStr() + "'";
-      m_FullJSON+= fieldSeparation + "'console_param_index': '" + IntToStr(this->GetMobIndex().GetParamIndex()) + "'";
-      m_FullJSON+= fieldSeparation + "'console_value_index': '" + IntToStr(this->GetMobIndex().GetValueIndex()) + "'";
-      m_FullJSON+= fieldSeparation + "'description': '" + GetDescription() + "'";
-      m_FullJSON+= "}";
-      return m_FullJSON;
-    }
+    const moText& ToJSON();
 
     protected:
+
+      MOint                 m_MoldeoFatherId;
+      moText					      m_MoldeoFatherLabelName;
 
       MOint					        m_MoldeoId; /// Identificador de objeto Moldeo
       moText					      m_MoldeoLabelName; /// Etiqueta o Identificador de texto de este objeto
@@ -281,31 +323,12 @@ class LIBMOLDEO_API moMobDefinition
 
       moMobIndex            m_MobIndex; /// Índice referente al archivo de configuración que describe a este objeto
 
+      moText                m_KeyName;/// nombre de la tecla que activa el objeto
       moText                m_FullJSON;
 };
 
 /*doesnt work with GCC 4.7.1*/
-static moMoldeoObjectType moGetStrType( const moText& p_Str = moText("default") ) {
-
-            if (p_Str == moText("effect") || p_Str == moText("moEffect")) {
-                return MO_OBJECT_EFFECT;
-            } else if (p_Str == moText("mastereffect") || p_Str == moText("moMasterEffect")) {
-                return MO_OBJECT_MASTEREFFECT;
-            } else if (p_Str == moText("posteffect") || p_Str == moText("moPostEffect")) {
-                return MO_OBJECT_POSTEFFECT;
-            } else if (p_Str == moText("preeffect") || p_Str == moText("moPreEffect")) {
-                return MO_OBJECT_PREEFFECT;
-            } else if (p_Str == moText("iodevice") || p_Str == moText("moIODevice")) {
-                return MO_OBJECT_IODEVICE;
-            } else if (p_Str == moText("resource") || p_Str == moText("moResource")) {
-                return MO_OBJECT_RESOURCE;
-            } else if (p_Str == moText("console") || p_Str == moText("moConsole")) {
-                return MO_OBJECT_CONSOLE;
-            }
-
-            return MO_OBJECT_UNDEFINED;
-
-        }
+LIBMOLDEO_API moMoldeoObjectType moGetStrType( const moText& p_Str );
 
 
 class LIBMOLDEO_API moMobState : public moAbstract {
@@ -326,16 +349,7 @@ class LIBMOLDEO_API moMobState : public moAbstract {
         void Unselect();
 
         bool Selected()  const;
-        const moText& ToJSON() {
-          moText fieldSeparation = ",";
-
-          m_FullJSON = "{";
-          m_FullJSON+= "'activated': " + IntToStr(m_Activated);
-          m_FullJSON+= fieldSeparation + "'selected': " + IntToStr(m_Selected);
-          m_FullJSON+= "}";
-
-          return m_FullJSON;
-        }
+        const moText& ToJSON();
 
     protected:
         MOswitch m_Activated;
@@ -409,6 +423,13 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		virtual MOboolean CreateConnectors();
 
 		/**
+		* Actualiza todos los conectores
+		* Esta función vuelve a crear los conectores y sus conecciones, y evaluar todos los parámetros.
+		*/
+		virtual MOboolean UpdateConnectors();
+
+
+		/**
 		 * método de actualización de datos del objeto.
 		 * @param p_EventList puntero a la lista de eventos.
 		 */
@@ -448,12 +469,19 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/**
 		 * función que especifica el nombre del objeto.
 		 */
-		void	SetName( moText p_name ) { m_MobDefinition.SetName(p_name); }
+		void	SetName( const moText& p_name ) { m_MobDefinition.SetName(p_name); }
 
 		/**
 		 * función que especifica el nombre identificatorio del objeto.
 		 */
-		void	SetLabelName( moText p_labelname ) { m_MobDefinition.SetLabelName(p_labelname); }
+		void	SetLabelName( const moText& p_labelname ) { m_MobDefinition.SetLabelName(p_labelname); }
+
+		/**
+		 * función que especifica la tecla que activa el objeto.
+		 */
+		void	SetKeyName( const moText& p_keyname ) { m_MobDefinition.SetKeyName(p_keyname); }
+
+		const moText&	GetKeyName() const { return m_MobDefinition.GetKeyName(); }
 
 		/**
 		 * función que especifica el nombre del objeto.
@@ -473,7 +501,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/**
 		 * función que especifica el nombre del archivo de configuración del objeto.
 		 */
-		void	SetConfigName( moText p_configname );
+		void	SetConfigName( const moText& p_configname );
 
 		/**
 		 * función que devuelve el nombre del archivo de configuración del objeto.
@@ -583,20 +611,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
             m_MobDefinition.SetConsoleValueIndex(p_valueindex);
         }
 
-        virtual const moText& ToJSON() {
-          moText fieldSeparation = ",";
-          moMobDefinition Definition = GetMobDefinition();
-          moMobState State = GetState();
-
-          m_FullJSON = "{";
-          m_FullJSON+= "'objectstate': " + State.ToJSON();
-          m_FullJSON+= fieldSeparation + "'objecttypeid': '" + IntToStr( moGetStrType( Definition.GetName() ) )+"'";
-          m_FullJSON+= fieldSeparation + "'objectdefinition': " + Definition.ToJSON();
-          m_FullJSON+= fieldSeparation + "'objectconfig': " + m_Config.ToJSON();
-          m_FullJSON+= "}";
-
-          return m_FullJSON;
-        }
+        virtual const moText& ToJSON();
 
 	protected:
 

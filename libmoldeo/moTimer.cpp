@@ -8,9 +8,15 @@
 
 using namespace boost::posix_time;
 
+static long virtual_total_milliseconds = 0;
+
 /** ticks desde el arranque de la aplicación*/
 
-MOulong moGetTicksAbsolute() {
+MOulong moGetTicksAbsolute( bool force_real_absolute ) {
+
+    if (!force_real_absolute && virtual_total_milliseconds>0) {
+      return virtual_total_milliseconds;
+    }
 
     ptime t( microsec_clock::local_time() );
 
@@ -18,6 +24,14 @@ MOulong moGetTicksAbsolute() {
 
     return clockt.total_milliseconds();
 }
+
+MOulong moGetTicksAbsoluteStep( long step_interval ) {
+
+  virtual_total_milliseconds+= step_interval;
+
+  return virtual_total_milliseconds;
+}
+
 
 
 
@@ -68,6 +82,7 @@ long moTimerAbsolute::Duration() {
     } else duration = 0;
     return duration;
 }
+
 
 void moTimerAbsolute::SetDuration( MOulong p_timecode ) {
     start_tick = moGetTicksAbsolute()-p_timecode;
@@ -124,6 +139,10 @@ moTimerState moGetTimerState() {
     return GlobalMoldeoTimer->State();
 }
 
+moText moGetTimerStateStr() {
+    return GlobalMoldeoTimer->StateToStr();
+}
+
 
 bool moIsTimerPaused() {
     return GlobalMoldeoTimer->State()==MO_TIMERSTATE_PAUSED;
@@ -153,7 +172,7 @@ moTimer::moTimer() : moTimerAbsolute() {
     m_pRelativeTimer = NULL;
 }
 
-moTimer::moTimer( moTimer& src ) : moTimerAbsolute() {
+moTimer::moTimer( const moTimer& src ) : moTimerAbsolute() {
     *this = src;
 }
 
@@ -161,7 +180,7 @@ moTimer::~moTimer() {
 }
 
 moTimer&
-moTimer::operator=(moTimer& src) {
+moTimer::operator=( const moTimer& src) {
     (moTimerAbsolute&)(*this)=(moTimerAbsolute&)src;
     m_TimerId = src.m_TimerId;
     m_ObjectId = src.m_ObjectId;
@@ -188,6 +207,7 @@ long moTimer::Duration() {
 
     if (on) {
         //esta vez devuelve el Duration del GlobalMoldeoTimer....
+        last_duration = duration;
 
         if (m_pRelativeTimer) ///relative to another timer
         {
@@ -213,7 +233,7 @@ long moTimer::Duration() {
                 }
         }
 
-        last_duration = duration;
+
         if (!pause_on) duration = start_last - start_tick;
         else start_tick = start_last - last_duration;
     } else duration = 0;

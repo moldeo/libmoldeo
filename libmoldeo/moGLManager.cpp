@@ -102,12 +102,18 @@ MOboolean moGLManager::CheckErrors(moText p_location)
 	GLuint errnum;
 	moText errstr;
 	MOboolean error = false;
+
+  return false;
+
 	while ((errnum = glGetError()))
 	{
+	  //GL_NO_ERROR
+	  //GL_INVALID_ENUM
+
 		error = true;
-		errstr = (char *)gluErrorString(errnum);
+		errstr = moText(" GL error code:") + IntToStr(errnum) + moText(" message > ")+ (char *)gluErrorString(errnum);
 		if (p_location != moText("")) errstr += moText(" at ") + moText(p_location);
-		//if (MODebug != NULL) MODebug2->Push(errstr);
+		moDebugManager::Error("moGLManager::CheckErrors > errors: " + errstr);
 	}
 	return error;
 }
@@ -335,7 +341,7 @@ moTexParam moGLManager::BuildFPTexParam(MOboolean p_16bits, MOushort p_num_compo
 	return result;
 }
 
-MOboolean moGLManager::RectTexture(GLenum p_target)
+MOboolean moGLManager::RectTexture(GLenum p_target) const
 {
 	return (p_target == GL_TEXTURE_RECTANGLE_NV) ||
 	       (p_target == GL_TEXTURE_RECTANGLE_ARB);

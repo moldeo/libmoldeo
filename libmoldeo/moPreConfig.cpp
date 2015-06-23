@@ -127,88 +127,29 @@ moPreConfig::operator [] ( MOint paramindex) {
 	return vindex;
 }
 
+const moText&
+moPreConfig::ToJSON() {
 
+  moText fieldseparation = ",";
+  m_FullJSON = "{ 'name': '" + m_Name +"'";
+  m_FullJSON+= fieldseparation
+               + "'valueindexes': {";
+  fieldseparation  = "";
+  for( int vi = 0; vi< (int)m_PreconfIndexes.Count(); vi++ ) {
 
-/*
-void  moPreConfig::Init( moConfig* conf)
-{
-    MOint preconfig;
-    int i, j;
+    moPreconfigParamIndex vindex = m_PreconfIndexes[vi];
 
-    preconfig = conf->GetParamIndex("preconfig");
-    if(preconfig != MO_PARAM_NOT_FOUND)
-    {
-        paramnum = conf->GetParamsCount();
-        cantpreconfs = conf->GetValuesCount( preconfig);
-        if(cantpreconfs>0)
-        {
-            preconf = new MOint*[cantpreconfs];
-            for( i=0; i<cantpreconfs; i++)
-                preconf[i] = new MOint[paramnum];
-            for( i=0; i<cantpreconfs; i++)
-                for( j=0; j<paramnum; j++)
-                    preconf[i][j] = conf->GetParam(preconfig).GetValue(i).GetSubValue(j).Int();
-            preconfactual = 0;
-            SetCurrentPreConf( preconfactual, conf);
-        }
-    }
+    m_FullJSON+= fieldseparation
+          + "'" + vindex.m_ParamName + "': {";
+    fieldseparation = ",";
+
+    m_FullJSON+= "'paramindex': " + IntToStr(vindex.m_ParamIndex);
+    m_FullJSON+= fieldseparation + "'valueindex': " + IntToStr(vindex.m_ValueIndex);
+    m_FullJSON+=  "}";
+  }
+  m_FullJSON+=  "}";///fin valueindexes
+  m_FullJSON+=  "}";///fin Preconfig
+  return  m_FullJSON;
 }
 
-void
-moPreConfig::Finish()
-{
-    if(preconf != NULL)
-    {
-        for( int i=0; i<cantpreconfs; i++)
-            if(preconf[i]!=NULL)
-				delete[] preconf[i];
-        delete[] preconf;
-    }
-	preconf = NULL;
-}
-
-MOint moPreConfig::GetPreConfNum()
-{
-    return cantpreconfs;
-}
-
-
-MOint moPreConfig::GetCurrentPreConf()
-{
-    return preconfactual;
-}
-
-
-void  moPreConfig::SetCurrentPreConf( int p, moConfig *conf)
-{
-    if(0<=p && p<cantpreconfs)
-    {
-        for( int i=0; i<paramnum; i++)
-            conf->SetCurrentValueIndex( i, preconf[p][i]);
-        preconfactual = p;
-    }
-}
-
-
-void  moPreConfig::PreConfFirst( moConfig* conf)
-{
-    if(cantpreconfs>0)
-        SetCurrentPreConf( 0, conf);
-}
-
-
-void  moPreConfig::PreConfNext( moConfig* conf)
-{
-    if(preconfactual!=-1 && preconfactual<cantpreconfs-1)
-        SetCurrentPreConf( ++preconfactual, conf);
-}
-
-
-void  moPreConfig::PreConfPrev( moConfig* conf)
-{
-    if(preconfactual!=-1 && preconfactual>0)
-        SetCurrentPreConf( --preconfactual, conf);
-}
-
-*/
 

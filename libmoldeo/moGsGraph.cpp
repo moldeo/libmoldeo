@@ -32,10 +32,8 @@
 *******************************************************************************/
 #include "moGsGraph.h"
 
-//#ifdef MO_LINUX
 #include <gst/gst.h>
-//#endif
-
+#include <gst/interfaces/propertyprobe.h>
 
 #include "moFileManager.h"
 
@@ -801,15 +799,97 @@ moGsFramework::~moGsFramework() {
 
 }
 
+/**
+GList*
+gst_camera_capturer_enum_devices(gchar* device_name)
+{
+  GstElement* device;
+  GstPropertyProbe* probe;
+  GValueArray* va;
+  GList* list=NULL;
+  guint i=0;
 
+  device = gst_element_factory_make (device_name, "source");
+  gst_element_set_state(device, GST_STATE_READY);
+  gst_element_get_state(device, NULL, NULL, 5 * GST_SECOND);
+  if (!device || !GST_IS_PROPERTY_PROBE(device))
+    goto finish;
+  probe = GST_PROPERTY_PROBE (device);
+  va = gst_property_probe_get_values_name (probe, "device-name");
+  if (!va)
+    goto finish;
+  for(i=0; i < va->n_values; ++i) {
+    GValue* v = g_value_array_get_nth(va, i);
+    list = g_list_append(list, g_string_new(g_value_get_string(v)));
+  }
+  g_value_array_free(va);
+
+finish:
+  {
+    gst_element_set_state (device, GST_STATE_NULL);
+    gst_object_unref(GST_OBJECT (device));
+    return list;
+  }
+}
+
+
+GList*
++gst_camera_capturer_enum_devices(gchar* device_name)
++{
++  GstElement* device;
++  GstPropertyProbe* probe;
++  GValueArray* va;
++  GList* list=NULL;
++  guint i=0;
++
++  device = gst_element_factory_make (device_name, "source");
++  gst_element_set_state(device, GST_STATE_READY);
++  gst_element_get_state(device, NULL, NULL, 5 * GST_SECOND);
++  if (!device || !GST_IS_PROPERTY_PROBE(device))
++    goto finish;
++  probe = GST_PROPERTY_PROBE (device);
++  va = gst_property_probe_get_values_name (probe, "device-name");
++  if (!va)
++    goto finish;
++  for(i=0; i < va->n_values; ++i) {
++    GValue* v = g_value_array_get_nth(va, i);
++    list = g_list_append(list, g_string_new(g_value_get_string(v)));
++  }
++  g_value_array_free(va);
++
++finish:
++ {
++  gst_element_set_state (device, GST_STATE_NULL);
++  gst_object_unref(GST_OBJECT (device));
++  return list;
++ }
++}
+*/
 moCaptureDevices* moGsFramework::LoadCaptureDevices() {
 
-    #ifdef MO_WIN32
+        GstElement* device;
+        GstPropertyProbe* probe;
+        GValueArray* va;
+        //GList* list=NULL;
+        //guint i=0;
+        gchar* device_name;
+
+        MODebug2->Log( "moGsFramework::LoadCaptureDevices running..." );
+
+        m_CaptureDevices.Empty();
+
+
+  #ifdef MO_WIN32
         //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("-") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("-"), moText("-") ) );
 
+        device_name = moText("dshowvideosrc");
+
         for( MOuint i=0; i<m_PreferredDevices.Count();i++) {
-            AddCaptureDevice( m_PreferredDevices[i] );
+            moCaptureDevice CaptDev = m_PreferredDevices[i];
+            CaptDev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
+            AddCaptureDevice( CaptDev );
+            MODebug2->Log( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
         }
         //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("-") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("Microsoft DV Camera and VCR"), moText("DV IEEE 1394"), moText("-"), 0 ) );
@@ -837,14 +917,60 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
         }
         */
     #else
+        device_name = "v4l2src";
         // in linux: for v4l2src   device could be  /dev/video0   -   /dev/video1   etc...
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("-"), moText("-") ) );
         for(int i=0; i<m_PreferredDevices.Count();i++) {
-            AddCaptureDevice( m_PreferredDevices[i] );
+            moCaptureDevice CaptDev = m_PreferredDevices[i];
+            AddCaptureDevice( CaptDev );
+
+            MODebug2->Log( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
         }        //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText(""), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("DV"), moText("DV IEEE 1394"), moText("-"), 0 ) );
     #endif
+
+  try {
+
+    device = gst_element_factory_make (device_name, "source");
+    gst_element_get_state(device, NULL, NULL, 5 * GST_SECOND);
+    if (!device || !GST_IS_PROPERTY_PROBE(device))
+      goto finish;
+    probe = GST_PROPERTY_PROBE (device);
+    va = gst_property_probe_get_values_name (probe, "device-name");
+    if (!va)
+      goto finish;
+    for(guint i=0; i < va->n_values; ++i) {
+      GValue* v = g_value_array_get_nth(va, i);
+      GString* stv = g_string_new( g_value_get_string(v) );
+      if (stv) {
+          moText cap_dev_name = moText((char*)stv->str);
+          moCaptureDevice newdev;
+          newdev.Present(true);
+
+          newdev.SetName(cap_dev_name);
+          newdev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
+
+          m_CaptureDevices.Add( newdev );
+
+          MODebug2->Log( "moGsFramework::LoadCaptureDevices > Added capture device: " + newdev.GetName() + " label:" + newdev.GetLabelName() );
+      }
+      //list = g_list_append(list, );
+    }
+    g_value_array_free(va);
+
+    finish:
+    {
+    gst_element_set_state (device, GST_STATE_NULL);
+    gst_object_unref(GST_OBJECT (device));
+    }
+  }
+  catch(...) {
+    MODebug2->Error("moGsFramework::LoadCaptureDevices > exception error.");
+  }
+
+  ///iterate thru list and populate m_CaptureDevices (best as we can)
+
 
 	return &m_CaptureDevices;
 
@@ -1442,7 +1568,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
     moGstElement* m_pCapsFilterSource = NULL;
     moGstElement* m_pCapsFilter2 = NULL;
 
-    moText codename;
+    moText labelname;
     moText devicename;
     MOint p_sourcewidth;
     MOint p_sourceheight;
@@ -1454,7 +1580,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
     moText colormode;
 
 
-    codename = p_capdev.GetCodeName();
+    labelname = p_capdev.GetLabelName();
 
     devicename = p_capdev.GetName();
     ( p_capdev.GetVideoFormat().m_ColorMode==YUV ) ? colormode = moText("video/x-raw-yuv") : colormode = moText("video/x-raw-rgb");
@@ -1482,7 +1608,11 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
     if (devicename.Length()>0)
     {
 
-        if (codename==moText("RTSP")) {
+        std::string dname;
+
+        dname = devicename;
+
+        if (labelname==moText("RTSP")) {
 
             m_pRTSPSource = gst_element_factory_make ("rtspsrc", "source");
             m_pRTSPDepay = gst_element_factory_make ("rtpmp4vdepay", "depay");
@@ -1491,7 +1621,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                 m_pRTSPDepaySink = gst_element_get_static_pad ( (GstElement*)m_pRTSPDepay, "sink"  );
                 signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBACK (on_rtsppadd_added), (gpointer)this);
             }
-        } else if (codename==moText("HTTP")) {
+        } else if (labelname==moText("HTTP") || dname.find("http")==0 ) {
             m_pHTTPSource = gst_element_factory_make ("souphttpsrc", "source");
             //needed for decodebin2 TODO: check this in gstreamer 1.0
             //m_pMultipartDemux = gst_element_factory_make ("multipartdemux", "demux");

@@ -196,7 +196,7 @@ class LIBMOLDEO_API moGLManager : public moResource
          * @param p_target target de textura.
          * @return true o false, de acuerdo si el tárget corresponde una textura rectangular o no.
          */
-		MOboolean RectTexture(GLenum p_target);
+		MOboolean RectTexture(GLenum p_target)  const;
         /**
          * Revisa que p_internal_format represente una textura de punto flotante.
          * @param p_internal_format formato interno de textura.

@@ -29,6 +29,7 @@
 *******************************************************************************/
 
 #include <moConsole.h>
+#include "moSceneEffect.h"
 
 #define NOSDL 1
 
@@ -105,11 +106,22 @@ moConsole::~moConsole()
     Finish();
 }
 
-bool moConsole::LabelNameExists( moText labelname ) {
+bool moConsole::LabelNameExists( const moText& labelname ) {
 
   int mobid = -1;
 
-  mobid = this->GetObjectId(labelname);
+  mobid = GetObjectId(labelname);
+  if (mobid>-1) {
+      moMoldeoObject* pObj = GetObjectByIdx(mobid);
+      if (pObj) {
+        moText obj_labelname =  pObj->GetLabelName();
+        if ( obj_labelname!=labelname ) {
+          return false;
+        }
+      }
+      else
+        return false;
+  }
 
   return ( mobid > -1 );
 }
@@ -252,8 +264,8 @@ MOboolean moConsole::Init(
 	idebug = -1;
 	iligia = -1;
 	iborrado = -1;
-    m_ConsoleScript = moText("");
-  moGetStrType( moText("console") );
+  m_ConsoleScript = moText("");
+  //moMoldeoObjectType consoletype = moGetStrType( moText("console") );
 
 	srand( time(NULL) );
 
@@ -272,6 +284,7 @@ MOboolean moConsole::Init(
 
     if (MODebug2) MODebug2->Message(moText("moConsole::Init > Initializing Effects Manager."));
 	m_EffectManager.Init();
+	m_EffectManager.m_pEffectManager = &m_EffectManager;
 
 	//Inicializando Estado de la Consola
 	m_ConsoleState.Init();
@@ -289,7 +302,7 @@ MOboolean moConsole::Init(
     return false;
   }
 
-  ///TODO: ahora todos los parametros script de moldeoobject se llaman "script"
+  ///TODO: ahora todos los parametros script de moldeoobject se llaman "script", hay que eliminar cualquier referencia anterior
   /// en la consola se llaman: consolescript
   if (__iscript==MO_PARAM_NOT_FOUND) __iscript = m_Config.GetParamIndex(moText("consolescript"));
 
@@ -374,6 +387,9 @@ MOboolean moConsole::Init(
 					p_OpWindowHandle,
 					p_Display);
 
+  m_EffectManager.m_pResourceManager = GetResourceManager();
+
+
   ///cargamos los inlets, outlets de la consola...
   moMoldeoObject::CreateConnectors();
 
@@ -400,7 +416,7 @@ MOboolean moConsole::Init(
 
 /** WARNING
 
-    TODO:
+    TODO: check
     */
     /** the order of initialization is important:
         some tweaks are needed for example:
@@ -424,6 +440,7 @@ MOboolean moConsole::Init(
                 b) Then make a Preload Texture method/function for all objects
     */
 	//LoadResources();
+	/**TODO: implementar un LoadObjects() General que tambien asigne los ids*/
 	LoadIODevices();
 	LoadResources();
 
@@ -431,8 +448,6 @@ MOboolean moConsole::Init(
 	LoadPostEffects();
 	LoadEffects();
 	LoadMasterEffects();
-
-	m_ConsoleState.m_nAllEffects = m_EffectManager.AllEffects().Count();
 
 	MOboolean m_bMasterEffects_On = m_Config.GetParam( moText("mastereffects_on") ).GetValue().GetSubValue(0).Int();
 	if (m_bMasterEffects_On) {
@@ -459,6 +474,7 @@ MOboolean moConsole::Init(
 	///asigna Inlets y outlets...
 	if (MODebug2) MODebug2->Message(moText("moConsole::Init > InitializeAllEffects."));
 	this->InitializeAllEffects();
+
 	if (MODebug2) MODebug2->Message(moText("moConsole::Init > StartMasterEffects."));
 	this->StartMasterEffects();
 
@@ -471,6 +487,12 @@ MOboolean moConsole::Init(
     ScriptExeInit();
 
     m_bInitialized = true;
+
+
+    moDataMessage* pMessageStayingAlive = new moDataMessage();
+    pMessageStayingAlive->Add( moData( "consoleget" ) );
+    ProcessMoldeoAPIMessage(pMessageStayingAlive);
+
 
     return Initialized();
 }
@@ -491,6 +513,8 @@ moConsole::UpdateMoldeoIds() {
   int max = RelativeToGeneralIndex( 0, MO_OBJECT_CONSOLE ) + 1;
   m_MoldeoObjects.Empty();
   m_MoldeoObjects.Init( max, NULL);
+
+  m_MoldeoSceneObjects.Empty();
 
   for( MOuint i=0; i<m_pResourceManager->Resources().Count(); i++ ) {
     moResource* pResource = m_pResourceManager->Resources().GetRef(i);
@@ -530,6 +554,24 @@ moConsole::UpdateMoldeoIds() {
 		if (mobject) mobject->SetId(MO_MOLDEOOBJECTS_OFFSET_ID + i);
 	}
 
+  ///PROCESSING SCENE OBJECTS (recursive)
+
+	for( MOuint i=0; i<m_EffectManager.Effects().Count(); i++ ) {
+    moEffect* pFx = m_EffectManager.Effects().GetRef(i);
+    if (pFx->GetName()=="scene") {
+      moSceneEffect* pScene = (moSceneEffect*) pFx;
+      pScene->UpdateMoldeoIds( m_MoldeoSceneObjects );
+    }
+  }
+
+  ///SET UNIQUE IDS!!!
+  /*
+  for( MOuint i=0; i<m_MoldeoSceneObjects.Count(); i++) {
+		moMoldeoObject* mobject = m_MoldeoSceneObjects.GetRef(i);
+		if (mobject) mobject->SetId(MO_MOLDEOSCENEOBJECTS_OFFSET_ID + i);
+	}
+	*/
+
 }
 
 void
@@ -540,9 +582,13 @@ moConsole::LoadConnections() {
 	UpdateMoldeoIds();
 
 	///Connect outlets to inlets....
-	for( i=0; i<m_MoldeoObjects.Count(); i++) {
+	for( i=0; i<(m_MoldeoObjects.Count()+m_MoldeoSceneObjects.Count()); i++) {
 
-		moMoldeoObject* psrcobject = m_MoldeoObjects[i];
+		moMoldeoObject* psrcobject = NULL;
+		if ( i<m_MoldeoObjects.Count())
+        psrcobject = m_MoldeoObjects[i];
+		else
+        psrcobject = m_MoldeoSceneObjects[i-m_MoldeoObjects.Count()];
 
 		if (psrcobject) {
 
@@ -569,9 +615,14 @@ moConsole::LoadConnections() {
 
                     ///search for moldeolabelname
                     ///search for connector labelname
-                    for( l=0; l<m_MoldeoObjects.Count(); l++) {
+                    for( l=0; l<(m_MoldeoObjects.Count()+m_MoldeoSceneObjects.Count()); l++) {
 
-                        moMoldeoObject* pdstobject = m_MoldeoObjects[l];
+                        moMoldeoObject* pdstobject = NULL;
+
+                        if ( l<m_MoldeoObjects.Count())
+                          pdstobject = m_MoldeoObjects[l];
+                        else
+                          pdstobject = m_MoldeoSceneObjects[l-m_MoldeoObjects.Count()];
 
                         if (pdstobject) {
                             if ( pdstobject->GetLabelName()==DestinationMoldeoLabelName ) {
@@ -631,6 +682,77 @@ moConsole::LoadConnections() {
 }
 
 
+void
+moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
+
+  if (fx_type==MO_OBJECT_UNDEFINED) {
+
+    for(int i=0;i<MO_OBJECT_TYPES;i++ ) {
+      this->LoadObjects( (moMoldeoObjectType)i );
+    }
+    return;
+  }
+
+  moText text,fxname,cfname,lblname,keyname;
+	MOint efx,i,N;
+	moEffect*	peffect = NULL;
+
+	moText fx_string = moMobDefinition::GetTypeToName(fx_type);
+
+  efx = m_Config.GetParamIndex("effect");
+  m_Config.SetCurrentParamIndex(efx);
+	N = m_Config.GetValuesCount(efx);
+
+	if (MODebug2) {
+		MODebug2->Message( moText("moConsole::LoadEffects > Loading Effects configs...") );
+		MODebug2->Message( moText("moConsole::LoadEffects > Effects number: ") + IntToStr(N)  );
+	}
+
+	if(N>0) {
+		m_Config.FirstValue();
+		for( i=0; i < N; i++) {
+			Draw();
+			fxname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT).Text();
+			cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
+			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
+        keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
+
+			moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
+			moFile FullCF( completecfname );
+
+			if ( FullCF.Exists() ) {
+                if ((moText)fxname!=moText("nil")) {
+
+                    peffect = (moEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname, MO_OBJECT_EFFECT, efx, i );
+
+                    if (peffect)
+                      m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
+
+                    if (MODebug2) {
+                      MODebug2->Message( moText("moConsole::LoadingEffect > ") + completecfname );
+                    }
+
+
+                } else {
+                    peffect = NULL;
+                    m_EffectManager.Effects().Add(peffect);
+                    m_EffectManager.AllEffects().Add(peffect);
+                    m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
+                }
+			} else {
+			    MODebug2->Error(moText("moConsole::LoadEffects > Error: Config File doesn't exist : ") + (moText)completecfname);
+            }
+			m_Config.NextValue();
+		}
+	}
+
+	if (MODebug2) MODebug2->Message(moText("moConsole::LoadEffects > Effects loaded !"));
+
+}
+
+
+
 //==========================================================================
 //   CARGAMOS LOS DISPOSITIVOS
 //==========================================================================
@@ -661,10 +783,7 @@ moConsole::LoadIODevices() {
             if (pdevice) {
                 m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
                 pdevice->SetResourceManager( m_pResourceManager );
-                if(pdevice!=NULL) {
-                    pdevice->SetResourceManager( m_pResourceManager );
-                    pdevice->Init();
-                } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't load a device:") + moText(fxname));
+                pdevice->Init();
             } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText(fxname));
 		} else {
 		    MODebug2->Error(moText("moConsole::LoadIODevices > Error: Config File doesn't exist : ") + (moText)completecfname);
@@ -673,6 +792,11 @@ moConsole::LoadIODevices() {
 
     }
 	if (MODebug2) MODebug2->Message( moText("moConsole::LoadIODevices > IODevices loaded.") );
+
+  ///check if we have any netoscin or out, configured in port 3334, and 3335
+  ///respectively
+  AddMoldeoAPIDevices();
+
 }
 
 void moConsole::UnloadIODevices() {
@@ -684,12 +808,81 @@ void moConsole::UnloadIODevices() {
         }
 }
 
+void
+moConsole::AddMoldeoAPIDevices() {
+
+  bool MoldeoAPISender = false;//in port 3335
+  bool MoldeoAPIListener = false;//in port 3334
+  ///check if oscin or oscout are present
+  if (m_pIODeviceManager)
+      for( MOuint i=0; i<(m_pIODeviceManager->IODevices().Count()); i++ ) {
+        moIODevice* pDevice = m_pIODeviceManager->IODevices().GetRef(i);
+        if (pDevice) {
+          if (pDevice->GetName()=="netoscin" ) {
+            if (pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1" ) {
+              if (pDevice->GetConfig()->Int( "port" ) == 3334 ) {
+                  MoldeoAPIListener = true;
+                  if (MoldeoAPISender) break;
+              }
+            }
+
+          }
+
+          if ( pDevice->GetName()=="netoscout" ) {
+            if ( pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1" ) {
+              if ( pDevice->GetConfig()->GetValue( "hosts" ).GetSubValue(1).Int() == 3335 ) {
+                  MoldeoAPISender = true;
+                 if (MoldeoAPIListener) break;
+              }
+            }
+
+          }
+        }
+      }
+
+  moIODevice* pdevice =NULL;
+  moMobDefinition MD;
+  if (!MoldeoAPIListener) {
+      MD.SetConfigName("moldeoapioscin");
+      MD.SetLabelName("moldeoapioscin");
+      MD.SetName("netoscin");
+      MD.SetConsoleParamIndex( m_Config.GetParamIndex("devices") );
+      MD.SetConsoleValueIndex( m_pIODeviceManager->IODevices().Count() );
+      pdevice = m_pIODeviceManager->NewIODevice( MD.GetName(), MD.GetConfigName(), MD.GetLabelName(), MO_OBJECT_IODEVICE, MD.GetMobIndex().GetParamIndex(), MD.GetMobIndex().GetValueIndex() );
+      if (pdevice) {
+          m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
+          moFile pFile( DataMan()->GetDataPath() + moSlash + MD.GetConfigName() + moText(".cfg") );
+          if (!pFile.Exists()) pdevice->GetConfig()->CreateDefault( pFile.GetCompletePath() );
+          pdevice->SetResourceManager( m_pResourceManager );
+          pdevice->Init();
+      } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText("moldeoapioscin"));
+
+  }
+  if (!MoldeoAPISender) {
+      MD.SetConfigName("moldeoapioscout");
+      MD.SetLabelName("moldeoapioscout");
+      MD.SetName("netoscout");
+      MD.SetConsoleParamIndex( m_Config.GetParamIndex("devices") );
+      MD.SetConsoleValueIndex( m_pIODeviceManager->IODevices().Count() );
+      pdevice = m_pIODeviceManager->NewIODevice( MD.GetName(), MD.GetConfigName(), MD.GetLabelName(), MO_OBJECT_IODEVICE, MD.GetMobIndex().GetParamIndex(), MD.GetMobIndex().GetValueIndex() );
+      if (pdevice) {
+          m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
+          moFile pFile( DataMan()->GetDataPath() + moSlash + MD.GetConfigName() + moText(".cfg") );
+          if (!pFile.Exists()) pdevice->GetConfig()->CreateDefault( pFile.GetCompletePath() );
+          pdevice->SetResourceManager( m_pResourceManager );
+          pdevice->Init();
+      } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText("moldeoapioscout"));
+
+  }
+
+}
+
 //==========================================================================
 //   CARGAMOS LOS EFFECTS MAESTROS
 //==========================================================================
 void
 moConsole::LoadMasterEffects() {
-	moText text, fxname, cfname, lblname;
+	moText text, fxname, cfname, lblname, keyname;
 	MOint N,i,mtfx;
 	moMasterEffect*	pmastereffect = NULL;
 
@@ -702,20 +895,20 @@ moConsole::LoadMasterEffects() {
 		MODebug2->Message( moText("moConsole::LoadMasterEffects > Master Effects number: ") + IntToStr(N)  );
 	}
 
-	m_ConsoleState.m_nMasterEffects = N;
-
 	if(N>0) {
 		m_Config.FirstValue();
 		for( i=0; i<N; i++) {
 			fxname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT).Text();
 			cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
+        keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
 
             moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
 			moFile FullCF( completecfname );
 
 			if ( FullCF.Exists() ) {
-                pmastereffect = (moMasterEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname,  MO_OBJECT_MASTEREFFECT, mtfx, i);
+                pmastereffect = (moMasterEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_MASTEREFFECT, mtfx, i);
                 if (pmastereffect) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) pmastereffect );
                     pmastereffect->SetResourceManager( m_pResourceManager );
@@ -753,7 +946,7 @@ void moConsole::UnloadMasterEffects() {
 void
 moConsole::LoadPreEffects() {
 
-	moText text,fxname,cfname,lblname;
+	moText text,fxname,cfname,lblname,keyname;
 	MOint prfx,i,N;
 	moPreEffect* ppreeffect;
 
@@ -766,8 +959,6 @@ moConsole::LoadPreEffects() {
 		MODebug2->Message( moText("moConsole::LoadPreEffects > Pre-Effects number: ") + IntToStr(N) );
 	}
 
-	m_ConsoleState.m_nPreEffects = N;
-
 	if(N>0) {
 		m_Config.FirstValue();
 		for( i=0; i<N; i++) {
@@ -778,6 +969,8 @@ moConsole::LoadPreEffects() {
 			fxname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT).Text();
 			cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
+        keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
 
 
       moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname + moText(".cfg");
@@ -785,10 +978,11 @@ moConsole::LoadPreEffects() {
 
 			if ( FullCF.Exists() ) {
 
-                ppreeffect = (moPreEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname,  MO_OBJECT_PREEFFECT, prfx, i);
+                ppreeffect = (moPreEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_PREEFFECT, prfx, i);
+
                 if (ppreeffect) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) ppreeffect );
-                    ppreeffect->SetResourceManager( m_pResourceManager );
+                    //ppreeffect->SetResourceManager( m_pResourceManager );
                     if ( ppreeffect->GetName() == moText("erase") ) {
                         iborrado = i;
                         if (ppreeffect->Init()) {
@@ -836,7 +1030,7 @@ void moConsole::UnloadPreEffects() {
 void
 moConsole::LoadEffects() {
 
-	moText text,fxname,cfname,lblname;
+	moText text,fxname,cfname,lblname,keyname;
 	MOint efx,i,N;
 	moEffect*	peffect = NULL;
 
@@ -849,8 +1043,6 @@ moConsole::LoadEffects() {
 		MODebug2->Message( moText("moConsole::LoadEffects > Effects number: ") + IntToStr(N)  );
 	}
 
-	m_ConsoleState.m_nEffects = N;
-
 	if(N>0) {
 		m_Config.FirstValue();
 		for( i=0; i < N; i++) {
@@ -858,20 +1050,25 @@ moConsole::LoadEffects() {
 			fxname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT).Text();
 			cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
+        keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
 
 			moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
 			moFile FullCF( completecfname );
 
 			if ( FullCF.Exists() ) {
                 if ((moText)fxname!=moText("nil")) {
-                    peffect = (moEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname,  MO_OBJECT_EFFECT, efx, i);
-                    if (peffect) {
-                        m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
-                        peffect->SetResourceManager( m_pResourceManager );
-                    }
+
+                    peffect = (moEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname, MO_OBJECT_EFFECT, efx, i );
+
+                    if (peffect)
+                      m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
+
                     if (MODebug2) {
                       MODebug2->Message( moText("moConsole::LoadingEffect > ") + completecfname );
                     }
+
+
                 } else {
                     peffect = NULL;
                     m_EffectManager.Effects().Add(peffect);
@@ -905,7 +1102,7 @@ void moConsole::UnloadEffects() {
 void
 moConsole::LoadPostEffects() {
 
-	moText text, fxname, cfname, lblname;
+	moText text, fxname, cfname, lblname, keyname;
 	MOint ptfx,i,N;
 	moPostEffect*	posteffect = NULL;
 
@@ -918,8 +1115,6 @@ moConsole::LoadPostEffects() {
 		MODebug2->Message( moText("moConsole::LoadPostEffects > Post Effects number: ") + IntToStr(N)  );
 	}
 
-	m_ConsoleState.m_nPostEffects = N;
-
 	if(N>0) {
 		m_Config.FirstValue();
 		for( i=0; i<N; i++) {
@@ -927,16 +1122,18 @@ moConsole::LoadPostEffects() {
 			fxname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT).Text();
 			cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
+        keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
 
             moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
 			moFile FullCF( completecfname );
 
 			if ( FullCF.Exists() ) {
 
-                posteffect = (moPostEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname,  MO_OBJECT_POSTEFFECT, ptfx , i );
+                posteffect = (moPostEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_POSTEFFECT, ptfx , i );
                 if (posteffect) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) posteffect );
-                    posteffect->SetResourceManager( m_pResourceManager );
+                    //posteffect->SetResourceManager( m_pResourceManager );
                     if(posteffect->GetName() == moText("debug")) {
                             idebug = i;
                             posteffect->Init();
@@ -1090,8 +1287,8 @@ moConsole::InitializeAllEffects() {
                         idx = ConvertKeyNameToIdx(key);
                         p_effect->keyidx = idx;
                         */
-                        // Fabri, despues implementa mejor esto... ;-)
-                        //lo saqué!!!
+					} else {
+            MODebug2->Error("Error Initializing Effect: " + p_effect->GetName() + " Label: " + p_effect->GetLabelName() + " Cfg: " + p_effect->GetConfigName() );
 					}
 			} else {
 
@@ -1261,8 +1458,7 @@ moConsole::Draw() {
 	if(m_ConsoleState.pause==MO_DEACTIVATED && m_pResourceManager->GetRenderMan() ) {
 
 		//m_ConsoleState.tempo.ticks = GetTicks();
-		m_ConsoleState.tempo.Duration();
-		m_ConsoleState.tempo.getTempo();
+    ConsoleModeUpdate();
 /*
         MODebug2->Push( "Console: tempo.on: " + IntToStr( (int)m_ConsoleState.tempo.Started() )
                     + " tempo.pause_on: " + IntToStr( (int)m_ConsoleState.tempo.Paused())
@@ -1307,76 +1503,77 @@ moConsole::Draw() {
 			}
 		}
 
-        ///3D STEREOSCOPIC RENDER METHOD
-        if (m_ConsoleState.stereooutput==MO_ACTIVATED) {
-            ///Dibujamos los efectos con capacidad stereo
+    ///3D STEREOSCOPIC RENDER METHOD
+    if (m_ConsoleState.stereooutput==MO_ACTIVATED) {
+        ///Dibujamos los efectos con capacidad stereo
 
-            ///ojo izquierdo
-            for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
+        ///ojo izquierdo
+        for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
 
-                pEffect = m_EffectManager.Effects().GetRef(i);
+            pEffect = m_EffectManager.Effects().GetRef(i);
 
-                if(pEffect) {
-                    moEffectState fxstate = pEffect->GetEffectState();
-                    if (fxstate.stereo==MO_ACTIVATED) {
+            if(pEffect) {
+                moEffectState fxstate = pEffect->GetEffectState();
+                if (fxstate.stereo==MO_ACTIVATED) {
 
-                        fxstate.stereoside = MO_STEREO_LEFT;
-                        pEffect->SetEffectState( fxstate );
+                    fxstate.stereoside = MO_STEREO_LEFT;
+                    pEffect->SetEffectState( fxstate );
 
-                        if(pEffect->Activated()) {
-                                RenderMan->BeginDrawEffect();
-                                pEffect->Draw(&m_ConsoleState.tempo);
-                                RenderMan->EndDrawEffect();
-                        }
-
-                    }
-                }
-            }
-
-            RenderMan->CopyRenderToTexture(MO_LEFT_TEX);
-
-            ///ojo derecho
-            for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
-
-                pEffect = m_EffectManager.Effects().GetRef(i);
-
-                if(pEffect) {
-                    moEffectState fxstate = pEffect->GetEffectState();
-                    if (fxstate.stereo==MO_ACTIVATED) {
-
-                        fxstate.stereoside = MO_STEREO_RIGHT;
-                        pEffect->SetEffectState( fxstate );
-
-                        if(pEffect->Activated()) {
-                                RenderMan->BeginDrawEffect();
-                                pEffect->Draw(&m_ConsoleState.tempo);
-                                RenderMan->EndDrawEffect();
-                        }
-
-                    }
-                }
-            }
-
-            RenderMan->CopyRenderToTexture(MO_RIGHT_TEX);
-
-        } else {
-            ///NORMAL METHOD
-
-            //Se dibujan los Effects
-            for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
-
-                pEffect = m_EffectManager.Effects().GetRef(i);
-                if(pEffect) {
                     if(pEffect->Activated()) {
                             RenderMan->BeginDrawEffect();
                             pEffect->Draw(&m_ConsoleState.tempo);
                             RenderMan->EndDrawEffect();
                     }
+
                 }
             }
-
-            RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
         }
+
+        RenderMan->CopyRenderToTexture(MO_LEFT_TEX);
+
+        ///ojo derecho
+        for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
+
+            pEffect = m_EffectManager.Effects().GetRef(i);
+
+            if(pEffect) {
+                moEffectState fxstate = pEffect->GetEffectState();
+                if (fxstate.stereo==MO_ACTIVATED) {
+
+                    fxstate.stereoside = MO_STEREO_RIGHT;
+                    pEffect->SetEffectState( fxstate );
+
+                    if(pEffect->Activated()) {
+                            RenderMan->BeginDrawEffect();
+                            pEffect->Draw(&m_ConsoleState.tempo);
+                            RenderMan->EndDrawEffect();
+                    }
+
+                }
+            }
+        }
+
+        RenderMan->CopyRenderToTexture(MO_RIGHT_TEX);
+
+    } else {
+        ///NORMAL METHOD
+
+        //Se dibujan los Effects
+        for( i=0; i<m_EffectManager.Effects().Count(); i++ ) {
+
+            pEffect = m_EffectManager.Effects().GetRef(i);
+            if(pEffect) {
+                if(pEffect->Activated()) {
+                        RenderMan->BeginDrawEffect();
+                        pEffect->Draw(&m_ConsoleState.tempo);
+                        RenderMan->EndDrawEffect();
+                        RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
+                }
+            }
+        }
+
+        //RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
+    }
 
 		//sedibujan los post Effects
 		for(i=0;i<m_EffectManager.PostEffects().Count();i++) {
@@ -1420,6 +1617,8 @@ moConsole::Draw() {
 			RenderMan->DrawTexture(MO_SCREEN_RESOLUTION, MO_FINAL_TEX);
 
 		this->GLSwapBuffers();
+
+    RenderMan->PreviewShot(false);
 	}
 
 	m_ConsoleState.fps0 = GetTicks();
@@ -1480,6 +1679,7 @@ moConsole::Finish() {
 			delete m_pResourceManager;
 			m_pResourceManager = NULL;
 		}
+		m_pResourceManager = NULL;
 	}
 
 	if (m_bIODeviceManagerDefault) {
@@ -1532,7 +1732,7 @@ moConsole::Interaction() {
                   MODebug2->Message("moConsole::Interaction > KEY DOWN (SDL_KEYDOWN)");
                   if ( event->reservedvalue0 == SDLK_ESCAPE ) {
                       MODebug2->Message("moConsole::Interaction > ESCAPE pressed");
-                      m_ConsoleState.finish = MO_TRUE;
+                      //m_ConsoleState.finish = MO_TRUE;
                   }
 
                   if ( event->reservedvalue0 == SDLK_F12 ) {
@@ -1613,7 +1813,7 @@ int moConsole::SendMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       ApiMessage->Text();
   }
   */
-  MODebug2->Message( "moConsole::SendMoldeoAPIMessage > " );
+  //MODebug2->Message( "moConsole::SendMoldeoAPIMessage > " );
 
   m_pIODeviceManager->GetEvents()->Add( MO_IODEVICE_CONSOLE,
                                         MO_ACTION_MOLDEOAPI_EVENT_SEND,
@@ -1622,6 +1822,10 @@ int moConsole::SendMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
   return 0;
 }
+
+
+#include <sstream>
+#include <iostream>
 
 int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
@@ -1640,8 +1844,9 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
   moMoldeoActionType MappedType = (moMoldeoActionType)m_ReactionListenerManager.m_MapStrToActionType[skey];
 
+/**/
   moText fullMessageText = "";
-  for( int k=0;k<p_pDataMessage->Count();k++) {
+  for( int k=0;k<(int)p_pDataMessage->Count();k++) {
     fullMessageText+= " k:" + IntToStr(k);
     fullMessageText+="[" + p_pDataMessage->Get(k).ToText()+"]";
   }
@@ -1651,7 +1856,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                     + moText(" count:") + IntToStr(p_pDataMessage->Count())
                     + moText(" mapped type:") +IntToStr(MappedType)
                     + moText(" fullmessage:") + fullMessageText  );
-
+/**/
 
   moEffect* fxObject;
   moText arg0;
@@ -1660,6 +1865,10 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   int arg2Int;
   moText arg2Text;
   moText arg3Text;
+
+  moText argRed,argGreen,argBlue,argAlpha;
+  std::stringstream sr,sg,sb;
+  unsigned int r,g,b;
 
   moText EffectStateJSON = "";
   moText FullObjectJSON = "";
@@ -1675,47 +1884,288 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
   switch( MappedType ) {
 
-    case MO_ACTION_OBJECT_ENABLE:
-      return 0;
-      break;
 
+    // VALUES
+
+    case MO_ACTION_VALUE_ADD:
+    case MO_ACTION_VALUE_DELETE:
     case MO_ACTION_VALUE_SET:
-      MODebug2->Message("MO_ACTION_VALUE_SET");
+    case MO_ACTION_VALUE_GET:
+    case MO_ACTION_VALUE_SAVE:
+{
+      //MODebug2->Message("MO_ACTION_VALUE_SET");
       arg0  = p_pDataMessage->Get(1).ToText();//MOBLABEL
       MODebug2->Message(arg0);
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+
       if (fxObject) {
-        MODebug2->Message("MO_ACTION_VALUE_SET fxObject ok");
-        arg1Text  = p_pDataMessage->Get(2).ToText();//PARAMNAME
-        arg2Text  = p_pDataMessage->Get(3).ToText();//PARAMVALUEINDEX
+        //MODebug2->Message("MO_ACTION_VALUE_SET fxObject ok");
+        arg1Text  = p_pDataMessage->Get(2).ToText();//PARAMNAME or ID
+      }
+      else {
+        MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > fxObject not found for " + arg0 );
+        return -1;
+      }
+      if (MappedType==MO_ACTION_VALUE_SAVE) {
+        //guardar ese valor en el config!!!
+        // guardamos el config completo mejor...
+        fxObject->GetConfig()->SaveConfig();
+        return -1;
+      }
+
+      if (MappedType==MO_ACTION_VALUE_SET
+          ||
+          MappedType==MO_ACTION_VALUE_ADD
+          ||
+          MappedType==MO_ACTION_VALUE_DELETE
+          )
+        arg2Text  = p_pDataMessage->Get(3).ToText();//PARAMVALUEINDEX ///si es 0:1 > indice 0, subindice 1...
+
+      int subvalue = -1;
+      bool issubvalue = false;
+      if (arg1Text=="color:0") { arg1Text = "color"; subvalue=0;issubvalue=true; }
+      if (arg1Text=="color_1") { arg1Text = "color"; subvalue=1;issubvalue=true; }
+      if (arg1Text=="color_2") { arg1Text = "color"; subvalue=2;issubvalue=true; }
+      if (arg1Text=="color_3") { arg1Text = "color"; subvalue=3;issubvalue=true; }
+      if (arg1Text=="particlecolor:0") { arg1Text = "particlecolor"; subvalue=0;issubvalue=true; }
+      if (arg1Text=="particlecolor_1") { arg1Text = "particlecolor"; subvalue=1;issubvalue=true; }
+      if (arg1Text=="particlecolor_2") { arg1Text = "particlecolor"; subvalue=2;issubvalue=true; }
+      if (arg1Text=="particlecolor_3") { arg1Text = "particlecolor"; subvalue=3;issubvalue=true; }
+
+
+      moParam& rParam( fxObject->GetConfig()->GetParam(arg1Text));
+
+      arg2Int = atoi( arg2Text );
+
+      moConfig* pConfig = fxObject->GetConfig();
+      if ( MappedType==MO_ACTION_VALUE_ADD && (int)rParam.GetValuesCount()<=arg2Int && pConfig ) {
+
+        MODebug2->Message("moConsole::ProcessMoldeoAPIMessage Adding > value for "+fxObject->GetLabelName()+" preconfig: "+arg2Text);
+        moText pName = rParam.GetParamDefinition().GetName();
+        moParamDefinition pParamDef = pConfig->GetConfigDefinition()->GetParamDefinition( pName );
+        moValue newValue = pParamDef.GetDefaultValue();
+
+        /// crea valores hasta completar el indice (arg2Int) (luego esperamos se rellenen
+        /// con valores reales definidos por el usuario.
+        /// si alguien pide el valor de la posicion xxx
+        /// y xxx es mas grande que la cantidad de valores:
+        ///   se crean todos los valores
+        int valcount = arg2Int - rParam.GetValuesCount() + 1;
+        for( int sum=0; sum < valcount ; sum++ ) {
+            MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > Adding Value at index:" + IntToStr( rParam.GetValuesCount() )
+                              + " newvalue: " + newValue.ToJSON() );
+            rParam.AddValue( newValue );
+        }
+        arg3Text = newValue.GetSubValue(0).ToText();
+
+        /**
+        *
+        * FULL PSEUDO CODE
+        *
+
+        si ya existe una preconfiguración (arg2Int) .
+            si no existe el parametro en esa preconfiguracion (apuntando al arg2Int)
+                lo agrega a esa preconfiguracion
+            en cambio si ya existe lo apunta a este nuevo indice arg2Int
+
+        sino genero una preconfiguracion nueva
+            recorro los parametros de este objeto y agrego como parametro todo los valores que tengan mas de un valor
+                (la idea es que si hay mas de un valor, entonces susceptiblemente es un parametro que es dinamico desde el punto de vista del usuario)
+            el indice de este parametro es el mas cercano a arg2Int o directamente el arg2Int esperando que el preconfig entienda que debera seleccionar el mas cercano
+                (o sea si hay 2 valores y el preconfig es el 3, automaticamente definira <P name="alpha">2</P>)
+        */
+
+
+        pConfig = fxObject->GetConfig();
+        if (pConfig==NULL) return -1;
+        moPreConfig preCfg;
+        bool param_exist = false;
+        int ip=0;
+
+
+        ///Adding to preconfig (available)
+        if (  arg2Int < pConfig->GetPreConfCount() ) {
+          /// si ya existe una preconfiguración correlativa a ese indice (arg2Int) .
+
+          for(int k=0; k < pConfig->GetPreConfCount(); k++ ) {
+            preCfg = pConfig->GetPreconfig( k );
+
+            /// ADD MISSING PARAMETERS THAT HAVE BEEN
+            /// CUSTOMIZED (so they have values count > 1)
+            for( int pi=0; pi < pConfig->GetParamsCount(); pi++) {
+                moParam& rParamx( pConfig->GetParam(pi) );
+
+                if ( rParamx.GetValuesCount()>1 /** only add customized*/) {
+                     moPreconfigParamIndex preIndexA;
+                     for( ip=0, param_exist = false; ip< (int)preCfg.m_PreconfIndexes.Count(); ip++ ) {
+                        preIndexA = preCfg.m_PreconfIndexes.Get(ip);
+                        if (preIndexA.m_ParamName == rParamx.GetParamDefinition().GetName() ) {
+                          param_exist = true;
+                          break;
+                        }
+                      }
+
+                      /// SI existe
+                      if (param_exist) {
+                        ///lo referenciamos a esta nueva posicion creada...
+                        preIndexA.m_ValueIndex = k;
+                        preCfg.m_PreconfIndexes.Set( ip, preIndexA );
+                      } else {
+                        preIndexA.m_ParamName = rParamx.GetParamDefinition().GetName();
+                        preIndexA.m_ParamIndex = rParamx.GetParamDefinition().GetIndex();
+                        preIndexA.m_ValueIndex = momin( rParamx.GetValuesCount()-1, k );
+                        preCfg.m_PreconfIndexes.Add( preIndexA );
+                      }
+
+                }
+            }
+
+            pConfig->SetPreconfig( k, preCfg.m_PreconfIndexes );
+
+          }
+
+        } else {
+
+        ///Creating preconfigs to make (arg2int) available
+
+          ///se incluye todos los parametros que tiene al menos un valor en esta preconfiguracion... (en ese indice)
+          MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > Adding Value > a new value");
+
+          int new_preconfigs = arg2Int - pConfig->GetPreConfCount() + 1;
+
+          MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > Adding Preconfigs: " + IntToStr(valcount) );
+
+          if (new_preconfigs>0) {
+            int base_index = pConfig->GetPreConfCount();
+            for( int sum=0; sum < new_preconfigs ; sum++ ) {
+
+              moPreConfig newPreCfg;
+              moPreconfigParamIndex preIndexI;
+
+              preIndexI.m_ParamName = rParam.GetParamDefinition().GetName();
+              preIndexI.m_ParamIndex = rParam.GetParamDefinition().GetIndex();
+              preIndexI.m_ValueIndex = base_index+sum;
+
+              newPreCfg.m_PreconfIndexes.Add( preIndexI );
+
+              /// ADD PARAMETERS THAT HAS BEEN
+              /// CUSTOMIZED (so they have values count > 1)
+              for( int pi=0; pi < pConfig->GetParamsCount(); pi++) {
+                  moParam& rParam2( pConfig->GetParam(pi) );
+
+                  if ( pi!=preIndexI.m_ParamIndex
+                      && pConfig->GetParam(pi).GetValuesCount()>1 ) {
+
+                    moPreconfigParamIndex preIndexA;
+
+                    preIndexA.m_ParamName = rParam2.GetParamDefinition().GetName();
+                    preIndexA.m_ParamIndex = rParam2.GetParamDefinition().GetIndex();
+                    preIndexA.m_ValueIndex = momin( pConfig->GetParam(pi).GetValuesCount()-1, preIndexI.m_ValueIndex );
+
+                    newPreCfg.m_PreconfIndexes.Add( preIndexA );
+
+                  }
+              }
+
+              pConfig->AddPreconfig( newPreCfg.m_PreconfIndexes );
+            }
+          }
+
+        }
+        /**
+        *
+        *
+        */
+        ///Set and Notify value
+        MappedType = MO_ACTION_VALUE_SET;
+
+      }
+
+
+      moValue& rValue( rParam.GetValue(arg2Int) );
+
+      if (MappedType==MO_ACTION_VALUE_DELETE) {
+          rParam.DeleteValue( arg2Int );
+          return 0;
+      }
+      if (subvalue==-1) subvalue = 0;
+      moValueBase& VB( rValue.GetSubValue(subvalue) );
+
+      if (MappedType==MO_ACTION_VALUE_SET && p_pDataMessage->Count()>=5) {
         arg3Text  = p_pDataMessage->Get(4).ToText();//VALUE
-        moParam& rParam( fxObject->GetConfig()->GetParam(arg1Text));
-        arg2Int = atoi( arg2Text );
-        moValue& rValue( rParam.GetValue(arg2Int) );
-        moValueBase& VB( rValue.GetSubValue(0) );
-        MODebug2->Message("MO_ACTION_VALUE_SET settings: arg1Text (param):" + arg1Text
-                          + " arg2Text (preconf): ["+arg2Text+"] arg2Int: "+ IntToStr(arg2Int)
-                          + " arg3Text (val): " + arg3Text
-                          + " VB:" + VB.TypeToText()
-                          );
-        switch(VB.Type()) {
+      } else {
+        arg3Text = VB.ToText();
+      }
+/*
+      MODebug2->Message("MO_ACTION_VALUE_SET settings: arg1Text (param):" + arg1Text
+                        + " arg2Text (preconf): ["+arg2Text+"] arg2Int: "+ IntToStr(arg2Int)
+                        + " arg3Text (val): " + arg3Text
+                        + " VB:" + VB.TypeToText()
+                        );
+*/
+      if (rParam.GetParamDefinition().GetType()==MO_PARAM_COLOR && issubvalue==false ) {
+
+        argRed = arg3Text;
+        argGreen = arg3Text;
+        argBlue = arg3Text;
+        MODebug2->Message("color");
+
+        if (arg3Text.Left(0)=="#") {
+          argRed.Mid(1,2);
+          argGreen.Mid(3,2);
+          argBlue.Mid(5,2);
+          MODebug2->Message("color: red: " + argRed + " green:" + argGreen + " blue:" + argBlue);
+
+          sr << std::hex << argRed;
+          sr >> r;
+          if (m_pResourceManager->GetMathMan())
+              idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)r*1.0/255.0),
+                                                                  (MOboolean)true, this );
+          if (idx>-1) {
+              rValue.GetSubValue(0).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+          } else return -1;
+
+          sg << std::hex << argGreen;
+          sg >> g;
+          if (m_pResourceManager->GetMathMan())
+              idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)g*1.0/255.0),
+                                                                  (MOboolean)true, this );
+          if (idx>-1) {
+              rValue.GetSubValue(1).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+          } else return -1;
+
+          sb << std::hex << argBlue;
+          sb >> b;
+          if (m_pResourceManager->GetMathMan())
+              idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)b*1.0/255.0),
+                                                                  (MOboolean)true, this );
+          if (idx>-1) {
+              rValue.GetSubValue(2).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+          } else return -1;
+
+          MODebug2->Message("color: red: " + IntToStr(r) + " green:" + IntToStr(g) + " blue:" + IntToStr(b));
+        }
+      }
+      else { switch(VB.Type()) {
           case MO_DATA_FUNCTION:
             idx = -1;
-            VB.SetText(arg3Text);
             if (m_pResourceManager->GetMathMan())
-              idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
+              idx = m_pResourceManager->GetMathMan()->AddFunction( arg3Text, (MOboolean)true, fxObject );
             if (idx>-1) {
+                VB.SetText(arg3Text);
                 VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
-                //MODebug2->Message( moText("function defined: ") + VB.Text() );
+                MODebug2->Message( moText("function defined: ") + VB.Text() );
+                VB.Eval();
             } else {
                 MODebug2->Error(moText("moConsole::ProcessMoldeoAPIMessage > function couldn't be defined: ") + VB.Text()
                                 + " object: "+GetName()
                                 + " config: " + GetConfigName()
                                 + " label:" + GetLabelName() );
+                return -1;
             }
-            return 0;
             break;
           case MO_DATA_TEXT:
+          case MO_DATA_SOUNDSAMPLE:
           case MO_DATA_IMAGESAMPLE:
           case MO_DATA_IMAGESAMPLE_FILTERED:
           case MO_DATA_IMAGESAMPLE_TEXTUREBUFFER:
@@ -1758,21 +2208,37 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                     */
                 } else {
                   MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > importing image error! "+arg3Text);
+                  return -1;
                 }
                 break;
               case MO_PARAM_SOUND:
-                VB.SetText(arg3Text);
-                if (VB.Text()!="") {
-                  moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( VB.Text() );
-                  if (pSound) {
-                      VB.SetSound( pSound );
+                {
+                  if (m_pResourceManager->GetDataMan()->InData(arg3Text)) {
+                    //make relative to datapath
+                    arg3Text = m_pResourceManager->GetDataMan()->MakeRelativeToData(arg3Text);
+                  } else {
+                    //try to import file
+                    moFile importFile( arg3Text );
+                    m_pResourceManager->GetDataMan()->ImportFile( importFile.GetAbsolutePath() );
+                    arg3Text = importFile.GetFullName();
+                  }
+
+
+                  if (arg3Text!="") {
+                    moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( arg3Text );
+                    if (pSound) {
+                        VB.SetText(arg3Text);
+                        VB.SetSound( pSound );
+                    } else {
+                      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > importing Sound error! "+arg3Text);
+                      return -1;
+                    }
                   }
                 }
                 break;
               default:
                 break;
             }
-            return 0;
             break;
           case MO_DATA_NUMBER:
             VB.SetInt( (int)atoi(arg3Text) );
@@ -1795,24 +2261,50 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           default:
             break;
         }
+      }
+
+      moValue fullValueToCopy = rValue;
+
+      SetValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, fullValueToCopy );
+
+      MappedType = MO_ACTION_VALUE_GET;
+
+      if (MappedType==MO_ACTION_VALUE_GET) {
+
+        moText fullValueJSON = rValue.ToJSON();
+        MODebug2->Message("valueget " + fullValueJSON );
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("valueget") );
+            pMessageToSend->Add( moData( arg0 ) );//mob
+            pMessageToSend->Add( moData( arg1Text ) );//param
+            pMessageToSend->Add( moData( arg2Text ) );//preconf
+            pMessageToSend->Add( moData( fullValueJSON ) );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
 
       }
+
+      return 0;
+}
+      break;
+
+    // OBJECTS
+
+    case MO_ACTION_OBJECT_ENABLE:
       return 0;
       break;
 
-    /**
-
-    EFFECTS
-
-    */
+    // EFFECTS
 
     case MO_ACTION_EFFECT_ENABLE:
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
 
       //buscar este efecto y prenderlo...
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
-          fxObject->TurnOn();
+          ObjectEnable( fxObject->GetId() );
 
           /** SEND IT UPDATED!!!*/
           MoldeoApiCommandData.SetText( "effectgetstate" );
@@ -1822,15 +2314,17 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_ENABLE > [" + arg0+"] not found!" );
+      }
       break;
 
     case MO_ACTION_EFFECT_DISABLE:
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
 
       //buscar este efecto y prenderlo...
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
-          fxObject->TurnOff();
+          ObjectDisable( fxObject->GetId() );
 
           /** SEND IT UPDATED!!!*/
           MoldeoApiCommandData.SetText( "effectgetstate" );
@@ -1840,10 +2334,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_DISABLE > [" + arg0+"] not found!" );
+      }
       break;
 
     case MO_ACTION_EFFECT_GETSTATE:
-      ///TODO: SEND FULL STATE OBJECT in JSON Format
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
@@ -1864,9 +2359,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_GETSTATE > [" + arg0+"] not found!" );
+      }
       break;
 
     case MO_ACTION_EFFECT_SETSTATE:
+      {
       if (p_pDataMessage->Count()<4) {
         return -1;
       }
@@ -1875,55 +2372,45 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       if (fxObject) {
         arg1Text  = p_pDataMessage->Get(2).ToText();
         arg2Text  = p_pDataMessage->Get(3).ToText();
-        /*
-        MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > arg0:" + arg0
-                          + " arg1Text:" + arg1Text
-                          + " arg2Text: " + arg2Text );
-                          */
+
         if ( arg1Text == moText("alpha") ) {
             if ( arg2Text == moText("increment") ) {
 
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > alpha increment" );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > alpha increment" );
               fxObject->Alpha( 0.01 );
 
             } else if ( arg2Text == moText("decrement") ) {
 
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > alpha decrement" );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > alpha decrement" );
               fxObject->Alpha( -0.01 );
 
             } else if( p_pDataMessage->Get(3).Type() != MO_DATA_TEXT ) {
               EffectState = fxObject->GetEffectState();
               EffectState.alpha = p_pDataMessage->Get(3).Float();
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating to: " + FloatToStr(EffectState.alpha) );
-              fxObject->SetState( EffectState );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating to: " + FloatToStr(EffectState.alpha) );
+              fxObject->SetEffectState( EffectState );
               EffectState = fxObject->GetEffectState();
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updated: " + FloatToStr(EffectState.alpha) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updated: " + FloatToStr(EffectState.alpha) );
             }
         }
 
         if ( arg1Text == moText("tempo") ) {
             if ( arg2Text == moText("increment") ) {
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo increment" );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo increment" );
               fxObject->TempoDelta( 0.01 );
             } else if ( arg2Text == moText("decrement") ) {
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo decrement" );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo decrement" );
               fxObject->TempoDelta( -0.01 );
             } else if ( arg2Text == moText("beatpulse") ) {
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo beatpulse" );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > tempo beatpulse" );
               fxObject->BeatPulse();
             } else if( p_pDataMessage->Get(3).Type() != MO_DATA_TEXT ) {
-              EffectState = fxObject->GetEffectState();
-
-              EffectState.tempo.delta = p_pDataMessage->Get(3).Float();
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating to: " + FloatToStr(EffectState.tempo.delta) );
-              fxObject->SetState( EffectState );
-
-              EffectState = fxObject->GetEffectState();
-              MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updated: " + FloatToStr(EffectState.tempo.delta) );
+              fxObject->SetTempoDelta( p_pDataMessage->Get(3).Float() );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > EffectState updating tempo.delta to: " + FloatToStr(fxObject->GetEffectState().tempo.delta) );
             }
         }
-
-
+        EffectState = fxObject->GetEffectState();
+        SetEffectState( fxObject->GetId(), EffectState );
 
         /** SEND IT UPDATED!!!*/
         MoldeoApiCommandData.SetText( "effectgetstate" );
@@ -1933,13 +2420,14 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_SETSTATE > [" + arg0+"] not found!" );
+      }
       break;
 
     case MO_ACTION_EFFECT_PLAY:
       arg0  = p_pDataMessage->Get(1).ToText();
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
-          fxObject->Play();
+          EffectPlay(fxObject->GetId());
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PLAY > [" + arg0+"] not found!" );
@@ -1949,7 +2437,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       arg0  = p_pDataMessage->Get(1).ToText();
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
-          fxObject->Pause();
+          EffectPause(fxObject->GetId());
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PAUSE > [" + arg0+"] not found!" );
@@ -1959,11 +2447,91 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       arg0  = p_pDataMessage->Get(1).ToText();
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
-          fxObject->Stop();
+          EffectStop(fxObject->GetId());
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_STOP > [" + arg0+"] not found!" );
       break;
+
+    /**
+
+    VALUE SET
+
+    */
+
+    case MO_ACTION_PARAM_SET:
+      // code, mob, param, info
+      {
+        if (p_pDataMessage->Count()<4) {
+          return -1;
+        }
+        arg0  = p_pDataMessage->Get(1).ToText();
+        fxObject = m_EffectManager.GetEffectByLabel( arg0 );//mob_label
+        if (fxObject) {
+          arg1Text  = p_pDataMessage->Get(2).ToText();//param
+          arg2Text  = p_pDataMessage->Get(3).ToText();//attribute
+        } else return -1;
+
+        moParam& pparam( fxObject->GetConfig()->GetParam( arg1Text ));
+        if (arg2Text=="property") {
+          arg3Text  = p_pDataMessage->Get(4).ToText();//property value "empty" or "published"
+          pparam.GetParamDefinition().SetProperty( arg3Text );
+        } else if(arg2Text=="interpolation") {
+          moParamInterpolation ParamInter = pparam.GetParamDefinition().GetInterpolation();
+          arg3Text  = p_pDataMessage->Get(4).ToText();//linear|easein|easeinout|easout
+          pparam.GetParamDefinition().GetInterpolation().SetInterpolationFunction( arg3Text );
+        } else if(arg2Text=="duration") {
+          arg3Text  = p_pDataMessage->Get(4).ToText();//linear|easein|easeinout|easout
+          moParamInterpolation ParamInter = pparam.GetParamDefinition().GetInterpolation();
+          pparam.GetParamDefinition().GetInterpolation().SetDuration( atoi(arg3Text) );
+        }
+
+        SetParam( fxObject->GetId(), pparam.GetParamDefinition().GetIndex(), pparam.GetParamDefinition() );
+      }
+
+      /** SEND IT UPDATED!!!*/
+      MoldeoApiCommandData.SetText( "paramget" );
+      p_pDataMessage->Set( 0, MoldeoApiCommandData );
+      p_pDataMessage->Set( 1, moData(arg0) );
+      p_pDataMessage->Set( 2, moData(arg1Text) );
+      p_pDataMessage->Set( 3, moData("") );
+      p_pDataMessage->Set( 4, moData("") );
+      ProcessMoldeoAPIMessage( p_pDataMessage );
+      break;
+
+    case MO_ACTION_PARAM_GET:
+      {
+        //MODebug2->Message("MO_ACTION_VALUE_SET");
+        arg0  = p_pDataMessage->Get(1).ToText();//MOBLABEL
+        MODebug2->Message(arg0);
+        fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+
+        if (fxObject) {
+          //MODebug2->Message("MO_ACTION_VALUE_SET fxObject ok");
+          arg1Text  = p_pDataMessage->Get(2).ToText();//PARAMNAME or ID
+        }
+        else
+          return -1;
+
+        moParam mParam = fxObject->GetConfig()->GetParam(arg1Text);
+
+        moText FullParamJSON = mParam.GetParamDefinition().ToJSON();
+        MODebug2->Message( FullParamJSON );
+
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("paramget") );
+            //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+            pMessageToSend->Add( moData( arg0 ) );
+            pMessageToSend->Add( moData( FullParamJSON ) );
+            //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+            //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+            // send it: but we need an id
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+      }
+      break;
+
 
     /**
 
@@ -1977,10 +2545,15 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
-          fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
+          //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
+          if ( 0 <= arg1Int && arg1Int<fxObject->GetConfig()->GetPreConfCount()) {
+            this->SetPreconf( fxObject->GetId(), arg1Int );
+          } else {
+            MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > preconfig index [" + IntToStr(arg1Int)+"] not found!" );
+          }
           return 0;
       }
-      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > effectenable > MO_ACTION_EFFECT_ENABLE > [" + arg0+"] not found!" );
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > Moldeo Object [" + arg0+"] not found!" );
       break;
 
   /** OBJECTS
@@ -2030,7 +2603,32 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_CONSOLE_SCREENSHOT:
       //ScreenShot();
-      m_pResourceManager->GetRenderMan()->Screenshot(moText(""));
+      if (m_pResourceManager->GetRenderMan()->Screenshot(moText(""), m_LastScreenshot)) {
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolescreenshot") );
+            pMessageToSend->Add( moData("success") );
+            ///JSON INFO
+            pMessageToSend->Add( moData("{\"lastscreenshot\" : \""+m_LastScreenshot + "\"}" ) );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+      }
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_PREVIEW_SHOT:
+      //ScreenShot();
+      if (m_pResourceManager->GetRenderMan()->PreviewShot( true ) ) {
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolepreviewshot") );
+            pMessageToSend->Add( moData("success") );
+            ///JSON INFO
+            //pMessageToSend->Add( moData("{\"lastscreenshot\" : \""+m_LastScreenshot + "\"}" ) );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+      }
+
       return 0;
       break;
 
@@ -2038,30 +2636,107 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       //ScreenShot();
       ///SAVING ALL
       MODebug2->Message("moConsole::Processing > Saving ALL");
-      for( int fx=0; fx<m_MoldeoObjects.Count(); fx++ ) {
+      for( int fx=0; fx<(int)m_MoldeoObjects.Count(); fx++ ) {
         m_MoldeoObjects[fx]->GetConfig()->SaveConfig();
       }
 
       pMessageToSend = new moDataMessage();
       if (pMessageToSend) {
           pMessageToSend->Add( moData("consolesave") );
+          pMessageToSend->Add( moData("success") );
           SendMoldeoAPIMessage( pMessageToSend );
       }
       return 0;
       break;
+    case MO_ACTION_CONSOLE_SAVEAS:
+      MODebug2->Message("moConsole::Processing > Save As");
+      arg0  = p_pDataMessage->Get(1).ToText();//DIRECTORY
+      ///si no existe ese directorio crearlo!!!
+      MODebug2->Message("moConsole::Processing > Save As: FROM: " + m_pResourceManager->GetDataMan()->GetDataPath()
+                        + " TO: "+ arg0);
+      if ( moFileManager::CopyDirectory( m_pResourceManager->GetDataMan()->GetDataPath(), arg0 ) ) {
+
+        moFile molFile(  m_pResourceManager->GetDataMan()->GetConsoleConfigName() );
+
+        MODebug2->Message("moConsole::Processing > Save As OK!!!");
+        m_pResourceManager->GetDataMan()->Init( m_pResourceManager->GetDataMan()->GetAppPath(),
+                                               arg0,
+                                               molFile.GetFullName() );
+         MODebug2->Message(" changing path: " + m_pResourceManager->GetDataMan()->GetDataPath()
+                          + " mol file:" + molFile.GetFullName() );
+
+        for( int fx=0; fx<(int)m_MoldeoObjects.Count(); fx++ ) {
+          moFile cfgName( m_MoldeoObjects[fx]->GetConfig()->GetName() );
+          m_MoldeoObjects[fx]->GetConfig()->SaveConfig( arg0+moSlash+cfgName.GetFullName() );
+        }
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolesaveas") );
+            pMessageToSend->Add( moData("success") );
+            ///JSON INFO
+            pMessageToSend->Add( moData("{\"projectfullpath\":\""+arg0 + "\"}" ) );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+
+      } else {
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolesaveas") );
+            pMessageToSend->Add( moData("failed") );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+      }
+      break;
 
     case MO_ACTION_CONSOLE_PLAY:
       ConsolePlay();
+
+      EffectStateJSON = m_ConsoleState.ToJSON();
+
+      pMessageToSend = new moDataMessage();
+
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consolegetstate") );
+          pMessageToSend->Add( moData("__console__") );
+          pMessageToSend->Add( moData( EffectStateJSON ) );
+          /** send it: but we need an id */
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
+
       return 0;
       break;
 
     case MO_ACTION_CONSOLE_STOP:
       ConsoleStop();
+
+      EffectStateJSON = m_ConsoleState.ToJSON();
+
+      pMessageToSend = new moDataMessage();
+
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consolegetstate") );
+          pMessageToSend->Add( moData("__console__" ) );
+          pMessageToSend->Add( moData( EffectStateJSON ) );
+          /** send it: but we need an id */
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
       return 0;
       break;
 
     case MO_ACTION_CONSOLE_PAUSE:
       ConsolePause();
+
+      EffectStateJSON = m_ConsoleState.ToJSON();
+
+      pMessageToSend = new moDataMessage();
+
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consolegetstate") );
+          pMessageToSend->Add( moData("__console__" ) );
+          pMessageToSend->Add( moData( EffectStateJSON ) );
+          /** send it: but we need an id */
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
       return 0;
       break;
 
@@ -2072,6 +2747,16 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       FullObjectJSON+= fieldSeparation+"'apppath': '"+m_pResourceManager->GetDataMan()->GetAppPath()+"'";
       FullObjectJSON+= fieldSeparation+"'appdatapath': '"+m_pResourceManager->GetDataMan()->GetAppDataPath()+"'";
       FullObjectJSON+= fieldSeparation+"'configname': '"+m_pResourceManager->GetDataMan()->GetConsoleConfigName()+"'";
+      FullObjectJSON+= fieldSeparation+"'config': "+this->m_Config.ToJSON();
+      FullObjectJSON+= fieldSeparation+"'MapEffects':  {";
+      fieldSeparation = "";
+      for(int i=0;i<(int)this->m_EffectManager.AllEffects().Count(); i++ ) {
+        moEffect* Fx = m_EffectManager.AllEffects().Get(i);
+        FullObjectJSON+= fieldSeparation+"'"+Fx->GetLabelName()+"': '" + Fx->GetKeyName() +"'";
+        fieldSeparation = ",";
+      }
+      FullObjectJSON+= "}";
+
       FullObjectJSON+= "}";
 
       pMessageToSend = new moDataMessage();
@@ -2090,6 +2775,19 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_CONSOLE_GETSTATE:
       /** must return console state */
+      EffectStateJSON = m_ConsoleState.ToJSON();
+
+      pMessageToSend = new moDataMessage();
+
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consolegetstate") );
+          pMessageToSend->Add( moData("__console__" ) );
+          pMessageToSend->Add( moData( EffectStateJSON ) );
+          /** send it: but we need an id */
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
+
+      return 0;
       return 0;
       break;
 
@@ -2218,7 +2916,7 @@ moConsole::Update() {
         } else {
 
             if ( m_ScreenshotTimer.Duration()>m_ScreenshotInterval ) {
-                m_pResourceManager->GetRenderMan()->Screenshot(moText(""));
+                m_pResourceManager->GetRenderMan()->Screenshot(moText(""),m_LastScreenshot);
                 m_ScreenshotTimer.Stop();
                 m_ScreenshotTimer.Start();
             }
@@ -2231,9 +2929,13 @@ moConsole::Update() {
   /// moMoldeoObject->GetMobDefinition()->GetMoldeoId()
 	RenderMan->BeginUpdate();
 	if (m_pIODeviceManager) {
-		for(MOuint i = 0; i<m_MoldeoObjects.Count(); i++) {
+		for(MOuint i = 0; i<(m_MoldeoObjects.Count()+m_MoldeoSceneObjects.Count()); i++) {
 			RenderMan->BeginUpdateObject();
-			moMoldeoObject* pMOB = m_MoldeoObjects[i];
+			moMoldeoObject* pMOB = NULL;
+			if (i<m_MoldeoObjects.Count())
+        pMOB = m_MoldeoObjects[i];
+			else
+        pMOB = m_MoldeoSceneObjects[i-m_MoldeoObjects.Count()];
 			if (pMOB) {
                 if (pMOB->GetType()!=MO_OBJECT_IODEVICE)
                     pMOB->Update(m_pIODeviceManager->GetEvents());
@@ -2309,7 +3011,7 @@ moConsole::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("mastereffect"), MO_PARAM_TEXT, CONSOLE_MASTEREFFECT );
 	p_configdefinition->Add( moText("resources"), MO_PARAM_TEXT, CONSOLE_RESOURCES );
 
-	p_configdefinition->Add( moText("mastereffects_on"), MO_PARAM_NUMERIC, CONSOLE_ON, moValue("0","NUM").Ref() );
+	p_configdefinition->Add( moText("mastereffects_on"), MO_PARAM_NUMERIC, (MOint)CONSOLE_ON, moValue("0","NUM").Ref(), moText("off,on") );
 	p_configdefinition->Add( moText("fulldebug"), MO_PARAM_NUMERIC, CONSOLE_FULLDEBUG, moValue("0","NUM").Ref()  );
 
 	//obsoleto
@@ -2377,27 +3079,436 @@ moConsole::ConvertKeyNameToIdx(moText& name) {
 	return -1;
 }
 
+int moConsole::ProcessSessionKey( const moDataSessionKey & p_session_key ) {
+  moMoldeoActionType action = p_session_key.GetActionType();
+  //APPLY!!!!
+  switch( action ) {
+    case MO_ACTION_CONSOLE_PLAY:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_CONSOLE_PLAY" );
+      ConsolePlay();
+      break;
+    case MO_ACTION_CONSOLE_PAUSE:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_CONSOLE_PAUSE" );
+      ConsolePause();
+      break;
+    case MO_ACTION_CONSOLE_STOP:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_CONSOLE_STOP" );
+      ConsoleStop();
+      break;
+
+    case MO_ACTION_PRECONFIG_SET:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_PRECONFIG_SET" );
+      SetPreconf( p_session_key.m_ObjectId, p_session_key.m_PreconfId  );
+      break;
+
+    case MO_ACTION_VALUE_SET:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_VALUE_SET" );
+      SetValue( p_session_key.m_ObjectId, p_session_key.m_ParamId, p_session_key.m_ValueId, p_session_key.m_Value );
+      break;
+
+    case MO_ACTION_PARAM_SET:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_PARAM_SET" );
+      SetParam( p_session_key.m_ObjectId, p_session_key.m_ParamId, p_session_key.m_ParamDefinition );
+      break;
+
+    case MO_ACTION_EFFECT_ENABLE:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_EFFECT_ENABLE" );
+      ObjectEnable( p_session_key.m_ObjectId );
+      break;
+
+    case MO_ACTION_EFFECT_DISABLE:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_EFFECT_DISABLE" );
+      ObjectDisable( p_session_key.m_ObjectId );
+      break;
+
+    case MO_ACTION_EFFECT_PLAY:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_EFFECT_PLAY" );
+      EffectPlay( p_session_key.m_ObjectId );
+      break;
+
+    case MO_ACTION_EFFECT_PAUSE:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_EFFECT_PAUSE" );
+      EffectPause( p_session_key.m_ObjectId );
+      break;
+
+    case MO_ACTION_EFFECT_STOP:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_EFFECT_STOP" );
+      EffectStop( p_session_key.m_ObjectId );
+      break;
+
+    case MO_ACTION_UNDEFINED:
+      break;
+    case MO_ACTION_VALUE_ADD:
+    case MO_ACTION_VALUE_DELETE:
+    case MO_ACTION_VALUE_SAVE:
+    case MO_ACTION_VALUE_GET:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_VALUE_###" );
+      break;
+    case MO_ACTION_CONSOLE_PRESET_ADD:
+    case MO_ACTION_CONSOLE_PRESET_DELETE:
+    case MO_ACTION_CONSOLE_PRESET_SAVE:
+    case MO_ACTION_CONSOLE_PRESET_SET:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_CONSOLE_PRESET_###" );
+      break;
+    default:
+      {
+      moDataSessionKey sk = p_session_key;
+      moText json = sk.ToJSON();
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type not processed: " + json );
+      }
+      break;
+  };
+
+  return 0;
+}
+
+int moConsole::ProcessSessionEventKey( const moDataSessionEventKey & p_session_event_key ) {
+
+  moDataSessionEventKey sek = p_session_event_key;
+
+  //int mtimecode = sek.GetTimecode();
+
+  return 0;
+
+}
+
+
+
+void moConsole::ConsoleModeUpdate() {
+
+  /**
+  chequear que haya una sesion activa en el DataManager...
+  */
+  moDataSession* loadedSession = GetResourceManager()->GetDataMan()->GetSession();
+  /**
+  moldeoplayer -mol xx.mol -mos session.mos -outputmode "AUTOPLAY" -mode "LIVE"|"RECORD"|"PLAYBACK"|"RENDER"
+  */
+  //session object
+  if (loadedSession==NULL) { MODebug2->Error("moConsole::ConsoleModeUpdate > no session"); return; }
+
+
+  switch( m_ConsoleState.m_Mode ) {
+
+    case MO_CONSOLE_MODE_LIVE:
+      {
+      //normal mode: do nothing
+      	m_ConsoleState.tempo.Duration();
+        m_ConsoleState.tempo.getTempo();
+      }
+      break;
+
+    case MO_CONSOLE_MODE_PLAY_SESSION:
+      {
+      //playing back last session loaded
+      //
+        //loaded/loading session
+        if (!loadedSession->Loaded())
+            if (!loadedSession->LoadSession()) { MODebug2->Error("moConsole::ConsoleModeUpdate > no loaded session"); return; }
+
+        //session ended?
+        if (loadedSession->SessionEnded()) { MODebug2->Message("moConsole::ConsoleModeUpdate > session playback ended."); return; }
+
+        // 1000 / 20fps = 50 ms
+        // 1000 / 24fps = 41 ms = 24 frames + 16/24
+        // 1000 / 30fps = 50 ms
+        m_ConsoleState.step_interval = 41;
+
+        moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
+
+        //process next keys
+        ProcessSessionKey( loadedSession->NextKey( m_ConsoleState ) );
+
+      }
+      break;
+
+    case MO_CONSOLE_MODE_RECORD_SESSION:
+      {
+        m_ConsoleState.tempo.Duration();
+        m_ConsoleState.tempo.getTempo();
+
+      }
+      break;
+
+    case MO_CONSOLE_MODE_RENDER_SESSION:
+      {
+        m_ConsoleState.step_interval = 41;
+        long tickis = moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
+        MODebug2->Message("moConsole::ConsoleModeUpdate > render session: " + IntToStr(tickis) );
+        int console_timecode = m_ConsoleState.tempo.Duration();
+
+        if (console_timecode==0)  {
+              m_ConsoleState.tempo.Fix();
+              m_ConsoleState.tempo.Stop();
+              m_ConsoleState.tempo.Start();
+        }
+
+        m_ConsoleState.tempo.getTempo();
+
+        MODebug2->Message("moConsole::ConsoleModeUpdate > render session: m_ConsoleState.tempo.Duration: " + IntToStr(console_timecode) );
+
+        ProcessSessionKey( loadedSession->NextKey( m_ConsoleState ) );
+        loadedSession->StepRender( m_ConsoleState );
+
+      }
+      break;
+
+    default:
+      /**  */
+      break;
+  };
+}
+
+void moConsole::ConsolePlaySession() {
+  MODebug2->Message("moConsole::ConsolePlaySession");
+  if (m_pResourceManager==NULL) return;
+  GetResourceManager()->GetDataMan()->GetSession()->Playback(m_ConsoleState);
+}
+
+void moConsole::ConsoleRecordSession() {
+  MODebug2->Message("moConsole::ConsoleRecordSession ");
+  if (m_pResourceManager==NULL) return;
+  m_pResourceManager->GetDataMan()->GetSession()->Record( m_ConsoleState );
+
+}
+
+void moConsole::ConsoleRenderSession() {
+  MODebug2->Message("moConsole::ConsoleRenderSession");
+  if (m_pResourceManager==NULL) return;
+
+  m_pResourceManager->GetDataMan()->GetSession()->Render( m_ConsoleState );
+}
+
+void moConsole::ConsoleSaveSessionAs() {
+  MODebug2->Message("moConsole::ConsoleSaveSessionAs");
+  if (m_pResourceManager==NULL) return;
+}
+
 void moConsole::ConsolePlay() {
 
-    m_ConsoleState.tempo.Start();
+    if (m_ConsoleState.tempo.State()!=MO_TIMERSTATE_PLAYING) {
+      m_ConsoleState.tempo.Start();
+    }
 
-    if (moIsTimerPaused())
+    if (moIsTimerPaused()) {
         moContinueTimer();
-    else
+    } else {
         moStartTimer();
+    }
+
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      if (m_pResourceManager==NULL) return;
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_CONSOLE_PLAY );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
 }
 
 void moConsole::ConsolePause() {
     moPauseTimer();
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      if (m_pResourceManager==NULL) return;
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_CONSOLE_PAUSE );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
 }
 
 void moConsole::ConsoleStop() {
     moStopTimer();
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      if (m_pResourceManager==NULL) return;
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_CONSOLE_STOP );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+
 }
 
-moTimerState moConsole::ConsoleState() {
+moConsoleMode moConsole::GetConsoleMode() {
+
+    return m_ConsoleState.m_Mode;
+}
+
+moTimerState moConsole::GetConsoleState() {
 
     return moGetTimerState();
+}
+
+int
+moConsole::SetEffectState( int m_MoldeoObjectId, const moEffectState& p_effect_state ) {
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object && Object->GetConfig()) {
+
+    moEffect* Effect = ((moEffect*)Object);
+    Effect->SetEffectState( p_effect_state );
+
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_EFFECT_SETSTATE, Object->GetId(),  p_effect_state );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+
+    return 1;
+  } else return -1;
+  return 0;
+}
+
+int
+moConsole::SetParam( int m_MoldeoObjectId, int m_ParamId, const moParamDefinition &p_param_definition ) {
+
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object && Object->GetConfig()) {
+    moParam& Param( Object->GetConfig()->GetParam(m_ParamId));
+    moParamDefinition mpdef = p_param_definition;
+    Param.SetParamDefinition( mpdef );
+
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_PARAM_SET, Object->GetId(),  m_ParamId, Param.GetParamDefinition() );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+
+    return 1;
+  }
+  return 0;
+}
+
+int moConsole::SetValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, const moValue &p_value ) {
+
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object && Object->GetConfig()) {
+    moParam& Param( Object->GetConfig()->GetParam(m_ParamId));
+    moValue& Value( Param.GetValue(m_ValueId) );
+    Value = p_value;
+
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_VALUE_SET, Object->GetId(),  m_ParamId, m_ValueId, p_value );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+
+    return 1;
+  }
+
+  return 0;
+}
+
+int
+moConsole::EffectPlay( int m_MoldeoObjectId ) {
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object) {
+    moEffect* fxEffect = (moEffect*)Object;
+    fxEffect->Play();
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_EFFECT_PLAY, Object->GetId()  );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+    return 1;
+  }
+  return 0;
+}
+
+int
+moConsole::EffectPause( int m_MoldeoObjectId ) {
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object) {
+    moEffect* fxEffect = (moEffect*)Object;
+    fxEffect->Pause();
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_EFFECT_PAUSE, Object->GetId()  );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+    return 1;
+  }
+  return 0;
+}
+
+
+int
+moConsole::EffectStop( int m_MoldeoObjectId ) {
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object) {
+    moEffect* fxEffect = (moEffect*)Object;
+    fxEffect->Stop();
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_EFFECT_STOP, Object->GetId()  );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+    return 1;
+  }
+  return 0;
+}
+
+int
+moConsole::ObjectEnable( int m_MoldeoObjectId ) {
+
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object) {
+
+        if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+          moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_OBJECT_ENABLE, Object->GetId()  );
+          GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+        }
+
+        switch ( Object->GetType() ) {
+            case MO_OBJECT_EFFECT:
+            case MO_OBJECT_PREEFFECT:
+            case MO_OBJECT_POSTEFFECT:
+            case MO_OBJECT_MASTEREFFECT:
+              {
+                moEffect* pEffect = (moEffect*) Object;
+                //pEffect->Enable();
+                pEffect->TurnOn();
+              }
+                return 1;
+                break;
+            case MO_OBJECT_IODEVICE:
+            case MO_OBJECT_RESOURCE:
+                {
+                Object->Activate();
+                return 1;
+                }
+                break;
+            default:
+                break;
+        };
+
+  } else return -1;
+
+  return 0;
+}
+
+int
+moConsole::ObjectDisable( int m_MoldeoObjectId ) {
+
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object) {
+
+        if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+          moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_OBJECT_DISABLE, Object->GetId()  );
+          GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+        }
+
+        switch ( Object->GetType() ) {
+            case MO_OBJECT_EFFECT:
+            case MO_OBJECT_PREEFFECT:
+            case MO_OBJECT_POSTEFFECT:
+            case MO_OBJECT_MASTEREFFECT:
+                {
+                  moEffect* pEffect = (moEffect*) Object;
+                  //pEffect->Enable();
+                  pEffect->TurnOff();
+                }
+                return 1;
+                break;
+            case MO_OBJECT_IODEVICE:
+            case MO_OBJECT_RESOURCE:
+                {
+                Object->Deactivate();
+                return 1;
+                }
+                break;
+            default:
+                break;
+        };
+
+  } else return -1;
+
+  return 0;
 }
 
 
@@ -2414,12 +3525,19 @@ void moConsole::SetPreset( int presetid ) {
 int moConsole::GetPreconf( int objectid ) {
     moMoldeoObject* MOB;
     MOB = m_MoldeoObjects.Get(objectid);
-    return 0;
+    return MOB->GetConfig()->GetCurrentPreConf();
 }
 
 void moConsole::SetPreconf( int objectid, int preconfid ) {
-    m_MoldeoObjects[objectid]->GetConfig()->SetCurrentPreConf( preconfid );
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
+    if (Object && Object->GetConfig()) {
+      Object->GetConfig()->SetCurrentPreConf( preconfid );
+    }
 
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_PRECONFIG_SET, objectid, preconfid );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
 }
 
 
@@ -2427,7 +3545,8 @@ void moConsole::SetTicks( int ticksid ) {
     moSetDuration( ticksid );
 }
 
-int moConsole::GetObjectId( moText p_objectlabelname ) {
+int moConsole::GetObjectId( const moText& p_objectlabelname ) {
+
     for( MOuint i=0; i<m_MoldeoObjects.Count(); i++) {
 
         if (p_objectlabelname == m_MoldeoObjects[i]->GetLabelName()) {
@@ -2435,10 +3554,41 @@ int moConsole::GetObjectId( moText p_objectlabelname ) {
         }
 
     }
+
+    for( MOuint i=0; i<m_MoldeoSceneObjects.Count(); i++) {
+
+        if (p_objectlabelname == m_MoldeoSceneObjects[i]->GetLabelName()) {
+            return m_MoldeoSceneObjects[i]->GetId();
+        }
+
+    }
+
     return -1;
 }
 
-int moConsole::GetDirectoryFileCount( moText p_path ) {
+moMoldeoObject* moConsole::GetObjectByIdx( int p_object_id ) {
+
+  moMoldeoObject* returnMOB = NULL;
+  //if ( p_object_id )
+  int object_id_to_index =  p_object_id - MO_MOLDEOOBJECTS_OFFSET_ID;
+
+  if (0<=object_id_to_index && object_id_to_index<(int)m_MoldeoObjects.Count()) {
+    returnMOB = m_MoldeoObjects[object_id_to_index];
+    return returnMOB;
+  }
+
+  int object_id_to_subscene_index =  p_object_id - MO_MOLDEOSCENEOBJECTS_OFFSET_ID;
+
+  if (0<=object_id_to_subscene_index && object_id_to_subscene_index<(int)m_MoldeoSceneObjects.Count()) {
+    returnMOB = m_MoldeoSceneObjects[object_id_to_subscene_index];
+    return returnMOB;
+  }
+
+  return returnMOB;
+}
+
+
+int moConsole::GetDirectoryFileCount( const moText& p_path ) {
 
     moDirectory* pDir;
     pDir = NULL;
@@ -2648,7 +3798,7 @@ int moConsole::luaState( moLuaVirtualMachine& vm ) {
 
     lua_State *state = (lua_State *) vm;
 
-    moTimerState elstate = ConsoleState();
+    moTimerState elstate = GetConsoleState();
     int retstate = (int) elstate;
     lua_pushnumber( state, (lua_Number) retstate);
 
@@ -2698,9 +3848,9 @@ int moConsole::luaGetObjectPreconf(moLuaVirtualMachine& vm)
 {
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
         lua_pushnumber(state, (lua_Number) Object->GetConfig()->GetCurrentPreConf() );
@@ -2716,16 +3866,15 @@ int moConsole::luaSetObjectPreconf(moLuaVirtualMachine& vm)
 {
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     MOint preconfid = (MOint) lua_tonumber (state, 2);
 
     moMoldeoObject* Object = NULL;
 
-    if ( 0<=objectid && objectid< (int) m_MoldeoObjects.Count() )
-        Object = m_MoldeoObjects[objectid];
+    Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
-        Object->GetConfig()->SetCurrentPreConf( preconfid );
+        SetPreconf( objectid, preconfid );
     } else {
         MODebug2->Error( moText("in console script: SetObjectPreconf : object not founded : id:")+(moText)IntToStr(objectid)+moText(" preconfid:")+(moText)IntToStr(preconfid) );
     }
@@ -2757,27 +3906,14 @@ int moConsole::luaObjectEnable(moLuaVirtualMachine& vm)
 {
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
 
     moMoldeoObject* Object = NULL;
-    moEffect* pEffect = NULL;
 
-    if ( 0<=objectid && objectid<(int)m_MoldeoObjects.Count() )
-        Object = m_MoldeoObjects[objectid];
+    Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
-        switch ( Object->GetType() ) {
-            case MO_OBJECT_EFFECT:
-            case MO_OBJECT_PREEFFECT:
-            case MO_OBJECT_POSTEFFECT:
-            case MO_OBJECT_MASTEREFFECT:
-                pEffect = (moEffect*) Object;
-                //pEffect->Enable();
-                pEffect->TurnOn();
-                break;
-            default:
-                break;
-        }
+        ObjectEnable( objectid );
     } else {
         MODebug2->Error( moText("in console script: ObjectEnable : object not founded : id:")+(moText)IntToStr(objectid));
     }
@@ -2789,27 +3925,14 @@ int moConsole::luaObjectDisable(moLuaVirtualMachine& vm)
 {
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
 
     moMoldeoObject* Object = NULL;
-    moEffect* pEffect = NULL;
 
-    if ( 0<=objectid && objectid<(int)m_MoldeoObjects.Count() )
-        Object = m_MoldeoObjects[objectid];
+    Object = GetObjectByIdx(objectid);
 
-        if (Object && Object->GetConfig()) {
-            switch ( Object->GetType() ) {
-                case MO_OBJECT_EFFECT:
-                case MO_OBJECT_PREEFFECT:
-                case MO_OBJECT_POSTEFFECT:
-                case MO_OBJECT_MASTEREFFECT:
-                    pEffect = (moEffect*) Object;
-                    //pEffect->Enable();
-                    pEffect->TurnOff();
-                    break;
-                default:
-                    break;
-            }
+    if (Object && Object->GetConfig()) {
+        ObjectDisable( objectid );
     } else {
         MODebug2->Error( moText("in console script: ObjectDisable : object not founded : id:")+(moText)IntToStr(objectid));
     }
@@ -2822,10 +3945,10 @@ int moConsole::luaGetObjectParamIndex(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     char *text = (char *) lua_tostring (state, 2);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
         if (Object->GetConfig()->GetParamIndex(text)<0) {
@@ -2843,10 +3966,10 @@ int moConsole::luaGetObjectParamValues(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     char *text = (char *) lua_tostring (state, 2);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if ( Object && Object->GetConfig() ) {
 
@@ -2867,11 +3990,11 @@ int moConsole::luaSetObjectCurrentValue(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     MOint paramid = (MOint) lua_tonumber (state, 2);
     MOint valueid = (MOint) lua_tonumber (state, 3);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
         Object->GetConfig()->SetCurrentValueIndex( paramid, valueid );
@@ -2891,10 +4014,10 @@ int moConsole::luaGetObjectCurrentValue(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     MOint paramid = (MOint) lua_tonumber (state, 2);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
         int valueid = Object->GetConfig()->GetParam( paramid ).GetIndexValue();
@@ -2913,11 +4036,11 @@ int moConsole::luaGetObjectDataIndex(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     char *text = (char *) lua_tostring (state, 2);
     int inletid = -1;
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object) {
         inletid = Object->GetInletIndex( text );
@@ -2934,12 +4057,12 @@ int moConsole::luaGetObjectData(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     MOint inletid = (MOint) lua_tonumber (state, 2);
 
     //MODebug2->Message( "in console script: GetObjectData : moldeo objectid: " + moText((long)objectid) );
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object) {
         //MODebug2->Message( "in console script: GetObjectData : moldeo Object: " + moText((long)Object) );
@@ -3051,10 +4174,10 @@ int moConsole::luaSetObjectData(moLuaVirtualMachine& vm) {
     double deluavalor = -1.0f;
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     MOint inletid = (MOint) lua_tonumber (state, 2);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object) {
         moInlet* pInlet = Object->GetInlets()->Get(inletid);
@@ -3157,9 +4280,9 @@ int moConsole::luaSetEffectState(moLuaVirtualMachine& vm) {
 
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
     moEffect*       pEffect = NULL;
 
     moEffectState fxstate;
@@ -3181,7 +4304,7 @@ int moConsole::luaSetEffectState(moLuaVirtualMachine& vm) {
                 fxstate.tintb = (MOfloat) lua_tonumber (state, 6);
                 fxstate.tempo.ang = (MOfloat) lua_tonumber (state, 7);
 
-                pEffect->SetEffectState(fxstate);
+                SetEffectState( Object->GetId(), fxstate);
                 break;
             default:
                 break;
@@ -3198,9 +4321,9 @@ int moConsole::luaSetEffectState(moLuaVirtualMachine& vm) {
 int moConsole::luaGetEffectState(moLuaVirtualMachine& vm) {
     lua_State *luastate = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (luastate, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (luastate, 1);
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
     moEffect*       pEffect = NULL;
 
 
@@ -3237,11 +4360,11 @@ int moConsole::luaGetDeviceCode(moLuaVirtualMachine& vm)
 {
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     MOint devicecode = (MOint) lua_tonumber (state, 2);
     MOint codevalue = -1;
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
         if (Object->GetType()==MO_OBJECT_IODEVICE) {
@@ -3262,11 +4385,11 @@ int moConsole::luaGetDeviceCodeId(moLuaVirtualMachine& vm)
 {
     lua_State *state = (lua_State *) vm;
 
-    MOint objectid = (MOint) lua_tonumber (state, 1) - MO_MOLDEOOBJECTS_OFFSET_ID;
+    MOint objectid = (MOint) lua_tonumber (state, 1);
     char *devicecodestr = (char *) lua_tostring (state, 2);
     MOint devicecode = -1;
 
-    moMoldeoObject* Object = m_MoldeoObjects[objectid];
+    moMoldeoObject* Object = GetObjectByIdx(objectid);
 
     if (Object && Object->GetConfig()) {
         if (Object->GetType()==MO_OBJECT_IODEVICE) {
@@ -3340,7 +4463,7 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
         MODebug2->Error( moText("console lua script: GetDirectoryFileCount > Directory doesn't exist") );
     }
 */
-    res = this->m_pResourceManager->GetRenderMan()->Screenshot( moText(pathname) );
+    res = this->m_pResourceManager->GetRenderMan()->Screenshot( moText(pathname), m_LastScreenshot );
 
     lua_pushnumber(state, (lua_Number) res );
 

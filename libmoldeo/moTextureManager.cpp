@@ -38,6 +38,7 @@
 moDefineDynamicArray(moTextureBuffers)
 moDefineDynamicArray(moTextureFrames)
 
+void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message);
 
 /**
 FreeImage error handler
@@ -49,7 +50,7 @@ void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
    if(fif != FIF_UNKNOWN) {
      //printf("%s Format\n", FreeImage_GetFormatFromFIF(fif));
    }
-   moAbstract::MODebug2->Error(moText("FreeImage error:") + moText(message));
+   moDebugManager::Error(moText("FreeImage error:") + moText(message));
 
 }
 
@@ -277,8 +278,13 @@ moTextureBuffer::LoadImage( moText p_ImageName, moBitmap* pImage, int indeximage
     MOboolean res = false;
     FIBITMAP* _pImage = (FIBITMAP*)pImage;
 	FIBITMAP* pImageResult = NULL;
-	FIBITMAP* pImageCropped = NULL;
+//	FIBITMAP* pImageCropped = NULL;
 	FIBITMAP* pImageScaled = NULL;
+
+	if (indeximage<0) {
+      MODebug2->Error("moTextureBuffer::LoadImage > indeximage invalid or unused for: " + p_ImageName);
+      return false;
+	}
     /*
 	if ( m_width!=FreeImage_GetWidth(_pImage) || m_height!=FreeImage_GetHeight(_pImage) ) {
 		//CROP MODE
@@ -434,6 +440,10 @@ moTextureBuffer::GetBufferPatterns( moTexture* p_ImageReference, int x, int y, i
 
     int index = 0;
 
+    if (p_ImageReference && x>=0 && y>=0 && width>0 && height>0 ) {
+      return m_pBufferPatterns[index+0];
+    }
+
     return m_pBufferPatterns[index];
 }
 
@@ -441,7 +451,9 @@ moTextureFrames&
 moTextureBuffer::GetBufferPatterns( const moTexture& p_ImageReference, int x, int y, int width, int height ) {
 
     int index = 0;
-
+    if (p_ImageReference.GetMOId() && x>=0 && y>=0 && width>0 && height>0 ) {
+      return m_pBufferPatterns[index+0];
+    }
     return m_pBufferPatterns[index];
 }
 
@@ -943,7 +955,7 @@ MOuint moTextureManager::GetGLId(MOuint p_moid) {
 
 void moTextureManager::Update(moEventList *Events)
 {
-
+  if (Events==NULL) return;
 	//if ( GetId() == MO_MOLDEOOBJECT_UNDEFINED_ID ) return;
 
 	/// Texture buffer loading routine, 10 x ,,,,

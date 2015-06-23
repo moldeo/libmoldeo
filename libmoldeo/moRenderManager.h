@@ -279,8 +279,13 @@ class LIBMOLDEO_API moRenderManager : public moResource
          */
 		void SaveScreen();
 
-		bool Screenshot( moText pathname );
+		bool Screenshot( moText pathname, moText& screenshot_result, const moText& image_format="PNG", const moText& file_pattern="image_{DATETIME}_{####}.png" );
 
+    /**
+    * Dispara una secuencia de 4 capturas de pantalla ( a razón de 1 por segundo) en la carpeta del proyecto que servirán
+    * para previsualizarlo.
+    */
+    bool PreviewShot( bool shot_start = false);
 
         /**
          * Copia el contenido de la pantalla (o del búfer de dibujo si está haciendo off-screen rendering a un FBO)
@@ -298,66 +303,66 @@ class LIBMOLDEO_API moRenderManager : public moResource
          * Devuelve ancho de la pantalla.
          * @return ancho de la pantalla.
          */
-		MOint ScreenWidth();
+		MOint ScreenWidth() const;
         /**
          * Devuelve alto de la pantalla.
          * @return alto de la pantalla.
          */
-		MOint ScreenHeight();
+		MOint ScreenHeight() const;
 
         /**
          * Devuelve ancho de la pantalla de interface.
          * @return ancho de la pantalla de interface.
          */
-		MOint InterfaceWidth();
+		MOint InterfaceWidth() const;
         /**
          * Devuelve alto de la pantalla.
          * @return alto de la pantalla.
          */
-		MOint InterfaceHeight();
+		MOint InterfaceHeight() const;
 
         /**
          * Devuelve proporción de la pantalla de salida, la relación del ancho por la altura.
          * @return proporción.
          */
-		float ScreenProportion();
+		float ScreenProportion() const;
 
 
         /**
          * Devuelve ancho de render / procesamiento.
          * @return ancho de render / procesamiento.
          */
-		MOint RenderWidth();
+		MOint RenderWidth() const;
         /**
          * Devuelve alto de render / procesamiento.
          * @return alto de render / procesamiento.
          */
-		MOint RenderHeight();
+		MOint RenderHeight() const;
 
         /**
          * Devuelve proporción de la pantalla de procesamiento, la relación del ancho por la altura.
          * @return proporción.
          */
-		float RenderProportion();
+		float RenderProportion() const;
 
 
         /**
          * Verifica que la placa gráfica soporte texturas múltiples.
          * @return true si la capacidad de texturas múltiples está soportada, false en caso contrario.
          */
-		MOboolean MultiTextureSupported();
+		MOboolean MultiTextureSupported() const;
         /**
          * Verifica que la placa gráfica soporte FrameBuffer Objects (FBO).
          * @return true si la capacidad de FBOs está soportada, false en caso contrario.
          */
-		MOboolean FramebufferObjectSupported();
+		MOboolean FramebufferObjectSupported() const;
         /**
          * Verifica que la placa gráfica soporte shaders.
          * @return true si la capacidad de shaders está soportada, false en caso contrario.
          */
-		MOboolean ShadersSupported();
+		MOboolean ShadersSupported() const;
 
-    MOboolean IsTextureNonPowerOf2Disabled();
+    MOboolean IsTextureNonPowerOf2Disabled() const;
 
 		void    SetOutputConfiguration( moRenderOutputConfiguration p_output_configuration );
 
@@ -372,6 +377,8 @@ class LIBMOLDEO_API moRenderManager : public moResource
 
 	protected:
 
+    moTimerAbsolute m_PreviewShotTimer;
+    int             m_PreviewShotIteration;
 		moLock					m_RenderLock;
 
 		MOboolean				m_saved_screen;
@@ -396,8 +403,8 @@ class LIBMOLDEO_API moRenderManager : public moResource
 		MOuint m_render_attach_points[4];
 		MOuint m_fbo_idx;
 
-		MOboolean ValidSourceTexNum(MOint p_tex_num) { return (0 <= p_tex_num) && (p_tex_num < 4); }
-		MOboolean ValidDestTexNum(MOint p_tex_num) { return (0 < p_tex_num) && (p_tex_num < 4); }
+		MOboolean ValidSourceTexNum(MOint p_tex_num) const { return (0 <= p_tex_num) && (p_tex_num < 4); }
+		MOboolean ValidDestTexNum(MOint p_tex_num) const { return (0 < p_tex_num) && (p_tex_num < 4); }
 };
 
 

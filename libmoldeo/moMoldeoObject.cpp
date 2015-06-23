@@ -89,6 +89,17 @@ bool moMobState::Selected() const {
     return (m_Selected==MO_ON);
 }
 
+const moText&
+moMobState::ToJSON() {
+  moText fieldSeparation = ",";
+
+  m_FullJSON = "{";
+  m_FullJSON+= "'activated': " + IntToStr(m_Activated);
+  m_FullJSON+= fieldSeparation + "'selected': " + IntToStr(m_Selected);
+  m_FullJSON+= "}";
+
+  return m_FullJSON;
+}
 
 
 /**
@@ -104,6 +115,9 @@ moMobDefinition::moMobDefinition() {
   m_MoldeoLabelName = moText("");
   m_MoldeoId = -1;
   m_Type = MO_OBJECT_UNDEFINED;
+  m_MoldeoFatherId = -1;
+  m_MoldeoFatherLabelName = "";
+  m_KeyName = "";
 
 }
 
@@ -125,6 +139,9 @@ moMobDefinition::operator = ( const moMobDefinition& mb) {
   m_MoldeoLabelName = mb.m_MoldeoLabelName;
   m_MoldeoId = mb.m_MoldeoId;
   m_MobIndex = mb.m_MobIndex;
+  m_MoldeoFatherId = mb.m_MoldeoFatherId;
+  m_MoldeoFatherLabelName = mb.m_MoldeoFatherLabelName;
+  m_KeyName = mb.m_KeyName;
   return(*this);
 }
 
@@ -138,7 +155,7 @@ moMobDefinition::GetName() const {
 /// Fijar el nombre del objeto
 
 void
-moMobDefinition::SetName( moText p_name ) {
+moMobDefinition::SetName( const moText& p_name ) {
     m_Name = p_name;
 }
 
@@ -150,7 +167,7 @@ moMobDefinition::GetConfigName() const {
 
 /// Fijar el nombre del archivo de configuración
 void
-moMobDefinition::SetConfigName( moText p_configname ) {
+moMobDefinition::SetConfigName( const moText& p_configname ) {
     m_ConfigName = p_configname;
 }
 
@@ -160,9 +177,14 @@ moMobDefinition::GetType() const {
     return m_Type;
 }
 
+moText
+moMobDefinition::GetTypeStr() const {
+    return moMobDefinition::GetTypeToClass( m_Type );
+}
+
 /// Transforma una cadena de caracteres en su correspondiente moMoldeoObjectType
 moMoldeoObjectType
-moMobDefinition::GetStrType( const moText& p_Str ) const {
+moMobDefinition::GetStrToType( const moText& p_Str ) const {
 
     if (p_Str == moText("effect") || p_Str == moText("moEffect")) {
         return MO_OBJECT_EFFECT;
@@ -186,11 +208,9 @@ moMobDefinition::GetStrType( const moText& p_Str ) const {
 
 /// Transforma un moMoldeoObjectType en el nombre de su correspondiente clase base
 moText
-moMobDefinition::GetTypeStr( moMoldeoObjectType p_Type ) const {
-    if ( ! ( p_Type == MO_OBJECT_UNDEFINED ) ) {
-        return moText("MOB class undefined");
-    }
-    switch(m_Type) {
+moMobDefinition::GetTypeToClass( moMoldeoObjectType p_Type ) {
+
+    switch(p_Type) {
         case MO_OBJECT_EFFECT:
             return moText("moEffect");
             break;
@@ -221,6 +241,43 @@ moMobDefinition::GetTypeStr( moMoldeoObjectType p_Type ) const {
     }
 }
 
+/// Transforma un moMoldeoObjectType en el nombre de su correspondiente clase base
+moText
+moMobDefinition::GetTypeToName( moMoldeoObjectType p_Type ) {
+    if ( ! ( p_Type == MO_OBJECT_UNDEFINED ) ) {
+        return moText("undefined");
+    }
+    switch(p_Type) {
+        case MO_OBJECT_EFFECT:
+            return moText("effect");
+            break;
+        case MO_OBJECT_MASTEREFFECT:
+            return moText("mastereffect");
+            break;
+        case MO_OBJECT_POSTEFFECT:
+            return moText("posteffect");
+            break;
+        case MO_OBJECT_PREEFFECT:
+            return moText("preeffect");
+            break;
+        case MO_OBJECT_IODEVICE:
+            return moText("devices");
+            break;
+        case MO_OBJECT_RESOURCE:
+            return moText("resources");
+            break;
+        case MO_OBJECT_CONSOLE:
+            return moText("console");
+            break;
+        case MO_OBJECT_UNDEFINED:
+            return moText("undefined");
+            break;
+        default:
+            return moText("undefined");
+            break;
+    }
+}
+
 /// Fija el tipo de moMoldeoObject o moMoldeoObjectType
 void
 moMobDefinition::SetType( moMoldeoObjectType p_type ) {
@@ -236,7 +293,7 @@ moMobDefinition::GetMobIndex() const {
 
 /// Fija la etiqueta de este objeto
 void
-moMobDefinition::SetLabelName( moText p_labelname ) {
+moMobDefinition::SetLabelName( const moText& p_labelname ) {
     m_MoldeoLabelName = p_labelname;
 }
 
@@ -265,22 +322,26 @@ moMobDefinition::GetMoldeoId() const {
     return m_MoldeoId;
 }
 
-/// Devuelve al descripción del objeto
-/**
-*   La descripción describe la funcionalidad de este objeto
-*/
-/*
-const moText&
-moMobDefinition::GetDescription() const {
-    return m_Description;
+
+
+/// Fija la etiqueta de este objeto
+void
+moMobDefinition::SetFatherLabelName( const moText& p_labelname ) {
+    m_MoldeoFatherLabelName = p_labelname;
 }
-*/
+
 
 /// Fija la descripción de este objeto
 void
 moMobDefinition::SetDescription( const moText& p_Description ) {
     m_Description  = p_Description;
 }
+
+void
+moMobDefinition::SetKeyName( const moText& p_keyname ) {
+  m_KeyName = p_keyname;
+}
+
 
 void
 moMobDefinition::SetConsoleParamIndex( MOint p_paramindex ) {
@@ -291,6 +352,24 @@ moMobDefinition::SetConsoleParamIndex( MOint p_paramindex ) {
 void
 moMobDefinition::SetConsoleValueIndex(MOint p_valueindex) {
     m_MobIndex.SetValueIndex(p_valueindex);
+}
+
+const moText&
+moMobDefinition::ToJSON() {
+  moText fieldSeparation = ",";
+  m_FullJSON  = "{";
+  m_FullJSON+= "'moldeoid': '" + IntToStr( GetMoldeoId() ) +"'";
+  m_FullJSON+= fieldSeparation + "'name': '" + GetName() + "'";
+  m_FullJSON+= fieldSeparation + "'labelname': '" + GetLabelName() + "'";
+  m_FullJSON+= fieldSeparation + "'configname': '" + GetConfigName() + "'";
+  m_FullJSON+= fieldSeparation + "'type': '" + this->GetTypeStr() + "'";
+  m_FullJSON+= fieldSeparation + "'console_param_index': '" + IntToStr(this->GetMobIndex().GetParamIndex()) + "'";
+  m_FullJSON+= fieldSeparation + "'console_value_index': '" + IntToStr(this->GetMobIndex().GetValueIndex()) + "'";
+  m_FullJSON+= fieldSeparation + "'description': '" + GetDescription() + "'";
+  m_FullJSON+= fieldSeparation + "'moldeofatherid': '" + IntToStr( GetMoldeoFatherId() ) +"'";
+  m_FullJSON+= fieldSeparation + "'fatherlabelname': '" + GetFatherLabelName() + "'";
+  m_FullJSON+= "}";
+  return m_FullJSON;
 }
 
 //===========================================
@@ -306,6 +385,7 @@ moMoldeoObject::moMoldeoObject() {
 	SetName("");
 	SetConfigName("");
 	SetDescription("");
+	SetKeyName("");
 	SetScript("");
 
 	m_pResourceManager = NULL;
@@ -462,13 +542,13 @@ void moMoldeoObject::ScriptExeRun() {
 
 
   moText cs;
-  cs = m_Config.GetParam((MOint)__iscript).GetValue().GetSubValue().Text();
+  cs = m_Config.Text( __iscript );
 
   ///Reinicializamos el script en caso de haber cambiado
 	if ((moText)m_Script!=cs && IsInitialized()) {
 
         m_Script = cs;
-        moText fullscript = m_pResourceManager->GetDataMan()->GetDataPath()+ moSlash + (moText)m_Script;
+        moText fullscript = DataMan()->GetDataPath()+ moSlash + (moText)m_Script;
 
         if (moFileManager::FileExists(fullscript)) {
 
@@ -528,19 +608,22 @@ moMoldeoObject::CreateConnectors() {
 
 
 	///crea los Inlets adicionales a los parámetros: definidos en el parámetro "inlet"
+
 	moParam& pinlets = m_Config[moText("inlet")];
 
 	for( MOuint i=0; i<pinlets.GetValuesCount(); i++ ) {
-		moInlet* Inlet = new moInlet();
-		if (Inlet) {
-			Inlet->SetMoldeoLabelName( GetLabelName() );
-			moText InletName = pinlets[i][MO_INLET_NAME].Text();
-			///lo creamos si y solo si no existe como parámetro....
-			if ( m_Config.GetParamIndex(InletName)==-1 ) {
-				((moConnector*)Inlet)->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
-        m_Inlets.Add( Inlet );
-			}
-		}
+    if ( GetInletIndex(pinlets[i][MO_INLET_NAME].Text())==-1 ) {
+      moInlet* Inlet = new moInlet();
+      if (Inlet) {
+        Inlet->SetMoldeoLabelName( GetLabelName() );
+        moText InletName = pinlets[i][MO_INLET_NAME].Text();
+        ///lo creamos si y solo si no existe como parámetro....
+        if ( m_Config.GetParamIndex(InletName)==-1 ) {
+          ((moConnector*)Inlet)->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
+          m_Inlets.Add( Inlet );
+        }
+      }
+    }
 	}
 
 	///Inicializa las funciones matemáticas del config
@@ -744,34 +827,36 @@ moMoldeoObject::CreateConnectors() {
 	moParam& poutlets = m_Config[moText("outlet")];
 
 	for( MOuint i=0; i<poutlets.GetValuesCount(); i++ ) {
-		moOutlet* Outlet = new moOutlet();
-		if (Outlet) {
-			Outlet->SetMoldeoLabelName( GetLabelName() );
-			///Buscamos el parametro asociado al outlet
-			///para asociar un parametro a un outlet debe simplemente tener el mismo nombre...
-			moText OutletName = poutlets[i][MO_OUTLET_NAME].Text();
+    if ( GetOutletIndex(poutlets[i][MO_OUTLET_NAME].Text())==-1 ) {
+      moOutlet* Outlet = new moOutlet();
+      if (Outlet) {
+        Outlet->SetMoldeoLabelName( GetLabelName() );
+        ///Buscamos el parametro asociado al outlet
+        ///para asociar un parametro a un outlet debe simplemente tener el mismo nombre...
+        moText OutletName = poutlets[i][MO_OUTLET_NAME].Text();
 
-			if ( m_Config.GetParamIndex(OutletName) > -1 ) {
-			  ///CREAMOS UN OUTLET nuevo para este parametro....
-			  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter \"") + OutletName + "\""  );
-				Outlet->Init( OutletName, i, m_Config.GetParam(OutletName).GetPtr());
-			} else {
-			  ///CREAMOS UN OUTLET desde el .cfg, teniendo en cuenta los tipos...
-			  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
-				Outlet->Init( OutletName, i, poutlets[i][MO_OUTLET_TYPE].Text() );
-			}
-			m_Outlets.Add( Outlet );
+        if ( m_Config.GetParamIndex(OutletName) > -1 ) {
+          ///CREAMOS UN OUTLET nuevo para este parametro....
+          MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter \"") + OutletName + "\""  );
+          Outlet->Init( OutletName, i, m_Config.GetParam(OutletName).GetPtr());
+        } else {
+          ///CREAMOS UN OUTLET desde el .cfg, teniendo en cuenta los tipos...
+          MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
+          Outlet->Init( OutletName, i, poutlets[i][MO_OUTLET_TYPE].Text() );
+        }
+        m_Outlets.Add( Outlet );
 
-			/// Creamos sus conecciones
-			/// las conecciones viene de a pares: object label name + object inlet name
-			for( MOuint j=MO_OUTLET_INLETS_OFFSET; j<poutlets[i].GetSubValueCount(); j+=2 ) {
-				moText objectname = poutlets[i][j].Text();
-				moText inletname = poutlets[i][j+1].Text();
-				moConnection* Connection = new moConnection( objectname, inletname );
-				if (Connection)
-					Outlet->GetConnections()->Add(Connection);
-			}
-		}
+        /// Creamos sus conecciones
+        /// las conecciones viene de a pares: object label name + object inlet name
+        for( MOuint j=MO_OUTLET_INLETS_OFFSET; j<poutlets[i].GetSubValueCount(); j+=2 ) {
+          moText objectname = poutlets[i][j].Text();
+          moText inletname = poutlets[i][j+1].Text();
+          moConnection* Connection = new moConnection( objectname, inletname );
+          if (Connection)
+            Outlet->GetConnections()->Add(Connection);
+        }
+      }
+    }
 	}
 
   m_bConnectorsLoaded = true;
@@ -782,6 +867,13 @@ moMoldeoObject::CreateConnectors() {
   MODebug2->Message("moMoldeoObject::CreateConnectors > OK! Object: " + GetName() + " config:" + GetConfigName() + " label: " + GetLabelName() );
 
 	return m_bConnectorsLoaded;
+}
+
+MOboolean
+moMoldeoObject::UpdateConnectors() {
+  m_bConnectorsLoaded = false;
+  return moMoldeoObject::CreateConnectors();
+
 }
 
 MOboolean
@@ -855,7 +947,7 @@ moMoldeoObject::GetResourceManager() {
 }
 
 void
-moMoldeoObject::SetConfigName( moText p_configname ) {
+moMoldeoObject::SetConfigName( const moText& p_configname ) {
 	m_MobDefinition.SetConfigName( p_configname );
 }
 
@@ -2420,6 +2512,40 @@ int moMoldeoObject::luaGetHistoryMinMax(moLuaVirtualMachine& vm) {
 
 }
 
+const moText&
+moMoldeoObject::ToJSON() {
+  moText fieldSeparation = ",";
+  moMobDefinition Definition = GetMobDefinition();
+  moMobState State = GetState();
 
+  m_FullJSON = "{";
+  m_FullJSON+= "'objectstate': " + State.ToJSON();
+  m_FullJSON+= fieldSeparation + "'objecttypeid': '" + IntToStr( moGetStrType( Definition.GetName() ) )+"'";
+  m_FullJSON+= fieldSeparation + "'objectdefinition': " + Definition.ToJSON();
+  m_FullJSON+= fieldSeparation + "'objectconfig': " + m_Config.ToJSON();
+  m_FullJSON+= "}";
 
+  return m_FullJSON;
+}
 
+moMoldeoObjectType moGetStrType( const moText& p_Str ) {
+
+  if (p_Str == moText("effect") || p_Str == moText("moEffect")) {
+      return MO_OBJECT_EFFECT;
+  } else if (p_Str == moText("mastereffect") || p_Str == moText("moMasterEffect")) {
+      return MO_OBJECT_MASTEREFFECT;
+  } else if (p_Str == moText("posteffect") || p_Str == moText("moPostEffect")) {
+      return MO_OBJECT_POSTEFFECT;
+  } else if (p_Str == moText("preeffect") || p_Str == moText("moPreEffect")) {
+      return MO_OBJECT_PREEFFECT;
+  } else if (p_Str == moText("iodevice") || p_Str == moText("moIODevice")) {
+      return MO_OBJECT_IODEVICE;
+  } else if (p_Str == moText("resource") || p_Str == moText("moResource")) {
+      return MO_OBJECT_RESOURCE;
+  } else if (p_Str == moText("console") || p_Str == moText("moConsole")) {
+      return MO_OBJECT_CONSOLE;
+  }
+
+  return MO_OBJECT_UNDEFINED;
+
+}

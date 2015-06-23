@@ -1240,7 +1240,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, line)
             x2 = (MOfloat) lua_tonumber (L, lua_pindex(4));
             y2 = (MOfloat) lua_tonumber (L, lua_pindex(5));
             z2 = (MOfloat) lua_tonumber (L, lua_pindex(6));
-            moP5::line(x1, y1, x2, y2);
+            moP5::line(x1, y1, z1, x2, y2, z2);
             break;
     }
 

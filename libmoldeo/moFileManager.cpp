@@ -996,8 +996,10 @@ moFileManager::FileExists( moText filename ) {
 
 bool
 moFileManager::DirectoryExists( moText dirname ) {
-        moDirectory   directory( dirname );
-        return directory.Exists();
+       // moDirectory   directory( dirname );
+      //return directory.Exists();
+      return  bfs::exists((char*)dirname);
+
 }
 
 
@@ -1057,5 +1059,91 @@ moFileManager::CopyFile( moText FileSrc, moText FileDst ) {
 
 	return 1;
 
+}
+
+
+
+bool moFileManager::CopyDirectory( const moText& DirSrc, const moText& DirDst)
+{
+    std::string dsrc, ddst;
+    dsrc = DirSrc;
+    ddst = DirDst;
+    bfs::path source = dsrc;
+    bfs::path destination = ddst;
+
+    try
+    {
+        // Check whether the function call is valid
+        if(
+            !bfs::exists(source) ||
+            !bfs::is_directory(source)
+        )
+        {
+            std::cerr << "Source directory " << source.string()
+                << " does not exist or is not a directory." << '\n'
+            ;
+            return false;
+        }
+        if(bfs::exists(destination))
+        {
+            std::cerr << "Destination directory " << destination.string()
+                << " already exists." << '\n'
+            ;
+            //return false;
+        } else
+        // Create the destination directory
+        if(!bfs::create_directory(destination))
+        {
+            std::cerr << "Unable to create destination directory"
+                << destination.string() << '\n'
+            ;
+            return false;
+        }
+    }
+    catch(bfs::filesystem_error const & e)
+    {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
+    // Iterate through the source directory
+    for(
+        bfs::directory_iterator file(source);
+        file != bfs::directory_iterator(); ++file
+    )
+    {
+        try
+        {
+            bfs::path current(file->path());
+            bfs::path destin(destination / current.filename());
+            moText destinT = (char*)destin.string().c_str();
+            moText currentT = (char*)current.string().c_str();
+            if(bfs::is_directory(current))
+            {
+                // Found directory: Recursion
+                if(
+                    !CopyDirectory(
+                        currentT,
+                        destinT
+                    )
+                )
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                // Found file: Copy
+                bfs::copy_file(
+                    current,
+                    destin
+                );
+            }
+        }
+        catch(bfs::filesystem_error const & e)
+        {
+            std:: cerr << e.what() << '\n';
+        }
+    }
+    return true;
 }
 

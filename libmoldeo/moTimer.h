@@ -52,7 +52,16 @@ LIBMOLDEO_API MOulong moGetTicks();
 *   Este valor dependerá de la implementación según el sistema operativo y la librería utilizada,
 *   y afectará el comportamiento de los otros temporizadores
 */
-LIBMOLDEO_API MOulong moGetTicksAbsolute();
+LIBMOLDEO_API MOulong moGetTicksAbsolute( bool force_real_absolute=false );
+
+///Devuelve en milisegundos el valor del reloj de Moldeo
+/**
+*   Función global que devuelve en milisegundos el valor del reloj absoluto
+*   Esta función devuelve un valor absoluto del reloj de la máquina
+*   Este valor dependerá de la implementación según el sistema operativo y la librería utilizada,
+*   y afectará el comportamiento de los otros temporizadores
+*/
+LIBMOLDEO_API MOulong moGetTicksAbsoluteStep( long step_interval=0 );
 
 
 
@@ -122,6 +131,7 @@ LIBMOLDEO_API void moStopTimer();
 *   @see moTimerState
 */
 LIBMOLDEO_API moTimerState moGetTimerState();
+LIBMOLDEO_API moText moGetTimerStateStr();
 
 
 /// Devuelve verdadero si el temporizador global está en pausa
@@ -170,6 +180,8 @@ LIBMOLDEO_API bool moIsTimerStarted();
 *   En el caso del moTimerAbsolute, Duration() utiliza la función global: moGetTicksAbsolute() , que devuelve el tiempo actual del reloj de la máquina.
 */
 class LIBMOLDEO_API moTimerAbsolute {
+
+  friend class moEffectState;
   public:
     /// Constructor
     /**
@@ -242,7 +254,7 @@ class LIBMOLDEO_API moTimerAbsolute {
     * @return verdadero si fue pausado, falso si no
     */
     bool Paused() const {
-        return pause_on;
+        return on && pause_on;
     }
 
     /// Fija el valor del reloj del temporizador
@@ -290,6 +302,7 @@ protected:
 
         long last_duration;
         moText state_str;
+        long last_step_interval;
 
 };
 
@@ -315,9 +328,9 @@ class LIBMOLDEO_API moTimer : public moTimerAbsolute {
         */
         moTimer();
 
-        moTimer( moTimer& src );
+        moTimer( const moTimer& src );
         virtual ~moTimer();
-        moTimer& operator=(moTimer& src);
+        moTimer& operator=( const moTimer& src);
 
 
 

@@ -77,6 +77,7 @@ bool moThread::ThreadExists() {
 }
 
 bool moThread::SendThreadMessage( int message ) {
+  if (message<=0) return false;
 	return true;
 }
 

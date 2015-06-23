@@ -103,7 +103,7 @@ libmoldeo_suite(void)
  * Main
  */
 int
-main()
+main( int argc, char *argv[] )
 {
   int nf;
   Suite *s = libmoldeo_suite();

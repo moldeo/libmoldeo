@@ -52,6 +52,7 @@ moEffectManager::New( moMobDefinition& p_MobDefinition ) {
     return NewEffect(   p_MobDefinition.GetName(),
                         p_MobDefinition.GetConfigName(),
                         p_MobDefinition.GetLabelName(),
+                        p_MobDefinition.GetKeyName(),
                         p_MobDefinition.GetType(),
                         p_MobDefinition.GetMobIndex().GetParamIndex(),
                         p_MobDefinition.GetMobIndex().GetValueIndex()
@@ -59,7 +60,7 @@ moEffectManager::New( moMobDefinition& p_MobDefinition ) {
 }
 
 moEffect*
-moEffectManager::NewEffect( moText p_resname, moText p_configname, moText p_labelname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex ) {
+moEffectManager::NewEffect( const moText& p_resname, const moText& p_configname, const moText& p_labelname, const moText& p_keyname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex ) {
 
 	moEffect* peffect = NULL;
 
@@ -67,26 +68,29 @@ moEffectManager::NewEffect( moText p_resname, moText p_configname, moText p_labe
 		case MO_OBJECT_EFFECT:
 			if ( p_resname==moText("scene") ) {
 				peffect = new moSceneEffect();
-			} else if ( p_resname==moText("sequence") ) {
-				peffect = new moSequenceEffect();
 			} else {
 				peffect = moNewEffect( p_resname, m_Plugins);
 			}
+			p_valueindex = m_Effects.Count();
 			m_Effects.Add( peffect );
+
 			break;
 
 		case MO_OBJECT_PREEFFECT:
 			peffect = moNewPreEffect( p_resname, m_PrePlugins );
+			p_valueindex = m_PreEffects.Count();
 			m_PreEffects.Add( (moPreEffect*)peffect );
 			break;
 
 		case MO_OBJECT_POSTEFFECT:
 			peffect = moNewPostEffect( p_resname, m_PostPlugins );
+			p_valueindex = m_PostEffects.Count();
 			m_PostEffects.Add( (moPostEffect*)peffect );
 			break;
 
 		case MO_OBJECT_MASTEREFFECT:
 			peffect = moNewMasterEffect( p_resname, m_MasterPlugins );
+			p_valueindex = m_MasterEffects.Count();
 			m_MasterEffects.Add( (moMasterEffect*)peffect );
 			break;
 		default:
@@ -94,13 +98,24 @@ moEffectManager::NewEffect( moText p_resname, moText p_configname, moText p_labe
 	}
 
 	if (peffect) {
-		peffect->SetConfigName( p_configname );
-		peffect->SetLabelName( p_labelname );
+    peffect->SetConfigName( p_configname );
+    peffect->SetLabelName( p_labelname );
+    peffect->SetKeyName( p_keyname );
 
-        peffect->SetConsoleParamIndex(p_paramindex);
-        peffect->SetConsoleValueIndex(p_valueindex);
+    peffect->SetConsoleParamIndex(p_paramindex);
+    peffect->SetConsoleValueIndex(p_valueindex);
 
-		m_AllEffects.Add((moEffect*) peffect);
+    if (peffect) {
+        //m_pMoldeoObjects->Add( (moMoldeoObject*) peffect );
+        peffect->SetResourceManager( m_pResourceManager );
+
+        if ( peffect->GetName()==moText("scene") || peffect->GetName()==moText("sequence") ) {
+          moMasterEffect* pmastereffect = (moMasterEffect*)peffect;
+          pmastereffect->Set( m_pEffectManager, NULL);
+        }
+    }
+
+    m_AllEffects.Add((moEffect*) peffect);
 	}
 
 	return (peffect);
@@ -211,7 +226,7 @@ moEffectManager::RemoveEffect( MOint p_ID, moMoldeoObjectType p_type ) {
 }
 
 MOint
-moEffectManager::GetEffectId( moText p_labelname ) {
+moEffectManager::GetEffectId( const moText& p_labelname ) {
 
 	for(MOuint i=0;i<m_AllEffects.Count();i++) {
 		if ( m_AllEffects.Get(i) != NULL ) {
@@ -235,7 +250,7 @@ moEffectManager::GetEffectLabelName( MOint p_ID ) {
 }
 
 moEffect*
-moEffectManager::GetEffectByLabel( moText p_label_name, moMoldeoObjectType p_mob_type ) {
+moEffectManager::GetEffectByLabel( const moText& p_label_name, moMoldeoObjectType p_mob_type ) {
 
   moEffect* peffect = NULL;
   moText label_name;

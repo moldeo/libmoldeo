@@ -273,6 +273,7 @@ moBoostSocket moNetConnection::Socket() {
 void
 moNetConnection::HandleRead( long bytesbuf ) {
 
+    bytesbuf = 0 + bytesbuf;
 /*
     boost::tribool result;
 
@@ -381,9 +382,9 @@ void moNetServer::HandleAccept( )
     tcp::acceptor *p_acceptor = (tcp::acceptor *) m_pAcceptor;
     if (p_acceptor) {
 
-        tcp::socket* p_socket = (tcp::socket*) m_pNewConnection->Socket();
+        //tcp::socket* p_socket = (tcp::socket*) m_pNewConnection->Socket();
 
-        moBoostHandleFunctions* pFunctions = (moBoostHandleFunctions*) m_pHandleFunctions;
+        //moBoostHandleFunctions* pFunctions = (moBoostHandleFunctions*) m_pHandleFunctions;
 
         /*
         p_acceptor->async_accept( *p_socket,
@@ -405,12 +406,11 @@ void HandleAccept( const boost::system::error_code& error )
 
 
 */
-moNetServer::moNetServer( moAddress p_address, moPort  p_port, moText p_directory ) :
-m_pIOService(NULL),
-m_pAcceptor(NULL),
-m_pNewConnection(NULL) {
+moNetServer::moNetServer( moAddress p_address, moPort  p_port, moText p_directory ) {
 
     m_pIOService = NULL;
+
+    if ( p_directory==moText("") ) p_directory = "";
 
     io_service* p_io_service = new io_service();
     m_pIOService = (void*) p_io_service;

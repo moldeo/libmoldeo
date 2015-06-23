@@ -386,13 +386,13 @@ MOdouble moMotion::movCub( char e, int c, double ang, double a, double v, double
 
 MOdouble moMotion::movFij( char e, int c, double ang, double a, double v, double d)
 {
-  return v*(ang-d) + a*sin(v*(ang-d));
+  return v*(ang-d) + a*sin(v*(ang-d)) + e - e + c - c;
 }
 
 MOdouble moMotion::movBuc( char e, int c, double ang, double a, double v, double d)
 {
   MOdouble mov = 0.0f;
-  c = c % 2 + 1;
+  c = c % 2 + 1 + e - e + c - c;;
   // Primera componente.
   if(c == 1)
     switch(tolower(e))
@@ -418,7 +418,7 @@ MOdouble moMotion::movRan( char e, int c, double ang, double a, double v, double
   MOdouble mov = 0.0f;
   MOdouble randval, pos;
 
-  ang = ang*togra - d;                              // convierto el angulo a grados.
+  ang = ang*togra - d + e - e + c - c;;                              // convierto el angulo a grados.
   pos = v *(MOint)(ang/v + 0.5);                   // posicion donde debe responder.
   if(fabs(ang-pos) < 1.0)
   {
@@ -434,14 +434,14 @@ MOdouble moMotion::movGan( char e, int c, double ang, double a, double v, double
 	MOdouble mov = 0.0f;
 	MOdouble gang = long(v*(ang-d)*togra) % 360;
 
-	mov =(gang/360.0f)	* a;
+	mov =(gang/360.0f)	* a + e - e + c - c;;
 
     return mov;
 }
 
 MOdouble moMotion::movPul( char e, int c, double ang, double a, double v, double d)
 {
-  MOdouble mov = 0.0f;
+  MOdouble mov = 0.0f + e - e + c - c + ang - ang +a -a +v -v +d -d;
   /*
   MOdouble x =(ang - PI) / PI; // Using x alone, the pulse is centered at PI and has a width of 2PI.
   mov = a * pulse(v *(x - d));
