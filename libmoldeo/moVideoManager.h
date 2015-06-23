@@ -144,29 +144,21 @@ class LIBMOLDEO_API moLiveSystem {
 	public:
 
 		moLiveSystem();
-		moLiveSystem( moText p_CodeName, moLiveSystemType p_Type );
 		moLiveSystem( moCaptureDevice p_capdev );
 
 		//Copy constructor
-		moLiveSystem( moLiveSystem &p_ls)
+		moLiveSystem( const moLiveSystem &p_ls)
 		{
-			m_Type = p_ls.GetType();
-			m_CodeName = p_ls.GetCodeName();
-			m_DeviceName = p_ls.GetDeviceName();
-			m_CaptureDevice = p_ls.GetCaptureDevice();
-			m_pBucketsPool = p_ls.GetBucketsPool();
-			m_pVideoGraph = p_ls.GetVideoGraph();
-			m_pVideoSample = p_ls.GetVideoSample();
+      (*this)=p_ls;
 		}
 
-		moLiveSystem& operator = ( moLiveSystem& p_ls) {
-			m_Type = p_ls.GetType();
-			m_CodeName = p_ls.GetCodeName();
-			m_DeviceName = p_ls.GetDeviceName();
-			m_CaptureDevice = p_ls.GetCaptureDevice();
-			m_pBucketsPool = p_ls.GetBucketsPool();
-			m_pVideoGraph = p_ls.GetVideoGraph();
-			m_pVideoSample = p_ls.GetVideoSample();
+		moLiveSystem& operator = ( const moLiveSystem& p_ls) {
+			m_Type = p_ls.m_Type;
+			m_CaptureDevice = p_ls.m_CaptureDevice;
+			m_pBucketsPool = p_ls.m_pBucketsPool;
+			m_pVideoGraph = p_ls.m_pVideoGraph;
+			m_pVideoSample = p_ls.m_pVideoSample;
+			m_pTexture = p_ls.m_pTexture;
 			return (*this);
 		}
 
@@ -175,29 +167,29 @@ class LIBMOLDEO_API moLiveSystem {
 		bool Init();
 		void Finish();
 
-		void SetCodeName( moText p_CodeName );
-		void SetDeviceName( moText p_DeviceName );
 		void SetType( moLiveSystemType p_Type );
 		void SetCaptureDevice( moCaptureDevice p_capdev );
+
 		moLiveSystemType	GetType();
-		moText				GetCodeName();
+		moText				GetLabelName();
 		moText				GetDeviceName();
 		moCaptureDevice		GetCaptureDevice();
 		moBucketsPool*		GetBucketsPool();
 		moVideoGraph*		GetVideoGraph();
 		moVideoSample*		GetVideoSample();
+		moTexture*      GetTexture();
+		void            SetTexture( moTexture* p_Texture );
 
 	private:
 
 		moLiveSystemType	m_Type;
-		moText				m_CodeName;
-		moText				m_DeviceName;
 		moCaptureDevice		m_CaptureDevice;
 
 		moBucketsPool*		m_pBucketsPool;
 		moVideoGraph*		m_pVideoGraph;
 
 		moVideoSample*		m_pVideoSample;
+		moTexture*        m_pTexture;
 
 };
 
@@ -283,7 +275,7 @@ class LIBMOLDEO_API moVideoBuffer : public moTextureAnimated {
 
 		virtual void GetFrame( MOuint p_i );
 
-		MOboolean LoadImage( moBitmap* pImage , MOuint indeximage );
+		MOboolean LoadImage( moBitmap* pImage , int indeximage=-1 );
 
 		MOint GetXSource() { return m_XSource; }
 		MOint GetYSource() { return m_YSource; }
@@ -305,6 +297,7 @@ class LIBMOLDEO_API moVideoBuffer : public moTextureAnimated {
 		MOuint m_YSource;
 		MOuint m_SourceWidth;
 		MOuint m_SourceHeight;
+
 };
 
 typedef moVideoBuffer* moVideoBufferPtr;
@@ -467,12 +460,36 @@ class LIBMOLDEO_API moVideoManager : public moResource
 		MOdevcode GetCode( moText);
 
     /**
-    * Devuelve el objeto moCircularVideoBuffer de cb_idx
+    * Devuelve el objeto moCamera de cb_idx
+    * Se consigue el cam_idx con la función GetCameraByName, y el nombre del dispositivo de captura
+    * con las funciones GetCaptureDevices
     */
 		moCamera* GetCamera( int cam_idx );
 
     /**
-    * Devuelve la cantidad de objetos de moCircularVideoBuffer disponibles
+    * Devuelve el objeto moCamera cuyo Device Name sea camera
+    * en caso de no encontrarlo y el load es true intenta inicializar el dispositivo/camara
+    * @param camera es el nombre del dispositivo de captura o cámara asignado por el sistema operativo (v4l2src|dshowvideosrc|osxvideosrc)
+    * @param load si es true inicializa el dispositivo
+    */
+		moCamera* GetCameraByName( const moText& camera, bool load=false, moCaptureDevice customCD = moCaptureDevice() );
+
+		moCamera* CreateCamera( const moCaptureDevice& p_CapDev );
+
+    /**
+    * Devuelve una lista de nombres de dispositivos disponibles
+    */
+    const moTextArray& GetCameraNames();
+
+    /**
+    * Devuelve el arreglo de dispostivos disponibles (moCapureDevice)
+    * @param reload si es true vuelve a consultar al sistema el listado
+    * de dispositivos disponibles
+    */
+    const moCaptureDevices& GetCaptureDevices( bool reload = true );
+
+    /**
+    * Devuelve la cantidad de objetos de moCamera disponibles
     */
 		int GetCameraCount();
 
@@ -510,9 +527,12 @@ class LIBMOLDEO_API moVideoManager : public moResource
     static moText NanosecondsToTimecode( MOulonglong duration );
     static moText FramesToTimecode( MOulonglong duration, double framespersecond );
 
+    moTextArray     m_CameraDevices;
+
 	protected:
 
 		moLiveSystems*		m_pLiveSystems;
+		moCaptureDevices  m_CaptureDevices;
 		moTextureIndex		Images;
 
 		moCircularVideoBuffers	m_CircularVideoBuffers;

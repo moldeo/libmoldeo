@@ -31,6 +31,11 @@
 
 #include "moVideoManager.h"
 
+#ifndef MO_DIRECTSHOW
+#ifndef MO_QUICKTIME
+//  #define MO_GSTREAMER 1
+#endif // MO_QUICKTIME
+#endif // MO_DIRECTSHOW
 
 #include "moArray.h"
 moDefineDynamicArray(moCircularVideoBuffers)
@@ -196,7 +201,7 @@ MOboolean  moVideoBuffer::Finish() {
 }
 
 MOboolean
-moVideoBuffer::LoadImage( moBitmap* pImage , MOuint indeximage ) {
+moVideoBuffer::LoadImage( moBitmap* pImage, int indeximage ) {
 
     FIBITMAP* _pImage = (FIBITMAP*)pImage;
 	FIBITMAP* pImageResult = NULL;
@@ -227,11 +232,21 @@ moVideoBuffer::LoadImage( moBitmap* pImage , MOuint indeximage ) {
 		}
 	}
 
-	moVideoFrame* pVideoFrame = new moVideoFrame(  );
-	if (pVideoFrame) {
-		pVideoFrame->Init( m_BufferFormat, pImageResult );
-		m_Frames.Add(pVideoFrame);
-	}
+  moVideoFrame* pVideoFrame = NULL;
+
+  if (indeximage==-1 || indeximage == (int)m_Frames.Count() ) {
+    pVideoFrame = new moVideoFrame();
+    if (pVideoFrame) {
+      pVideoFrame->Init( m_BufferFormat, pImageResult );
+      m_Frames.Add(pVideoFrame);
+    }
+  } else if ( indeximage < (int)m_Frames.Count() ) {
+    pVideoFrame = m_Frames.Get(indeximage);
+    if (pVideoFrame) {
+      pVideoFrame->Finish();
+      pVideoFrame->Init( m_BufferFormat, pImageResult );
+    }
+  }
 
 	if (pImageResult!=_pImage)
 		FreeImage_Unload(pImageResult);
@@ -747,6 +762,11 @@ MOboolean moVideoManager::Init()
 
   moResource::Init();
 
+  m_pLiveSystems = new moLiveSystems();
+  m_pLiveSystems->Init(0, NULL);
+
+
+
 	if (m_Config.IsConfigLoaded()) {
 
       moText msg = "In moVideoManager::Init from config file ***********************\n";
@@ -755,12 +775,12 @@ MOboolean moVideoManager::Init()
 
       preferreddevices = m_Config.GetParamIndex("preferreddevices");//FIREWIRE, WEBCAMS, LIVEVIDEO[movie]
       autoreconnect = m_Config.GetParamIndex("autoreconnect");//FIREWIRE, WEBCAMS, LIVEVIDEO[movie]
-      MOuint videoin = m_Config.GetParamIndex("videoin");
+      //MOuint videoin = m_Config.GetParamIndex("videoin");
 
-      moText videoinname;
+     // moText videoinname;
 
+/*
       MODebug2->Message( "VideoManager:: Generating videoin textures" );
-
       for(MOuint i=0; i<m_Config.GetValuesCount(videoin); i++ ) {
         videoinname = m_Config.GetParam(videoin).GetValue(i).GetSubValue(0).Text();
         if(videoinname!=moText("")) {
@@ -769,6 +789,7 @@ MOboolean moVideoManager::Init()
           MODebug2->Message( moText("VideoManager:: Added ") + moText(videoinname) );
         }
       }
+      */
       /**	LOAD AUTORECONNECT PARAMETER...	*/
       m_bAutoReconnect = (bool) m_Config.GetParam((MOint)autoreconnect).GetValue().GetSubValue().Int();
 
@@ -780,9 +801,14 @@ MOboolean moVideoManager::Init()
       /*
     MO_LIVE_LABELNAME	0
     MO_LIVE_DEVICENAME	1
-    MO_LIVE_WIDTH		2
-    MO_LIVE_HEIGHT		3
-    MO_LIVE_BITCOUNT	4
+    MO_LIVE_COLORMODE 2
+    MO_LIVE_WIDTH		3
+    MO_LIVE_HEIGHT		4
+    MO_LIVE_BITCOUNT	5
+    MO_LIVE_SCALE_WIDTH 6
+    MO_LIVE_SCALE_HEIGHT 7
+    MO_LIVE_FLIPH 8
+    MO_LIVE_FLIPV 9
       */
       MODebug2->Message(moText("Setting preferred devices"));
       for( MOuint i = 0; i < nvalues; i++) {
@@ -802,7 +828,7 @@ MOboolean moVideoManager::Init()
         moVideoFormat VF;
         moCaptureDevice CD( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_DEVICENAME).Text(), moText(""), moText(""), 0, srcw, srch, srcbpp, flH, flV );
 
-        CD.SetCodeName( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_LABELNAME).Text() );
+        CD.SetLabelName( m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_LABELNAME).Text() );
 
         VF.m_Width = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEWIDTH).Int();
         VF.m_Height = m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_SCALEHEIGHT).Int();
@@ -811,6 +837,7 @@ MOboolean moVideoManager::Init()
         VF.m_ColorMode = (moColorMode)m_Config.GetParam().GetValue().GetSubValue(MO_LIVE_COLORMODE).Int();
 
         CD.SetVideoFormat( VF );
+        CD.SetPreffered( true );
 
         pPreferredDevices->Add( CD );
         MODebug2->Message(moText("Added preferred device setting: Device Name: ")+CD.GetName());
@@ -821,25 +848,40 @@ MOboolean moVideoManager::Init()
 
     //INITIALIZING LiveSystems
 
-      //try to connect to all
-      m_pLiveSystems = new moLiveSystems();
-      m_pLiveSystems->Init(0, NULL);
+      //try to connect to all predefined
+
 
       MODebug2->Message(moText("Finally load live systems grabber for each device...."));
 
-      if ( m_pLiveSystems->LoadLiveSystems( pPreferredDevices ) ) {
+
+      if (!m_pLiveSystems) return false;
+
+      m_pLiveSystems->GetVideoFramework()->SetPreferredDevices( pPreferredDevices );
+
+      GetCaptureDevices();
+
+      for( int c=0; c<(int)m_CaptureDevices.Count(); c++) {
+        moCaptureDevice CapDev = m_CaptureDevices.Get(c);
+        if (CapDev.IsPreferred()) {
+          moCamera* Cam = CreateCamera( CapDev );
+          if (Cam==NULL) MODebug2->Error("moVideoManager::Init > could create Camera: " + CapDev.GetName()+ " Label: " + CapDev.GetLabelName() );
+        }
+
+      }
+
+      //if ( m_pLiveSystems->LoadLiveSystems( pPreferredDevices ) ) {
         //los inicializa...
-        for( MOuint i = 0; i < m_pLiveSystems->Count(); i++) {
+       // for( MOuint i = 0; i < m_pLiveSystems->Count(); i++) {
 
-          moLiveSystemPtr pLS = m_pLiveSystems->Get(i);
+      //    moLiveSystemPtr pLS = m_pLiveSystems->Get(i);
 
-          if (pLS && pLS->GetCaptureDevice().IsPresent()) {
+      //    if (pLS && pLS->GetCaptureDevice().IsPresent()) {
 
-            if (pLS->Init()) {
+     //       if (pLS->Init()) {
 
-                MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
+    //            MODebug2->Message( moText(pLS->GetCaptureDevice().GetName()) + " initialized");
 
-
+/*
                 if ( pLS->GetVideoGraph()->GetVideoFormat().m_WaitForFormat == false  && 1==2 ) {
 
                     moBucketsPool* pBucketsPool = pLS->GetBucketsPool();
@@ -859,7 +901,8 @@ MOboolean moVideoManager::Init()
 
                                 //if( pSample!=NULL ) {
 
-                                  moTexture * ts =(moTexture*)Images[i];
+                                  //moTexture * ts =(moTexture*)Images[i];
+                                  moTexture* ts = pLS->GetTexture();
 
                                   if(ts!=NULL)
                                   {
@@ -878,22 +921,20 @@ MOboolean moVideoManager::Init()
                                       pbucket->Unlock();
                                     }
                                 }
-/*
-                                } else {
-                                    MODebug2->Error( moText(pLS->GetCaptureDevice().GetName()) + " not initialized");
-                                }
-*/
+
+
                             }
+
                         }
                     }
-                }
-            }
-          }
+                }*/
+  //          }
+  //        }
 
-        }
+  //      }
 
 
-      } else MODebug2->Error(moText("Error. No livesystems loaded??...."));
+      //} else MODebug2->Error(moText("Error. No livesystems loaded??...."));
 
 
       MOuint circularbuffer = m_Config.GetParamIndex("circularbuffer");
@@ -1002,6 +1043,12 @@ MOboolean moVideoManager::Init()
 
 MOswitch moVideoManager::SetStatus(MOdevcode devcode, MOswitch state)
 {
+
+    if (devcode == 0 /**RELOAD CAPTURE DEVICES*/) {
+      if (state==MO_ON) {
+        GetCaptureDevices(true);
+      }
+    }
     return true;
 }
 
@@ -1054,7 +1101,7 @@ MOdevcode moVideoManager::GetCode(moText strcod)
 		for(MOuint i =0; i< m_pLiveSystems->Count(); i++) {
 			moLiveSystemPtr pLS = m_pLiveSystems->Get(i);
 			if (pLS) {
-				if ( pLS->GetCodeName() == strcod ) {
+				if ( pLS->GetLabelName() == strcod ) {
 					return i;
 				}
 			}
@@ -1065,8 +1112,163 @@ MOdevcode moVideoManager::GetCode(moText strcod)
 }
 
 moCamera* moVideoManager::GetCamera( int cam_idx ) {
-  if (m_pLiveSystems)
+  if (m_pLiveSystems) {
     return m_pLiveSystems->Get(cam_idx);
+  }
+  return NULL;
+}
+
+moCamera*
+moVideoManager::CreateCamera( const moCaptureDevice& p_CapDev ) {
+
+  MODebug2->Message("moVideoManager::CreateCamera > " + p_CapDev.GetLabelName()+" for device:"+p_CapDev.GetName() );
+
+/// create
+  moLiveSystem* pLS = new moLiveSystem(p_CapDev);
+  moTextureManager* TMan = m_pResourceManager->GetTextureMan();
+
+  if (!pLS) return NULL;
+
+  if (!pLS->Init()) return NULL;
+
+  MODebug2->Message( moText("moVideoManager::CreateCamera > Capture Device ")
+                    + pLS->GetCaptureDevice().GetName()
+                    + " initialized");
+
+  int mid = TMan->AddTexture( MO_TYPE_TEXTURE, pLS->GetLabelName() );
+
+  moTexture * ts = NULL;
+
+  if (mid>-1) ts = TMan->GetTexture(mid);
+
+  if(ts)
+  {
+    pLS->SetTexture(ts);
+    MODebug2->Message("moVideoManager::CreateCamera > texture added ok: " + ts->GetName() );
+  } else {
+    MODebug2->Error("moVideoManager::CreateCamera > texture not added. " +ts->GetName()  );
+  }
+
+/*
+  if ( pLS->GetVideoGraph()->GetVideoFormat().m_WaitForFormat == false  && 1==2 ) {
+
+      moBucketsPool* pBucketsPool = pLS->GetBucketsPool();
+
+      if ( pBucketsPool==NULL ) return NULL;
+
+      if ( pBucketsPool->IsFull() ) {
+
+        moBucket* pbucket = pBucketsPool->RetreiveBucket();
+
+        if ( pbucket && pLS->GetVideoGraph() ) {
+
+          //moVideoSample* pSample = new moVideoSample( pLS->GetVideoGraph()->GetVideoFormat(), (MOpointer) pbucket );
+
+          ///procesamos el GetState para que ejecute la iteracion del loop interno...obligatorio!!
+          pLS->GetVideoGraph()->GetState();
+
+
+          int mid = TMan->AddTexture( MO_TYPE_TEXTURE, pLS->GetLabelName() );
+          moTexture * ts = NULL;
+          if (mid>-1) ts = TMan->GetTexture(mid);
+          pLS->SetTexture(ts);
+          if(ts!=NULL)
+          {
+            MODebug2->Log("moVideoManager::CreateCamera > texture added ok: " + ts->GetName() );
+            if ((ts->GetGLId() <= 0) || (ts->GetWidth() != pLS->GetVideoGraph()->GetVideoFormat().m_Width))
+            {
+              if (ts->GetGLId() != 0) ts->Finish();
+              ts->BuildEmpty(pLS->GetVideoGraph()->GetVideoFormat().m_Width,  pLS->GetVideoGraph()->GetVideoFormat().m_Height);
+            }
+
+            MOubyte* pbuffer = pbucket->GetBuffer();
+
+            if (pbuffer) {
+              pbucket->Lock();
+              ts->SetBuffer( pbuffer, GL_BGR_EXT);
+              pbucket->Unlock();
+            }
+
+          }
+      }
+    }
+  }
+  */
+
+  m_pLiveSystems->Add( pLS );
+  MODebug2->Message( moText("Added LiveSystem: Label Name: ") + pLS->GetCaptureDevice().GetLabelName()
+                    + moText(" Device Name:") + pLS->GetCaptureDevice().GetName() );
+
+  return (moCamera*)pLS;
+}
+
+moCamera*
+moVideoManager::GetCameraByName( const moText& camera, bool load, moCaptureDevice customCD ) {
+
+  moCamera* Cam = NULL;
+
+  if (m_pLiveSystems) {
+    for( int c=0; c<(int)m_pLiveSystems->Count(); c++ ) {
+      Cam = m_pLiveSystems->Get(c);
+      if (Cam) {
+        if (Cam->GetCaptureDevice().GetLabelName()==camera
+            ||
+            Cam->GetCaptureDevice().GetName()==camera
+            ||
+            ( camera=="default" && c>=0 && Cam->GetVideoGraph() )
+           ) {
+          return Cam;
+        }
+      }
+    }
+  }
+
+  for(int d=0;d<(int)m_CaptureDevices.Count();d++) {
+    moCaptureDevice m_CapDev = m_CaptureDevices[d];
+    if (m_CapDev.GetName()==camera
+        ||
+        m_CapDev.GetLabelName()==camera
+        ||
+        (  camera=="default" && d>=0 && m_CapDev.IsPresent() )
+         ) {
+        ///Try to create it!!!
+        if (load) {
+          moCaptureDevice newCD = m_CapDev;
+
+          if ( m_pResourceManager->GetRenderMan()->IsTextureNonPowerOf2Disabled() ) {
+            //chequear video format
+            newCD.GetVideoFormat().m_Width = 256;
+            newCD.GetVideoFormat().m_Height = 256;
+            //newCD.GetVideoFormat().m_ColorMode = (moColorMode) ;
+            newCD.GetVideoFormat().m_BitCount = 24;
+            newCD.GetVideoFormat().m_ColorMode = (moColorMode) 0;
+
+          }
+
+          // apply custom capture device values from customCD
+          if ( customCD.GetLabelName()!=""
+              && customCD.GetVideoFormat().m_Width>0
+              && customCD.GetVideoFormat().m_Height>0 ) {
+            newCD = customCD;
+            newCD.SetName( m_CapDev.GetName() );
+            newCD.SetLabelName( m_CapDev.GetLabelName() );
+            if ( m_pResourceManager->GetRenderMan()->IsTextureNonPowerOf2Disabled() ) {
+              moMathi mathI;
+              if ( !mathI.IsPowerOfTwo( newCD.GetVideoFormat().m_Width ) ) {
+                newCD.GetVideoFormat().m_Width = moTexture::NextPowerOf2( newCD.GetVideoFormat().m_Width );
+              }
+              if ( !mathI.IsPowerOfTwo( newCD.GetVideoFormat().m_Height ) ) {
+                newCD.GetVideoFormat().m_Height = moTexture::NextPowerOf2( newCD.GetVideoFormat().m_Height );
+              }
+            }
+          }
+
+          Cam = CreateCamera( newCD );
+          return Cam;
+        }
+      }
+  }
+
   return NULL;
 }
 
@@ -1074,6 +1276,26 @@ int moVideoManager::GetCameraCount() {
   if (m_pLiveSystems)
     return m_pLiveSystems->Count();
   return 0;
+}
+
+const moTextArray&
+moVideoManager::GetCameraNames() {
+
+  /** Loads capture devices.... preferred devices go first... or they are just OPENED */
+  ///
+  ///m_pLiveSystems->GetVideoFramework();
+  ///m_pLiveSystems->GetStatus(devcode);
+  return m_CameraDevices;
+}
+
+const moCaptureDevices&
+moVideoManager::GetCaptureDevices( bool reload ) {
+  if (m_pLiveSystems && m_pLiveSystems->GetVideoFramework()) {
+    if (reload) {
+      m_CaptureDevices = (*m_pLiveSystems->GetVideoFramework()->LoadCaptureDevices());
+    } /*else m_CaptureDevices = (*m_pLiveSystems->GetVideoFramework()->GetCaptureDevices());*/
+  }
+  return m_CaptureDevices;
 }
 
 moCircularVideoBuffer* moVideoManager::GetCircularVideoBuffer( int cb_idx ) {
@@ -1121,8 +1343,9 @@ moText moVideoManager::NanosecondsToTimecode( MOulonglong duration ) {
   MOulonglong minutes,oneminute;
   MOulonglong seconds,onesecond;
   MOulonglong miliseconds,onemilisecond;
-  MOulonglong nanos;
+  //MOulonglong nanos;
 
+  //nanos = 0;
   onemilisecond = GST_MSECOND;
   onesecond = GST_SECOND;
   oneminute = 60 * onesecond;
@@ -1160,9 +1383,10 @@ moText moVideoManager::FramesToTimecode( MOulonglong duration, double framespers
   double minutes,oneminute;
   double seconds,onesecond;
   double miliseconds,onemilisecond;
-  double nanos;
+  //double nanos;
   double frames,durationF;
 
+  //nanos = 0;
   onemilisecond = framespersecond/1000.0f;
   onesecond = framespersecond;
   oneminute = 60 * onesecond;
@@ -1241,7 +1465,6 @@ void moVideoManager::Update(moEventList * p_EventList)
 		} else actual = actual->next;//no es el que necesitamos...
 	}
 
-
 	//aquí moLive da de alta en la lista un evento con su id, devicecode, size y pointer
 	//a cada vez que tiene un Bucket lleno....
 	for( MOuint i =0; i< m_pLiveSystems->Count(); i++) {
@@ -1266,7 +1489,9 @@ void moVideoManager::Update(moEventList * p_EventList)
             pLS->GetVideoGraph()->GetState();
 
             if( pSample!=NULL ) {
-              moTexture * ts =(moTexture*)Images[i];
+              //moTexture * ts =(moTexture*)Images[i];
+              moTexture* ts = (moTexture*) pLS->GetTexture();
+
               if(ts!=NULL)
               {
 
@@ -1396,7 +1621,6 @@ moLiveSystem::moLiveSystem() {
 	m_pVideoGraph = NULL;
 	m_pVideoSample = NULL;
 
-	m_CodeName = moText("");
 	m_Type = LST_UNKNOWN;
 
 }
@@ -1406,23 +1630,13 @@ moLiveSystem::~moLiveSystem() {
 	Finish();
 }
 
-moLiveSystem::moLiveSystem( moText p_CodeName, moLiveSystemType p_Type ) {
-
-	m_pBucketsPool = NULL;
-	m_pVideoGraph = NULL;
-	m_pVideoSample = NULL;
-
-	m_CodeName = p_CodeName;
-	m_Type = p_Type;
-
-
-}
 
 moLiveSystem::moLiveSystem( moCaptureDevice p_capdev) {
 
 	m_pBucketsPool = NULL;
 	m_pVideoGraph = NULL;
 	m_pVideoSample = NULL;
+	m_pTexture = NULL;
 
 	m_CaptureDevice = p_capdev;
 
@@ -1493,13 +1707,8 @@ moLiveSystem::Finish() {
 }
 
 void
-moLiveSystem::SetCodeName( moText p_CodeName ) {
-	m_CodeName = p_CodeName;
-}
-
-void
-moLiveSystem::SetDeviceName( moText p_DeviceName ) {
-	m_DeviceName = p_DeviceName;
+moLiveSystem::SetTexture( moTexture* p_Texture ) {
+  m_pTexture = p_Texture;
 }
 
 void
@@ -1513,13 +1722,13 @@ moLiveSystem::GetType() {
 }
 
 moText
-moLiveSystem::GetCodeName() {
-	return m_CodeName;
+moLiveSystem::GetLabelName() {
+	return m_CaptureDevice.GetLabelName();
 }
 
 moText
 moLiveSystem::GetDeviceName() {
-	return m_DeviceName;
+	return m_CaptureDevice.GetName();
 }
 
 moVideoGraph*
@@ -1534,6 +1743,12 @@ moLiveSystem::GetVideoSample() {
 
 	return m_pVideoSample;
 
+}
+
+
+moTexture*
+moLiveSystem::GetTexture() {
+  return m_pTexture;
 }
 
 void
@@ -1557,15 +1772,15 @@ moLiveSystem::GetBucketsPool() {
 
 moLiveSystems::moLiveSystems() {
 
-        m_pVideoFramework = NULL;
+    m_pVideoFramework = NULL;
 
-        #ifdef MO_DIRECTSHOW
+    #ifdef MO_DIRECTSHOW
         	m_pVideoFramework = (moVideoFramework*) new moDsFramework();
 		#endif
 
 		#ifdef MO_GSTREAMER
 			m_pVideoFramework = new moGsFramework();
-        #endif
+    #endif
 
 		#ifdef MO_QUICKTIME
 			m_pVideoFramework = (moVideoFramework*) new moQtFramework();
@@ -1584,7 +1799,6 @@ bool
 moLiveSystems::LoadLiveSystems( moCaptureDevices* p_pPreferredDevices ) {
 
 	moText CodeStr;
-	int i;
 
 	//genera los descriptores de dispositivos de captura...
 	m_pVideoFramework->SetPreferredDevices( p_pPreferredDevices );
@@ -1594,36 +1808,27 @@ moLiveSystems::LoadLiveSystems( moCaptureDevices* p_pPreferredDevices ) {
 	/**
 
 	*/
+	/*
 	for( i = 0; i < (int)pCapDevs->Count(); i++) {
 		moLiveSystemPtr pLS = new moLiveSystem( pCapDevs->Get(i) );
 		if (pLS) {
-
-			CodeStr = moText("LIVEIN");
-			CodeStr+= IntToStr(i);
-
-			pLS->SetCodeName( CodeStr );
 
 			Add( pLS );
 			moDebugManager::Message( moText("Added LiveSystem: CodeName:") + (moText)CodeStr + moText(" Device Name:") + pCapDevs->Get(i).GetName() );
 		}
 	}
-
+*/
 	//y el resto de los sistemas los inicializamos vacios
+	/*
 	for( i = pCapDevs->Count(); i < 7; i++) {
 		moCaptureDevice Cap( moText(""), moText(""), moText("") );
 		Cap.Present(false);
 		moLiveSystemPtr pLS = new moLiveSystem( Cap );
 		if (pLS) {
-
-			CodeStr = moText("LIVEIN");
-			CodeStr+= IntToStr(i);
-
-			pLS->SetCodeName( CodeStr );
-
 			Add( pLS );
 		}
 	}
-
+*/
 	return ( pCapDevs->Count() > 0 );
 
 }
@@ -1652,6 +1857,8 @@ moLiveSystems::UpdateLiveSystems() {
 							m_pVideoFramework->SetPreferredFormat( pCapDevs->Get(i) );
 							pLS->Init();
 						}
+
+
 
 					} else if ( pLS->GetCaptureDevice().GetPath() == pCapDevs->Get(i).GetPath() &&
 								!pLS->GetCaptureDevice().IsPresent()) {
