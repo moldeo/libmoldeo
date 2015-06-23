@@ -110,22 +110,23 @@ enum moConsoleParamIndex {
     CONSOLE_OUTLET,
     CONSOLE_SCRIPT,
 
-	CONSOLE_DEVICES,
-	CONSOLE_PREEFFECT,
-	CONSOLE_EFFECT,
-	CONSOLE_POSTEFFECT,
-	CONSOLE_MASTEREFFECT,
-	CONSOLE_RESOURCES,
-	CONSOLE_ON,
-	CONSOLE_FULLDEBUG,
-	CONSOLE_OUTPUTMODE,
-	CONSOLE_OUTPUTRESOLUTION,
-	CONSOLE_RENDERMODE,
-	CONSOLE_RENDERRESOLUTION,
-	CONSOLE_CLIP1,
-	CONSOLE_CLIP2,
-	CONSOLE_CLIP3,
-	CONSOLE_SCREENSHOTS,
+    CONSOLE_DEVICES,
+    CONSOLE_PREEFFECT,
+    CONSOLE_EFFECT,
+    CONSOLE_POSTEFFECT,
+    CONSOLE_MASTEREFFECT,
+    CONSOLE_RESOURCES,
+    CONSOLE_ON,
+    CONSOLE_FULLDEBUG,
+    CONSOLE_OUTPUTMODE,
+    CONSOLE_OUTPUTRESOLUTION,
+    CONSOLE_RENDERMODE,
+    CONSOLE_RENDERRESOLUTION,
+    CONSOLE_CLIP1,
+    CONSOLE_CLIP2,
+    CONSOLE_CLIP3,
+    CONSOLE_PREVIEWS,
+    CONSOLE_SCREENSHOTS,
     CONSOLE_VIDEOSHOTS
 };
 
@@ -280,12 +281,16 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         * @param labelname la etiqueta del objeto
         * @return verdadero si existe, falso si no
         */
-        bool LabelNameExists( moText labelname );
+        bool LabelNameExists( const moText& labelname );
 
         moMoldeoObjects& GetMoldeoObjects();
         moEffectManager& GetEffectManager();
 
         int RelativeToGeneralIndex( int relativeindex, moMoldeoObjectType p_type );
+
+
+        int ProcessSessionKey( const moDataSessionKey & p_session_key );
+        int ProcessSessionEventKey( const moDataSessionEventKey & p_session_event_key );
 
         /// enciende el reloj de la consola
         /**
@@ -293,6 +298,30 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         * las funciones de ConsoleStop y ConsolePause
         */
         void ConsolePlay();
+
+        /// inicia la reproducción de una sesión pregrabada
+        /**
+        * Reproduce la última sesión grabada
+        */
+        void ConsolePlaySession();
+
+        /// inicia la grabación de la sesión actual
+        /**
+        * Registra la sesión actual en memoria luego al disco (a definir)
+        */
+        void ConsoleRecordSession();
+
+        /// inicia el renderizado de una sesión pregrabada
+        /**
+        * Renderiza una sesión
+        */
+        void ConsoleRenderSession();
+
+        /// salva la sesión a un archivo
+        /**
+        * Permite salvar la sesión actual grabada en un archivo XML
+        */
+        void ConsoleSaveSessionAs();
 
         /// pausa el reloj de la consola
         /**
@@ -316,7 +345,30 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         * MO_TIMERSTATE_STARTED : arrancado
         * @return moTimerState el estado del reloj
         */
-        moTimerState ConsoleState();
+        moTimerState GetConsoleState();
+
+        /// devuelve el modo de la consola
+        /**
+        * El modo de la consola define si se trata de una sesión en vivo, grabada, de playback o en proceso de renderización.
+        * MO_CONSOLE_MODE_LIVE : predeterminado
+        * MO_CONSOLE_MODE_RECORD_SESSION: graba la sesión actual
+        * MO_CONSOLE_MODE_PLAY_SESSION: reproduce una sesión pregrabada
+        * MO_CONSOLE_MODE_RENDER_SESSION: renderiza la sesión pregrabada
+        *
+        * @return moConsoleMode
+        */
+        moConsoleMode GetConsoleMode();
+
+        void ConsoleModeUpdate();
+
+        int SetEffectState( int m_MoldeoObjectId, const moEffectState& p_effect_state );
+        int SetParam( int m_MoldeoObjectId, int m_ParamId, const moParamDefinition &p_param_definition );
+        int SetValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, const moValue &p_value );
+        int EffectPlay( int m_MoldeoObjectId );
+        int EffectPause( int m_MoldeoObjectId );
+        int EffectStop( int m_MoldeoObjectId );
+        int ObjectEnable( int m_MoldeoObjectId );
+        int ObjectDisable( int m_MoldeoObjectId );
 
         /// devuelve el preset actualmente seleccionado
         /**
@@ -368,13 +420,27 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         void SetTicks( int ticksid );
 
-        int GetObjectId( moText p_objectlabelname );
+        /**
+        * Obtener un Moldeo Object por su indice
+        */
+        virtual moMoldeoObject* GetObjectByIdx( int p_object_id );
 
-        int GetDirectoryFileCount( moText p_path );
+        /**
+        * Obtener el indice de un Moldeo Object por su etiqueta (label name)
+        */
+        int GetObjectId( const moText& p_objectlabelname );
+
+
+
+        int GetDirectoryFileCount( const moText& p_path );
 
 
         void ProcessConsoleMessage( moMessage* p_pMessage );
 
+        /// Procesa los mensajes de la Moldeo API 1.0
+        /**
+        * Procesar los mensajes de la API
+        */
         int ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage );
         int SendMoldeoAPIMessage( moDataMessage* p_pDataMessage );
 
@@ -478,6 +544,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         MOboolean				m_bIODeviceManagerDefault;
         moIODeviceManager*		m_pIODeviceManager;
         moMoldeoObjects			m_MoldeoObjects;
+        moMoldeoObjects			m_MoldeoSceneObjects;
         moEffectManager			m_EffectManager;
         moReactionListenerManager m_ReactionListenerManager;
 
@@ -505,6 +572,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         void UnloadResources();
         void LoadIODevices();
         void UnloadIODevices();
+        void AddMoldeoAPIDevices();
         void LoadMasterEffects();
         void UnloadMasterEffects();
         void LoadPreEffects();
@@ -526,6 +594,8 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         void LoadStatus(int);
 
         MOint ConvertKeyNameToIdx(moText& name);
+
+        void LoadObjects( moMoldeoObjectType fx_type = MO_OBJECT_UNDEFINED );
 
         moPresetParams m_PresetParams;
 };

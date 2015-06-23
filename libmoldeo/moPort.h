@@ -49,14 +49,21 @@ getch (void)
 
 
 inline char *
-itoa (int value, char *str, int radix)
+itoa (int value, char *str, int base=10)
 {
 	char buffer[100];
 	char *res;
-	str = NULL;
-	radix = 0;
+
+	base = 0;
   // Memory-safe version of sprintf.
-	snprintf (buffer, 100, "%i", value);
+	if (str==NULL) {
+      if (base==10) snprintf (buffer, 100, "%i", value);
+      if (base==16)  snprintf (buffer, 100, "%x", value);
+  } else {
+      if (base==10) snprintf (str, 100, "%i", value);
+      if (base==16)  snprintf (str, 100, "%x", value);
+      return str;
+  }
 	res = buffer;
 	return res;
 }

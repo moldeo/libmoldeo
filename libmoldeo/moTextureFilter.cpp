@@ -624,12 +624,12 @@ MOboolean moTextureFilter::Finish()
 	return true;
 }
 
-void moTextureFilter::Apply(MOuint p_i, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilter::Apply( MOuint p_i, MOfloat p_fade, moTextFilterParam *p_params)
 {
 	MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
 	SetGLConf(w, h);
-	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
+//	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
 
 	if (m_use_screen_tex) m_renderman->SaveScreen();
 
@@ -654,7 +654,7 @@ void moTextureFilter::Apply(MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *
 	MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
 	SetGLConf(w, h);
-	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
+//	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
 
 
 	if (m_use_screen_tex) m_renderman->SaveScreen();
@@ -680,7 +680,7 @@ void moTextureFilter::Apply(moTempo *p_tempo, MOfloat p_fade, moTextFilterParam 
 	MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
 	SetGLConf(w, h);
-	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
+//	moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
 
 	if (m_use_screen_tex) m_renderman->SaveScreen();
 
@@ -713,24 +713,27 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
                 //cgGLEnableTextureParameter( (CGparameter)m_src_tex_unit[i] );
 		    }
 		}
-		if (-1 < m_src_tex_offset[i])
+		if (-1 < m_src_tex_offset[i]) {
 			if (m_glman->RectTexture(m_src_tex[i]->GetTexTarget())) glUniform2fARB(m_src_tex_offset[i], 1.0, 1.0);
 			else glUniform2fARB(m_src_tex_offset[i], 1.0 / float(m_src_tex[i]->GetWidth()), 1.0 / float(m_src_tex[i]->GetHeight()));
+		}
 	}
 
-	if (-1 < m_tempo_angle)
+	if (-1 < m_tempo_angle) {
 		if (p_tempo != NULL)
 		{
 			float a = p_tempo->ang;
 			float f = fmod(float(a), float(2.0 * moMathf::PI)) / (2.0 * moMathf::PI);
 
 			glUniform2fARB(m_tempo_angle, a, f);
+			//moDebugManager::Push("m_tempo_angle:" + FloatToStr(a));
 			//(m_shader->GetType() == (MOuint)MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, a, f) : m_tempo_angle=0;/*cgGLSetParameter2f( (CGparameter)m_tempo_angle, a, f)*/
 		}
 		else {
 		    glUniform2fARB(m_tempo_angle, 0.0, 0.0);
 		    //(m_shader->GetType() == (MOuint)MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, 0.0, 0.0) : m_tempo_angle=0;/*cgGLSetParameter2f( (CGparameter)m_tempo_angle, 0.0, 0.0 )*/
 		}
+	}
 
 	if (-1 < m_dest_tex_size) {
 	    glUniform2fARB(m_dest_tex_size, w, h);

@@ -156,7 +156,7 @@ moMathFunction::~moMathFunction()
 {
     Finish();
 }
-
+#include "moDebugManager.h"
 MOboolean moMathFunction::Init( const moText& p_Expression, moMoldeoObject* p_pMOB )
 {
 	SetExpression(p_Expression);
@@ -175,10 +175,12 @@ MOboolean moMathFunction::Init( const moText& p_Expression, moMoldeoObject* p_pM
 
             moMathVariable* pVariable = m_Variables[i];
 
+
+            ///check if variable exists in config parameters
             for( MOuint p=0; p<Params.Count(); p++  ) {
 
                 moParam& param( Params[p] );
-                ///check for every parameters in config...
+
                 if ( param.GetParamDefinition().GetName() == pVariable->GetName() ) {
 
                     ///assign pointer to variable!!!!
@@ -188,11 +190,14 @@ MOboolean moMathFunction::Init( const moText& p_Expression, moMoldeoObject* p_pM
 
             }
 
+             ///check if variable exists in object inlets
             for( MOuint m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
 
               moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
 
               if ( pInlet->GetConnectorLabelName() == pVariable->GetName() ) {
+                  ///found inlet! check index
+                  MODebug2->Message( moText("moMathFunction::Init > assigning variable [") + pVariable->GetName() + moText("] to inlet with the same name. Inlet index is: " + IntToStr(m)) );
                   pVariable->SetInlet( pInlet );
               }
 
@@ -596,7 +601,9 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
         catch ( mu::ParserError Exc) {
             moText msgexpr = (char*)Exc.GetExpr().c_str();
             moText msgerror = (char*)Exc.GetMsg().c_str();
-            MODebug2->Error( (moText)msgexpr + moText(":") + (moText)msgerror );
+            moText mobname = "undefined MOB";
+            if (p_pMOB) mobname = p_pMOB->GetLabelName();
+            MODebug2->Error( mobname + moText(" > ") + (moText)msgexpr + moText(":") + (moText)msgerror );
             delete pVarFactory;
             return false;
         }
@@ -613,10 +620,11 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
 
             moMathVariable* pVariable = m_Variables[i];
 
+            ///check for variable in config parameters
             for( MOuint p=0; p<Params.Count(); p++  ) {
 
                 moParam& param( Params[p] );
-                ///check for every parameters in config...
+
                 if ( param.GetParamDefinition().GetName() == pVariable->GetName() ) {
 
                     ///assign pointer to variable!!!!
@@ -627,12 +635,13 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
 
             }
 
+            ///check for variable in object inlets
             for( MOuint m=0; m<m_pMOB->GetInlets()->Count(); m++ ) {
 
               moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
 
               if ( pInlet->GetConnectorLabelName() == pVariable->GetName() ) {
-                  MODebug2->Message( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText(" to inlet with the same name.") );
+                  MODebug2->Message( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText("] to inlet with the same name. Inlet index is: " + IntToStr(m)) );
                   pVariable->SetInlet( pInlet );
               }
 
@@ -771,7 +780,9 @@ double moParserFunction::OnFuncEval() {
         catch ( mu::ParserError Exc) {
             moText msgexpr = (char*)Exc.GetExpr().c_str();
             moText msgerror = (char*)Exc.GetMsg().c_str();
-            MODebug2->Error( (moText)msgexpr + moText(":") + (moText)msgerror );
+            moText mobname = "undefined MOB";
+            if (m_pMOB) mobname = m_pMOB->GetLabelName();
+            MODebug2->Error( mobname + moText(" > ") + (moText)msgexpr + moText(":") + (moText)msgerror );
             m_LastEval = 0.0;
         }
 

@@ -36,6 +36,8 @@
 
 #include "moArray.h"
 #include "moText.h"
+#include <tinyxml.h>
+#include "moDebugManager.h"
 
 moDefineDynamicArray( moValueIndexes )
 moDefineDynamicArray( moValueBases )
@@ -733,7 +735,7 @@ moData::ToText() const {
         case MO_DATA_MESSAGE:
           dM = (moDataMessage*)m_Number.m_Pointer;
           if (dM) {
-            for(int c=0;c<dM->Count();c++) {
+            for(int c=0;c<(int)dM->Count();c++) {
               finalMsg+= ";" + dM->Get(c).ToText();
             }
           }
@@ -742,10 +744,10 @@ moData::ToText() const {
         case MO_DATA_MESSAGES:
           dMs = (moDataMessages*)m_Number.m_Pointer;
           if (dMs) {
-            for(int c=0;c<dMs->Count();c++) {
-              moDataMessage dM =  dMs->Get(c);
-              for(int cc=0;cc<dM.Count();cc++) {
-                finalMsg+= ";" + dM.Get(c).ToText();
+            for(int c=0;c<(int)dMs->Count();c++) {
+              moDataMessage Mes =  dMs->Get(c);
+              for(int cc=0;cc<(int)Mes.Count();cc++) {
+                finalMsg+= ";" + Mes.Get(c).ToText();
               }
               finalMsg+= "\n";
 
@@ -1146,13 +1148,17 @@ moValueDefinition::GetTypeStr() const {
 			return moText("LNK");
 			break;
 		case MO_VALUE_NUM:
-            return moText("NUM");
+      return moText("NUM");
+      break;
 		case MO_VALUE_NUM_CHAR:
-            return moText("CHAR");
+      return moText("CHAR");
+      break;
 		case MO_VALUE_NUM_DOUBLE:
-            return moText("DOUBLE");
+      return moText("DOUBLE");
+      break;
 		case MO_VALUE_NUM_FLOAT:
-            return moText("FLOAT");
+      return moText("FLOAT");
+      break;
 		case MO_VALUE_NUM_INT:
 			return moText("INT");
 			break;
@@ -1162,11 +1168,43 @@ moValueDefinition::GetTypeStr() const {
 		case MO_VALUE_TXT:
 			return moText("TXT");
 			break;
+		case MO_VALUE_XML:
+			return moText("XML");
+			break;
 		case MO_VALUE_MATRIX:
 			return moText("MATRIX");
 			break;
 	}
 	return moText("UNDEFINED");
+}
+
+moValueType
+moValueDefinition::ValueTypeFromStr( const moText& p_value_type_str ) {
+    if (p_value_type_str=="FUNCTION") {
+      return MO_VALUE_FUNCTION;
+    } else if (p_value_type_str=="NUM") {
+      return MO_VALUE_NUM;
+    } else if (p_value_type_str=="CHAR") {
+      return MO_VALUE_NUM_CHAR;
+    } else if (p_value_type_str=="INT") {
+      return MO_VALUE_NUM_INT;
+    } else if (p_value_type_str=="LONG") {
+      return MO_VALUE_NUM_LONG;
+    } else if (p_value_type_str=="FLOAT") {
+      return MO_VALUE_NUM_FLOAT;
+    } else if (p_value_type_str=="DOUBLE") {
+      return MO_VALUE_NUM_DOUBLE;
+    } else if (p_value_type_str=="TXT") {
+      return MO_VALUE_TXT;
+    } else if (p_value_type_str=="XML") {
+      return MO_VALUE_XML;
+    } else if (p_value_type_str=="LNK") {
+      return MO_VALUE_LNK;
+    } else if (p_value_type_str=="MATRIX") {
+      return MO_VALUE_MATRIX;
+    }
+
+    return MO_VALUE_UNDEFINED;
 }
 
 MOint
@@ -1220,7 +1258,59 @@ moValueDefinition::IsValid() const {
     return (m_Type!=MO_VALUE_UNDEFINED);
 }
 
+const moText&
+moValueDefinition::ToJSON() {
+  moText fieldSeparation = ",";
 
+  m_FullJSON = "{";
+  m_FullJSON+= "'codename': '" + m_CodeName + "'";
+  m_FullJSON+= fieldSeparation + "'type': '" + GetTypeStr() + "'";
+  m_FullJSON+= fieldSeparation + "'min': " + FloatToStr(m_Min);
+  m_FullJSON+= fieldSeparation + "'max': " + FloatToStr(m_Max);
+  m_FullJSON+= "}";
+  return m_FullJSON;
+}
+
+const moText&
+moValueDefinition::ToXML() {
+  moText fieldSeparation = " ";
+
+  m_FullXML = "<moValueDefinition ";
+  m_FullXML+= "codename='" + m_CodeName + "'";
+  m_FullXML+= fieldSeparation + "type='" + GetTypeStr() + "'";
+  m_FullXML+= fieldSeparation + "min='" + FloatToStr(m_Min)+ "'";
+  m_FullXML+= fieldSeparation + "max='" + FloatToStr(m_Max)+ "'";
+  m_FullXML+= fieldSeparation + ">";
+  m_FullXML+= "</moValueDefinition>";
+  return m_FullXML;
+}
+
+
+int
+moValueDefinition::Set( const moText& p_XmlText ) {
+ TiXmlDocument   m_XMLDoc;
+  //TiXmlHandle xmlHandle( &m_XMLDoc );
+  TiXmlEncoding   xencoding = TIXML_ENCODING_LEGACY; ///or TIXML_ENCODING_UTF8
+
+  m_XMLDoc.Parse((const char*) p_XmlText, 0, xencoding );
+  ///convert xmltext to structure
+  //TiXmlElement* rootKey = m_XMLDoc.FirstChildElement( "D" );
+  TiXmlElement* definitionNode = m_XMLDoc.FirstChildElement("moValueDefinition");
+
+  //if (rootKey) {
+
+    //TiXmlElement* sceneStateNode = rootKey->FirstChildElement("moSceneState");
+    if (definitionNode) {
+      m_CodeName = moText( definitionNode->Attribute("codename") );
+      m_Type = ValueTypeFromStr( moText(definitionNode->Attribute("type")) );
+      m_Min = atof(moText( definitionNode->Attribute("min") ));
+      m_Max = atof(moText( definitionNode->Attribute("max") ));
+      return 0;
+    } else moDebugManager::Log( "No XML moValueDefinition in: " + p_XmlText );
+
+  //} else moDebugManager::Error();
+  return -1;
+}
 
 //================================================================
 //	moValueBase
@@ -1335,6 +1425,92 @@ moValueBase::SetCodeName( moText p_codename ) {
     m_ValueDefinition.SetCodeName( p_codename );
 }
 
+const moText&
+moValueBase::ToJSON() {
+  moText fieldSeparation =",";
+  m_FullJSON = "{";
+  m_FullJSON+= "'valuedefinition':" + m_ValueDefinition.ToJSON();
+  m_FullJSON+= fieldSeparation + "'value':" + "'" + ToText() + "'";
+  m_FullJSON+= "}";
+  return m_FullJSON;
+}
+
+const moText&
+moValueBase::ToXML() {
+  moText fieldSeparation = " ";
+  m_FullXML = "<moValueBase ";
+  m_FullXML+= fieldSeparation+"type='"+GetTypeStr()+"'";
+  m_FullXML+= fieldSeparation+"value='"+ToText()+"'";
+  /** TODO: add range
+  if (m_ValueDefinition.)
+  */
+  /*m_FullXML+= m_ValueDefinition.ToXML();*/
+  m_FullXML+= fieldSeparation+">";
+  m_FullXML+= ToText();
+  m_FullXML+= "</moValueBase>";
+  return m_FullXML;
+}
+
+int
+moValueBase::Set( const moText& p_XmlText ) {
+
+TiXmlDocument   m_XMLDoc;
+  //TiXmlHandle xmlHandle( &m_XMLDoc );
+  TiXmlEncoding   xencoding = TIXML_ENCODING_LEGACY; ///or TIXML_ENCODING_UTF8
+
+  m_XMLDoc.Parse((const char*) p_XmlText, 0, xencoding );
+  ///convert xmltext to structure
+  //TiXmlElement* rootKey = m_XMLDoc.FirstChildElement( "D" );
+  TiXmlElement* valueNode = m_XMLDoc.FirstChildElement("moValueBase");
+
+  if (valueNode) {
+    //moData data( moText( valueNode->Attribute("value") ) );
+    //SetType( );
+
+    moText value = moText( valueNode->Attribute("value") );
+    switch(GetType()) {
+      case MO_VALUE_FUNCTION:
+          SetFun( value );
+          break;
+      case MO_VALUE_NUM:
+      case MO_VALUE_NUM_INT:
+          SetInt( atoi(value) );
+          break;
+      case MO_VALUE_NUM_CHAR:
+          SetChar( atoi(value) );
+          break;
+      case MO_VALUE_NUM_LONG:
+          SetLong( atoi(value) );
+          break;
+      case MO_VALUE_NUM_FLOAT:
+          SetFloat( atof(value) );
+          break;
+      case MO_VALUE_NUM_DOUBLE:
+          SetDouble( atof(value) );
+          break;
+      case MO_VALUE_TXT:
+          SetText( value );
+          break;
+      case MO_VALUE_XML:
+          SetText( value );
+          break;
+      case MO_VALUE_MATRIX:
+      case MO_VALUE_LNK:
+          SetText( value );
+          break;
+      default:
+          SetText(value);
+          break;
+    };
+
+    SetType( moValueDefinition::ValueTypeFromStr( moText( valueNode->Attribute("type") ) )  );
+
+    return 0;
+  } else moDebugManager::Log( "No XML moValueBase in: " + p_XmlText );
+
+  return -1;
+
+}
 
 //================================================================
 //	moValue
@@ -1552,7 +1728,7 @@ moValue::AddSubValue( const moText &strvalue, const moText &type ) {
 		//float tmp2;
 		//sscanf( strvalue, "%f", &tmp2);
 		//valuebase.SetFloat( tmp2 );
-		valuebase.SetText( strvalue );
+		valuebase.SetFun( strvalue );
 		valuebase.SetType( MO_VALUE_FUNCTION );
 
 	} else if ((moText)type== moText("MATRIX") ) {
@@ -1579,4 +1755,70 @@ moValue &moValue::operator = (const moValue &src) {
 		return *this;
 }
 
+const moText&
+moValue::ToJSON() {
+  moText fieldSeparation  = "";
+  m_FullJSON = "[";
+  for( int vbase=0; vbase < (int)m_List.Count(); vbase++) {
+    m_FullJSON+= fieldSeparation + m_List[vbase].ToJSON();
+    fieldSeparation = ",";
+  }
+  m_FullJSON+= "]";
+  return m_FullJSON;
+}
 
+const moText&
+moValue::ToXML() {
+  moText fieldSeparation  = "";
+  m_FullXML = "<moValue>";
+  for( int vbase=0; vbase < (int)m_List.Count(); vbase++) {
+    m_FullXML+= fieldSeparation + m_List[vbase].ToXML();
+    fieldSeparation = "";
+  }
+  m_FullXML+= "</moValue>";
+  return m_FullXML;
+}
+
+
+int
+moValue::Set( const moText& p_XmlText ) {
+
+  TiXmlDocument   m_XMLDoc;
+  //TiXmlHandle xmlHandle( &m_XMLDoc );
+  TiXmlEncoding   xencoding = TIXML_ENCODING_LEGACY; ///or TIXML_ENCODING_UTF8
+
+  m_XMLDoc.Parse((const char*) p_XmlText, 0, xencoding );
+  ///convert xmltext to structure
+  //TiXmlElement* rootKey = m_XMLDoc.FirstChildElement( "D" );
+  TiXmlElement* valueNode = m_XMLDoc.FirstChildElement("moValue");
+
+  //if (rootKey) {
+
+    //TiXmlElement* sceneStateNode = rootKey->FirstChildElement("moSceneState");
+    if (valueNode) {
+
+      TiXmlElement* valuebaseNode = valueNode->FirstChildElement("moValueBase");
+      int vbidx = 0;
+      while(valuebaseNode) {
+        moValueBase vb;
+        moText vbXML;
+        TiXmlPrinter printer;
+        TiXmlNode* NODEDATAXML = valuebaseNode;
+        if (NODEDATAXML) {
+          NODEDATAXML->Accept( &printer );
+          vbXML = moText( printer.CStr() );
+        }
+        vb.Set( vbXML );
+
+        if (vbidx<(int)GetSubValueCount()) GetSubValue(vbidx) = vb;
+        else AddSubValue( vb );
+
+        valuebaseNode = valuebaseNode->NextSiblingElement("moValueBase");
+        vbidx+= 1;
+      }
+      return 0;
+    } else moDebugManager::Log( "No XML moValue in: " + p_XmlText );
+
+  //} else moDebugManager::Error();
+  return -1;
+}

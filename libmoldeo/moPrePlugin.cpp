@@ -52,8 +52,8 @@ void moPrePlugin::Load(moText plugin_file)
     handle = moLoadPlugin(plugin_file);
 
     if(!handle) {
-	#if !defined(WIN32)
-        cerr << "Cannot open library: " << dlerror() << '\n';
+  #ifndef MO_WIN32
+        moDebugManager::Error( "moPrePlugin::Load > Cannot open library: " + moText(dlerror()) );
 	#else
 		CHAR szBuf[80];
 		DWORD dw = GetLastError();
@@ -64,7 +64,7 @@ void moPrePlugin::Load(moText plugin_file)
 	#endif
     }
 
-    #if defined(_WIN32)
+    #ifdef MO_WIN32
 	FARPROC farp;
 	farp = GetProcAddress(handle, "DestroyPreEffectFactory");
     CreatePreEffectFactory = CreatePreEffectFactoryFunction(GetProcAddress(handle, "CreatePreEffectFactory"));

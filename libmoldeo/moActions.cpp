@@ -29,7 +29,7 @@
 *******************************************************************************/
 
 #include "moActions.h"
-
+#include <moArray.h>
 moDefineDynamicArray( moReactionListeners )
 
 /** ======================================= */
@@ -76,9 +76,18 @@ moReactionListener::~moReactionListener() {
 
 }
 
+
+
 /** ======================================= */
 
+TMapStrToActionType  moReactionListenerManager::m_MapStrToActionType;
 
+moMoldeoActionType
+moReactionListenerManager::StrToActionType( const moText& p_action_type_str ) {
+  //m_MapStrToActionType
+  std::string skey = (char*)p_action_type_str;
+  return (moMoldeoActionType) m_MapStrToActionType[skey];
+}
 moReactionListenerManager::moReactionListenerManager() {
   //m_ReactionListeners
 
@@ -123,11 +132,16 @@ moReactionListenerManager::moReactionListenerManager() {
 
   /** console map actions  */
   m_MapStrToActionType["consoleplay"] = MO_ACTION_CONSOLE_PLAY;
+  m_MapStrToActionType["consoleplaysession"] = MO_ACTION_CONSOLE_PLAY_SESSION;
+  m_MapStrToActionType["consolerecordsession"] = MO_ACTION_CONSOLE_RECORD_SESSION;
+  m_MapStrToActionType["consolerendersession"] = MO_ACTION_CONSOLE_RENDER_SESSION;
+  m_MapStrToActionType["consolesavesessionas"] = MO_ACTION_CONSOLE_SAVE_SESSION_AS;
   m_MapStrToActionType["consolepause"] = MO_ACTION_CONSOLE_PAUSE;
   m_MapStrToActionType["consolestop"] = MO_ACTION_CONSOLE_STOP;
   m_MapStrToActionType["consolesave"] = MO_ACTION_CONSOLE_SAVE;
   m_MapStrToActionType["consolesaveas"] = MO_ACTION_CONSOLE_SAVEAS;
   m_MapStrToActionType["consolescreenshot"] = MO_ACTION_CONSOLE_SCREENSHOT;
+  m_MapStrToActionType["consolepreviewshot"] = MO_ACTION_CONSOLE_PREVIEW_SHOT;
   m_MapStrToActionType["consolepresentation"] = MO_ACTION_CONSOLE_PRESENTATION;
   m_MapStrToActionType["consolefullscreen"] = MO_ACTION_CONSOLE_FULLSCREEN;
   m_MapStrToActionType["consolefullscreensecondary"] = MO_ACTION_CONSOLE_FULLSCREEN_SECONDARY;

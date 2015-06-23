@@ -497,10 +497,16 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 
 		if (error_code == 0)
 		{
-			pfilter = new moTextureFilter();
-			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
-      pfilter->SetTextureFilterLabelName( MakeTextureFilterLabelName( &pValue ) );
-			Add(pfilter);
+		  moText filterlabelname = MakeTextureFilterLabelName( &pValue );
+		  int idx = TextureFilterExists(&pValue);
+		  if (idx>0) {
+
+		  } else {
+        pfilter = new moTextureFilter();
+        pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+        pfilter->SetTextureFilterLabelName( filterlabelname );
+        Add(pfilter);
+		  }
 		}
 		else
 		{

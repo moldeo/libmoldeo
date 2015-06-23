@@ -248,13 +248,13 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 	}
 
 	if (m_Inlets.Count()>2) {
-	  moInlet* InletTime = m_Inlets[0];
-	  moInlet* InletT = m_Inlets[1];
-	  moInlet* InletTempo = m_Inlets[2];
-	  moInlet* InletScreenWidth = m_Inlets[3];
-	  moInlet* InletScreenHeight = m_Inlets[4];
+	  moInlet* InletTime = m_Inlets.Get(this->GetInletIndex("time"));
+	  moInlet* InletT = m_Inlets.Get(this->GetInletIndex("t"));
+	  moInlet* InletTempo = m_Inlets.Get(this->GetInletIndex("tempo"));
+	  moInlet* InletScreenWidth = m_Inlets.Get(this->GetInletIndex("screen_width"));
+	  moInlet* InletScreenHeight = m_Inlets.Get(this->GetInletIndex("screen_height"));
 	  if (InletTime) {
-            if (InletTime->GetData()) InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
+        if (InletTime->GetData()) InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
     }
 	  if (InletT) {
         if (InletT->GetData()) InletT->GetData()->SetDouble( m_EffectState.tempo.ang );
@@ -277,7 +277,15 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 void moEffect::EndDraw() {
 
   ScriptExeDraw();
+/*
+  if (m_pResourceManager)
+    if (m_pResourceManager->GetGLMan())
+        m_pResourceManager->GetGLMan()->CheckErrors( GetName()+"::"+GetConfigName()+"::"+GetLabelName() );
+*/
 
+  if (m_pResourceManager)
+    if (m_pResourceManager->GetRenderMan())
+      m_pResourceManager->GetRenderMan()->EndDrawEffect();
 }
 
 
@@ -715,10 +723,10 @@ moConfigDefinition *
 moEffect::GetDefinition( moConfigDefinition *p_configdefinition ) {
 
 	p_configdefinition = moMoldeoObject::GetDefinition(p_configdefinition);
-	p_configdefinition->Add( moText("alpha"), MO_PARAM_ALPHA );
-	p_configdefinition->Add( moText("color"), MO_PARAM_COLOR );
-	p_configdefinition->Add( moText("syncro"), MO_PARAM_SYNC );
-	p_configdefinition->Add( moText("phase"), MO_PARAM_PHASE );
+	p_configdefinition->Add( moText("alpha"), MO_PARAM_ALPHA, -1, moValue("1.0","FUNCTION").Ref() );
+	p_configdefinition->Add( moText("color"), MO_PARAM_COLOR, -1, moValue("1.0","FUNCTION","1.0","FUNCTION","1.0","FUNCTION","1.0","FUNCTION").Ref() );
+	p_configdefinition->Add( moText("syncro"), MO_PARAM_SYNC, -1, moValue("1.0","FUNCTION").Ref() );
+	p_configdefinition->Add( moText("phase"), MO_PARAM_PHASE, -1, moValue("0.0","FUNCTION").Ref() );
 	return p_configdefinition;
 }
 
@@ -860,7 +868,7 @@ int moEffect::luaEnable(moLuaVirtualMachine& vm)
 
     TurnOn();
 
-    return 0;
+    return luastate==NULL;
 }
 
 int moEffect::luaDisable(moLuaVirtualMachine& vm)
@@ -902,3 +910,21 @@ int moEffect::luaGetEffectState(moLuaVirtualMachine& vm) {
 
     return 0;
 }
+
+
+const moText&
+moEffect::ToJSON() {
+
+  moText fieldSeparation = ",";
+  moEffectState EffectState = GetEffectState();
+  moText objectJSON = moMoldeoObject::ToJSON();
+  m_FullJSON = "{";
+  m_FullJSON+= "'effectstate': " + EffectState.ToJSON();
+  m_FullJSON+= fieldSeparation + "'object': " + objectJSON;
+  m_FullJSON+= "}";
+
+  return m_FullJSON;
+
+}
+
+

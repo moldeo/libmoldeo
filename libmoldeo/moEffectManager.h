@@ -42,6 +42,7 @@
 #include "moPostPlugin.h"
 #include "moPrePlugin.h"
 #include "moMasterPlugin.h"
+#include "moResourceManager.h"
 
 /// Administrador de efectos
 /**
@@ -92,7 +93,7 @@ class LIBMOLDEO_API moEffectManager : public moAbstract {
          * @see moEffectIndex
          * @see moConfig
          */
-		moEffect*				NewEffect( moText p_resname,  moText p_configname, moText p_labelname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex );
+		moEffect*				NewEffect( const moText& p_resname, const moText& p_configname, const moText& p_labelname, const moText& p_keyname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex );
 
         /**
          * Agrega un efecto previamente creado con la función NewEffect
@@ -105,11 +106,11 @@ class LIBMOLDEO_API moEffectManager : public moAbstract {
          * @param p_type
          */
 		MOboolean				RemoveEffect( MOint p_ID, moMoldeoObjectType p_type );
-		MOint					GetEffectId( moText p_labelname );
+		MOint					GetEffectId( const moText& p_labelname );
 		moText					GetEffectLabelName( MOint p_ID );
 		moMoldeoObjectType		GetType( MOint p_ID );
 
-		moEffect*     GetEffectByLabel( moText p_label_name, moMoldeoObjectType p_mob_type=MO_OBJECT_UNDEFINED );
+		moEffect*     GetEffectByLabel( const moText& p_label_name, moMoldeoObjectType p_mob_type=MO_OBJECT_UNDEFINED );
 
 
     bool        Set( int fx_index, moMoldeoObject*  p_pMOB );
@@ -119,6 +120,9 @@ class LIBMOLDEO_API moEffectManager : public moAbstract {
 		moEffectsArray&			Effects();
 		moPostEffectsArray&		PostEffects();
 		moMasterEffectsArray&	MasterEffects();
+
+    moResourceManager*  m_pResourceManager;
+		moEffectManager*    m_pEffectManager;
 
 	private:
 		// EFFECTS(TODOS,PREEFFECTS,EFFECTS;POSTEFFECTS)
@@ -133,6 +137,8 @@ class LIBMOLDEO_API moEffectManager : public moAbstract {
 		moMasterPluginsArray	m_MasterPlugins;
 
 		moEffectsArray			m_AllEffects;
+
+
 
 };
 

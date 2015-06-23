@@ -329,6 +329,7 @@ class LIBMOLDEO_API moValueDefinition
 		void SetType( moValueType p2_type );
 		void SetIndex( MOint	p_index );
 		moValueType GetType()  const;
+		static moValueType ValueTypeFromStr( const moText& p_value_type_str );
 		moText		GetTypeStr()  const;
 		MOint GetIndex()  const;
 
@@ -343,17 +344,9 @@ class LIBMOLDEO_API moValueDefinition
 		void        SetAttribute( moText p_attribute );
 
 		bool        IsValid()  const;
-    const moText& ToJSON() {
-      moText fieldSeparation = ",";
-
-      m_FullJSON = "{";
-      m_FullJSON+= "'codename': '" + m_CodeName + "'";
-      m_FullJSON+= fieldSeparation + "'type': '" + GetTypeStr() + "'";
-      m_FullJSON+= fieldSeparation + "'min': " + FloatToStr(m_Min);
-      m_FullJSON+= fieldSeparation + "'max': " + FloatToStr(m_Max);
-      m_FullJSON+= "}";
-      return m_FullJSON;
-    }
+		int         Set( const moText& p_XmlText );
+    const moText& ToJSON();
+    const moText& ToXML();
 
 	private:
 		moValueType		m_Type;
@@ -363,6 +356,7 @@ class LIBMOLDEO_API moValueDefinition
 
 		moText          m_Attribute; //for future use
 		moText          m_FullJSON;
+		moText          m_FullXML;
 
 };
 
@@ -460,14 +454,9 @@ class LIBMOLDEO_API moValueBase : public moData
 		moText      GetAttribute()  const;
 		void        SetAttribute( moText p_attribute );
 
-    const moText& ToJSON() {
-      moText fieldSeparation =",";
-      m_FullJSON = "{";
-      m_FullJSON+= "'valuedefinition':" + m_ValueDefinition.ToJSON();
-      m_FullJSON+= fieldSeparation + "'value':" + "'" + ToText() + "'";
-      m_FullJSON+= "}";
-      return m_FullJSON;
-    }
+    const moText& ToJSON();
+    const moText& ToXML();
+    int Set( const moText& p_XmlText );
 
     bool FixType( moValueType p_ValueType );
 	private:
@@ -475,6 +464,7 @@ class LIBMOLDEO_API moValueBase : public moData
         /// Este miembro es lo que diferencia un Valor (moValueBase) de un Dato ( moData ).
 		moValueDefinition	m_ValueDefinition;
     moText m_FullJSON;
+    moText m_FullXML;
 };
 
 
@@ -542,20 +532,14 @@ class LIBMOLDEO_API moValue
 		    return *this;
         }
 
-    const moText& ToJSON() {
-      moText fieldSeparation  = "";
-      m_FullJSON = "[";
-      for( int vbase; vbase < (int)m_List.Count(); vbase++) {
-        m_FullJSON+= fieldSeparation + m_List[vbase].ToJSON();
-        fieldSeparation = ",";
-      }
-      m_FullJSON+= "]";
-      return m_FullJSON;
-    }
+    int Set( const moText& p_XmlText );
+    const moText& ToJSON();
+    const moText& ToXML();
 
 	private:
 		moValueBases	m_List;
     moText m_FullJSON;
+    moText m_FullXML;
 };
 
 

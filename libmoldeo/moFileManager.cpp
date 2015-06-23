@@ -996,8 +996,10 @@ moFileManager::FileExists( moText filename ) {
 
 bool
 moFileManager::DirectoryExists( moText dirname ) {
-        moDirectory   directory( dirname );
-        return directory.Exists();
+       // moDirectory   directory( dirname );
+      //return directory.Exists();
+      return  bfs::exists((char*)dirname);
+
 }
 
 

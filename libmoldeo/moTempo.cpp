@@ -143,7 +143,7 @@ MOdouble moTempo::getPrincipalAngle() {
 
 long moTempo::Duration() {
     //return moTimer::Duration();
-    long duration = moTimer::Duration();
+    duration = moTimer::Duration();
     return duration;
 }
 
@@ -228,6 +228,7 @@ void moTempo::SetFromTempo( moTempo *pfromtempo ) {
 
 void moTempo::getInterpolatedTempo( MOfloat inter_value ) {//ivalue entre 0.0 y 1.0
 	//aca se hace el calculointerpolado
+	inter_value = 0 + inter_value;
 }
 
 

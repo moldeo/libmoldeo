@@ -120,11 +120,10 @@ using namespace std;
 
   //revisar esto!!! para Mac OSX
   #define MO_DISPLAY void*
-
-/*
   #include "SDL.h"
   #include "SDL_thread.h"
   #include "SDL_mutex.h"
+/*
   #include "SDL_net.h"
   #include "SDL_image.h"
   //#include "QuickTime.h"

@@ -85,29 +85,7 @@ class LIBMOLDEO_API moPreConfig {
 		moPreconfigParamIndex operator [] ( MOint paramindex); //devuelve el indice del valor para el parametro elegido
 		moPreConfig& operator = ( const moPreConfig& preconf);
 
-    const moText& ToJSON() {
-
-      moText fieldseparation = ",";
-      m_FullJSON = "{ 'name': '" + m_Name +"'";
-      m_FullJSON+= fieldseparation
-                   + "'valueindexes': {";
-      fieldseparation  = "";
-      for( int vi = 0; vi< (int)m_PreconfIndexes.Count(); vi++ ) {
-
-        moPreconfigParamIndex vindex = m_PreconfIndexes[vi];
-
-        m_FullJSON+= fieldseparation
-              + "'" + vindex.m_ParamName + "': {";
-        fieldseparation = ",";
-
-        m_FullJSON+= "'paramindex': " + IntToStr(vindex.m_ParamIndex);
-        m_FullJSON+= fieldseparation + "'valueindex': " + IntToStr(vindex.m_ValueIndex);
-        m_FullJSON+=  "}";
-      }
-      m_FullJSON+=  "}";///fin valueindexes
-      m_FullJSON+=  "}";///fin Preconfig
-      return  m_FullJSON;
-    }
+    const moText& ToJSON();
 
     moText              m_Name;
 		//moValueIndexes	    m_ValueIndexes;

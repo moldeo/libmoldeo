@@ -152,63 +152,14 @@ class LIBMOLDEO_API moEffectState : public moMobState
 		moStereoSides stereoside;
 
 		moText fullJSON;
-
+		moText fullXML;
+    int Set( const moText& p_XmlText );
     void SetColorRGB( MOfloat r, MOfloat g, MOfloat b);
     void SetColorCSV( MOfloat c, MOfloat s, MOfloat t);
 		void CSV2RGB();
 
-    const moText& ToJSON() {
-
-      moText fieldSeparation = ",";
-
-      /** from mobstate */
-      /**
-      m_Activated = src.m_Activated;
-      m_Selected = src.m_Selected;
-      */
-      fullJSON = "{";
-      fullJSON+= "'Activated': '"+IntToStr(m_Activated)+"'";
-      fullJSON+= fieldSeparation+"'Selected': '"+IntToStr(m_Selected)+"'";
-
-      fullJSON+= fieldSeparation+ "'tempo': {";
-      fullJSON+= "'tempo': '"+FloatToStr(tempo.getTempo())+"'";
-      fullJSON+= fieldSeparation+ "'syncro': '"+FloatToStr(tempo.syncro)+"'";
-      fullJSON+= fieldSeparation+ "'delta': '"+FloatToStr(tempo.delta)+"'";
-      fullJSON+= fieldSeparation+ "'duration': '"+IntToStr(tempo.Duration())+"'";
-      fullJSON+= fieldSeparation+ "'state': '"+tempo.StateToStr()+"'";
-      fullJSON+= fieldSeparation+ "'started': '"+IntToStr(tempo.Started())+"'";
-      fullJSON+= fieldSeparation+ "'factor': '"+FloatToStr(tempo.factor)+"'";
-      fullJSON+= "}";
-      /** from state */
-
-
-      fullJSON+= fieldSeparation + "'on': '"+IntToStr(on)+"'";
-      fullJSON+= fieldSeparation + "'synchronized': '"+IntToStr(synchronized)+"'";
-
-      fullJSON+= fieldSeparation + "'enabled': '"+IntToStr(enabled)+"'";
-
-      /**  */
-      fullJSON+= fieldSeparation + "'magnitude': '"+FloatToStr(magnitude)+"'";
-      fullJSON+= fieldSeparation + "'amplitude': '"+FloatToStr(amplitude)+"'";
-
-    /**COLORS*/
-      fullJSON+= fieldSeparation + "'alpha': '"+FloatToStr(alpha)+"'";
-      fullJSON+= fieldSeparation + "'tint': '"+FloatToStr(tint)+"'";
-      fullJSON+= fieldSeparation + "'tintr': '"+FloatToStr(tintr)+"'";
-      fullJSON+= fieldSeparation + "'tintg': '"+FloatToStr(tintg)+"'";
-      fullJSON+= fieldSeparation + "'tintb': '"+FloatToStr(tintb)+"'";
-      fullJSON+= fieldSeparation + "'tintc': '"+FloatToStr(tintc)+"'";
-      fullJSON+= fieldSeparation + "'tints': '"+FloatToStr(tints)+"'";
-
-      fullJSON+= fieldSeparation + "'stereo': '"+IntToStr(stereo)+"'";
-      fullJSON+= fieldSeparation + "'stereoside': '"+IntToStr(stereoside)+"'";
-
-      fullJSON+= fieldSeparation + "'fulldebug': '"+IntToStr(fulldebug)+"'";
-
-      fullJSON+= "}";
-      //cout << fullJSON << endl;
-      return fullJSON;
-    }
+    virtual const moText& ToJSON();
+    virtual const moText& ToXML();
 };
 
 #endif
