@@ -8,7 +8,7 @@ EXTRA_DIST = AUTHORS ChangeLog NEWS README Makefile.TUIO.patch tuio.sh buildpkg.
 pkgconfigdir = @pkgconfigdir@
 pkgconfig_DATA = libmoldeo.pc libmoldeotest.pc
 
-datadir = ${prefix}/share/moldeo
+datadir = ${prefix}/share/moldeo/data
 modulesdir = ${libdir}/moldeo
 docdir = ${prefix}/share/doc/moldeo
 preeffectsdir = ${modulesdir}/preeffects

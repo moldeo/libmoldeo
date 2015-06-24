@@ -6,7 +6,7 @@ else
 DFLAGS = -O2 -fpermissive
 endif
 
-datadir = ${prefix}/share/moldeo
+datadir = ${prefix}/share/moldeo/data
 modulesdir = ${libdir}/moldeo
 docdir = ${prefix}/share/doc/moldeo
 
@@ -109,6 +109,7 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 
 libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
+    $(GST_INTERFACES_CFLAGS) \
 	${GTK2_CFLAGS} \
 	${MUPARSER_CFLAGS} \
 	${BOOST_CPPFLAGS} \
@@ -134,7 +135,8 @@ libmoldeo_la_LIBADD = -ldl\
 	${BOOST_FILESYSTEM_LIB} \
 	${BOOST_SYSTEM_LIB} \
 	${LUA51_LIBS} \
-	${GST_LIBS} 
+	${GST_LIBS} \
+    $(GST_INTERFACES_LIBS)
 #\
 #	${CG_LIBS} \
 #	${CGGL_LIBS} \
