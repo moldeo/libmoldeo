@@ -1650,6 +1650,11 @@ moValue::AddSubValue(const  moText &strvalue,  moValueType p_valuetype ) {
       valuebase.SetDouble( tmpDouble );
       break;
 
+    case MO_VALUE_FUNCTION:
+      valuebase.SetFun( strvalue );
+      valuebase.SetType( MO_VALUE_FUNCTION );
+      break;
+
     default:
       break;
 
