@@ -537,6 +537,9 @@ class LIBMOLDEO_API moConfig
         /// Agrega una pre-configuración
         void                    AddPreconfig( moPreconfigIndexes& p_preconfindexes );
 
+        /// Agrega una pre-configuración y las precendentes
+        void AddPreconfig( int preconfig_index);
+
         /// Inserta una pre-configuración
         void                    InsertPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes );
 

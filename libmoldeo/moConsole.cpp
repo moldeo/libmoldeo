@@ -2031,45 +2031,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           ///se incluye todos los parametros que tiene al menos un valor en esta preconfiguracion... (en ese indice)
           MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > Adding Value > a new value");
 
-          int new_preconfigs = arg2Int - pConfig->GetPreConfCount() + 1;
-
-          MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > Adding Preconfigs: " + IntToStr(valcount) );
-
-          if (new_preconfigs>0) {
-            int base_index = pConfig->GetPreConfCount();
-            for( int sum=0; sum < new_preconfigs ; sum++ ) {
-
-              moPreConfig newPreCfg;
-              moPreconfigParamIndex preIndexI;
-
-              preIndexI.m_ParamName = rParam.GetParamDefinition().GetName();
-              preIndexI.m_ParamIndex = rParam.GetParamDefinition().GetIndex();
-              preIndexI.m_ValueIndex = base_index+sum;
-
-              newPreCfg.m_PreconfIndexes.Add( preIndexI );
-
-              /// ADD PARAMETERS THAT HAS BEEN
-              /// CUSTOMIZED (so they have values count > 1)
-              for( int pi=0; pi < pConfig->GetParamsCount(); pi++) {
-                  moParam& rParam2( pConfig->GetParam(pi) );
-
-                  if ( pi!=preIndexI.m_ParamIndex
-                      && pConfig->GetParam(pi).GetValuesCount()>1 ) {
-
-                    moPreconfigParamIndex preIndexA;
-
-                    preIndexA.m_ParamName = rParam2.GetParamDefinition().GetName();
-                    preIndexA.m_ParamIndex = rParam2.GetParamDefinition().GetIndex();
-                    preIndexA.m_ValueIndex = momin( pConfig->GetParam(pi).GetValuesCount()-1, preIndexI.m_ValueIndex );
-
-                    newPreCfg.m_PreconfIndexes.Add( preIndexA );
-
-                  }
-              }
-
-              pConfig->AddPreconfig( newPreCfg.m_PreconfIndexes );
-            }
-          }
+          pConfig->AddPreconfig( arg2Int );
 
         }
         /**
@@ -2550,6 +2512,37 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
             this->SetPreconf( fxObject->GetId(), arg1Int );
           } else {
             MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > preconfig index [" + IntToStr(arg1Int)+"] not found!" );
+          }
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > Moldeo Object [" + arg0+"] not found!" );
+      break;
+    case MO_ACTION_PRECONFIG_ADD:
+      arg0  = p_pDataMessage->Get(1).ToText();//label object
+      arg1Int = p_pDataMessage->Get(2).Int();//preconfig index
+
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
+          if ( 0 <= arg1Int && arg1Int<fxObject->GetConfig()->GetPreConfCount()) {
+            //this->SetPreconf( fxObject->GetId(), arg1Int );
+            //do nothing
+          } else {
+            fxObject->GetConfig()->AddPreconfig( arg1Int );
+            FullObjectJSON = fxObject->ToJSON();
+            MODebug2->Message(FullObjectJSON);
+
+            pMessageToSend = new moDataMessage();
+            if (pMessageToSend) {
+                pMessageToSend->Add( moData("objectget") );
+                //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+                pMessageToSend->Add( moData( arg0 ) );
+                pMessageToSend->Add( moData( FullObjectJSON ) );
+                //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+                //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+                // send it: but we need an id
+                SendMoldeoAPIMessage( pMessageToSend );
+            }
           }
           return 0;
       }

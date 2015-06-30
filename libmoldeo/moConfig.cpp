@@ -1513,6 +1513,48 @@ moConfig::AddPreconfig( moPreconfigIndexes& p_preconfindexes ) {
 }
 
 void
+moConfig::AddPreconfig( int preconfig_index) {
+
+  int new_preconfigs = preconfig_index - GetPreConfCount() + 1;
+
+  //MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > Adding Preconfigs: " + IntToStr(valcount) );
+  //mo->Message("moConfig::AddPreconfig > Adding Preconfigs: " + IntToStr(new_preconfigs) );
+
+  if (new_preconfigs>0) {
+    int base_index = GetPreConfCount();
+    int min_index = 0;
+    for( int sum=0; sum < new_preconfigs ; sum++ ) {
+
+      moPreConfig newPreCfg;
+
+      /// ADD PARAMETERS THAT HAS BEEN
+      /// CUSTOMIZED (so they have values count > 1)
+      for( int pi=0; pi < GetParamsCount(); pi++) {
+          moParam& rParam2( GetParam(pi) );
+          int nvalues = GetParam(pi).GetValuesCount();
+          min_index = nvalues - 1;
+
+          if ( nvalues > 1 ) {
+
+            moPreconfigParamIndex preIndexA;
+
+            preIndexA.m_ParamName = rParam2.GetParamDefinition().GetName();
+            preIndexA.m_ParamIndex = rParam2.GetParamDefinition().GetIndex();
+            preIndexA.m_ValueIndex = momin( min_index, base_index+sum );
+
+            newPreCfg.m_PreconfIndexes.Add( preIndexA );
+
+          }
+      }
+
+      AddPreconfig( newPreCfg.m_PreconfIndexes );
+    }
+  }
+
+}
+
+
+void
 moConfig::InsertPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes ) {
     m_PreConfigs.Insert( valueindex,  moPreConfig( p_preconfindexes ) );
 }
