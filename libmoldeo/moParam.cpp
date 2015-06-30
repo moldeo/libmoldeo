@@ -493,6 +493,82 @@ moParamDefinition::SetType( moParamType p_ParamType ) {
 }
 
 void
+moParamDefinition::SetDefault( const moValue& p_defaultvalue ) {
+
+  moValue Default = p_defaultvalue;
+  m_DefaultValue = p_defaultvalue;
+
+  if (  Default.GetSubValue().GetType()==MO_VALUE_UNDEFINED  ) {
+    switch ( GetType()  ) {
+
+      case MO_PARAM_TEXT:
+      case MO_PARAM_TEXTURE:
+      case MO_PARAM_TEXTUREFOLDER:
+      case MO_PARAM_FILTER:
+      case MO_PARAM_VIDEO:
+      case MO_PARAM_SOUND:
+      case MO_PARAM_FILE:
+      case MO_PARAM_SCRIPT:
+      case MO_PARAM_OBJECT:
+      case MO_PARAM_3DMODEL:
+        m_DefaultValue = moValue( "", "TXT" );
+        break;
+
+      case MO_PARAM_INLET:
+        m_DefaultValue = moValue( "VARIABLE1", "TXT", "NUMERIC", "TXT" );
+        break;
+
+      case MO_PARAM_FONT:
+        m_DefaultValue = moValue( "", "TXT", "", "TXT", "", "TXT" );
+        break;
+
+      case MO_PARAM_PHASE:
+      case MO_PARAM_ROTATEX:
+      case MO_PARAM_ROTATEY:
+      case MO_PARAM_ROTATEZ:
+      case MO_PARAM_TRANSLATEX:
+      case MO_PARAM_TRANSLATEY:
+      case MO_PARAM_TRANSLATEZ:
+      case MO_PARAM_FUNCTION:
+        m_DefaultValue = moValue( "0.0", "FUNCTION" ).Ref();
+        break;
+
+      case MO_PARAM_ALPHA:
+      case MO_PARAM_SYNC:
+      case MO_PARAM_SCALEX:
+      case MO_PARAM_SCALEY:
+      case MO_PARAM_SCALEZ:
+        m_DefaultValue = moValue( "1.0", "FUNCTION" ).Ref();
+        break;
+
+      case MO_PARAM_POLYGONMODE:
+      case MO_PARAM_BLENDING:
+        m_DefaultValue = moValue( "0", "INT" );
+        break;
+      case MO_PARAM_COLOR:
+        m_DefaultValue = moValue( "1.0", "FUNCTION","1.0", "FUNCTION","1.0", "FUNCTION","1.0", "FUNCTION"  );
+        break;
+      case MO_PARAM_COMPOSE:
+        m_DefaultValue = moValue( "composed by", "TXT","1.0", "FUNCTION","<nada></nada>", "XML","12345", "INT"  );
+        break;
+      case MO_PARAM_VECTOR:
+        m_DefaultValue = moValue( "1.0", "FUNCTION","2.0", "FUNCTION","3.0", "FUNCTION","4.0", "FUNCTION" );
+        break;
+      case MO_PARAM_NUMERIC:
+        m_DefaultValue = moValue( "0", "NUM" );
+        break;
+      case MO_PARAM_UNDEFINED:
+        m_DefaultValue = moValue( "INVALID", MO_VALUE_UNDEFINED );
+        break;
+      default:
+        break;
+    };
+  }
+
+}
+
+
+void
 moParamDefinition::SetOptions( const moTextArray& p_options ) {
   m_Options = p_options;
   m_OptionsStr = "";

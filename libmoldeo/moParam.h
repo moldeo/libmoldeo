@@ -303,9 +303,7 @@ class LIBMOLDEO_API moParamDefinition
         m_Group = p_Group;
 		}
 
-		void SetDefault( const moValue& p_defaultvalue) {
-        m_DefaultValue = p_defaultvalue;
-    }
+		void SetDefault( const moValue& p_defaultvalue);
 
     moValue& GetDefaultValue() {
         return m_DefaultValue;
