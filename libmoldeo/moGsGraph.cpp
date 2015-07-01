@@ -39,7 +39,6 @@
 
 moLock BuildLock;
 
-#define MO_GSTREAMER
 #ifdef MO_GSTREAMER
 
     #ifdef MO_MACOSX
