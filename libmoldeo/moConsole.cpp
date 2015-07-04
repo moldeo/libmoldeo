@@ -558,10 +558,11 @@ moConsole::UpdateMoldeoIds() {
 
 	for( MOuint i=0; i<m_EffectManager.Effects().Count(); i++ ) {
     moEffect* pFx = m_EffectManager.Effects().GetRef(i);
-    if (pFx->GetName()=="scene") {
-      moSceneEffect* pScene = (moSceneEffect*) pFx;
-      pScene->UpdateMoldeoIds( m_MoldeoSceneObjects );
-    }
+    if (pFx)
+      if (pFx->GetName()=="scene") {
+        moSceneEffect* pScene = (moSceneEffect*) pFx;
+        pScene->UpdateMoldeoIds( m_MoldeoSceneObjects );
+      }
   }
 
   ///SET UNIQUE IDS!!!
@@ -2725,6 +2726,40 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
       if (pMessageToSend) {
           pMessageToSend->Add( moData("consolegetstate") );
+          pMessageToSend->Add( moData("__console__" ) );
+          pMessageToSend->Add( moData( EffectStateJSON ) );
+          /** send it: but we need an id */
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_RECORD_SESSION:
+      ConsoleRecordSession();
+
+      EffectStateJSON = m_ConsoleState.ToJSON();
+
+      pMessageToSend = new moDataMessage();
+
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consolerecordsession") );
+          pMessageToSend->Add( moData("__console__" ) );
+          pMessageToSend->Add( moData( EffectStateJSON ) );
+          /** send it: but we need an id */
+          SendMoldeoAPIMessage( pMessageToSend );
+      }
+      return 0;
+      break;
+
+    case MO_ACTION_CONSOLE_RENDER_SESSION:
+      ConsoleRenderSession();
+
+      EffectStateJSON = m_ConsoleState.ToJSON();
+
+      pMessageToSend = new moDataMessage();
+
+      if (pMessageToSend) {
+          pMessageToSend->Add( moData("consolerendersession") );
           pMessageToSend->Add( moData("__console__" ) );
           pMessageToSend->Add( moData( EffectStateJSON ) );
           /** send it: but we need an id */

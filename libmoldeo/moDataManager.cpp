@@ -296,10 +296,10 @@ moDataSession::StepRender( moConsoleState& p_console_state ) {
 
     p_console_state.Activated();
     int mod1000 = m_Rendered_Frames / (int)1000;
-    temp_render+="_"+IntToStr(mod1000);
-
+    //temp_render+="_"+IntToStr(mod1000);
+    moText frame_filename = "frame_" + IntToStr( m_Rendered_Frames, 7 );
     if (m_pResourceManager && m_pResourceManager->GetRenderMan())
-      RenderMan()->Screenshot( DataMan()->GetDataPath() + temp_render, frame_result, "JPGGOOD" );
+      RenderMan()->Screenshot( DataMan()->GetDataPath() + temp_render, frame_result, "JPGGOOD", frame_filename );
 
     MODebug2->Message("moDataSession::StepRender > 24/1 frame number:" + IntToStr(m_Rendered_Frames)+" frame_result:" + frame_result);
     m_Rendered_Frames+=1;

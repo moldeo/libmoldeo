@@ -98,10 +98,18 @@ const moText&
 moConsoleState::ToJSON() {
 
   moText fieldSeparation = ",";
-
   moEffectState::ToJSON();
+  moText tmode = "";
+  if (m_Mode==MO_CONSOLE_MODE_LIVE) tmode = "live";
+  if (m_Mode==MO_CONSOLE_MODE_PLAY_SESSION) tmode = "playsession";
+  if (m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) tmode = "recordsession";
+  if (m_Mode==MO_CONSOLE_MODE_RENDER_SESSION) tmode = "rendersession";
 
-
+  moText json = "{";
+  json+= "'mode': '"+tmode+"'";
+  json+= fieldSeparation + "'effectstate':"+fullJSON;
+  json+= "}";
+  fullJSON = json;
   return fullJSON;
 }
 
