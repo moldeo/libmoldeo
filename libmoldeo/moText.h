@@ -37,6 +37,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -346,6 +347,12 @@ LIBMOLDEO_API moText IntToStr(unsigned long long a);
 LIBMOLDEO_API moText FloatToStr(double a);
 LIBMOLDEO_API moText FloatToStr(double a, int n);
 LIBMOLDEO_API moText FloatToStr(double a, int nzeros, int ndecimals );
+LIBMOLDEO_API int HexToInt( const moText& hex );
+LIBMOLDEO_API long HexToLong( const moText& hex );
+LIBMOLDEO_API float StrToFloat( const moText& hex );
+LIBMOLDEO_API double StrToDouble( const moText& hex );
+LIBMOLDEO_API int StrToInt( const moText& hex );
+LIBMOLDEO_API long StrToLong( const moText& hex );
 
 #endif
 

@@ -430,6 +430,13 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
 
 		/**
+		* Resuelve un valor de un parámetro
+		* Esta función asigna funciones, filtros, sonidos, y todo tipo de recursos asociados a los valores descriptos en los parámetros
+		*/
+		virtual MOboolean ResolveValue( moParam& param, int value_index );
+
+
+		/**
 		 * método de actualización de datos del objeto.
 		 * @param p_EventList puntero a la lista de eventos.
 		 */

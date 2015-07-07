@@ -588,11 +588,188 @@ void moMoldeoObject::ScriptExeRun() {
     }
 }
 
+MOboolean
+moMoldeoObject::ResolveValue( moParam& param, int value_index ) {
+
+  int idx = -1;
+  moValue& value( param.GetValue(value_index) );
+  moParamType param_type = param.GetParamDefinition().GetType();
+  //MODebug2->Message( moText("+Init value #") + IntToStr(v) );
+
+  ///RESUELVE LAS FUNCIONES!!!!
+  ///esto debe hacerse antes de aplicar filtros y otros...
+
+  for( MOuint ivb=0; ivb<value.GetSubValueCount(); ivb++) {
+      moValueBase& VB( value.GetSubValue( ivb ) );
+      if (VB.GetType() == MO_VALUE_FUNCTION ) {
+          idx = -1;
+          if (m_pResourceManager->GetMathMan())
+            idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
+          if (idx>-1) {
+              VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
+              //MODebug2->Message( moText("function defined: ") + VB.Text() );
+          } else {
+              MODebug2->Error(moText("moMoldeoObject::CreateConnectors > function couldn't be defined: ") + VB.Text()
+                              + " object: "+GetName()
+                              + " config: " + GetConfigName()
+                              + " label:" + GetLabelName() );
+          }
+      }
+  }
+
+
+  //
+
+  if (value.GetSubValueCount()<=0) return false;
+
+  moValueBase& valuebase0(value.GetSubValue(0));
+
+  switch( param_type ) {
+
+      case MO_PARAM_TEXTUREFOLDER:
+          ///es una carpeta pero puede tener otros parametros
+          ///
+          if ( ! (valuebase0.Text().Trim() == moText("")) ) {
+
+              ///si tenemos un segundo parametro deberia ser el formato del buffer (JPG o PNG)
+
+              idx = m_pResourceManager->GetTextureMan()->GetTextureBuffer( valuebase0.Text(), true, "PNG" );
+              if (idx>-1) {
+
+                  moTextureBuffer*  pTextureBuffer = m_pResourceManager->GetTextureMan()->GetTextureBuffer(idx);
+                  valuebase0.SetTextureBuffer( pTextureBuffer );
+                  return true;
+              }
+              return false;
+
+          }
+
+
+          break;
+
+      case MO_PARAM_VIDEO:
+          ///ojo aquí el video es tratado por el VideoManager si quiere ser tratado realamente
+          /// como video y no como texturaanimada....
+
+          break;
+
+      case MO_PARAM_TEXTURE:
+      case MO_PARAM_FILTER:
+          if ( ! (valuebase0.Text().Trim() == moText("")) ) {
+              idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( valuebase0.Text(), true);
+              if (idx>-1) {
+                  moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
+                  valuebase0.SetTexture( pTexture );
+
+                  if (pTexture->GetType()!=MO_TYPE_TEXTURE_MULTIPLE && value.GetSubValueCount()>1) {
+                      idx = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->LoadFilter( &value );
+                      moTextureFilter*  pTextureFilter = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->Get(idx-1);
+                      valuebase0.SetTextureFilter( pTextureFilter );
+                  }
+
+                  if (value.GetSubValueCount()==4) {
+                      valuebase0.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
+                  }
+
+                  if (value.GetSubValueCount()>=5) {
+                      //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
+                  }
+
+                  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + valuebase0.Text());
+
+              }
+          } else {
+              MODebug2->Error( moText("moMoldeoObject::UpdateValue > VALUE BASE EMPTY: ") + valuebase0.Text()
+                              /*+ moText(" Param name:") +param.GetParamDefinition().GetName()*/ );
+              return false;
+          }
+          break;
+
+      case MO_PARAM_FONT:
+
+          moFont* pFont;
+          moFontType fonttype;
+          moFontSize  fontsize;
+
+          if ( value.GetSubValueCount()==3 ) {
+              if ( valuebase0.Text().Trim() == moText("Default") ) {
+                pFont = m_pResourceManager->GetFontMan()->GetFont(0);
+              } else if ( ! (valuebase0.Text().Trim() == moText("")) ) {
+
+                  if ( value.GetSubValue(1).GetType()==MO_VALUE_TXT) {
+                      moText fonttypeT = value.GetSubValue(1).Text();
+                      fonttype = m_pResourceManager->GetFontMan()->GetFontType(fonttypeT);
+                  } else {
+                      fonttype = (moFontType)value.GetSubValue(1).Int();
+                  }
+
+                  if ( value.GetSubValue(2).GetType()==MO_VALUE_NUM ) {
+                      fontsize = value.GetSubValue(2).Int();
+                  } else if ( value.GetSubValue(2).GetType()==MO_VALUE_FUNCTION ) {
+                      fontsize = 12;
+                  }
+
+                  pFont = m_pResourceManager->GetFontMan()->AddFont( valuebase0.Text(), fonttype, fontsize);
+                  if (pFont==NULL) {
+                    MODebug2->Error( moText("moMoldeoObject::CreateConnectors > FONT NOT FOUND: Using Default")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                    pFont = m_pResourceManager->GetFontMan()->GetFont(0);
+                  }
+              } else {
+                  MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: Using Default")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+                  pFont = m_pResourceManager->GetFontMan()->GetFont(0);
+              }
+
+              if (pFont) {
+                  valuebase0.SetFont( pFont );
+                  return true;
+              }
+              return false;
+          } else {
+              MODebug2->Error( moText("moMoldeoObject::UpdateValue > MISSING VALUES: ")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
+              return false;
+          }
+          break;
+
+      case MO_PARAM_3DMODEL:
+      case MO_PARAM_OBJECT:
+          if (value.GetSubValueCount()>0) {
+              //PROBAR!!!!!
+              //PROBAR!!!!!
+              mo3dModel* pModel = m_pResourceManager->GetModelMan()->Get3dModel( valuebase0.Text() );
+              if (pModel) {
+                  mo3DModelSceneNode *newSceneNode;
+                  newSceneNode = new mo3DModelSceneNode();
+                  if (newSceneNode) {
+                      newSceneNode->Init(pModel);
+                  }
+                  valuebase0.SetModel( newSceneNode );
+                  return true;
+              }
+              return false;
+          }
+          break;
+
+      case MO_PARAM_SOUND:
+          if (value.GetSubValueCount()>0) {
+            if (valuebase0.Text()!="") {
+              moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( valuebase0.Text() );
+              if (pSound) {
+                  valuebase0.SetSound( pSound );
+                  return true;
+              }
+              return false;
+            }
+          }
+          break;
+      default:
+        break;
+
+  }//fin siwtch
+  return false;
+}
 
 MOboolean
 moMoldeoObject::CreateConnectors() {
-
-  int idx = -1;
 
   if (m_pResourceManager == NULL) {
     MODebug2->Error("moMoldeoObject::CreateConnectors > ResourceManager is NULL!!! Can't continue. Sorry for object: "+GetName()+ " config: " + GetConfigName() + " label:"+GetLabelName() );
@@ -636,182 +813,19 @@ moMoldeoObject::CreateConnectors() {
 		MODebug2->Log( moText("moMoldeoObject::CreateConnectors > Init param type ") + param.GetParamDefinition().GetTypeStr() + moText(" name: ") + param.GetParamDefinition().GetName() );
 
 
-        ///CREAMOS UN INLET POR CADA PARAMETRO
-        int inletidx = GetInletIndex(param.GetParamDefinition().GetName());
-        if (inletidx==-1) {
-          moInlet* Inlet = new moInlet();
-          if (Inlet) {
-            Inlet->Init( param.GetParamDefinition().GetName(), m_Inlets.Count(), param.GetPtr() );
-            m_Inlets.Add(Inlet);
-          }
-        }
+    ///CREAMOS UN INLET POR CADA PARAMETRO
+    int inletidx = GetInletIndex(param.GetParamDefinition().GetName());
+    if (inletidx==-1) {
+      moInlet* Inlet = new moInlet();
+      if (Inlet) {
+        Inlet->Init( param.GetParamDefinition().GetName(), m_Inlets.Count(), param.GetPtr() );
+        m_Inlets.Add(Inlet);
+      }
+    }
 
 		for( MOuint v=0;v<param.GetValuesCount();v++) {
+      ResolveValue( param, v );
 
-			moValue& value( param.GetValue(v) );
-
-			//MODebug2->Message( moText("+Init value #") + IntToStr(v) );
-
-            ///RESUELVE LAS FUNCIONES!!!!
-            ///esto debe hacerse antes de aplicar filtros y otros...
-
-            for( MOuint ivb=0; ivb<value.GetSubValueCount(); ivb++) {
-                moValueBase& VB( value.GetSubValue( ivb ) );
-                if (VB.GetType() == MO_VALUE_FUNCTION ) {
-                    idx = -1;
-                    if (m_pResourceManager->GetMathMan())
-                      idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
-                    if (idx>-1) {
-                        VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
-                        //MODebug2->Message( moText("function defined: ") + VB.Text() );
-                    } else {
-                        MODebug2->Error(moText("moMoldeoObject::CreateConnectors > function couldn't be defined: ") + VB.Text()
-                                        + " object: "+GetName()
-                                        + " config: " + GetConfigName()
-                                        + " label:" + GetLabelName() );
-                    }
-                }
-            }
-
-
-            //
-
-			if (value.GetSubValueCount()>0) {
-
-                moValueBase& valuebase0(value.GetSubValue(0));
-
-                switch((int)param.GetParamDefinition().GetType() ) {
-
-                    case MO_PARAM_TEXTUREFOLDER:
-                        ///es una carpeta pero puede tener otros parametros
-                        ///
-                        if ( ! (valuebase0.Text().Trim() == moText("")) ) {
-
-                            ///si tenemos un segundo parametro deberia ser el formato del buffer (JPG o PNG)
-
-                            idx = m_pResourceManager->GetTextureMan()->GetTextureBuffer( valuebase0.Text(), true, "PNG" );
-                            if (idx>-1) {
-
-                                moTextureBuffer*  pTextureBuffer = m_pResourceManager->GetTextureMan()->GetTextureBuffer(idx);
-                                valuebase0.SetTextureBuffer( pTextureBuffer );
-
-                            }
-
-                        }
-
-
-                        break;
-
-                    case MO_PARAM_VIDEO:
-                        ///ojo aquí el video es tratado por el VideoManager si quiere ser tratado realamente
-                        /// como video y no como texturaanimada....
-
-                        break;
-
-                    case MO_PARAM_TEXTURE:
-                    case MO_PARAM_FILTER:
-                        if ( ! (valuebase0.Text().Trim() == moText("")) ) {
-                            idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( valuebase0.Text(), true);
-                            if (idx>-1) {
-                                moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
-                                valuebase0.SetTexture( pTexture );
-
-                                if (pTexture->GetType()!=MO_TYPE_TEXTURE_MULTIPLE && value.GetSubValueCount()>1) {
-                                    idx = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->LoadFilter( &value );
-                                    moTextureFilter*  pTextureFilter = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->Get(idx-1);
-                                    valuebase0.SetTextureFilter( pTextureFilter );
-                                }
-
-                                if (value.GetSubValueCount()==4) {
-                                    valuebase0.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
-                                }
-
-                                if (value.GetSubValueCount()>=5) {
-                                    //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
-                                }
-
-                                MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + valuebase0.Text());
-
-                            }
-                        } else {
-                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: ") + valuebase0.Text()
-                                            + moText(" Param name:") +param.GetParamDefinition().GetName() );
-                        }
-                        break;
-
-                    case MO_PARAM_FONT:
-
-                        moFont* pFont;
-                        moFontType fonttype;
-                        moFontSize  fontsize;
-
-                        if ( value.GetSubValueCount()==3 ) {
-                            if ( valuebase0.Text().Trim() == moText("Default") ) {
-                              pFont = m_pResourceManager->GetFontMan()->GetFont(0);
-                            } else if ( ! (valuebase0.Text().Trim() == moText("")) ) {
-
-                                if ( value.GetSubValue(1).GetType()==MO_VALUE_TXT) {
-                                    moText fonttypeT = value.GetSubValue(1).Text();
-                                    fonttype = m_pResourceManager->GetFontMan()->GetFontType(fonttypeT);
-                                } else {
-                                    fonttype = (moFontType)value.GetSubValue(1).Int();
-                                }
-
-                                if ( value.GetSubValue(2).GetType()==MO_VALUE_NUM ) {
-                                    fontsize = value.GetSubValue(2).Int();
-                                } else if ( value.GetSubValue(2).GetType()==MO_VALUE_FUNCTION ) {
-                                    fontsize = 12;
-                                }
-
-                                pFont = m_pResourceManager->GetFontMan()->AddFont( valuebase0.Text(), fonttype, fontsize);
-                                if (pFont==NULL) {
-                                  MODebug2->Error( moText("moMoldeoObject::CreateConnectors > FONT NOT FOUND: Using Default")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
-                                  pFont = m_pResourceManager->GetFontMan()->GetFont(0);
-                                }
-                            } else {
-                                MODebug2->Error( moText("moMoldeoObject::CreateConnectors > VALUE BASE EMPTY: Using Default")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
-                                pFont = m_pResourceManager->GetFontMan()->GetFont(0);
-                            }
-
-                            if (pFont) {
-                                valuebase0.SetFont( pFont );
-                            }
-                        } else {
-                            MODebug2->Error( moText("moMoldeoObject::CreateConnectors > MISSING VALUES: ")+ valuebase0.Text() + moText(" Param name:") +param.GetParamDefinition().GetName() );
-                        }
-                        break;
-
-                    case MO_PARAM_3DMODEL:
-                    case MO_PARAM_OBJECT:
-                        if (value.GetSubValueCount()>0) {
-                            //PROBAR!!!!!
-                            //PROBAR!!!!!
-                            mo3dModel* pModel = m_pResourceManager->GetModelMan()->Get3dModel( valuebase0.Text() );
-                            if (pModel) {
-                                mo3DModelSceneNode *newSceneNode;
-                                newSceneNode = new mo3DModelSceneNode();
-                                if (newSceneNode) {
-                                    newSceneNode->Init(pModel);
-                                }
-                                valuebase0.SetModel( newSceneNode );
-                            }
-                        }
-                        break;
-
-                    case MO_PARAM_SOUND:
-                        if (value.GetSubValueCount()>0) {
-                          if (valuebase0.Text()!="") {
-                            moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( valuebase0.Text() );
-                            if (pSound) {
-                                valuebase0.SetSound( pSound );
-                            }
-                          }
-                        }
-                        break;
-
-                }//fin siwtch
-
-			}//fin if
 		}
 	}
 

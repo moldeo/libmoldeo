@@ -1868,7 +1868,6 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   moText arg3Text;
 
   moText argRed,argGreen,argBlue,argAlpha;
-  std::stringstream sr,sg,sb;
   unsigned int r,g,b;
 
   moText EffectStateJSON = "";
@@ -1880,8 +1879,6 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   moDataMessage* pMessageToSend;
   moData pData("PRESENTATION");
   moMessage* newMessage = NULL;
-
-  int idx = -1;
 
   switch( MappedType ) {
 
@@ -2044,7 +2041,6 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
       }
 
-
       moValue& rValue( rParam.GetValue(arg2Int) );
 
       if (MappedType==MO_ACTION_VALUE_DELETE) {
@@ -2077,55 +2073,20 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           argRed.Mid(1,2);
           argGreen.Mid(3,2);
           argBlue.Mid(5,2);
-          MODebug2->Message("color: red: " + argRed + " green:" + argGreen + " blue:" + argBlue);
 
-          sr << std::hex << argRed;
-          sr >> r;
-          if (m_pResourceManager->GetMathMan())
-              idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)r*1.0/255.0),
-                                                                  (MOboolean)true, this );
-          if (idx>-1) {
-              rValue.GetSubValue(0).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
-          } else return -1;
-
-          sg << std::hex << argGreen;
-          sg >> g;
-          if (m_pResourceManager->GetMathMan())
-              idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)g*1.0/255.0),
-                                                                  (MOboolean)true, this );
-          if (idx>-1) {
-              rValue.GetSubValue(1).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
-          } else return -1;
-
-          sb << std::hex << argBlue;
-          sb >> b;
-          if (m_pResourceManager->GetMathMan())
-              idx = m_pResourceManager->GetMathMan()->AddFunction( FloatToStr((float)b*1.0/255.0),
-                                                                  (MOboolean)true, this );
-          if (idx>-1) {
-              rValue.GetSubValue(2).SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
-          } else return -1;
-
-          MODebug2->Message("color: red: " + IntToStr(r) + " green:" + IntToStr(g) + " blue:" + IntToStr(b));
+          r = HexToInt( argRed );
+          g = HexToInt( argGreen );
+          b = HexToInt( argBlue );
+          //MODebug2->Message("color: red: " + argRed + " green:" + argGreen + " blue:" + argBlue);
+          rValue.GetSubValue(0).SetFun( FloatToStr((float)r*1.0/255.0) );
+          rValue.GetSubValue(1).SetFun( FloatToStr((float)g*1.0/255.0) );
+          rValue.GetSubValue(2).SetFun( FloatToStr((float)b*1.0/255.0) );
+          //MODebug2->Message("color: red: " + IntToStr(r) + " green:" + IntToStr(g) + " blue:" + IntToStr(b));
         }
       }
       else { switch(VB.Type()) {
           case MO_DATA_FUNCTION:
-            idx = -1;
-            if (m_pResourceManager->GetMathMan())
-              idx = m_pResourceManager->GetMathMan()->AddFunction( arg3Text, (MOboolean)true, fxObject );
-            if (idx>-1) {
-                VB.SetText(arg3Text);
-                VB.SetFun( m_pResourceManager->GetMathMan()->GetFunction(idx) );
-                MODebug2->Message( moText("function defined: ") + VB.Text() );
-                VB.Eval();
-            } else {
-                MODebug2->Error(moText("moConsole::ProcessMoldeoAPIMessage > function couldn't be defined: ") + VB.Text()
-                                + " object: "+GetName()
-                                + " config: " + GetConfigName()
-                                + " label:" + GetLabelName() );
-                return -1;
-            }
+            VB.SetFun( arg3Text );
             break;
           case MO_DATA_TEXT:
           case MO_DATA_SOUNDSAMPLE:
@@ -2138,7 +2099,6 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                 VB.SetText(arg3Text);
                 break;
               case MO_PARAM_TEXTURE:
-
                 if (m_pResourceManager->GetDataMan()->InData(arg3Text)) {
                   //make relative to datapath
                   arg3Text = m_pResourceManager->GetDataMan()->MakeRelativeToData(arg3Text);
@@ -2148,31 +2108,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                   m_pResourceManager->GetDataMan()->ImportFile( importFile.GetAbsolutePath() );
                   arg3Text = importFile.GetFullName();
                 }
-
-                idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( arg3Text, true);
-                if (idx>-1) {
-                    moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
-                    VB.SetText(arg3Text);
-                    VB.SetTexture( pTexture );
-                    /*
-                    if (pTexture->GetType()!=MO_TYPE_TEXTURE_MULTIPLE && value.GetSubValueCount()>1) {
-                        idx = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->LoadFilter( &value );
-                        moTextureFilter*  pTextureFilter = m_pResourceManager->GetShaderMan()->GetTextureFilterIndex()->Get(idx-1);
-                        valuebase0.SetTextureFilter( pTextureFilter );
-                    }
-
-                    if (value.GetSubValueCount()==4) {
-                        valuebase0.SetTextureFilterAlpha( value.GetSubValue(3).GetData() );
-                    }
-
-                    if (value.GetSubValueCount()>=5) {
-                        //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
-                    }
-                    */
-                } else {
-                  MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > importing image error! "+arg3Text);
-                  return -1;
-                }
+                VB.SetText(arg3Text);
                 break;
               case MO_PARAM_SOUND:
                 {
@@ -2185,18 +2121,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                     m_pResourceManager->GetDataMan()->ImportFile( importFile.GetAbsolutePath() );
                     arg3Text = importFile.GetFullName();
                   }
-
-
-                  if (arg3Text!="") {
-                    moSound* pSound = m_pResourceManager->GetSoundMan()->GetSound( arg3Text );
-                    if (pSound) {
-                        VB.SetText(arg3Text);
-                        VB.SetSound( pSound );
-                    } else {
-                      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > importing Sound error! "+arg3Text);
-                      return -1;
-                    }
-                  }
+                  VB.SetText(arg3Text);
                 }
                 break;
               default:
@@ -3403,6 +3328,7 @@ int moConsole::SetValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, con
     moParam& Param( Object->GetConfig()->GetParam(m_ParamId));
     moValue& Value( Param.GetValue(m_ValueId) );
     Value = p_value;
+    Object->ResolveValue( Param, m_ValueId );
 
     if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
       moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_VALUE_SET, Object->GetId(),  m_ParamId, m_ValueId, p_value );

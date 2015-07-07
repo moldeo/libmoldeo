@@ -1175,5 +1175,38 @@ LIBMOLDEO_API moText0 FloatToStr(double a, int nzeros, int ndecimals )
     return str;
 }
 
+
+int HexToInt( const moText& hex ) {
+  int res;
+  std::stringstream sr;
+  sr << std::hex << hex;
+  sr >> res;
+  return res;
+}
+
+long HexToLong( const moText& hex ) {
+  long res;
+  std::stringstream sr;
+  sr << std::hex << hex;
+  sr >> res;
+  return res;
+}
+
+double StrToDouble( const moText& str ) {
+  return atof( str );
+}
+
+float StrToFloat( const moText& str ) {
+  return atof( str );
+}
+
+long StrToLong( const moText& str ) {
+  return atol( str );
+}
+
+int StrToInt( const moText& str ) {
+  return atoi( str );
+}
+
 #endif
 
