@@ -295,7 +295,7 @@ moDataSession::StepRender( moConsoleState& p_console_state ) {
     moText temp_render = moText("temp_render");
 
     p_console_state.Activated();
-    int mod1000 = m_Rendered_Frames / (int)1000;
+    //int mod1000 = m_Rendered_Frames / (int)1000;
     //temp_render+="_"+IntToStr(mod1000);
     moText frame_filename = "frame_" + IntToStr( m_Rendered_Frames, 7 );
     if (m_pResourceManager && m_pResourceManager->GetRenderMan())
