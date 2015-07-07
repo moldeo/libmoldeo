@@ -881,8 +881,8 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
   #ifdef MO_WIN32
         //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("-") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("-"), moText("-") ) );
-
-        device_name = moText("dshowvideosrc");
+        moText dname( "dshowvideosrc" );
+        device_name = dname;
 
         for( MOuint i=0; i<m_PreferredDevices.Count();i++) {
             moCaptureDevice CaptDev = m_PreferredDevices[i];
