@@ -1953,6 +1953,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
             MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > Adding Value at index:" + IntToStr( rParam.GetValuesCount() )
                               + " newvalue: " + newValue.ToJSON() );
             rParam.AddValue( newValue );
+            SetValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), rParam.GetValuesCount()-1, newValue );
         }
         arg3Text = newValue.GetSubValue(0).ToText();
 
