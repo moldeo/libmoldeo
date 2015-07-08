@@ -1846,17 +1846,20 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   moMoldeoActionType MappedType = (moMoldeoActionType)m_ReactionListenerManager.m_MapStrToActionType[skey];
 
 /**/
+/*
   moText fullMessageText = "";
   for( int k=0;k<(int)p_pDataMessage->Count();k++) {
     fullMessageText+= " k:" + IntToStr(k);
     fullMessageText+="[" + p_pDataMessage->Get(k).ToText()+"]";
   }
-
+  */
+/*
   MODebug2->Message( moText("moConsole::ProcessMoldeoAPIMessage > Processing Moldeo API Message: ")
                     + MoldeoAPICommand
                     + moText(" count:") + IntToStr(p_pDataMessage->Count())
                     + moText(" mapped type:") +IntToStr(MappedType)
                     + moText(" fullmessage:") + fullMessageText  );
+*/
 /**/
 
   moEffect* fxObject;
