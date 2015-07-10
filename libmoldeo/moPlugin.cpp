@@ -60,6 +60,7 @@ void moPlugin::Load(moText plugin_file)
 			(char*)plugin_file, (int)dw);
 		moDebugManager::Error( "moPlugin::Load > Cannot open library: " + moText(szBuf) );
 	#endif
+    return;
     }
 
     #ifdef MO_WIN32

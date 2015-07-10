@@ -257,17 +257,17 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 				m_param.internal_format = GL_RGB;
 				if ( red_mask == 0x0000FF || red_mask==0) p_format = GL_BGR;
 				else p_format = GL_RGB;
-				#ifdef WIN32
+				//#ifdef WIN32
         if (fif==FIF_JPEG) p_format = GL_BGR;
-        #endif // WIN32
+        //#endif // WIN32
 				break;
 			case 32: // 32 bits
 				m_param.internal_format = GL_RGBA;
 				if ( blue_mask == 0xFF0000 || blue_mask==0 ) p_format = GL_BGRA_EXT;
 				else p_format = GL_RGBA;
-				#ifdef WIN32
+				//#ifdef WIN32
         if (fif==FIF_PNG) p_format = GL_BGRA_EXT;
-        #endif
+        //#endif
 				break;
 			default:
 				break;

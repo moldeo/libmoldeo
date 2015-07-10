@@ -60,8 +60,8 @@ void moPrePlugin::Load(moText plugin_file)
 		sprintf(szBuf, "%s failed: GetLastError returned %u\n",
 			(char*)plugin_file, (int)dw);
     moDebugManager::Error( "moPrePlugin::Load > Cannot open library: " + moText(szBuf) );
-
 	#endif
+    return;
     }
 
     #ifdef MO_WIN32
