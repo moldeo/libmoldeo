@@ -18,10 +18,8 @@ check_libmoldeo_LDADD       = @CHECK_LIBS@ \
 	-L../libmoldeo -lmoldeo \
 	@MUPARSER_LIBS@ \
 	@SDL_LIBS@ \
-	@GLE_LIBS@ \
-	@FREEIMAGE_LIBS@ \
-	@FREEALUT_LIBS@ \
-	@GLEW_LIBS@ \
+    @GLEW_LIBS@ \
+    @FREEIMAGE_LIBS@ \
 	@LUA51_LIBS@ \
 	@GST_LIBS@ \
 	@TINYXML_LIBS@ \
@@ -31,6 +29,8 @@ check_libmoldeo_LDADD       = @CHECK_LIBS@ \
 	@BOOST_THREAD_LIB@ \
 	@FTGL_LIBS@ 
 #\
+#	@FREEALUT_LIBS@ \
+#   @GLE_LIBS@ \
 #	@CG_LIBS@ \
 #	@CGGL_LIBS@ \
 	#@TUIO_LIBS@
