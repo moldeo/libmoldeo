@@ -20,7 +20,7 @@ dnl check for muParser
 PKG_CHECK_MODULES([MUPARSER], [muparser] ,has_muparser=yes)
 
 dnl check for lua51
-PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
+PKG_CHECK_MODULES([LUA51], [lua-5.1] ,has_lua51=yes)
 
 dnl check tinyxml
 PKG_CHECK_MODULES([TINYXML], [tinyxml] ,has_tinyxml=yes)
@@ -37,7 +37,7 @@ PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
 
 #dnl check for sdl-image
 #AC_CHECK_HEADER(SDL/SDL_image.h, , AC_MSG_ERROR([SDL_image header not found.]))
-#AC_CHECK_LIB(SDL_image, IMG_Load, AC_SUBST([SDL_IMAGE_LIBS], [-lSDL_image]), AC_MSG_ERROR([SDL_image not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
+#AC_CHECK_LIB(SDL_image, IMG_Load, AC_SUBST([SDL_IMAGE_LIBS], [-lSDL_image]), #AC_MSG_ERROR([SDL_image not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
 
 dnl check for opengl
 PKG_CHECK_MODULES([GL], [gl] ,has_gl=yes)
@@ -49,31 +49,29 @@ dnl check for glu
 PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
 
 dnl check for glew
-AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
-AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GLEW_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]), )
+PKG_CHECK_MODULES([GLEW], [glew] ,has_glew=yes)
+#AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
+#AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GLEW_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]), )
 
 dnl check for glut
-AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
-AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([glut not found.]), )
+PKG_CHECK_MODULES([GLUT], [freeglut], has_glut=yes )
+#AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
+#AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([glut not found.]), )
 
 dnl check for gle
-AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
-AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
+#AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
+#AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
 
 dnl check for ftgl
 PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
 
 dnl check for freeimage
+#PKG_CHECK_MODULES([FREEIMAGE], [freeimage], has_freeimage=yes )
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
 AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfreeimage]), AC_MSG_ERROR([FreeImage not found.]), )
 
 dnl check for alut
-PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
-
-dnl check for TUIO
-#AC_LANG_PUSH(C++)dnl
-#AC_CHECK_HEADER(TUIO/TuioObject.h, , AC_MSG_ERROR([TUIO header not found. Please read README.]))
-#PKG_CHECK_MODULES([TUIO], [libTUIO] ,has_tuio=yes)
+#PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
 #SAVED_LDFLAGS=$LDFLAGS
 #LDFLAGS="$LDFLAGS -lTUIO"

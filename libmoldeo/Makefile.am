@@ -121,12 +121,10 @@ libmoldeo_la_LIBADD = -ldl\
 	${SDL_LIBS} \
 	${TINYXML_LIBS} \
 	${GL_LIBS} \
-	${GLE_LIBS} \
 	${GLEW_LIBS} \
 	${FTGL_LIBS} \
 	${GLUT_LIBS} \
 	${GLU_LIBS} \
-	${FREEALUT_LIBS} \
 	${FREEIMAGE_LIBS} \
 	${MUPARSER_LIBS} \
 	${BOOST_ASIO_LIB} \
@@ -135,11 +133,7 @@ libmoldeo_la_LIBADD = -ldl\
 	${BOOST_SYSTEM_LIB} \
 	${LUA51_LIBS} \
 	${GST_LIBS} 
-#\
-#	${CG_LIBS} \
-#	${CGGL_LIBS} \
-#	${OPENAL_LIBS} \
-	#${TUIO_LIBS}
+
 
 libmoldeo_includedir = $(includedir)/libmoldeo
 

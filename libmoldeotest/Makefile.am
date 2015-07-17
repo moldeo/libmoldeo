@@ -32,12 +32,10 @@ libmoldeotest_la_LIBADD = -ldl\
 	${SDL_LIBS} \
 	${TINYXML_LIBS} \
 	${GL_LIBS} \
-	${GLE_LIBS} \
 	${GLEW_LIBS} \
 	${FTGL_LIBS} \
 	${GLUT_LIBS} \
 	${GLU_LIBS} \
-	${FREEALUT_LIBS} \
 	${FREEIMAGE_LIBS} \
 	${MUPARSER_LIBS} \
 	${BOOST_ASIO_LIB} \
@@ -45,7 +43,10 @@ libmoldeotest_la_LIBADD = -ldl\
 	${BOOST_FILESYSTEM_LIB} \
 	${BOOST_SYSTEM_LIB} \
 	${LUA51_LIBS} \
-	${GST_LIBS} 
+	${GST_LIBS}
+    
+#${FREEALUT_LIBS} \
+#${GLE_LIBS}
 
 libmoldeotest_includedir = $(includedir)/libmoldeotest
 
