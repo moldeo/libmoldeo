@@ -299,8 +299,13 @@ class LIBMOLDEO_API moDataSession : public moAbstract {
         bool SessionEnded();
         int GetKeyCount();
         int GetRenderedFrames() const;
+        const moText& GetRenderedFolder() {
+          return m_Rendered_Folder;
+        }
+        void SetRenderedFolder( const moText& p_rendered_folder );
         bool StepRender( moConsoleState& p_console_state );
 
+        const moText& ToJSON();
 
     private:
 
@@ -323,6 +328,8 @@ class LIBMOLDEO_API moDataSession : public moAbstract {
         moDataSessionKey        m_ActualKey;
 
         int                     m_Rendered_Frames;
+        moText                  m_Rendered_Folder;
+        moText                  m_FullJSON;
 
 };
 

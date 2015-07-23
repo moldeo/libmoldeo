@@ -285,23 +285,40 @@ moDataSession::Render(moConsoleState& p_console_state) {
   m_iActualKey = 0;
   MODebug2->Message("moConsole::ConsoleModeUpdate > START RENDER session: m_StartTimeCode: " + IntToStr(m_StartTimeCode) );
 
+  moText temp_render_base = DataMan()->GetDataPath() + moText("temp_render");
+  this->m_Rendered_Folder = temp_render_base;
+
+  int ntemp = 0;
+
+  while( moFileManager::DirectoryExists( this->m_Rendered_Folder )  ) {
+    ntemp+=1;
+    this->m_Rendered_Folder = temp_render_base + IntToStr( ntemp, 3 );
+    if (ntemp>1000) {
+      break;
+    }
+  }
+
   return true;
+}
+
+void
+moDataSession::SetRenderedFolder( const moText& p_rendered_folder ) {
+  m_Rendered_Folder = p_rendered_folder;
 }
 
 bool
 moDataSession::StepRender( moConsoleState& p_console_state ) {
 
     moText frame_result;
-    moText temp_render = moText("temp_render");
 
     p_console_state.Activated();
     //int mod1000 = m_Rendered_Frames / (int)1000;
     //temp_render+="_"+IntToStr(mod1000);
     moText frame_filename = "frame_" + IntToStr( m_Rendered_Frames, 7 );
     if (m_pResourceManager && m_pResourceManager->GetRenderMan())
-      RenderMan()->Screenshot( DataMan()->GetDataPath() + temp_render, frame_result, "JPGGOOD", frame_filename );
+      RenderMan()->Screenshot( DataMan()->GetSession()->GetRenderedFolder(), frame_result, "JPGGOOD", frame_filename );
 
-    MODebug2->Message("moDataSession::StepRender > 24/1 frame number:" + IntToStr(m_Rendered_Frames)+" frame_result:" + frame_result);
+    //MODebug2->Message("moDataSession::StepRender > 24/1 frame number:" + IntToStr(m_Rendered_Frames)+" frame_result:" + frame_result);
     m_Rendered_Frames+=1;
     return true;
 }
@@ -385,6 +402,18 @@ moDataSession::NextKey( moConsoleState& m_ConsoleState ) {
   }
 
   return m_ActualKey;
+}
+
+
+const moText&
+moDataSession::ToJSON() {
+
+  moText fieldSeparation = ",";
+
+  m_FullJSON = "{";
+  m_FullJSON+= moText("'rendered_folder': '") + this->GetRenderedFolder() + moText("'");
+  m_FullJSON+= "}";
+  return m_FullJSON;
 }
 
 
