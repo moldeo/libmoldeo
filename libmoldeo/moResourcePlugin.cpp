@@ -58,12 +58,12 @@ void moResourcePlugin::Load(moText plugin_file)
 
     if(!handle) {
 	#if !defined(WIN32)
-        cerr << "Cannot open library: " << dlerror() << '\n';
+        moDebugManager::Error( "moResourcePlugin::Load > Cannot open library: " + moText(dlerror()) );
 	#else
 		CHAR szBuf[80];
 		DWORD dw = GetLastError();
-		sprintf(szBuf, "%s failed: GetLastError returned %u\n",
-			(char*)plugin_file, dw);
+		sprintf(szBuf, "%s failed: GetLastError returned %i\n",
+			(char*)plugin_file, (int)dw);
     moDebugManager::Error( "moResourcePlugin::Load > Cannot open library: " + moText(szBuf) );
 
 	#endif

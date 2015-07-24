@@ -43,10 +43,10 @@ moRenderManager::moRenderManager() {
 	SetName("rendermanager");
 	SetLabelName("rendermanager");
 
+  m_pResourceManager = NULL;
 	m_pGLManager = NULL;
 	m_pFBManager = NULL;
 	m_pTextureManager = NULL;
-
 	m_pDecoderManager = NULL;
 
 
@@ -418,8 +418,39 @@ void moRenderManager::SaveScreen()
 }
 
 int screenshots_c = 0;
+int previewshotmax = 4;
 
-bool moRenderManager::Screenshot( moText pathname ) {
+//moText pathname, moText& screenshot_result
+bool moRenderManager::PreviewShot( bool shot_start ) {
+
+/*start absolute timer, one shot each*/
+  if( shot_start && !m_PreviewShotTimer.Started()) {
+    m_PreviewShotTimer.Stop();
+    m_PreviewShotTimer.Start();
+    m_PreviewShotIteration = 0;
+  }
+
+  if( m_PreviewShotTimer.Started()) {
+    if (m_PreviewShotTimer.Duration()>=1000) {
+
+      moText sshot = m_pResourceManager->GetDataMan()->GetDataPath()+moSlash+moText("previewshots");
+      moText preview_shot_filename = moText("preview_shot_")+IntToStr(m_PreviewShotIteration,7);
+      moText result;
+      m_pResourceManager->GetRenderMan()->Screenshot( sshot, result, "JPG", preview_shot_filename );
+      MODebug2->Message( "moRenderManager::PreviewShot() > " + result );
+      m_PreviewShotIteration+=1;
+      m_PreviewShotTimer.Stop();
+      m_PreviewShotTimer.Start();
+      if (m_PreviewShotIteration==previewshotmax) {
+        m_PreviewShotTimer.Stop();
+      }
+    }
+  }
+
+  return true;
+}
+
+bool moRenderManager::Screenshot( moText pathname, moText& screenshot_result, const moText& image_format, const moText& file_pattern ) {
 
         if (m_render_tex_moid[MO_SCREEN_TEX]) {
 
@@ -428,8 +459,8 @@ bool moRenderManager::Screenshot( moText pathname ) {
             if (TexScreen) {
                 /** Atamos la textura de TexScreen : SCREEN_TEXTURE*/
                 glBindTexture(GL_TEXTURE_2D, TexScreen->GetGLId()  );
-                /** Copia los pixeles de la pantalla a la textura atada
-                    aqui podriamos usar el glCopyTexSubImage....(para mantener potencias de dos)
+                /** TODO: Copia los pixeles de la pantalla a la textura atada
+                *    aqui podriamos usar el glCopyTexSubImage....(para mantener potencias de dos)
                 */
                 glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, TexScreen->GetWidth(), TexScreen->GetHeight(), 0 );
                 glBindTexture(GL_TEXTURE_2D, 0);
@@ -439,36 +470,67 @@ bool moRenderManager::Screenshot( moText pathname ) {
                 char strbuffer[0x100];
                 struct tm * timeinfo;
 
-                srand(2);
+                //srand(2);
                 //int randcode = rand();
-                screenshots_c+= 1;
+
 
                 time(&rawtime);
                 timeinfo = localtime ( &rawtime );
                 strftime ( strbuffer, 80, "%Y-%m-%d-%H-%M-%S", timeinfo );
                 moText datetime = strbuffer;
+                strftime ( strbuffer, 80, "%Y-%m-%d", timeinfo );
+                moText date = strbuffer;
+
+
+                moText screenshot_filename;
+                moText pat_date = moText("{DATE}");
+                moText pat_date_time = moText("{DATETIME}");
+                moText pat_number = moText("{####}");
+                screenshot_filename = file_pattern;
+                //screenshot_filename.Replace( pat_date, date );
+                //screenshot_filename.Replace( pat_date_time, datetime );
+                //screenshot_filename.Replace( pat_number, IntToStr( screenshots_c, 4 ) );
+                if (screenshot_filename=="") {
+                    screenshot_filename= "screen_" + IntToStr( screenshots_c, 7 );
+                    screenshots_c+= 1;
+                }
+
+                if (
+                    screenshot_filename=="image_{DATETIME}_{####}.png"
+                    ) {
+
+                 //=="image_{DATETIME}_{####}.png")
+                  screenshot_filename= "screen_" + IntToStr( screenshots_c, 7 );
+                  screenshots_c+= 1;
+
+                }
+
+
 
                 moText screenshot_name;
                 moText screenshot_path;
                 if (pathname=="") {
                     screenshot_path = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + moText("moldeo_screenshots");
-                    /** crear directorio si no existe*/
-                    if ( !moDirectory( screenshot_path ).Exists() ) {
-                        if (!moFileManager::CreateDirectory(screenshot_path) ) {
-                            MODebug2->Error("could not create directory: "+ screenshot_path);
-                            return false;
-                        }
-                    }
 
-                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText("_") + IntToStr(screenshots_c) + moText(".png");
+                    //screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText("_") + IntToStr(screenshots_c);
+                    screenshot_name = screenshot_path + moSlash + screenshot_filename;
                 } else {
                     screenshot_path = pathname;
-                    /** crear directorio ?? */
-                    screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText(".png");
+                    //screenshot_name = screenshot_path + moSlash + moText(datetime)+ moText("_")+ IntToStr(screenshots_c);
+                    screenshot_name = screenshot_path + moSlash + screenshot_filename;
+                }
+
+                /** crear directorio si no existe*/
+                //if ( !moDirectory( screenshot_path ).Exists() ) {
+                if (!moFileManager::DirectoryExists(screenshot_path)) {
+                    if (!moFileManager::CreateDirectory(screenshot_path) ) {
+                        MODebug2->Error("could not create directory: "+ screenshot_path);
+                        return false;
+                    }
                 }
 
                 /** Generamos un archivo de imagen a partir de la textura TexScreen actualizada*/
-                TexScreen->CreateThumbnail( "PNG", m_pResourceManager->GetRenderMan()->ScreenWidth(), m_pResourceManager->GetRenderMan()->ScreenHeight(), screenshot_name );
+                screenshot_result = TexScreen->CreateThumbnail( image_format, m_pResourceManager->GetRenderMan()->ScreenWidth(), m_pResourceManager->GetRenderMan()->ScreenHeight(), screenshot_name );
 
             }
 
@@ -493,15 +555,15 @@ void moRenderManager::CopyRenderToTexture(MOint p_tex_num)
 		}
 		else m_pFBManager->BindScreenFB();
 
-        moTexture* pScreenText;
+    moTexture* pScreenText;
 
-        pScreenText = m_pTextureManager->GetTexture( m_render_tex_moid[p_tex_num] );
+    pScreenText = m_pTextureManager->GetTexture( m_render_tex_moid[p_tex_num] );
 
-        if (pScreenText) {
-            glBindTexture(GL_TEXTURE_2D, pScreenText->GetGLId() );
-            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_render_width, m_render_height, 0);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
+    if (pScreenText) {
+        glBindTexture(GL_TEXTURE_2D, pScreenText->GetGLId() );
+        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, m_render_width, m_render_height, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 
 		if (IsRenderToFBOEnabled()) m_pFBManager->UnbindFBO();
 		else m_pFBManager->UnbindScreenFB();
@@ -515,26 +577,26 @@ MOint moRenderManager::RenderTexGLId(MOint p_tex_num)
 }
 
 
-MOboolean moRenderManager::MultiTextureSupported()
+MOboolean moRenderManager::MultiTextureSupported() const
 {
 	return GLEW_ARB_multitexture;
 }
 
-MOboolean moRenderManager::FramebufferObjectSupported()
+MOboolean moRenderManager::FramebufferObjectSupported() const
 {
 	return GLEW_EXT_framebuffer_object;
 }
 
-MOboolean moRenderManager::ShadersSupported()
+MOboolean moRenderManager::ShadersSupported() const
 {
 	return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
 }
 
-MOboolean moRenderManager::IsTextureNonPowerOf2Disabled() {
+MOboolean moRenderManager::IsTextureNonPowerOf2Disabled() const {
   return !(GLEW_ARB_texture_non_power_of_two);
 }
 
-MOint moRenderManager::ScreenWidth() {
+MOint moRenderManager::ScreenWidth()  const {
 /*
     GLint  	params[4];
 
@@ -546,7 +608,7 @@ MOint moRenderManager::ScreenWidth() {
     return m_screen_width;
 }
 
-MOint moRenderManager::ScreenHeight() {
+MOint moRenderManager::ScreenHeight()  const {
 /*
     GLint   	params[4];
 
@@ -558,17 +620,17 @@ MOint moRenderManager::ScreenHeight() {
     return m_screen_height;
 }
 
-MOint moRenderManager::InterfaceWidth() {
+MOint moRenderManager::InterfaceWidth() const {
     return m_interface_width;
 }
 
-MOint moRenderManager::InterfaceHeight() {
+MOint moRenderManager::InterfaceHeight() const {
 
     return m_interface_height;
 }
 
 
-float moRenderManager::ScreenProportion() {
+float moRenderManager::ScreenProportion()  const {
 
     float prop = 1.0;
     int w = ScreenWidth();
@@ -586,15 +648,15 @@ float moRenderManager::ScreenProportion() {
 }
 
 
-MOint moRenderManager::RenderWidth() {
+MOint moRenderManager::RenderWidth()  const {
     return m_render_width;
 }
 
-MOint moRenderManager::RenderHeight() {
+MOint moRenderManager::RenderHeight()  const {
     return m_render_height;
 }
 
-float moRenderManager::RenderProportion() {
+float moRenderManager::RenderProportion()  const {
 
     float prop = 1.0;
     int w = RenderWidth();

@@ -6,7 +6,7 @@ else
 DFLAGS = -O2
 endif
 
-datadir = ${prefix}/share/moldeo
+datadir = ${prefix}/share/moldeo/data
 modulesdir = ${libdir}/moldeo
 docdir = ${prefix}/share/doc/moldeo
 
@@ -20,6 +20,7 @@ libmoldeotest_la_SOURCES = \
 
 libmoldeotest_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
+    $(GST_INTERFACES_CFLAGS) \
 	${GTK2_CFLAGS} \
 	${MUPARSER_CFLAGS} \
 	${BOOST_CPPFLAGS} \
@@ -43,10 +44,15 @@ libmoldeotest_la_LIBADD = -ldl\
 	${BOOST_FILESYSTEM_LIB} \
 	${BOOST_SYSTEM_LIB} \
 	${LUA51_LIBS} \
+<<<<<<< HEAD
 	${GST_LIBS}
     
 #${FREEALUT_LIBS} \
 #${GLE_LIBS}
+=======
+	${GST_LIBS} \
+    $(GST_INTERFACES_LIBS)
+>>>>>>> 07d580acff452fd164ae75f228d975b53175fa98
 
 libmoldeotest_includedir = $(includedir)/libmoldeotest
 

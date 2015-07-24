@@ -51,8 +51,8 @@ void moPlugin::Load(moText plugin_file)
     handle = moLoadPlugin(plugin_file);
 
     if(!handle) {
-	#if !defined(WIN32)
-        cerr << "Cannot open library: " << dlerror() << '\n';
+  #ifndef MO_WIN32
+        moDebugManager::Error( "moPlugin::Load > Cannot open library: " + moText(dlerror()) );
 	#else
 		CHAR szBuf[80];
 		DWORD dw = GetLastError();
@@ -60,9 +60,10 @@ void moPlugin::Load(moText plugin_file)
 			(char*)plugin_file, (int)dw);
 		moDebugManager::Error( "moPlugin::Load > Cannot open library: " + moText(szBuf) );
 	#endif
+    return;
     }
 
-    #if defined(_WIN32)
+    #ifdef MO_WIN32
 	FARPROC farp;
 	farp = GetProcAddress(handle, "DestroyEffectFactory");
     CreateEffectFactory = CreateEffectFactoryFunction(GetProcAddress(handle, "CreateEffectFactory"));

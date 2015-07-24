@@ -66,6 +66,25 @@ moConfigDefinition::moConfigDefinition() {
 moConfigDefinition::~moConfigDefinition() {
 }
 
+/// copy constructor
+moConfigDefinition::moConfigDefinition( const moConfigDefinition& p_src ) {
+    (*this) = p_src;
+}
+
+/// assignment copy operator
+moConfigDefinition&
+moConfigDefinition::operator =( const moConfigDefinition& p_src ) {
+
+ (moAbstract)(*this) = (moAbstract) p_src;
+  m_ParamDefinitions = p_src.m_ParamDefinitions;
+  m_ParamIndexes = p_src.m_ParamIndexes;
+  m_ObjectName = p_src.m_ObjectName;
+  m_ObjectClass = p_src.m_ObjectClass;
+  m_FullJSON = p_src.m_FullJSON;
+
+  return (*this);
+}
+
 bool
 moConfigDefinition::Exists( moText p_name ) {
   for( MOuint i = 0; i < m_ParamDefinitions.Count(); i++ ) {
@@ -75,6 +94,21 @@ moConfigDefinition::Exists( moText p_name ) {
   }
   return false;
 }
+
+const moParamDefinition&
+moConfigDefinition::GetParamDefinition( const moText& p_param_name ) {
+
+  MOuint i = 0;
+
+  for( i = 0; i < m_ParamDefinitions.Count(); i++ ) {
+    moParamDefinition& pdef( m_ParamDefinitions[i] );
+    if ( pdef.GetName() == p_param_name )
+      return m_ParamDefinitions[i];
+  }
+
+  return m_ParamDefinitions.Get(-1);
+}
+
 
 bool
 moConfigDefinition::SetIndex( moText p_name, MOint p_index) {
@@ -99,7 +133,7 @@ moConfigDefinition::SetIndex( moText p_name, MOint p_index) {
 
     return founded;
 }
-
+/*
 void
 moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index) {
 
@@ -114,8 +148,8 @@ moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index) {
 
 	m_ParamDefinitions.Add( pdef );
 
-  /** ATENCION!!!! si p_index no coincide con el indice real de la entrada d el array de m_ParamIndexes....
-      entonces no funcionará.... hay que evitar este problema....
+   ATENCION!!!! si p_index no coincide con el indice real de la entrada d el array de m_ParamIndexes....
+      entonces no funcionar�.... hay que evitar este problema....
       sobre todo  y tambien si no se llama en el orden correcto.
 
       soluciones:
@@ -124,40 +158,12 @@ moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index) {
         Si el siguiente indice no coincide...
 
 
-      */
+
 
 	m_ParamIndexes.Add( p_index );
 
 }
-
-void
-moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index, moValue p_defaultvalue ) {
-
-	moParamDefinition pdef( p_name, p_type );
-
-	pdef.SetIndex( p_index );
-	pdef.SetDefault( p_defaultvalue );
-
-	m_ParamDefinitions.Add( pdef );
-
-	m_ParamIndexes.Add( p_index );
-
-}
-
-void
-moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index, moValue p_defaultvalue, const moTextArray& p_Options ) {
-
-	moParamDefinition pdef( p_name, p_type );
-
-	pdef.SetIndex( p_index );
-	pdef.SetDefault( p_defaultvalue );
-	pdef.SetOptions(p_Options);
-
-	m_ParamDefinitions.Add( pdef );
-
-	m_ParamIndexes.Add( p_index );
-
-}
+*/
 
 bool
 moConfigDefinition::SetParamIndex( int defined_array_index, moParamIndex paramindex  ) {
@@ -187,6 +193,18 @@ moConfigDefinition::SetParamIndex( int defined_array_index, moParamIndex paramin
 
 }
 
+const moText&
+moConfigDefinition::ToJSON() {
+
+  moText fieldSeparation = ",";
+
+  m_FullJSON = "{";
+  m_FullJSON+= "'objectname': '" + this->m_ObjectName + "'";
+  m_FullJSON+= fieldSeparation + "'objectclass': '" + this->m_ObjectClass + "'";
+  m_FullJSON+= "}";
+
+  return m_FullJSON;
+}
 
 //================================================================
 //	moConfig ( XML Config )
@@ -231,6 +249,7 @@ void
 moConfig::FixConfig() {
 
   ///AGREGAMOS PARAMETROS FALTANTES
+  /// Y OPCIONES !!!
   for( MOuint j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
     moParamDefinitions* pd = m_ConfigDefinition.GetParamDefinitions();
     if (pd) {
@@ -254,6 +273,10 @@ moConfig::FixConfig() {
           if ( pParamLoaded.GetParamDefinition().GetType() != paramDefType ) {
             /// fix type
             pParamLoaded.FixType( paramDefType );
+
+          }
+          if (pDef.GetOptions().Count()!=pParamLoaded.GetParamDefinition().GetOptions().Count()) {
+            pParamLoaded.FixOptions( pDef.GetOptions() );
           }
         }
     }
@@ -325,6 +348,9 @@ int moConfig::LoadConfig( moText p_filename ) {
 			TiXmlElement* UPDATE = NULL;
 			if (NODEUPDATE) {
 				UPDATE = NODEUPDATE->ToElement();
+				if (UPDATE) {
+          moText version = UPDATE->Attribute("");
+				}
 			}
 
 			TiXmlNode* NODECONFIGPARAMS = MOCONFIG->FirstChild( "CONFIGPARAMS" );
@@ -365,8 +391,12 @@ int moConfig::LoadConfig( moText p_filename ) {
 					resStr = ((char*) PARAM->Attribute( "duration"));
           if (resStr) paramduration = resStr;
 
+          moText paramoptions;
+					resStr = ((char*) PARAM->Attribute( "options"));
+					if (resStr) paramoptions = resStr;
+
           /*cout << endl << "moConfig::LoadConfig > name: " <<  paramname << " paraminterpolation: " << paraminterpolation  << endl;*/
-					moParamDefinition definition( paramname, paramtype, paramproperty, paramgroup, paraminterpolation, paramduration );
+					moParamDefinition definition( paramname, paramtype, paramproperty, paramgroup, paraminterpolation, paramduration, paramoptions );
 					moParam	xparam( definition );
 
 					TiXmlElement*  VALUE = NULL;
@@ -387,6 +417,15 @@ int moConfig::LoadConfig( moText p_filename ) {
 							moText valuemin( (char*) VALUEDATA->Attribute("min") );
 							moText valuemax( (char*) VALUEDATA->Attribute("max") );
 							moText valuedata( (char*) VALUEDATA->GetText() );
+
+              if (valuetype=="XML") {
+                  TiXmlPrinter printer;
+                  TiXmlNode* NODEDATAXML = VALUEDATA->FirstChild();
+                  if (NODEDATAXML) {
+                    NODEDATAXML->Accept( &printer );
+                    valuedata = moText( printer.CStr() );
+                  }
+              }
 
 							moValue xvalue( valuedata, valuetype );
 
@@ -409,6 +448,15 @@ int moConfig::LoadConfig( moText p_filename ) {
                 moText subvaluemax( (char*) VALUEDATA->Attribute("max") );
 								moText subvaluedata( (char*) VALUEDATA->GetText() );
 
+                if (subvaluetype=="XML") {
+                    TiXmlPrinter printer;
+                    TiXmlNode* NODEDATAXML = VALUEDATA->FirstChild();
+                    if (NODEDATAXML) {
+                      NODEDATAXML->Accept( &printer );
+                      subvaluedata = moText( printer.CStr() );
+                    }
+                }
+
 								xvalue.AddSubValue( subvaluedata, subvaluetype );
 
 								moValueBase& xxvbase( xvalue.GetLastSubValue() );
@@ -426,12 +474,7 @@ int moConfig::LoadConfig( moText p_filename ) {
 					}
 
 					xparam.FirstValue();
-					/*cout    << "moConfig::LoadConfig > adding paramname: " << xparam.GetParamDefinition().GetName()
-                            << "  paramtype:" << xparam.GetParamDefinition().GetTypeStr()
-                            << "  interpolation > IsOn(): " << xparam.GetParamDefinition().GetInterpolation().IsOn()
-                            << "  GetFunctionToText(): " << xparam.GetParamDefinition().GetInterpolation().GetFunctionToText()
-                            << "  GetDuration(): " << xparam.GetParamDefinition().GetInterpolation().GetDuration() << endl;
-					*/
+
 					m_Params.Add( xparam );
 
 					PARAM = PARAM->NextSiblingElement("PARAM");
@@ -505,6 +548,7 @@ int moConfig::LoadConfig( moText p_filename ) {
 }
 
 int moConfig::SaveConfig( moText p_filename ) {
+    moText TNodeValue;
 
     if (p_filename.Length()==0) {
         p_filename = this->m_FileName;
@@ -541,7 +585,7 @@ int moConfig::SaveConfig( moText p_filename ) {
 
             for( int p = 0; p< (int)m_Params.Count(); p++ ) {
 
-                //proximo parámetro
+                //proximo par�metro
                 moParam& xparam( m_Params[p] );
                 moParamDefinition definition = xparam.GetParamDefinition();
 
@@ -550,9 +594,11 @@ int moConfig::SaveConfig( moText p_filename ) {
 
                     PARAM->SetAttribute( "name" , definition.GetName() );
                     PARAM->SetAttribute( "type" , definition.GetTypeStr() );
-                    PARAM->SetAttribute( "property", definition.GetProperty() );
-                    PARAM->SetAttribute( "group", definition.GetGroup() );
-                    PARAM->SetAttribute( "type" , definition.GetTypeStr() );
+
+                    if (definition.GetProperty().Length()) PARAM->SetAttribute( "property", definition.GetProperty() );
+                    if (definition.GetGroup().Length()) PARAM->SetAttribute( "group", definition.GetGroup() );
+                    if (definition.GetTypeStr().Length()) PARAM->SetAttribute( "type" , definition.GetTypeStr() );
+                    if (definition.GetOptionsStr().Length()) PARAM->SetAttribute( "options" , definition.GetOptionsStr() );
 
                     if (definition.GetInterpolation().GetFunctionToText()!=moText("none") ) {
 
@@ -589,9 +635,29 @@ int moConfig::SaveConfig( moText p_filename ) {
                                             VALUEDATA->SetAttribute( "min" , FloatToStr( valuemin ) );
                                             VALUEDATA->SetAttribute( "max" , FloatToStr( valuemax ) );
                                     }
-                                    TiXmlText * datatext = new TiXmlText( xvaluedata.ToText() );
+                                    if (xvaluedata.GetTypeStr()=="XML") {
+                                      TiXmlDocument   XMLDoc;
+                                      TiXmlEncoding   xencoding = TIXML_ENCODING_LEGACY; ///or TIXML_ENCODING_UTF8
+                                      XMLDoc.Parse((const char*) xvaluedata.Text(), 0, xencoding );
+                                      TiXmlElement* rootKey = XMLDoc.FirstChildElement( "D" );
+                                      TiXmlNode* XMLC;
 
-                                    VALUEDATA->LinkEndChild( datatext );
+                                      if (rootKey==NULL) {
+                                        XMLC = XMLDoc.FirstChild();
+                                      } else XMLC = rootKey->FirstChild();
+
+                                      ///iterate childrens
+                                      while(XMLC) {
+                                        TNodeValue = XMLC->Value();
+                                        VALUEDATA->InsertEndChild( *XMLC );
+                                        XMLC = XMLC->NextSibling();
+                                      }
+                                    } else {
+                                      TiXmlText * datatext = new TiXmlText( xvaluedata.ToText() );
+                                      VALUEDATA->LinkEndChild( datatext );
+                                    }
+
+
                                 }
                                 VALUE->LinkEndChild( VALUEDATA );
                             }
@@ -645,6 +711,7 @@ int moConfig::SaveConfig( moText p_filename ) {
     cout << "moConfig::SaveConfig > saving file to " << p_filename << endl;
     if (m_XMLDocument.SaveFile( p_filename )) {
         cout << "moConfig::SaveConfig > success " << endl;
+        m_FileName = p_filename;
         return MO_CONFIG_OK;
     } else {
         cout << "moConfig::SaveConfig > ERROR " << endl;
@@ -660,7 +727,9 @@ moConfig::CreateParam( moParamDefinition& p_ParamDef ) {
 
   ///asigna valor predeterminado definido por el plugin, sino
   ///aplica el estandar
-  if (p_ParamDef.GetDefaultValue().GetSubValueCount()>0) {
+  if ( p_ParamDef.GetDefaultValue().GetSubValueCount()>0
+      &&
+      p_ParamDef.GetDefaultValue().GetSubValue(0).GetTypeStr()!="UNDEFINED" ) {
       xparam.AddValue( p_ParamDef.GetDefaultValue() );
   } else {
       xparam.SetDefaultValue();
@@ -692,7 +761,7 @@ moConfig::CreateDefault( const moText &p_fullconfigfilename ) {
         return false;
     }
 
-    //crea los parámetros en función de las definiciones, con valores por default...
+    //crea los par�metros en funci�n de las definiciones, con valores por default...
     moParamDefinitions* pParamDefinitions = NULL;
 
     pParamDefinitions = this->GetConfigDefinition()->GetParamDefinitions();
@@ -1242,9 +1311,9 @@ moConfig::Texture(  moParamReference p_paramreference ) {
   moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
-      moTexture* pVector = pdata->Texture();
-      if (pVector) {
-        return *pVector;
+      moTexture* pTexture = pdata->Texture();
+      if (pTexture) {
+        return *pTexture;
       }
   }
   return (*m_pTexture);
@@ -1330,7 +1399,7 @@ bool
 moConfig::NextValue() {
 	if ( m_CurrentParam>=0 ) {
 		moParam& pParam( m_Params[m_CurrentParam] );
-    if ( pParam.GetIndexValue() == (pParam.GetValuesCount()-1) ) {
+    if ( pParam.GetIndexValue() == (int)(pParam.GetValuesCount()-1) ) {
       return false;
     }
 		pParam.NextValue();
@@ -1430,28 +1499,108 @@ moConfig::DeleteValue( int paramindex,  int valueindex ) {
 }
 
 
+const moPreConfig&
+moConfig::GetPreconfig( int valueindex ) {
+  if (0<=valueindex && valueindex<GetPreConfCount() ) {
+    return m_PreConfigs.Get( valueindex );
+  }
+  return m_PreConfigs.Get(-1);
+}
 
-/// Agrega una pre-configuración
 void
 moConfig::AddPreconfig( moPreconfigIndexes& p_preconfindexes ) {
     m_PreConfigs.Add( moPreConfig( p_preconfindexes ) );
 }
 
-/// Agrega una pre-configuración
+void
+moConfig::AddPreconfig( int preconfig_index) {
+
+  int new_preconfigs = preconfig_index - GetPreConfCount() + 1;
+
+  //MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > Adding Preconfigs: " + IntToStr(valcount) );
+  //mo->Message("moConfig::AddPreconfig > Adding Preconfigs: " + IntToStr(new_preconfigs) );
+
+  if (new_preconfigs>0) {
+    int base_index = GetPreConfCount();
+    int min_index = 0;
+    for( int sum=0; sum < new_preconfigs ; sum++ ) {
+
+      moPreConfig newPreCfg;
+
+      /// ADD PARAMETERS THAT HAS BEEN
+      /// CUSTOMIZED (so they have values count > 1)
+      for( int pi=0; pi < GetParamsCount(); pi++) {
+          moParam& rParam2( GetParam(pi) );
+          int nvalues = GetParam(pi).GetValuesCount();
+          min_index = nvalues - 1;
+
+          if ( nvalues > 1 ) {
+
+            moPreconfigParamIndex preIndexA;
+
+            preIndexA.m_ParamName = rParam2.GetParamDefinition().GetName();
+            preIndexA.m_ParamIndex = rParam2.GetParamDefinition().GetIndex();
+            preIndexA.m_ValueIndex = momin( min_index, base_index+sum );
+
+            newPreCfg.m_PreconfIndexes.Add( preIndexA );
+
+          }
+      }
+
+      AddPreconfig( newPreCfg.m_PreconfIndexes );
+    }
+  }
+
+}
+
+
 void
 moConfig::InsertPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes ) {
     m_PreConfigs.Insert( valueindex,  moPreConfig( p_preconfindexes ) );
 }
 
-/// Agrega una pre-configuración
 void
 moConfig::SetPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes ) {
     m_PreConfigs.Set( valueindex, moPreConfig( p_preconfindexes ) );
 }
 
-/// Borra una pre-configuración
 void
 moConfig::DeletePreconfig( int valueindex ) {
     m_PreConfigs.Remove( valueindex );
 }
+
+const moText&
+moConfig::ToJSON() {
+
+  moText fieldSeparation = ",";
+
+  m_FullJSON = "{";
+
+  m_FullJSON+= "'configdefinition': " + this->GetConfigDefinition()->ToJSON();
+  m_FullJSON+= fieldSeparation + "'currentpreconfig':" + IntToStr( this->GetCurrentPreConf() );
+  m_FullJSON+= fieldSeparation + "'parameters': {";
+
+  fieldSeparation  = "";
+  for( int p=0; p<(int)m_Params.Count();p++) {
+    moParam Param = m_Params[p];
+    m_FullJSON+= fieldSeparation + "'" + Param.GetParamDefinition().GetName() + "': " + Param.ToJSON();
+    fieldSeparation = ",";
+  }
+  m_FullJSON+= "}";
+
+  fieldSeparation = ",";
+  m_FullJSON+= fieldSeparation + "'preconfigs': [";
+  fieldSeparation  = "";
+  for( int pre=0; pre<(int)m_PreConfigs.Count();pre++) {
+    moPreConfig PreConfig = m_PreConfigs[pre];
+    m_FullJSON+= fieldSeparation + PreConfig.ToJSON();
+    fieldSeparation = ",";
+  }
+  m_FullJSON+= "]";
+
+  m_FullJSON+= "}";
+  return m_FullJSON;
+
+  }
+
 

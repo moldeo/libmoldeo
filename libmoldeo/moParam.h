@@ -133,13 +133,42 @@ moDeclareExportedDynamicArray( moParamIndex, moParamIndexes );
 //==========================================================
 
 //check CSS3
+/**
+http://www.w3.org/TR/css3-transitions/#transition-property
+
+ease
+    The ease function is equivalent to cubic-bezier(0.25, 0.1, 0.25, 1).
+linear
+    The linear function is equivalent to cubic-bezier(0, 0, 1, 1).
+ease-in
+    The ease-in function is equivalent to cubic-bezier(0.42, 0, 1, 1).
+ease-out
+    The ease-out function is equivalent to cubic-bezier(0, 0, 0.58, 1).
+ease-in-out
+    The ease-in-out function is equivalent to cubic-bezier(0.42, 0, 0.58, 1)
+step-start
+    The step-start function is equivalent to steps(1, start).
+step-end
+    The step-end function is equivalent to steps(1, end).
+steps(<integer>[, [ start | end ] ]?)
+    Specifies a stepping function, described above, taking two parameters. The first parameter specifies the number of intervals in the function. It must be a positive integer (greater than 0). The second parameter, which is optional, is either the value ‘start’ or ‘end’, and specifies the point at which the change of values occur within the interval. If the second parameter is omitted, it is given the value ‘end’.
+cubic-bezier(<number>, <number>, <number>, <number>)
+    Specifies a cubic-bezier curve. The four values specify points P1 and P2 of the curve as (x1, y1, x2, y2). Both x values must be in the range [0, 1] or the definition is invalid. The y values can exceed this range.
+*/
 enum moParamInterpolationFunction {
     MO_INTERPOLATION_NONE=0,
     MO_INTERPOLATION_LINEAR,
+    MO_INTERPOLATION_EASE,
+    MO_INTERPOLATION_EASEIN,
+    MO_INTERPOLATION_EASEOUT,
+    MO_INTERPOLATION_EASEINOUT,
+    MO_INTERPOLATION_STEPSTART,
+    MO_INTERPOLATION_STEPEND,
+    MO_INTERPOLATION_CUBICBEZIER,
+    MO_INTERPOLATION_EXPRESSION,
     MO_INTERPOLATION_EASEINOUTQUAD,
     MO_INTERPOLATION_EASEINOUTSIN,
-    MO_INTERPOLATION_EXPRESSION,
-    MO_INTERPOLATION_ATSPEED
+    MO_INTERPOLATION_EASEINOUTCUBIC
 };
 
 
@@ -153,46 +182,28 @@ class LIBMOLDEO_API moParamInterpolation {
 
         moParamInterpolation &operator = (const moParamInterpolation &src);
 
-            void StartInterpolation( const moData& p_data_in, const moData& p_data_out );
-            void StopInterpolation();
-            const moTimer& GetTimer() const;
-            bool IsOn() const;
-            void Activate();
+        void StartInterpolation( const moData& p_data_in, const moData& p_data_out );
+        void StartInterpolation( const moValue& p_value_in, const moValue& p_value_out );
+        void StopInterpolation();
+        const moTimer& GetTimer() const;
+        bool IsOn() const;
+        void Activate();
 
+        void SetInterpolationFunction(  const moText& p_interpol_fun );
+        void SetInterpolation(  const moText& p_interpol_fun,
+                                const moText& p_fun_duration = moText(1000),
+                                const moText& p_fun_expression = moText() );
         void SetInterpolation(  moParamInterpolationFunction p_interpol_fun,
-                                            moText p_fun_duration = moText("1000"),
-                                            moText p_fun_expression = moText("") );
+                                            const moText& p_fun_duration = moText("1000"),
+                                            const moText& p_fun_expression = moText("") );
         void SetDuration(  MOlong p_fun_duration );
         MOlong GetDuration();
 
-        moText GetFunctionToText() {
-            switch(m_Function) {
-                case MO_INTERPOLATION_NONE:
-                    return moText("none");
-                    break;
-                case MO_INTERPOLATION_LINEAR:
-                    return moText("linear");
-                    break;
-                case MO_INTERPOLATION_EASEINOUTQUAD:
-                    return moText("easeinoutquad");
-                    break;
-                case MO_INTERPOLATION_ATSPEED:
-                    return moText("atspeed");
-                    break;
-                case MO_INTERPOLATION_EXPRESSION:
-                    return moText("expression");
-                    break;
-                case MO_INTERPOLATION_EASEINOUTSIN:
-                    return moText("easeinoutsin");
-                    break;
-                default:
-                    return moText("");
-                    break;
-            }
-            return moText("");
-        }
+        moText GetFunctionToText();
 
         moData* InterpolateData( moData& pParamData  );
+
+        moValue* InterpolateValue( moValue& pParamValue  );
 
         const moText& ToJSON() {
 
@@ -227,6 +238,10 @@ class LIBMOLDEO_API moParamInterpolation {
         moData  m_DataOut;
         moData  m_DataInterpolated;
 
+        moValue m_ValueIn;
+        moValue m_ValueOut;
+        moValue m_ValueInterpolated;
+
         moText  m_FullJSON;
 };
 
@@ -239,7 +254,8 @@ class LIBMOLDEO_API moParamDefinition
 		moParamDefinition();
 		moParamDefinition( const moParamDefinition &src);
 		moParamDefinition( const  moText& p_name, moParamType p_type );
-		moParamDefinition( const  moText& p_name, const moText& p_type, const moText& p_property=moText(""), const moText& p_group=moText(""), const moText& p_interpolation=moText(""), const moText& p_duration=moText("") );
+		moParamDefinition( const  moText& p_name, const moText& p_type, const moText& p_property=moText(""), const moText& p_group=moText(""), const moText& p_interpolation=moText(""), const moText& p_duration=moText(""), const moText& p_optionsstr=moText("") );
+		moParamDefinition( const  moText& p_name, const moText& p_type, const moText& p_property, const moText& p_group, const moText& p_interpolation, const moText& p_duration, const moTextArray& p_Options );
 		virtual ~moParamDefinition();
 
 		moParamDefinition &operator = (const moParamDefinition &src);
@@ -253,6 +269,9 @@ class LIBMOLDEO_API moParamDefinition
 		void SetName( const moText& p_Name) {
         m_Name = p_Name;
 		}
+
+
+    static moParamType ParamTypeFromStr( const moText& p_type );
 
 		moParamType GetType() const {
 			return m_Type;
@@ -284,21 +303,22 @@ class LIBMOLDEO_API moParamDefinition
         m_Group = p_Group;
 		}
 
-		void SetDefault( moValue& p_defaultvalue) {
-        m_DefaultValue = p_defaultvalue;
-    }
+		void SetDefault( const moValue& p_defaultvalue);
 
     moValue& GetDefaultValue() {
         return m_DefaultValue;
     }
 
 
-    void SetOptions( const moTextArray& p_options ) {
-        m_Options = p_options;
-    }
+    void SetOptions( const moTextArray& p_options );
+    void SetOptions( const moText& p_OptionsStr );
 
     moTextArray&    GetOptions() {
             return m_Options;
+    }
+
+    const moText&    GetOptionsStr() {
+            return m_OptionsStr;
     }
 
     void SetInterpolation( moParamInterpolation& p_Interpolation ) {
@@ -309,20 +329,10 @@ class LIBMOLDEO_API moParamDefinition
         return m_Interpolation;
     }
 
-    const moText& ToJSON() {
-      moText fieldseparation  = ",";
+    int Set( const moText& p_XmlText );
 
-      m_FullJSON = "{";
-      m_FullJSON+= "'name': '"+ GetName()+"'";
-      m_FullJSON+= fieldseparation + "'type': '"+ GetTypeStr()+"'";
-      m_FullJSON+= fieldseparation + "'index': '"+ IntToStr(GetIndex())+"'";
-      m_FullJSON+= fieldseparation + "'property': '"+ GetProperty()+"'";
-      m_FullJSON+= fieldseparation + "'group': '"+ GetGroup()+"'";
-      m_FullJSON+= fieldseparation + "'interpolation': "+ GetInterpolation().ToJSON();
-      m_FullJSON+= "}";
-
-      return m_FullJSON;
-    }
+    const moText& ToJSON();
+    const moText& ToXML();
 
 	private:
 
@@ -330,13 +340,15 @@ class LIBMOLDEO_API moParamDefinition
 		moParamType		  m_Type;//type of parameter ()
 		MOint			      m_Index;//index of this parameter on moConfig parameters array
 
-    moText          m_Property;
+    moText          m_Property;//published or not
     moText			    m_Group;
 		moValue         m_DefaultValue;
 		moTextArray     m_Options;
+		moText          m_OptionsStr;
 		moParamInterpolation    m_Interpolation;
 
 		moText          m_FullJSON;
+		moText          m_FullXML;
 
 };
 
@@ -379,26 +391,10 @@ class LIBMOLDEO_API moParam
 		moData* GetData();
 		void Update();
 		void SetExternData( moData* p_pExternData);
-		const moText& ToJSON() {
-
-          moText fieldSeparation = ",";
-          m_fullJSON = "{";
-          m_fullJSON+= "'paramdefinition': " + GetParamDefinition().ToJSON();
-          m_fullJSON+= fieldSeparation + "'paramvalues': [";
-
-          fieldSeparation = "";
-          for( int vi = 0; vi < (int)m_Values.Count(); vi++ ) {
-            m_fullJSON+= fieldSeparation + m_Values[vi].ToJSON();
-            fieldSeparation = ",";
-          }
-         // m_fullJSON+= fieldSeparation + "'paramvalues': " + ToJSON();
-          m_fullJSON+= "]";
-          m_fullJSON+= "}";
-          return m_fullJSON;
-
-		}
+		const moText& ToJSON();
 
     bool FixType( moParamType m_NewType = MO_PARAM_UNDEFINED );
+    bool FixOptions( moTextArray& m_NewOptions );
 
 	private:
 		moParamDefinition	m_ParamDefinition;

@@ -37,6 +37,15 @@
 #include "moEffectState.h"
 
 
+enum moConsoleMode {
+
+  MO_CONSOLE_MODE_LIVE=0,
+  MO_CONSOLE_MODE_RECORD_SESSION=1,
+  MO_CONSOLE_MODE_PLAY_SESSION=2,
+  MO_CONSOLE_MODE_RENDER_SESSION=3,
+
+};
+
 /// Estado de la consola
 /**
 * Estado de la consola
@@ -44,35 +53,35 @@
 */
 class LIBMOLDEO_API moConsoleState : public moEffectState
 {
-	public:
+  public:
 
-		moConsoleState();
-		virtual ~moConsoleState();
+    moConsoleState();
+    virtual ~moConsoleState();
 
-		MOboolean Init();
-		MOboolean Finish();
+    MOboolean Init();
+    MOboolean Finish();
 
-    public:
-		MOswitch pause;
-		MOswitch automatic;
-		MOswitch reinit;
-		MOswitch finish;
+  public:
 
-		MOswitch setfps;
-		MOuint fps, fps0, fps1;
+    moConsoleMode m_Mode;
 
-		//especiales
-		MOswitch stereooutput;
+    MOswitch pause;
+    MOswitch automatic;
+    MOswitch reinit;
+    MOswitch finish;
 
-		MOswitch savescreen;
-		MOuint frame;
+    MOswitch setfps;
+    MOuint fps, fps0, fps1;
 
-		MOuint m_nEffects;
-		MOuint m_nPreEffects;
-		MOuint m_nPostEffects;
-		MOuint m_nMasterEffects;
-		MOuint m_nAllEffects;
+    //especiales
+    MOswitch stereooutput;
 
+    MOswitch savescreen;
+    MOuint frame;
+
+    long step_interval;
+
+    const moText& ToJSON();
 };
 
 #endif

@@ -57,119 +57,123 @@
 class LIBMOLDEO_API moConfigDefinition : public moAbstract
 {
 	public:
-        /// constructor
+
+    /// constructor
 		moConfigDefinition();
 
 		/// destructor
 		virtual ~moConfigDefinition();
 
-        /// Agrega la definición de un parámetro
-        /**
-        *
-        * @param p_name nombre del parámetro
-        * @param p_type tipo del parámetro
-        * @param p_index    índice del parámetro dentro del archivo de configuración (-1 si no está definido aún)
-        */
-		void Add( moText p_name, moParamType p_type, MOint p_index = -1 );
+    /// copy constructor
+    moConfigDefinition( const moConfigDefinition& p_src );
 
-        /// Agrega la definición de un parámetro con un valor predeterminado a tomar
-        /**
-        *
-        * @param p_name nombre del parámetro
-        * @param p_type tipo del parámetro
-        * @param p_index    índice del parámetro dentro del archivo de configuración (-1 si no está definido aún)
-        * @param p_defaultvalue  valor predeterminado
-        */
-		//void Add( moText p_name, moParamType p_type, MOint p_index, const moValue& p_defaultvalue );
-		void Add( moText p_name, moParamType p_type, MOint p_index, moValue p_defaultvalue );
-		void Add( moText p_name, moParamType p_type, MOint p_index, moValue p_defaultvalue, const moTextArray& p_Options );
+    /// assignment copy operator
+    moConfigDefinition& operator =( const moConfigDefinition& p_src );
 
-		/// Devuelve el puntero al arreglo de definciones de parámetros
-        /**
-        *   Este objeto permite la enumeración de las definiciones de cada parámetro
-        * @return el puntero al arreglo de definiciones de parámetros moParamDefinitions
-        */
-		moParamDefinitions*	GetParamDefinitions() {
-			return &m_ParamDefinitions;
-		}
+    /// Agrega la definición de un parámetro con un valor predeterminado a tomar
+    /**
+    *
+    * @param p_name nombre del parámetro
+    * @param p_type tipo del parámetro
+    * @param p_index    índice del parámetro dentro del archivo de configuración (-1 si no está definido aún)
+    * @param p_defaultvalue  valor predeterminado
+    */
+    void Add( const moText& p_name, moParamType p_type, int p_index=-1, const moValue& p_defaultvalue = moValue("INVALID",MO_VALUE_UNDEFINED), const moText& p_OptionsStr = moText("") ) {
+      if ( Exists(p_name) ) {
+        MODebug2->Error( p_name + " already defined in " + m_ObjectName );
+        return;
+      }
 
-		/// Devuelve el puntero al arreglo de índices de los parámetros
-        /**
-        *   Este objeto permite la enumeración de los índices correspondiente a cada parámetro
-        * @return el puntero al arreglo de índices de los parámetros
-        */
-		moParamIndexes& ParamIndexes() { return m_ParamIndexes; }
+      moParamDefinition pdef( p_name, p_type );
 
-		/// Fija el nombre y la clase del objeto  a configurar
-        /**
-        * El nombre del objeto no especifica la clase.
-        * El nombre de la clase puede ser del objeto del que deriva este.
-        * @param p_objectname el nombre del objeto
-        * @param p_objectclass la clase del objeto
-        */
-        void Set( moText p_objectname, moText p_objectclass ) {
-            m_ObjectName = p_objectname;
-            m_ObjectClass = p_objectclass;
-        }
+      pdef.SetIndex( p_index );
+      pdef.SetDefault( p_defaultvalue );
+      pdef.SetOptions(p_OptionsStr);
 
-		/// Devuelve el nombre del objeto asociado a este config
-        /**
-        * El nombre del objeto no especifica la clase.
-        * @return el nombre del objeto
-        */
-        const moText& GetObjectName() {
-            return m_ObjectName;
-        }
+      m_ParamDefinitions.Add( pdef );
 
-		/// Devuelve el nombre de la clase del objeto asociado a este config
-        /**
-        * El nombre de la clase puede ser del objeto del que deriva este.
-        * @return el nombre de la clase
-        */
-        const moText& GetObjectClass() {
-            return m_ObjectClass;
-        }
+      m_ParamIndexes.Add( p_index );
+    }
 
-        /// Fija el indice del array con el indice del parametro...
-        /**
-        *
-        *   Asocia en el array m_ParamIndexes, un entero (para el acceso rapido) al indice de un parametro...
-        *   esta funcion es solo para facilitar el acceso a un parametro, sin necesidad de generar una busqueda a cada vez
-        *   permitiendo tener configs de muchos parametros con acceso de orden 1. (no N)
-        *
-        *   @param defined_array_index el entero con el que se asocia el parametro
-        *   @param paramindex es el indice que corresponde a la posicion del parámetro dentro del xml del archivo de configuracion
-        *   @return verdadero si pudo asociarlo correctamente...
-        */
-        bool SetParamIndex( int defined_array_index, moParamIndex paramindex );
-        bool SetIndex( moText p_name, MOint p_index);
+    /// Devuelve el puntero al arreglo de definciones de parámetros
+    /**
+    *   Este objeto permite la enumeración de las definiciones de cada parámetro
+    * @return el puntero al arreglo de definiciones de parámetros moParamDefinitions
+    */
+    moParamDefinitions*	GetParamDefinitions() {
+    return &m_ParamDefinitions;
+    }
 
-        /// Verifica si el parametro no existe ya
-        /**
-        *
-        *   Permite verificar si un parametro se encuentra definido
-        *
-        *   @param p_name el nombre del parametro
-        *   @return verdadero si ya existe
-        */
-        bool Exists( moText p_name );
+    /// Devuelve el puntero al arreglo de índices de los parámetros
+    /**
+    *   Este objeto permite la enumeración de los índices correspondiente a cada parámetro
+    * @return el puntero al arreglo de índices de los parámetros
+    */
+    moParamIndexes& ParamIndexes() { return m_ParamIndexes; }
 
-        ///Devuelve en formato texto la estructura del objeto convertida a JSON
-        const moText& ToJSON() {
+    /// Fija el nombre y la clase del objeto  a configurar
+    /**
+    * El nombre del objeto no especifica la clase.
+    * El nombre de la clase puede ser del objeto del que deriva este.
+    * @param p_objectname el nombre del objeto
+    * @param p_objectclass la clase del objeto
+    */
+    void Set( moText p_objectname, moText p_objectclass ) {
+        m_ObjectName = p_objectname;
+        m_ObjectClass = p_objectclass;
+    }
 
-          moText fieldSeparation = ",";
+    /// Devuelve el nombre del objeto asociado a este config
+    /**
+    * El nombre del objeto no especifica la clase.
+    * @return el nombre del objeto
+    */
+    const moText& GetObjectName() {
+        return m_ObjectName;
+    }
 
-          m_FullJSON = "{";
-          m_FullJSON+= "'objectname': '" + this->m_ObjectName + "'";
-          m_FullJSON+= fieldSeparation + "'objectclass': '" + this->m_ObjectClass + "'";
-          m_FullJSON+= "}";
+    /// Devuelve el nombre de la clase del objeto asociado a este config
+    /**
+    * El nombre de la clase puede ser del objeto del que deriva este.
+    * @return el nombre de la clase
+    */
+    const moText& GetObjectClass() {
+        return m_ObjectClass;
+    }
 
-          return m_FullJSON;
-        }
+    /// Fija el indice del array con el indice del parametro...
+    /**
+    *
+    *   Asocia en el array m_ParamIndexes, un entero (para el acceso rapido) al indice de un parametro...
+    *   esta funcion es solo para facilitar el acceso a un parametro, sin necesidad de generar una busqueda a cada vez
+    *   permitiendo tener configs de muchos parametros con acceso de orden 1. (no N)
+    *
+    *   @param defined_array_index el entero con el que se asocia el parametro
+    *   @param paramindex es el indice que corresponde a la posicion del parámetro dentro del xml del archivo de configuracion
+    *   @return verdadero si pudo asociarlo correctamente...
+    */
+    bool SetParamIndex( int defined_array_index, moParamIndex paramindex );
+    bool SetIndex( moText p_name, MOint p_index);
+
+    /// Verifica si el parametro no existe ya
+    /**
+    *
+    *   Permite verificar si un parametro se encuentra definido
+    *
+    *   @param p_name el nombre del parametro
+    *   @return verdadero si ya existe
+    */
+    bool Exists( moText p_name );
+
+    const moParamDefinition& GetParamDefinition( const moText& p_param_name );
+
+    ///Devuelve en formato texto la estructura del objeto convertida a JSON
+    const moText& ToJSON();
 
 	private:
 
 		moParamDefinitions	m_ParamDefinitions;
+
 		moParamIndexes		m_ParamIndexes;
 
 		moText              m_ObjectName;
@@ -527,52 +531,26 @@ class LIBMOLDEO_API moConfig
         void                    DeleteValue( int paramindex,  int valueindex );
 
 
+        /// Agrega una pre-configuración
+        const moPreConfig& GetPreconfig( int valueindex );
 
         /// Agrega una pre-configuración
         void                    AddPreconfig( moPreconfigIndexes& p_preconfindexes );
 
-        /// Agrega una pre-configuración
+        /// Agrega una pre-configuración y las precendentes
+        void AddPreconfig( int preconfig_index);
+
+        /// Inserta una pre-configuración
         void                    InsertPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes );
 
-        /// Agrega una pre-configuración
+        /// Setea una pre-configuración
         void                    SetPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes );
 
         /// Borra una pre-configuración
         void                    DeletePreconfig( int valueindex );
 
         /// Devuelve la estructura del config en formato JSON
-        const moText&  ToJSON() {
-
-          moText fieldSeparation = ",";
-
-          m_FullJSON = "{";
-
-          m_FullJSON+= "'configdefinition': " + this->GetConfigDefinition()->ToJSON();
-          m_FullJSON+= fieldSeparation + "'currentpreconfig':" + IntToStr( this->GetCurrentPreConf() );
-          m_FullJSON+= fieldSeparation + "'parameters': {";
-
-          fieldSeparation  = "";
-          for( int p=0; p<(int)m_Params.Count();p++) {
-            moParam Param = m_Params[p];
-            m_FullJSON+= fieldSeparation + "'" + Param.GetParamDefinition().GetName() + "': " + Param.ToJSON();
-            fieldSeparation = ",";
-          }
-          m_FullJSON+= "}";
-
-          fieldSeparation = ",";
-          m_FullJSON+= fieldSeparation + "'preconfigs': [";
-          fieldSeparation  = "";
-          for( int pre=0; pre<(int)m_PreConfigs.Count();pre++) {
-            moPreConfig PreConfig = m_PreConfigs[pre];
-            m_FullJSON+= fieldSeparation + PreConfig.ToJSON();
-            fieldSeparation = ",";
-          }
-          m_FullJSON+= "]";
-
-          m_FullJSON+= "}";
-          return m_FullJSON;
-
-        }
+        const moText&  ToJSON();
 
 	private:
 

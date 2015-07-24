@@ -132,7 +132,7 @@ moVideoFramework::SetPreferredDevices( moCaptureDevices* p_pPreferredDevices ) {
 			if ( CapDev.GetName() == PreferredDevice.GetName()) { //capdev founded and maybe present
 				//set preferred videoformat...and codename
 				CapDev.SetVideoFormat( PreferredDevice.GetVideoFormat() );
-				CapDev.SetCodeName( PreferredDevice.GetCodeName() );
+				CapDev.SetLabelName( PreferredDevice.GetLabelName() );
 				//save new CapDev data
 				m_CaptureDevices.Set( i, CapDev );
 			}
@@ -161,7 +161,7 @@ moVideoFramework::SetPreferredFormat( const moCaptureDevice &m_CaptureDevice ) {
 		if ( CapDev.GetPath() == m_CaptureDevice.GetPath()) { //capdev founded and maybe present
 			//set preferred videoformat...and codename
 			CapDev.SetVideoFormat( PreferredDevice.GetVideoFormat() );
-			CapDev.SetCodeName( PreferredDevice.GetCodeName() );
+			CapDev.SetLabelName( PreferredDevice.GetLabelName() );
 			//save new CapDev data
 			m_CaptureDevices.Set( i, CapDev );
 		}

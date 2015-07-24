@@ -66,6 +66,19 @@ class LIBMOLDEO_API moFont : public moAbstract {
 		moFont();
 		virtual ~moFont();
 
+		moFont(const moFont& src) {
+      (*this) = src;
+		}
+		moFont& operator = (const moFont& src) {
+      m_Name = src.m_Name;
+      m_FontSize = src.m_FontSize;
+      m_pFace = src.m_pFace;
+      m_GLBaseList = src.m_GLBaseList;
+      m_FontGLId = src.m_FontGLId;
+
+      return (*this);
+		}
+
 		virtual MOboolean Init();
 		virtual MOboolean Init( moFontType p_Type, moText p_fontname /*or font bitmap name*/, MOint p_size, MOuint glid = 0 );
 		virtual MOboolean Finish();
@@ -92,8 +105,9 @@ class LIBMOLDEO_API moFont : public moAbstract {
 		void BuildFont();
 		void glPrint( GLint x, GLint y, char *string, int set, float scx, float scy, float rt );
 		void KillFont();
-        GLuint m_GLBaseList; // Base Display List For The Font
-        GLuint m_FontGLId;
+
+    GLuint m_GLBaseList; // Base Display List For The Font
+    GLuint m_FontGLId;
 
 };
 

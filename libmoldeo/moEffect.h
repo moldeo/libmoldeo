@@ -31,6 +31,7 @@
 #ifndef __MO_EFFECT_H__
 #define __MO_EFFECT_H__
 
+class moEffect;
 
 #include "moAbstract.h"
 #include "moTempo.h"
@@ -55,14 +56,6 @@
 #include "mo3dModelManager.h"
 #include "moRenderManager.h"
 #include "moGUIManager.h"
-
-#define RenderMan()   m_pResourceManager->GetRenderMan()
-#define TextureMan()  m_pResourceManager->GetTextureMan()
-#define DataMan()  m_pResourceManager->GetDataMan()
-#define VideoMan()  m_pResourceManager->GetVideoMan()
-#define SoundMan()  m_pResourceManager->GetSoundMan()
-#define GLMan()  m_pResourceManager->GetGLMan()
-
 
 /// clase base para objetos dibujables
 /** \if spanish
@@ -168,6 +161,7 @@ public:
     virtual void BeatPulse();
     virtual double TempoDelta( double p_delta );
     virtual double GetTempoDelta() const;
+    double SetTempoDelta( double p_delta );
     virtual double TempoFactor( double p_factor );
     virtual double GetTempoFactor() const;
 
@@ -190,19 +184,7 @@ public:
 
     virtual moTimerState State();
 
-    virtual const moText& ToJSON() {
-
-      moText fieldSeparation = ",";
-      moEffectState EffectState = GetEffectState();
-      moText objectJSON = moMoldeoObject::ToJSON();
-      m_FullJSON = "{";
-      m_FullJSON+= "'effectstate': " + EffectState.ToJSON();
-      m_FullJSON+= fieldSeparation + "'object': " + objectJSON;
-      m_FullJSON+= "}";
-
-      return m_FullJSON;
-
-    }
+    virtual const moText& ToJSON();
 
 	public:
 

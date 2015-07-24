@@ -32,6 +32,7 @@
 #include "moConsoleState.h"
 
 moConsoleState::moConsoleState() {
+
 	automatic = MO_DEACTIVATED;
 	pause = MO_DEACTIVATED;
 	finish = MO_FALSE;
@@ -42,15 +43,11 @@ moConsoleState::moConsoleState() {
 	fps0 = 0;
 	fps1 = 1;
 
-    stereooutput = MO_DEACTIVATED;
+  stereooutput = MO_DEACTIVATED;
 	savescreen = MO_DEACTIVATED;
 	frame = 0;
 
-	m_nEffects = 0;
-	m_nPreEffects = 0;
-	m_nPostEffects = 0;
-	m_nMasterEffects = 0;
-	m_nAllEffects = 0;
+  m_Mode = MO_CONSOLE_MODE_LIVE;
 }
 
 moConsoleState::~moConsoleState() {
@@ -59,6 +56,7 @@ moConsoleState::~moConsoleState() {
 
 MOboolean
 moConsoleState::Init() {
+
 	automatic = MO_DEACTIVATED;
 	pause = MO_DEACTIVATED;
 	finish = MO_FALSE;
@@ -69,17 +67,14 @@ moConsoleState::Init() {
 	fps0 = 0;
 	fps1 = 1;
 
-	m_nEffects = 0;
-	m_nPreEffects = 0;
-	m_nPostEffects = 0;
-	m_nMasterEffects = 0;
-	m_nAllEffects = 0;
+  m_Mode = MO_CONSOLE_MODE_LIVE;
 
 	return true;
 }
 
 MOboolean
 moConsoleState::Finish() {
+
 	automatic = MO_DEACTIVATED;
 	pause = MO_DEACTIVATED;
 	finish = MO_FALSE;
@@ -89,13 +84,35 @@ moConsoleState::Finish() {
 	fps = 30;
 	fps0 = 0;
 	fps1 = 1;
-
+/*
 	m_nEffects = 0;
 	m_nPreEffects = 0;
 	m_nPostEffects = 0;
 	m_nMasterEffects = 0;
 	m_nAllEffects = 0;
-
+*/
 	return true;
 }
+
+const moText&
+moConsoleState::ToJSON() {
+
+  moText fieldSeparation = ",";
+  moEffectState::ToJSON();
+  moText tmode = "";
+  if (m_Mode==MO_CONSOLE_MODE_LIVE) tmode = "live";
+  if (m_Mode==MO_CONSOLE_MODE_PLAY_SESSION) tmode = "playsession";
+  if (m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) tmode = "recordsession";
+  if (m_Mode==MO_CONSOLE_MODE_RENDER_SESSION) tmode = "rendersession";
+
+  moText json = "{";
+  json+= "'mode': '"+tmode+"'";
+  json+= fieldSeparation + "'effectstate':"+fullJSON;
+  json+= "}";
+  fullJSON = json;
+  return fullJSON;
+}
+
+
+
 

@@ -30,13 +30,90 @@
 *******************************************************************************/
 
 #include "moSceneEffect.h"
+#include <moArray.h>
+moDefineDynamicArray( moKeys )
+
+
+/** ======================================================================= */
+/** KEY EFFECT */
+/** ======================================================================= */
+
+#include <tinyxml.h>
+int
+moKeyEffect::Set( const moText& p_XmlText ) {
+  TiXmlDocument   m_XMLDoc;
+  //TiXmlHandle xmlHandle( &m_XMLDoc );
+  TiXmlEncoding   xencoding = TIXML_ENCODING_LEGACY; ///or TIXML_ENCODING_UTF8
+
+  m_XMLDoc.Parse((const char*) p_XmlText, 0, xencoding );
+  ///convert xmltext to structure
+  TiXmlElement* rootKey = m_XMLDoc.FirstChildElement( "D" );
+
+  if (rootKey) {
+    TiXmlElement* keyNode = rootKey->FirstChildElement("moKey");
+    if (keyNode) {
+      m_label_name = moText( keyNode->Attribute("label_name") );
+      m_preconfig_index = atoi( moText( keyNode->Attribute("preconfig") ) );
+      m_active = atoi( moText( keyNode->Attribute("active") ) );
+      m_action = moText( keyNode->Attribute("action") );
+      return 0;
+    }
+  }
+  return -1;
+}
+
+
+/** ======================================================================= */
+/** SCENE STATE */
+/** ======================================================================= */
+
+
+int
+moSceneState::Set( const moText& p_XmlText ) {
+
+  TiXmlDocument   m_XMLDoc;
+  //TiXmlHandle xmlHandle( &m_XMLDoc );
+  TiXmlEncoding   xencoding = TIXML_ENCODING_LEGACY; ///or TIXML_ENCODING_UTF8
+
+  m_XMLDoc.Parse((const char*) p_XmlText, 0, xencoding );
+  ///convert xmltext to structure
+  //TiXmlElement* rootKey = m_XMLDoc.FirstChildElement( "D" );
+  TiXmlElement* sceneStateNode = m_XMLDoc.FirstChildElement("moSceneState");
+
+  //if (rootKey) {
+
+    //TiXmlElement* sceneStateNode = rootKey->FirstChildElement("moSceneState");
+    if (sceneStateNode) {
+      m_mode = moText( sceneStateNode->Attribute("mode") );
+      m_in = atoi( sceneStateNode->Attribute("in") );
+      m_out = atoi( sceneStateNode->Attribute("out") );
+      m_action = moText( sceneStateNode->Attribute("action") );
+      TiXmlElement* keyNode = sceneStateNode->FirstChildElement("moKey");
+      while(keyNode) {
+        moKeyEffect Key;
+        Key.m_label_name = moText( keyNode->Attribute("label_name") );
+        Key.m_preconfig_index = atoi( moText( keyNode->Attribute("preconfig") ) );
+        Key.m_active = atoi( moText( keyNode->Attribute("active") ) );
+        Key.m_action = moText( keyNode->Attribute("action") );
+        m_SceneKeys.Add(Key);
+
+        keyNode = keyNode->NextSiblingElement("moKey");
+      }
+      return 0;
+    } else moDebugManager::Log( "No XML moSceneState in: " + p_XmlText );
+
+  //} else moDebugManager::Error();
+  return -1;
+}
+
+
+
+/** ======================================================================= */
+
 
 moSceneEffect::moSceneEffect() {
 	SetName("scene");
-}
-
-moSceneEffect::moSceneEffect(char *nom) {
-	SetName(nom);
+	SetType(MO_OBJECT_EFFECT);
 }
 
 moSceneEffect::~moSceneEffect() {
@@ -54,89 +131,274 @@ MOboolean moSceneEffect::Init()
   moDefineParamIndex( SCENE_SCRIPT, "script" );
   moDefineParamIndex( SCENE_ALPHA, "alpha" );
   moDefineParamIndex( SCENE_COLOR, "color" );
-  moDefineParamIndex( SCENE_SYNC, "sync" );
+  moDefineParamIndex( SCENE_SYNC, "syncro" );
   moDefineParamIndex( SCENE_PHASE, "phase" );
-  moDefineParamIndex( SCENE_PREEFFECTS, "preeffects" );
-  moDefineParamIndex( SCENE_PREEFFECTS, "posteffects" );
-  moDefineParamIndex( SCENE_PREEFFECTS, "mastereffects" );
-  moDefineParamIndex( SCENE_PREEFFECTS, "scene_states" );
+  moDefineParamIndex( SCENE_PREEFFECTS, "preeffect" );
+  moDefineParamIndex( SCENE_EFFECTS, "effect" );
+  moDefineParamIndex( SCENE_POSTEFFECTS, "posteffect" );
+  moDefineParamIndex( SCENE_STATES, "scene_states" );
+  moDefineParamIndex( SCENE_SEQUENCE_MODE, "sequence_mode" );
+  moDefineParamIndex( SCENE_SEQUENCE_DURATION, "sequence_duration" );
+  moDefineParamIndex( SCENE_SEQUENCE_LOOP, "sequence_loop" );
   moDefineParamIndex( SCENE_CREATE_LAYER, "create_layer" );
 
-
+  m_i_scene_states = -1;
 	m_EffectManager.Init();
+	m_EffectManager.m_pEffectManager = &m_EffectManager;
+	m_EffectManager.m_pResourceManager = GetResourceManager();
 
+	moEffect* newEffect = NULL;
+  bool res = false;
+  int pre=-1,on=-1;
 	/** CREATING NEW LAYER!! */
 	//RenderMan->CreateNewLayer( this );
-  m_Config.SetCurrentParam( "preeffects" );
+
+  m_Config.SetCurrentParam( "preeffect" );
 	if (m_Config.FirstValue()) {
     do {
       moValue& mVal(m_Config.GetCurrentValue());
       moMobDefinition MoldeoObjectDef( mVal.GetSubValue( MO_CFG_EFFECT).Text(), mVal.GetSubValue( MO_CFG_EFFECT_CONFIG).Text(),
                                         MO_OBJECT_PREEFFECT, mVal.GetSubValue( MO_CFG_EFFECT_LABEL).Text() );
-      m_EffectManager.New( MoldeoObjectDef );
 
+      newEffect = m_EffectManager.New( MoldeoObjectDef );
+      if (newEffect) {
+          res = newEffect->Init();
+          pre = mVal.GetSubValue(MO_CFG_EFFECT_PRE).Int();
+          on = mVal.GetSubValue(MO_CFG_EFFECT_ON).Int();
+          if (pre>=0) newEffect->GetConfig()->SetCurrentPreConf(pre);
+          if (on>0) newEffect->Activate();
+          else newEffect->Deactivate();
+      }
     } while (m_Config.NextValue());
 	}
 
-  m_Config.SetCurrentParam( "effects" );
+
+  m_Config.SetCurrentParam( "effect" );
 	if (m_Config.FirstValue()) {
     do {
       moValue& mVal(m_Config.GetCurrentValue());
       moMobDefinition MoldeoObjectDef( mVal.GetSubValue( MO_CFG_EFFECT).Text(), mVal.GetSubValue( MO_CFG_EFFECT_CONFIG).Text(),
                                         MO_OBJECT_EFFECT, mVal.GetSubValue( MO_CFG_EFFECT_LABEL).Text() );
-      m_EffectManager.New( MoldeoObjectDef );
+      newEffect = m_EffectManager.New( MoldeoObjectDef );
+      if (newEffect) {
+          res = newEffect->Init();
+          pre = mVal.GetSubValue(MO_CFG_EFFECT_PRE).Int();
+          on = mVal.GetSubValue(MO_CFG_EFFECT_ON).Int();
+          if (pre>=0) newEffect->GetConfig()->SetCurrentPreConf(pre);
+          if (on>0) newEffect->Activate();
+          else newEffect->Deactivate();
+      }
 
     } while (m_Config.NextValue());
 	}
 
-  m_Config.SetCurrentParam( "posteffects" );
+  m_Config.SetCurrentParam( "posteffect" );
 	if (m_Config.FirstValue()) {
     do {
       moValue& mVal(m_Config.GetCurrentValue());
       moMobDefinition MoldeoObjectDef( mVal.GetSubValue( MO_CFG_EFFECT).Text(), mVal.GetSubValue( MO_CFG_EFFECT_CONFIG).Text(),
                                         MO_OBJECT_POSTEFFECT, mVal.GetSubValue( MO_CFG_EFFECT_LABEL).Text() );
-      m_EffectManager.New( MoldeoObjectDef );
+      newEffect = m_EffectManager.New( MoldeoObjectDef );
+      if (newEffect) {
+          res = newEffect->Init();
+          pre = mVal.GetSubValue(MO_CFG_EFFECT_PRE).Int();
+          on = mVal.GetSubValue(MO_CFG_EFFECT_ON).Int();
+          if (pre>=0) newEffect->GetConfig()->SetCurrentPreConf(pre);
+          if (on>0) newEffect->Activate();
+          else newEffect->Deactivate();
+      }
 
     } while (m_Config.NextValue());
 	}
-/*
-	plugins.Init(0,NULL);
 
-	//generamos el array para los efectos
-	effects.Init(m_Config.GetValuesCount(idp_effects),NULL);
 
-	//generamos los efectos
-	m_Config.SetCurrentParamIndex(idp_effects);
-	m_Config.FirstValue();
-	for(i=0; i<effects.Count(); i++) {
-		effects[i] = moNewEffect(m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT).Text(), plugins);
-		if(effects[i]!=NULL) {
-			effects[i]->SetResourceManager( m_pResourceManager );
-			effects[i]->SetConfigName(  m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text() );
-                        char* str = effects[i]->GetName(); //(by Andres)
-			printf("escena nombre efecto %i: %s\n",i,str);
-		}
-		m_Config.NextValue();
+	m_Config.SetCurrentParam( "scene_states" );
+	m_n_scene_states = m_Config.GetCurrentParam().GetValuesCount();
+
+	int i_scene_states = 0;
+	if (m_Config.FirstValue()) {
+    do {
+        moValue& mVal(m_Config.GetCurrentValue());
+        moSceneState SceneState;
+
+        if (mVal.GetSubValueCount()>1) {
+          SceneState.m_state_name = mVal.GetSubValue( 0 ).Text();
+          SceneState.Set( mVal.GetSubValue( 1 ).Text());
+        }
+
+        m_SceneStates[i_scene_states] = SceneState;
+
+        MODebug2->Message("scene_states: " + mVal.GetSubValue( 0 ).Text() );
+        i_scene_states+= 1;
+    } while (m_Config.NextValue());
 	}
+	m_Config[ moR(SCENE_STATES)].SetIndexValue(0);
 
-	//INICIALIZACION DE CADA EFFECT(LA ASIGNACION DE CODIGOS DE DISPOSITIVO SE HACE APARTE)
-	for(i=0; i<effects.Count(); i++) {
-		if(effects[i]!=NULL) {
+  m_Config.SetCurrentPreConf( 0 );
 
-			moEffectState fxstate = effects[i]->GetEffectState();
-			fxstate.fulldebug = m_EffectState.fulldebug;
-
-            effects[i]->SetEffectState( fxstate );
-			effects[i]->Init();
-			effects[i]->Activate();
-
-		}
-	}
-
-    if(m_Config.GetPreConfCount() > 0)
-        m_Config.PreConfFirst();
-*/
 	return true;
+}
+
+int
+moSceneEffect::GetObjectId( moText p_label_name ) {
+
+  moEffect* pEffect = m_EffectManager.GetEffectByLabel( p_label_name );
+
+  if (pEffect) {
+
+    return pEffect->GetId();
+
+  }
+
+  return -1;
+
+}
+
+
+int
+moSceneEffect::UpdateMoldeoIds( moMoldeoObjects &p_MoldeoSceneObjects ) {
+
+  for( int i=0; i<(int)m_EffectManager.AllEffects().Count(); i++ ) {
+
+    moEffect* childFx = m_EffectManager.AllEffects().Get(i);
+
+    moMobDefinition pChildDef = childFx->GetMobDefinition();
+    pChildDef.SetMoldeoFatherId(this->GetId());
+    pChildDef.SetFatherLabelName(this->GetLabelName());
+    pChildDef.SetMoldeoId(MO_MOLDEOSCENEOBJECTS_OFFSET_ID + p_MoldeoSceneObjects.Count() );
+
+    ///set definition in object
+    childFx->SetMobDefinition(pChildDef);
+
+    p_MoldeoSceneObjects.Add( (moMoldeoObject*) childFx );
+
+    /** RECURSIVE */
+    if ( childFx->GetName()=="scene" ) {
+      moSceneEffect* pScene = (moSceneEffect*) childFx;
+      pScene->UpdateMoldeoIds( p_MoldeoSceneObjects );
+    }
+
+  }
+  return 0;
+}
+
+int
+moSceneEffect::UpdateSceneState( int i_state ) {
+/*
+  if (0<=i_state && i_state<m_n_scene_states) {
+    moSceneState& SceneState( m_SceneStates[i_state] );
+*/
+  ///check auto -> dont wait -> if timer has reached duration
+  /// or timer has reached (total_duration/m_n_sequence_states)
+
+  ///
+
+
+/*
+    if ( SceneState.m_Timer.Duration() ) {
+
+    }
+*/
+  //}
+  if (i_state>0) return i_state;
+
+  return 0;
+}
+
+int
+moSceneEffect::NextSceneState( int i_state ) {
+
+  int i_next_state = i_state + 1;
+
+  if (0<=i_next_state && i_next_state<m_n_scene_states) {
+    MODebug2->Message("Next Scene State: " + IntToStr(i_next_state));
+  } else {
+    if (m_Config.Int( moR(SCENE_SEQUENCE_LOOP)) > 0) {
+      i_next_state = 0;
+      MODebug2->Message("Looping States.");
+    } else {
+      i_next_state = m_n_scene_states-1;
+      MODebug2->Message("End of States reached.");
+      return -1;
+    }
+  }
+
+  return SetSceneState( i_next_state );
+}
+
+int moSceneEffect::SetSceneState( int i_state ) {
+
+  int key = 0;
+  moEffect* pEffect=NULL;
+
+  if (i_state >= m_n_scene_states) return -1;
+
+  moSceneState& SceneState( m_SceneStates[i_state] );
+
+  ///Start timer
+  SceneState.m_Timer.Start();
+
+  /// Deactivate all effects
+
+  for( key=0; key<(int)m_EffectManager.AllEffects().Count(); key++) {
+
+    pEffect = m_EffectManager.AllEffects().Get(key);
+
+    if (pEffect) {
+      if (SceneState.m_action=="hideall"
+          || SceneState.m_SceneKeys.Count()>0 ) {
+        pEffect->Deactivate();
+      }
+
+      if (SceneState.m_action=="showall") {
+        pEffect->Activate();
+      }
+    }
+
+  }
+
+  for( key=0; key<(int)SceneState.m_SceneKeys.Count(); key++) {
+    moKeyEffect& Key(SceneState.m_SceneKeys[key]);
+
+    pEffect = m_EffectManager.GetEffectByLabel( Key.m_label_name );
+
+    if (pEffect) {
+      if ( Key.m_active>0 ) pEffect->Activate();
+      if ( Key.m_preconfig_index>=0 && pEffect->GetConfig()) pEffect->GetConfig()->SetCurrentPreConf( Key.m_preconfig_index );
+      if ( Key.m_action=="stop") pEffect->Stop();
+      if ( Key.m_action=="play") pEffect->Play();
+      if ( Key.m_action=="pause") pEffect->Pause();
+    }
+  }
+
+  return 0;
+}
+
+
+void moSceneEffect::UpdateParameters() {
+
+  //int key = 0;
+
+  ///next sequence is next sequence in config param "sequence_states"
+
+  if (m_i_scene_states!=m_Config[ moR(SCENE_STATES)].GetIndexValue()) {
+      m_i_scene_states = m_Config[ moR(SCENE_STATES)].GetIndexValue();
+      SetSceneState(m_i_scene_states);
+  } else {
+    //i_sequence_states = m_Config[ moR(SEQUENCE_STATES)].GetIndexValue()
+    UpdateSceneState(m_i_scene_states);
+  }
+
+}
+
+
+void
+moSceneEffect::Update( moEventList* p_EventList ) {
+
+  UpdateParameters();
+
+  moMoldeoObject::Update(p_EventList);
+
 }
 
 void moSceneEffect::Draw( moTempo* tempogral, moEffectState* parentstate)
@@ -147,37 +409,25 @@ void moSceneEffect::Draw( moTempo* tempogral, moEffectState* parentstate)
   bool pre_effect_on = false;
   moRenderManager* RenderMan = GetResourceManager()->GetRenderMan();
 
-  BeginDraw( tempogral, parentstate);
+
+  BeginDraw( tempogral, parentstate );
 
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();                                     // Store The Modelview Matrix
 	glLoadIdentity();
-    // Dejamos todo como lo encontramos //
-
-	//Se dibujan los efectos
-	/*
-	for(i=0;i<effects.Count();i++) {
-		if(effects[i]!=NULL) {
-			if(effects[i]->Activated()) {
-				effects[i]->GetConfig()->SetCurrentPreConf( m_Config.GetParam(idp_scenes).GetValue().GetSubValue(i).Int());
-
-				moEffectState scene_state = GetEffectState();
-				moTempo scene_tempo = GetEffectState().tempo;
-
-				effects[i]->Draw(&scene_tempo, &scene_state );
-			}
-		}
-	}
-*/
-
 
   /** ACTIVAR EL PRE-EFFECT */
-  for(i=1; i<m_EffectManager.PreEffects().Count(); i++ ) {
+  for(i=1 /*starting from index 0+1 (first is expected to be ERASE*/; i<m_EffectManager.PreEffects().Count(); i++ ) {
     pEffect = m_EffectManager.PreEffects().GetRef(i);
     if( pEffect ) {
       if( pEffect->Activated() ) {
         pre_effect_on = true;
         RenderMan->BeginDrawEffect();
+
+        moEffectState fstate = pEffect->GetEffectState();
+        fstate.alpha = m_EffectState.alpha;
+        pEffect->SetEffectState( fstate );
+
         pEffect->Draw(&m_EffectState.tempo);
         RenderMan->EndDrawEffect();
         borrar = MO_DEACTIVATED;
@@ -193,6 +443,11 @@ void moSceneEffect::Draw( moTempo* tempogral, moEffectState* parentstate)
           if( pEffect->Activated() )
           {
             if (RenderMan) RenderMan->BeginDrawEffect();
+
+            moEffectState fstate = pEffect->GetEffectState();
+            fstate.alpha = m_EffectState.alpha;
+            pEffect->SetEffectState( fstate );
+
             pEffect->Draw(&m_EffectState.tempo);
             if (RenderMan) RenderMan->EndDrawEffect();
           }
@@ -215,6 +470,11 @@ void moSceneEffect::Draw( moTempo* tempogral, moEffectState* parentstate)
       if(pEffect) {
           if(pEffect->Activated()) {
                   RenderMan->BeginDrawEffect();
+
+                  moEffectState fstate = pEffect->GetEffectState();
+                  fstate.alpha = m_EffectState.alpha;
+                  pEffect->SetEffectState( fstate );
+
                   pEffect->Draw(&m_EffectState.tempo);
                   RenderMan->EndDrawEffect();
           }
@@ -232,14 +492,20 @@ void moSceneEffect::Draw( moTempo* tempogral, moEffectState* parentstate)
     if(pEffect) {
       if(pEffect->Activated()) {
         RenderMan->BeginDrawEffect();
+
+        moEffectState fstate = pEffect->GetEffectState();
+        fstate.alpha = m_EffectState.alpha;
+        pEffect->SetEffectState( fstate );
+
         pEffect->Draw(&m_EffectState.tempo);
+
         RenderMan->EndDrawEffect();
       }
     }
   }
 
-
-  if (RenderMan) RenderMan->CopyRenderToTexture(MO_FINAL_TEX);
+  ///TODO: corregir esto, debe hacerse este paso sobre la textura final de ete efecto (FBO)
+  ///if (RenderMan) RenderMan->CopyRenderToTexture(MO_FINAL_TEX);
 
   /** GUARDAR LA TEXTURA -> scene_xxx_texture */
 
@@ -271,10 +537,17 @@ moSceneEffect::GetDefinition( moConfigDefinition *p_configdefinition ) {
 
 	//default: alpha, color, syncro
 	p_configdefinition = moEffect::GetDefinition( p_configdefinition );
-	p_configdefinition->Add( moText("preeffects"), MO_PARAM_TEXT, SCENE_PREEFFECTS, moValue( "", MO_VALUE_TXT ) );
-	p_configdefinition->Add( moText("effects"), MO_PARAM_TEXT, SCENE_EFFECTS, moValue( "", MO_VALUE_TXT ) );
-	p_configdefinition->Add( moText("posteffects"), MO_PARAM_TEXT, SCENE_POSTEFFECTS, moValue( "", MO_VALUE_TXT ) );
-	p_configdefinition->Add( moText("scene_states"), MO_PARAM_VECTOR, SCENE_SCENE_STATES, moValue( "0", MO_VALUE_NUM ) );
+	p_configdefinition->Add( moText("preeffect"), MO_PARAM_TEXT, SCENE_PREEFFECTS );
+	p_configdefinition->Add( moText("effect"), MO_PARAM_TEXT, SCENE_EFFECTS );
+	p_configdefinition->Add( moText("posteffect"), MO_PARAM_TEXT, SCENE_POSTEFFECTS );
+
+  moValue StateDefault( "State A", MO_VALUE_TXT );
+  StateDefault.AddSubValue("<moSceneState action=\"showall\"/>","XML");
+
+	p_configdefinition->Add( moText("scene_states"), MO_PARAM_TEXT, SCENE_STATES, StateDefault );
+	p_configdefinition->Add( moText("sequence_mode"), MO_PARAM_NUMERIC, SCENE_SEQUENCE_MODE, moValue( "0", MO_VALUE_NUM ) );
+	p_configdefinition->Add( moText("sequence_loop"), MO_PARAM_NUMERIC, SCENE_SEQUENCE_LOOP, moValue( "0", MO_VALUE_NUM ) );
+  p_configdefinition->Add( moText("sequence_duration"), MO_PARAM_NUMERIC, SCENE_SEQUENCE_DURATION, moValue( "0", MO_VALUE_NUM ) );
 	p_configdefinition->Add( moText("create_layer"), MO_PARAM_NUMERIC, SCENE_CREATE_LAYER, moValue( "0", MO_VALUE_NUM ) );
 
 	return p_configdefinition;
@@ -286,15 +559,6 @@ moSceneEffect::LoadCodes(moIODeviceManager *consolaesarray) {
 
 	//cargamos el especifico a este luego el de los efectos dentro del array
 	moEffect::LoadCodes(consolaesarray);
-
-	//ASIGNACION DE CODIGOS DE DISPOSITIVO(cargados del config de cada efecto)
-	/*
-	for(MOuint i=0;i<effects.Count();i++) {
-		if(effects[i]!=NULL) {
-			effects[i]->LoadCodes(consolaesarray);
-		}
-	}
-	*/
 
 
 }

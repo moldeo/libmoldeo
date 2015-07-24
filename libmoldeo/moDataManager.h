@@ -32,6 +32,8 @@
 #ifndef __MO_DATAMANAGER_H__
 #define __MO_DATAMANAGER_H__
 
+#include "moBasePlugin.h"
+#include <moConsoleState.h>
 #include <moActions.h>
 #include <moValue.h>
 #include <moParam.h>
@@ -80,6 +82,22 @@ enum moDataSessionPlaybackMode {
 };
 
 
+enum moDataSessionRenderdMode {
+    MO_DATASESSION_RENDER_TOMEMORY = 0, ///Renderizado en memoria
+    MO_DATASESSION_RENDER_BUFFERINGTOFILE = 1, ///renderizado con memoria intermedia a disco
+    MO_DATASESSION_RENDER_DIRECTTOFILE = 2, ///
+    MO_DATASESSION_RENDER_STREAMING = 4
+};
+
+enum moDataSessionConfigParameters {
+  MO_DATA_SESSION_CONFIG_PROJECT=0,
+  MO_DATA_SESSION_CONFIG_RESOLUTION,
+  MO_DATA_SESSION_CONFIG_RENDER_FOLDER,
+  MO_DATA_SESSION_CONFIG_LENGTH,
+  MO_DATA_SESSION_CONFIG_KEYS,
+  MO_DATA_SESSION_CONFIG_EVENT_KEYS,
+};
+
 
 /**
 
@@ -91,8 +109,8 @@ Configuración de sesión. Se crea antes de empezar una sesión con los datos espec
     la cantidad máxima de tiempo a grabar en milisegundos
 
 */
-class LIBMOLDEO_API moDataSessionConfig {
-
+class LIBMOLDEO_API moDataSessionConfig : public moConfig {
+  friend class moDataSession;
 	public:
 
 		moDataSessionConfig();
@@ -101,8 +119,8 @@ class LIBMOLDEO_API moDataSessionConfig {
                             moText p_apppath,
                             moText p_datapath,
                             moText p_consoleconfig,
-                            moText p_SessionFileName=moText("sesion.sml"),
-                            moText p_VideoFileName=moText("sesion.mpg"),
+                            moText p_SessionFileName=moText("sesion.mos"),
+                            moText p_VideoFileName=moText("sesion.mp4"),
                             long p_MaxKeys = 10000,
                             long p_MaxTimecode=3600000/*1 hora*/,
                             long p_Port = 0 /**/,
@@ -116,6 +134,7 @@ class LIBMOLDEO_API moDataSessionConfig {
 		moText GetConsoleConfigName();
 		moText GetVideoFileName();
 		moText GetSessionFileName();
+		moText GetPluginsPath();
 
 		long   GetMaxKeys() {
                 return m_MaxKeys;
@@ -133,13 +152,13 @@ class LIBMOLDEO_API moDataSessionConfig {
                 return m_Address;
         }
 
-
 	private:
 
     moText m_AppPath;/// Directorio de ejecución de la aplicación
 		moText m_DataPath;/// Directorio de datos de la sesión
 		moText m_ConsoleConfigName;///archivo de definición de la consola (*.mol)
     moText m_AppDataPath;
+    moText m_PluginsPath;
         /*
         MO_DATASESSION_MODE_SAVETOMEMORY
         */
@@ -154,20 +173,49 @@ class LIBMOLDEO_API moDataSessionConfig {
 };
 
 class LIBMOLDEO_API moDataSessionKey {
-
+    friend class moConsole;
     public:
 
         moDataSessionKey();
+        moDataSessionKey(		long p_Timecode,
+                            moMoldeoActionType p_ActionType,
+                            long p_MoldeoObjectId,
+                            long p_PreconfId );
+
         moDataSessionKey(   long p_Timecode,
                             moMoldeoActionType p_ActionType,
-                            moValue& p_Value,
-                            long p_MoldeoObjectId=MO_PARAM_UNDEFINED,
-                            long m_ParamId=MO_PARAM_UNDEFINED,
-                            long m_ValueId=MO_PARAM_UNDEFINED );
+                            long p_MoldeoObjectId=MO_UNDEFINED );
+
+        moDataSessionKey(   long p_Timecode,
+                            moMoldeoActionType p_ActionType,
+                            long p_MoldeoObjectId,
+                            long p_ParamId,
+                            long p_ValueId,
+                            const moValue& p_Value );
+
+        moDataSessionKey(   long p_Timecode,
+                            moMoldeoActionType p_ActionType,
+                            long p_MoldeoObjectId,
+                            const moEffectState& p_effect_state );
+
+        moDataSessionKey(   long p_Timecode,
+                            moMoldeoActionType p_ActionType,
+                            long p_MoldeoObjectId,
+                            long p_ParamId,
+                            const moParamDefinition& p_param_definition );
+
         virtual ~moDataSessionKey();
+        moDataSessionKey(const moDataSessionKey &src);
+        moDataSessionKey &operator = (const moDataSessionKey &src);
 
         moValue& GetValue();
-        moMoldeoActionType GetActionType();
+        moMoldeoActionType GetActionType() const;
+        bool IsInTime( long time_position, long time_interval );
+
+        const moText& ToJSON();
+        const moText& ToXML();
+
+        int Set(const moText& p_XmlText );
 
     private:
 
@@ -177,9 +225,13 @@ class LIBMOLDEO_API moDataSessionKey {
         long                  m_ObjectId; ///Opcional para identificación del índice único de objeto
         long                  m_ParamId; ///Opcional para identificación del índice único de parámetro
         long                  m_ValueId; ///Opcional para identificación del índice único de valor
-
+        long                  m_PreconfId;
         moValue               m_Value; /// Valor del dato agregado o modificado
+        moParamDefinition     m_ParamDefinition; /// Valor del dato agregado o modificado
+        moEffectState         m_EffectState; /// Valor del dato agregado o modificado
 
+        moText                m_FullJSON;
+        moText                m_FullXML;
 };
 
 class LIBMOLDEO_API moDataSessionEventKey {
@@ -188,7 +240,7 @@ class LIBMOLDEO_API moDataSessionEventKey {
 
         moDataSessionEventKey();
         moDataSessionEventKey(  long p_Timecode,
-                                moMessage& event );
+                                moMessage event );
 
         virtual ~moDataSessionEventKey();
 
@@ -198,7 +250,7 @@ class LIBMOLDEO_API moDataSessionEventKey {
 
     private:
 
-        long                  m_TimeCode; /// Valor del tick
+        long                  m_Timecode; /// Valor del tick
         moMessage             m_Message;
 
 };
@@ -216,35 +268,61 @@ class LIBMOLDEO_API moDataSession : public moAbstract {
                     moDataSessionConfig* pSessionConfig,
                     moDataSessionMode p_sessionmode,
                     moDataSessionRecordMode p_recordmode,
-                    moDataSessionPlaybackMode p_playbackmode );
+                    moDataSessionPlaybackMode p_playbackmode,
+                    moResourceManager*  p_ResMan );
 
 
-        bool SaveToFile( moText p_filename );
-        bool LoadFromFile( moText p_filename );
+        bool SaveToFile( const moText& p_filename=moText("") );
+        bool LoadFromFile( const moText& p_filename );
 
-        bool AddKey( moDataSessionKey* p_key );
-        bool AddEventKey( moDataSessionEventKey* p_eventkey );
+        bool AddKey( const moDataSessionKey& p_key );
+        bool AddEventKey( const moDataSessionEventKey& p_eventkey );
 
-        bool Playback(); ///fast playback
-        bool Record(); ///fast record
+        bool Playback( moConsoleState& p_console_state ); ///fast start playback
+        bool StopPlayback(moConsoleState& p_console_state); ///stop playback
+
+        bool Record(moConsoleState& p_console_state); ///start record
+        bool StopRecord(moConsoleState& p_console_state); ///stop record
+
+        bool Render(moConsoleState& p_console_state); ///render to images
+        bool StopRender(moConsoleState& p_console_state); ///stop render
+
         bool RecordLive( moResourceManager* pRM ); /// fast live record
 
+        bool Loaded();
+        bool LoadSession();
+        bool SetKey( int p_actual_key);
+        const moDataSessionKey& GetActualKey();
+        const moDataSessionKey& NextKey( moConsoleState& m_ConsoleState );
+
+        bool SessionStart();
+        bool SessionEnded();
+        int GetKeyCount();
+        int GetRenderedFrames() const;
+        bool StepRender( moConsoleState& p_console_state );
 
 
     private:
 
+        long                    m_StartTimeCode;
+        long                    m_EndTimeCode;
         moText                  m_Name;
         moDataSessionConfig*    m_pDataSessionConfig;
+        moResourceManager*      m_pResourceManager;
 
+        int                      m_iActualKey;
         moDataSessionKeys        m_Keys;
         moDataSessionEventKeys   m_EventKeys;
 
-        moDataSessionMode       m_SessionMode;
-        moDataSessionRecordMode m_SessionRecordMode;
+        moDataSessionMode         m_SessionMode;
+        moDataSessionRecordMode   m_SessionRecordMode;
         moDataSessionPlaybackMode m_SessionPlaybackMode;
+        moDataSessionRenderdMode  m_SessionRenderMode;
 
         moVideoGraph*           m_pVideoGraph;
+        moDataSessionKey        m_ActualKey;
 
+        int                     m_Rendered_Frames;
 
 };
 
@@ -267,6 +345,11 @@ class LIBMOLDEO_API moDataManager : public moResource
 		moText GetConsoleConfigName();
 		moText GetAppPath();
 		moText GetAppDataPath();
+		moText GetPluginsPath();
+
+		const moPluginDefinitions& GetPluginDefinitions() {
+      return m_PluginDefinitions;
+		}
 
     void StartRecordingSession(  );
     void StartPlayinbackSession(  );
@@ -279,11 +362,14 @@ class LIBMOLDEO_API moDataManager : public moResource
     bool InData( const moText& p_file_full_path  );
     moText MakeRelativeToData( const moText& p_file_full_path  );
 
+    int ReloadPluginDefinitions( moText plugindir = "", moMoldeoObjectType mobjecttype=MO_OBJECT_UNDEFINED );
+
 	protected:
 
 		moDataSessionConfig*	m_pDataSessionConfig;
 		moDataSession*          m_pDataSession;
 
+    moPluginDefinitions m_PluginDefinitions;
 
 };
 

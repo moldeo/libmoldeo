@@ -30,7 +30,8 @@
 *******************************************************************************/
 
 #include "moParam.h"
-
+#include <tinyxml.h>
+#include "moDebugManager.h"
 #include "moArray.h"
 
 moDefineDynamicArray(moParamDefinitions)
@@ -46,6 +47,7 @@ moParamDefinition::moParamDefinition() {
     m_Index = -1;
     m_Type = MO_PARAM_UNDEFINED;
     m_Property = "";
+    m_OptionsStr = "";
 }
 
 moParamDefinition::moParamDefinition( const moParamDefinition &src) {
@@ -56,7 +58,114 @@ moParamDefinition::moParamDefinition( const moText& p_name, moParamType p_type )
 		m_Name = p_name;
 		m_Type = p_type;
 		m_Index = -1;
-		m_Property = "";
+    m_Property = "";
+    m_OptionsStr = "";
+}
+
+moParamType
+moParamDefinition::ParamTypeFromStr( const moText& p_type ) {
+
+    moParamType p_Type;
+
+    if ( p_type == moText("ALPHA") ) {
+			p_Type = MO_PARAM_ALPHA;
+		} else
+		if ( p_type == moText("COLOR") ) {
+			p_Type = MO_PARAM_COLOR;
+		} else
+		if ( p_type == moText("BLENDING") ) {
+			p_Type = MO_PARAM_BLENDING;
+		} else
+		if ( p_type == moText("POLYGONMODE") ) {
+			p_Type = MO_PARAM_POLYGONMODE;
+		} else
+		if ( p_type == moText("SYNC") ) {
+			p_Type = MO_PARAM_SYNC;
+		} else
+		if ( p_type == moText("PHASE") ) {
+			p_Type = MO_PARAM_PHASE;
+		} else
+		if ( p_type == moText("TEXT") ) {
+			p_Type = MO_PARAM_TEXT;
+		} else
+		if ( p_type == moText("TEXTURE") ) {
+			p_Type = MO_PARAM_TEXTURE;
+		} else
+		if ( p_type == moText("TEXTUREFOLDER") ) {
+			p_Type = MO_PARAM_TEXTUREFOLDER;
+		} else
+		if ( p_type == moText("FONT") ) {
+			p_Type = MO_PARAM_FONT;
+		} else
+		if ( p_type == moText("3DMODEL") ) {
+			p_Type = MO_PARAM_3DMODEL;
+		} else
+		if ( p_type == moText("OBJECT") ) {
+			p_Type = MO_PARAM_OBJECT;
+		} else
+		if ( p_type == moText("VIDEO") ) {
+			p_Type = MO_PARAM_VIDEO;
+		} else
+        if ( p_type == moText("FILTER") ) {
+			p_Type = MO_PARAM_FILTER;
+		} else
+		if ( p_type == moText("SOUND") ) {
+			p_Type = MO_PARAM_SOUND;
+		} else
+		if ( p_type == moText("NUM") ) {
+			p_Type = MO_PARAM_NUMERIC;
+		} else
+		if ( p_type == moText("FUNCTION") ) {
+			p_Type = MO_PARAM_FUNCTION;
+		} else
+        if ( p_type == moText("TRANSLATEX") ) {
+			p_Type = MO_PARAM_TRANSLATEX;
+		} else
+        if ( p_type == moText("TRANSLATEY") ) {
+			p_Type = MO_PARAM_TRANSLATEY;
+		} else
+        if ( p_type == moText("TRANSLATEZ") ) {
+			p_Type = MO_PARAM_TRANSLATEZ;
+		} else
+        if ( p_type == moText("SCALEX") ) {
+			p_Type = MO_PARAM_SCALEX;
+		} else
+        if ( p_type == moText("SCALEY") ) {
+			p_Type = MO_PARAM_SCALEY;
+		} else
+        if ( p_type == moText("SCALEZ") ) {
+			p_Type = MO_PARAM_SCALEZ;
+		} else
+        if ( p_type == moText("ROTATEX") ) {
+			p_Type = MO_PARAM_ROTATEX;
+		} else
+        if ( p_type == moText("ROTATEY") ) {
+			p_Type = MO_PARAM_ROTATEY;
+		} else
+        if ( p_type == moText("ROTATEZ") ) {
+			p_Type = MO_PARAM_ROTATEZ;
+		} else
+		if ( p_type == moText("SCRIPT") ) {
+			p_Type = MO_PARAM_SCRIPT;
+		} else
+		if ( p_type == moText("COMPOSE") ) {
+			p_Type = MO_PARAM_COMPOSE;
+		} else
+		if ( p_type == moText("VECTOR") ) {
+			p_Type = MO_PARAM_VECTOR;
+		} else
+		if ( p_type == moText("INLET") ) {
+			p_Type = MO_PARAM_INLET;
+		} else
+		if ( p_type == moText("OUTLET") ) {
+			p_Type = MO_PARAM_OUTLET;
+		} else
+		if ( p_type == moText("UNDEFINED") ) {
+			p_Type = MO_PARAM_UNDEFINED;
+		}
+
+  return p_Type;
+
 }
 
 bool
@@ -85,7 +194,8 @@ moParamDefinition::moParamDefinition( const moText& p_name,
                                       const moText& p_property,
                                       const moText& p_group,
                                       const moText& p_interpolation,
-                                      const moText& p_duration) {
+                                      const moText& p_duration,
+                                      const moText& p_optionsstr ) {
 
 		m_Name = p_name;
 
@@ -99,6 +209,7 @@ moParamDefinition::moParamDefinition( const moText& p_name,
 		} else
 		if ( p_type == moText("COLOR") ) {
 			m_Type = MO_PARAM_COLOR;
+			valid_interpolation = false;// TODO: do it!
 		} else
 		if ( p_type == moText("BLENDING") ) {
 			m_Type = MO_PARAM_BLENDING;
@@ -227,6 +338,23 @@ moParamDefinition::moParamDefinition( const moText& p_name,
               //cout << "NO INTERPOLATION PARAMETERS: [" << p_interpolation << "] [" << p_duration << "]" << endl;
             }
     }// else cout << "INVALID type of parameter: " << p_type << endl;
+
+    if ( p_optionsstr.Length() > 0  ) {
+        m_OptionsStr = p_optionsstr;
+        m_Options = p_optionsstr.Explode(moText(","));
+    }
+
+}
+
+moParamDefinition::moParamDefinition( const moText& p_name,
+                                      const moText& p_type,
+                                      const moText& p_property,
+                                      const moText& p_group,
+                                      const moText& p_interpolation,
+                                      const moText& p_duration,
+                                      const moTextArray& p_Options ) {
+  (*this) = moParamDefinition(p_name,p_type,p_property,p_group,p_interpolation,p_duration);
+  m_Options = p_Options;
 }
 
 
@@ -242,6 +370,8 @@ moParamDefinition &moParamDefinition::operator = (const moParamDefinition &src)
 		m_Interpolation = src.m_Interpolation;
 		m_Property = src.m_Property;
 		m_Group = src.m_Group;
+		m_OptionsStr = src.m_OptionsStr;
+		m_Options = src.m_Options;
 		return *this;
 }
 
@@ -362,6 +492,175 @@ moParamDefinition::SetType( moParamType p_ParamType ) {
 
 }
 
+void
+moParamDefinition::SetDefault( const moValue& p_defaultvalue ) {
+
+  moValue Default = p_defaultvalue;
+  m_DefaultValue = p_defaultvalue;
+
+  if (  Default.GetSubValue().GetType()==MO_VALUE_UNDEFINED  ) {
+    switch ( GetType()  ) {
+
+      case MO_PARAM_TEXT:
+      case MO_PARAM_TEXTURE:
+      case MO_PARAM_TEXTUREFOLDER:
+      case MO_PARAM_FILTER:
+      case MO_PARAM_VIDEO:
+      case MO_PARAM_SOUND:
+      case MO_PARAM_FILE:
+      case MO_PARAM_SCRIPT:
+      case MO_PARAM_OBJECT:
+      case MO_PARAM_3DMODEL:
+        m_DefaultValue = moValue( "", "TXT" );
+        break;
+
+      case MO_PARAM_INLET:
+        m_DefaultValue = moValue( "VARIABLE1", "TXT", "NUMERIC", "TXT" );
+        break;
+
+      case MO_PARAM_FONT:
+        m_DefaultValue = moValue( "", "TXT", "", "TXT", "", "TXT" );
+        break;
+
+      case MO_PARAM_PHASE:
+      case MO_PARAM_ROTATEX:
+      case MO_PARAM_ROTATEY:
+      case MO_PARAM_ROTATEZ:
+      case MO_PARAM_TRANSLATEX:
+      case MO_PARAM_TRANSLATEY:
+      case MO_PARAM_TRANSLATEZ:
+      case MO_PARAM_FUNCTION:
+        m_DefaultValue = moValue( "0.0", "FUNCTION" ).Ref();
+        break;
+
+      case MO_PARAM_ALPHA:
+      case MO_PARAM_SYNC:
+      case MO_PARAM_SCALEX:
+      case MO_PARAM_SCALEY:
+      case MO_PARAM_SCALEZ:
+        m_DefaultValue = moValue( "1.0", "FUNCTION" ).Ref();
+        break;
+
+      case MO_PARAM_POLYGONMODE:
+      case MO_PARAM_BLENDING:
+        m_DefaultValue = moValue( "0", "INT" );
+        break;
+      case MO_PARAM_COLOR:
+        m_DefaultValue = moValue( "1.0", "FUNCTION","1.0", "FUNCTION","1.0", "FUNCTION","1.0", "FUNCTION"  );
+        break;
+      case MO_PARAM_COMPOSE:
+        m_DefaultValue = moValue( "composed by", "TXT","1.0", "FUNCTION","<nada></nada>", "XML","12345", "INT"  );
+        break;
+      case MO_PARAM_VECTOR:
+        m_DefaultValue = moValue( "1.0", "FUNCTION","2.0", "FUNCTION","3.0", "FUNCTION","4.0", "FUNCTION" );
+        break;
+      case MO_PARAM_NUMERIC:
+        m_DefaultValue = moValue( "0", "NUM" );
+        break;
+      case MO_PARAM_UNDEFINED:
+        m_DefaultValue = moValue( "INVALID", MO_VALUE_UNDEFINED );
+        break;
+      default:
+        break;
+    };
+  }
+
+}
+
+
+void
+moParamDefinition::SetOptions( const moTextArray& p_options ) {
+  m_Options = p_options;
+  m_OptionsStr = "";
+  moText comma = "";
+  for(int i=0; i<(int)m_Options.Count(); i++ ) {
+    m_OptionsStr+= comma + m_Options[i];
+    comma = ",";
+  }
+}
+
+void
+moParamDefinition::SetOptions( const moText& p_OptionsStr ) {
+  m_OptionsStr = p_OptionsStr;
+  m_Options = m_OptionsStr.Explode(moText(","));
+}
+
+const moText&
+moParamDefinition::ToJSON() {
+  moText fieldseparation  = ",";
+
+  m_FullJSON = "{";
+  m_FullJSON+= "'name': '"+ GetName()+"'";
+  m_FullJSON+= fieldseparation + "'type': '"+ GetTypeStr()+"'";
+  m_FullJSON+= fieldseparation + "'index': '"+ IntToStr(GetIndex())+"'";
+  m_FullJSON+= fieldseparation + "'property': '"+ GetProperty()+"'";
+  m_FullJSON+= fieldseparation + "'group': '"+ GetGroup()+"'";
+  m_FullJSON+= fieldseparation + "'interpolation': "+ GetInterpolation().ToJSON();
+  m_FullJSON+= fieldseparation + "'options': [";
+  fieldseparation = "";
+  for(int i=0; i<(int)m_Options.Count(); i++ ) {
+    moText ostr( m_Options[ i ] );
+    ostr.Replace( "'","&apos;" );
+    //std::string option_str = (char*)m_Options[ i ];
+    //option_str.replace( option_str.begin(), option_str.end(), "\'", "&apos;"  );
+    //option_str.replace( option_str.begin(), option_str.end(), "\"", "&quot;"  );
+    //moText ostr( option_str.c_str());
+    m_FullJSON+= fieldseparation + "'"+ostr+"'";
+    fieldseparation = ",";
+  }
+  m_FullJSON+= "]";
+
+  m_FullJSON+= "}";
+
+  return m_FullJSON;
+}
+
+const moText&
+moParamDefinition::ToXML() {
+  moText fieldseparation  = " ";
+
+  m_FullXML = "<moParamDefinition ";
+  m_FullXML+= "name='"+ GetName()+"'";
+  m_FullXML+= fieldseparation + "type='"+ GetTypeStr()+"'";
+  m_FullXML+= fieldseparation + "index='"+ IntToStr(GetIndex())+"'";
+  m_FullXML+= fieldseparation + "property='"+ GetProperty()+"'";
+  m_FullXML+= fieldseparation + "options='"+ GetOptionsStr()+"'";
+  m_FullXML+= fieldseparation + "group='"+ GetGroup()+"'";
+  m_FullXML+= fieldseparation + "interpolation='"+ GetInterpolation().GetFunctionToText()+"'";
+  m_FullXML+= fieldseparation + "duration='"+ IntToStr(GetInterpolation().GetDuration())+"' >";
+  m_FullXML+= "</moParamDefinition>";
+
+  return m_FullXML;
+}
+
+int
+moParamDefinition::Set( const moText& p_XmlText ) {
+ TiXmlDocument   m_XMLDoc;
+  //TiXmlHandle xmlHandle( &m_XMLDoc );
+  TiXmlEncoding   xencoding = TIXML_ENCODING_LEGACY; ///or TIXML_ENCODING_UTF8
+
+  m_XMLDoc.Parse((const char*) p_XmlText, 0, xencoding );
+  ///convert xmltext to structure
+  //TiXmlElement* rootKey = m_XMLDoc.FirstChildElement( "D" );
+  TiXmlElement* definitionNode = m_XMLDoc.FirstChildElement("moParamDefinition");
+
+  //if (rootKey) {
+
+    //TiXmlElement* sceneStateNode = rootKey->FirstChildElement("moSceneState");
+    if (definitionNode) {
+      m_Name = moText( definitionNode->Attribute("name") );
+      m_Type = ParamTypeFromStr( moText(definitionNode->Attribute("type")) );
+      m_Index = atoi(moText( definitionNode->Attribute("index") ));
+      m_Property = moText( definitionNode->Attribute("property") );
+      m_OptionsStr = moText( definitionNode->Attribute("options") );
+      m_Group = moText( definitionNode->Attribute("group") );
+      m_Interpolation.SetInterpolation(  moText( definitionNode->Attribute("interpolation")),  moText( definitionNode->Attribute("duration")) );
+      return 0;
+    } else moDebugManager::Log( "No XML moEffectState in: " + p_XmlText );
+
+  //} else moDebugManager::Error();
+  return -1;
+}
 
 //================================================================
 //	moParamInterpolation
@@ -406,6 +705,16 @@ moParamInterpolation::StartInterpolation( const moData& p_data_in, const moData&
 }
 
 void
+moParamInterpolation::StartInterpolation( const moValue& p_value_in, const moValue& p_value_out ) {
+    m_ValueIn = p_value_in;
+    m_ValueOut = p_value_out;
+    //m_ValueIn.Eval();
+    ///m_ValueOut.Eval();
+    m_ValueInterpolated = m_ValueIn;
+    m_Timer.Start();
+}
+
+void
 moParamInterpolation::SetDuration(  MOlong p_fun_duration ) {
     m_Duration = p_fun_duration;
 }
@@ -421,17 +730,124 @@ moParamInterpolation::StopInterpolation() {
 }
 
 void
-moParamInterpolation::SetInterpolation( moParamInterpolationFunction p_interpol_fun,
-                                moText p_fun_duration,
-                                moText p_fun_expression) {
-    moParserFunction* mp_dur = new moParserFunction();
-    //moParserFunction* mp_exp = new moParserFunction();
-    mp_dur->Init( p_fun_duration );
+moParamInterpolation::SetInterpolationFunction( const moText& p_interpol_fun ) {
+  SetInterpolation( p_interpol_fun, IntToStr(GetDuration()) );
+}
 
+
+void
+moParamInterpolation::SetInterpolation( const moText& p_interpol_fun,
+                                const moText& p_fun_duration,
+                                const moText& p_fun_expression) {
+            if ( p_interpol_fun == "linear" ) {
+                SetInterpolation( MO_INTERPOLATION_LINEAR, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("ease") ) {
+                SetInterpolation( MO_INTERPOLATION_EASE, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("easein") ) {
+                SetInterpolation( MO_INTERPOLATION_EASE, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("easeout") ) {
+                SetInterpolation( MO_INTERPOLATION_EASE, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("easeinout") ) {
+                SetInterpolation( MO_INTERPOLATION_EASEINOUT, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("stepstart") ) {
+                SetInterpolation( MO_INTERPOLATION_STEPSTART, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("stepend") ) {
+                SetInterpolation( MO_INTERPOLATION_STEPEND, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("expression") ) {
+                SetInterpolation( MO_INTERPOLATION_EXPRESSION, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("easeinoutquad") ) {
+                SetInterpolation( MO_INTERPOLATION_EASEINOUTQUAD, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("easeinoutsin") ) {
+                SetInterpolation( MO_INTERPOLATION_EASEINOUTSIN, p_fun_duration, p_fun_expression );
+
+            } else if (p_interpol_fun==moText("easeinoutcubic") ) {
+              SetInterpolation( MO_INTERPOLATION_EASEINOUTCUBIC, p_fun_duration, p_fun_expression );
+
+            } else {
+              SetInterpolation( MO_INTERPOLATION_NONE, "0", p_fun_expression );
+            }
+
+}
+
+
+moText
+moParamInterpolation::GetFunctionToText() {
+  switch(m_Function) {
+      case MO_INTERPOLATION_NONE:
+          return moText("none");
+          break;
+      case MO_INTERPOLATION_LINEAR:
+          return moText("linear");
+          break;
+      case MO_INTERPOLATION_EASE:
+          return moText("ease");
+          break;
+      case MO_INTERPOLATION_EASEIN:
+          return moText("easein");
+          break;
+      case MO_INTERPOLATION_EASEOUT:
+          return moText("easeout");
+          break;
+      case MO_INTERPOLATION_EASEINOUT:
+          return moText("easeinout");
+          break;
+      case MO_INTERPOLATION_CUBICBEZIER:
+          return moText("cubicbezer");
+          break;
+      case MO_INTERPOLATION_EASEINOUTCUBIC:
+          return moText("easeinoutcubic");
+          break;
+      case MO_INTERPOLATION_STEPSTART:
+          return moText("stepstart");
+          break;
+      case MO_INTERPOLATION_STEPEND:
+          return moText("stepend");
+          break;
+      case MO_INTERPOLATION_EASEINOUTQUAD:
+          return moText("easeinoutquad");
+          break;
+      case MO_INTERPOLATION_EXPRESSION:
+          return moText("expression");
+          break;
+      case MO_INTERPOLATION_EASEINOUTSIN:
+          return moText("easeinoutsin");
+          break;
+      default:
+          return moText("");
+          break;
+  }
+  return moText("");
+
+}
+
+void
+moParamInterpolation::SetInterpolation( moParamInterpolationFunction p_interpol_fun,
+                                const moText& p_fun_duration,
+                                const moText& p_fun_expression) {
+
+  if (p_fun_expression!=moText("")) {
+    cout << "p_fun_expression: " << p_fun_expression << endl;
+  }
+
+  if (p_fun_duration!="") {
+   moParserFunction mp_dur;
+    mp_dur.Init( p_fun_duration );
+    m_Duration = mp_dur.Eval();
+  }
+   /* moParserFunction mp_exp;*/
+    //moParserFunction* mp_exp = new moParserFunction();
+    /*mp_exp.Init( p_fun_expression );*/
     //setting
     m_Function = p_interpol_fun;
-    m_Duration = mp_dur->Eval();
-
 //    cout << "SetInterpolation: settting duration: " << p_fun_duration << " is finally m_Duration:" << m_Duration << endl;
 //    cout << " p_fun_expression:" << p_fun_expression << endl;
     Activate();
@@ -534,7 +950,7 @@ moParamInterpolation::InterpolateData( moData& pParamData  ) {
         //cout << "m_DataIn: " << m_DataIn.LastEval() << "  --> TO --> m_DataOut: " << m_DataOut.LastEval() << endl;
 
         double RDouble;
-        double differential = 1.0f* m_Timer.Duration() / (1.0f*m_Duration);
+        //double differential = 1.0f* m_Timer.Duration() / (1.0f*m_Duration);
 
         //process here with some function
         double c = (double) ( m_DataOut.LastEval() - m_DataIn.LastEval() );
@@ -561,14 +977,6 @@ moParamInterpolation::InterpolateData( moData& pParamData  ) {
                   RDouble = -c/2 * ( moMathd::Cos( moMathd::PI*t/d) - 1) + b;
                   break;
               case MO_INTERPOLATION_EXPRESSION:
-                  if (differential<0.0f) differential = 0.0f;
-                  if (differential>1.0f) differential = 1.0f;
-                  RDouble = ( m_DataOut.LastEval() - m_DataIn.LastEval() ) * differential + m_DataIn.LastEval();
-                  break;
-              case MO_INTERPOLATION_ATSPEED:
-                  if (differential<0.0f) differential = 0.0f;
-                  if (differential>1.0f) differential = 1.0f;
-                  RDouble = ( m_DataOut.LastEval() - m_DataIn.LastEval() ) * differential + m_DataIn.LastEval();
                   break;
               default:
                 cout << "moParamInterpolation::InterpolateData > nterpolation function doesn't exists for " << m_Function << endl;
@@ -585,6 +993,14 @@ moParamInterpolation::InterpolateData( moData& pParamData  ) {
 
 }
 
+moValue*
+moParamInterpolation::InterpolateValue( moValue& pParamValue  ) {
+
+  if (m_Function==MO_INTERPOLATION_NONE) return &pParamValue;
+
+  return &m_ValueInterpolated;
+
+}
 
 
 
@@ -704,12 +1120,25 @@ void moParam::SetDefaultValue() {
             case MO_PARAM_SOUND:
             case MO_PARAM_SCRIPT:
             case MO_PARAM_TEXT:
+                if ( GetParamDefinition().GetName()=="effect"
+                    ||
+                    GetParamDefinition().GetName()=="preeffect"
+                    ||
+                    GetParamDefinition().GetName()=="posteffect"
+                    ||
+                    GetParamDefinition().GetName()=="mastereffect"
+                    ||
+                    GetParamDefinition().GetName()=="devices"
+                    ||
+                    GetParamDefinition().GetName()=="resources" ) {
+                      return;
+                    }
                 valuebase.SetText( "" );
                 valuebase.SetType( MO_VALUE_TXT );
                 xvalue.AddSubValue( valuebase );
                 break;
             case MO_PARAM_FONT:
-                valuebase.SetText( "fonts/arial.ttf" );
+                valuebase.SetText( "fonts/Tuffy.ttf" );
                 valuebase.SetType( MO_VALUE_TXT );
                 xvalue.AddSubValue( valuebase );
                 break;
@@ -754,7 +1183,7 @@ void moParam::SetDefaultValue() {
 
 moValue&
 moParam::GetValue( MOint i ) {
-
+//TODO: apply interpolation if needed
 	if ( i == -1 )
 		i = m_CurrentIndexValue;
 
@@ -846,18 +1275,19 @@ moParam::GetData() {
     if (GetParamDefinition().GetName()=="control_roll_angle" ) {
       ///cout << "control_roll_angle: updated externally val: " + FloatToStr(pReturnData->Eval()) << endl;
     }
-	}
-	else
+	} else {
+	  //only work for single data values: FUNCTION > float evaluation
     pReturnData = GetValue().GetSubValue().GetData();
+	}
 
-    ///Interpolation code (defined in config using attributes: interpolation="linear" duration="1000"
-    if ( m_ParamDefinition.GetInterpolation().IsOn() && pReturnData ) {
+  ///Interpolation code (defined in config using attributes: interpolation="linear" duration="1000"
+  if ( m_ParamDefinition.GetInterpolation().IsOn() && pReturnData ) {
 
-        /// Eval Data
-        pReturnData->Eval();
-        ///
-        pReturnData = m_ParamDefinition.GetInterpolation().InterpolateData( *pReturnData );
-    }
+      /// Eval Data
+      pReturnData->Eval();
+      ///
+      pReturnData = m_ParamDefinition.GetInterpolation().InterpolateData( *pReturnData );
+  }
 
 	return pReturnData;
 }
@@ -907,6 +1337,34 @@ moParam::FixType( moParamType p_NewType ) {
   return result;
 }
 
+bool
+moParam::FixOptions( moTextArray& p_NewOptions ) {
+
+  m_ParamDefinition.SetOptions( p_NewOptions );
+  return m_ParamDefinition.GetOptions().Count()==p_NewOptions.Count();
+}
+
+
+const moText&
+moParam::ToJSON() {
+
+      moText fieldSeparation = ",";
+      m_fullJSON = "{";
+      m_fullJSON+= "'paramdefinition': " + GetParamDefinition().ToJSON();
+      m_fullJSON+= fieldSeparation + "'paramindexvalue': " + IntToStr(this->GetIndexValue());
+      m_fullJSON+= fieldSeparation + "'paramvalues': [";
+
+      fieldSeparation = "";
+      for( int vi = 0; vi < (int)m_Values.Count(); vi++ ) {
+        m_fullJSON+= fieldSeparation + m_Values[vi].ToJSON();
+        fieldSeparation = ",";
+      }
+     // m_fullJSON+= fieldSeparation + "'paramvalues': " + ToJSON();
+      m_fullJSON+= "]";
+      m_fullJSON+= "}";
+      return m_fullJSON;
+
+}
 
 
 
