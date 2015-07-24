@@ -2681,20 +2681,30 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       break;
 
     case MO_ACTION_CONSOLE_RENDER_SESSION:
-      ConsoleRenderSession();
+      {
+        ConsoleRenderSession();
 
-      EffectStateJSON = m_ConsoleState.ToJSON();
 
-      pMessageToSend = new moDataMessage();
+        moText rendered_folder = DataMan()->GetSession()->GetRenderedFolder();
+        moText RenderSessionInfo = "{";
+        moText data_session = DataMan()->GetSession()->ToJSON();
+        EffectStateJSON = m_ConsoleState.ToJSON();
 
-      if (pMessageToSend) {
-          pMessageToSend->Add( moData("consolerendersession") );
-          pMessageToSend->Add( moData("__console__" ) );
-          pMessageToSend->Add( moData( EffectStateJSON ) );
-          /** send it: but we need an id */
-          SendMoldeoAPIMessage( pMessageToSend );
+        RenderSessionInfo+= moText("'consolestate': ") + EffectStateJSON;
+        RenderSessionInfo+= moText(",") + moText("'session': ") + DataMan()->GetSession()->ToJSON();
+        RenderSessionInfo+= "}";
+
+        pMessageToSend = new moDataMessage();
+
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolerendersession") );
+            pMessageToSend->Add( moData("__console__" ) );
+            pMessageToSend->Add( moData( RenderSessionInfo ) );
+            /** send it: but we need an id */
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+        return 0;
       }
-      return 0;
       break;
 
     case MO_ACTION_CONSOLE_GET:

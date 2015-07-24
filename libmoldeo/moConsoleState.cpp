@@ -109,6 +109,7 @@ moConsoleState::ToJSON() {
   json+= "'mode': '"+tmode+"'";
   json+= fieldSeparation + "'effectstate':"+fullJSON;
   json+= "}";
+
   fullJSON = json;
   return fullJSON;
 }

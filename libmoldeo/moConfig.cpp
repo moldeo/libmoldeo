@@ -1601,6 +1601,6 @@ moConfig::ToJSON() {
   m_FullJSON+= "}";
   return m_FullJSON;
 
-  }
+}
 
 
