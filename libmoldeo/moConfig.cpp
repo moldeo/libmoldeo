@@ -133,6 +133,28 @@ moConfigDefinition::SetIndex( moText p_name, MOint p_index) {
 
     return founded;
 }
+
+
+void
+moConfigDefinition::Add( const moText& p_name, moParamType p_type, int p_index, const moValue& p_defaultvalue, const moText& p_OptionsStr ) {
+
+  if ( Exists(p_name) ) {
+    MODebug2->Error( p_name + " already defined in " + m_ObjectName );
+    return;
+  }
+
+  moParamDefinition pdef( p_name, p_type );
+
+  pdef.SetIndex( p_index );
+  if (p_type!=MO_PARAM_MOLDEO_OBJECT)
+      pdef.SetDefault( p_defaultvalue );
+  pdef.SetOptions(p_OptionsStr);
+
+  m_ParamDefinitions.Add( pdef );
+
+  m_ParamIndexes.Add( p_index );
+}
+
 /*
 void
 moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index) {

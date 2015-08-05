@@ -78,22 +78,7 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
     * @param p_index    índice del parámetro dentro del archivo de configuración (-1 si no está definido aún)
     * @param p_defaultvalue  valor predeterminado
     */
-    void Add( const moText& p_name, moParamType p_type, int p_index=-1, const moValue& p_defaultvalue = moValue("INVALID",MO_VALUE_UNDEFINED), const moText& p_OptionsStr = moText("") ) {
-      if ( Exists(p_name) ) {
-        MODebug2->Error( p_name + " already defined in " + m_ObjectName );
-        return;
-      }
-
-      moParamDefinition pdef( p_name, p_type );
-
-      pdef.SetIndex( p_index );
-      pdef.SetDefault( p_defaultvalue );
-      pdef.SetOptions(p_OptionsStr);
-
-      m_ParamDefinitions.Add( pdef );
-
-      m_ParamIndexes.Add( p_index );
-    }
+    void Add( const moText& p_name, moParamType p_type, int p_index=-1, const moValue& p_defaultvalue = moValue("INVALID",MO_VALUE_UNDEFINED), const moText& p_OptionsStr = moText("") );
 
     /// Devuelve el puntero al arreglo de definciones de parámetros
     /**
