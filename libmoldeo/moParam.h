@@ -50,7 +50,8 @@ enum moParamType {
 	MO_PARAM_FONT,          ///value type: TXT or LNK
 	MO_PARAM_3DMODEL,		///value type: TXT or LNK
 	MO_PARAM_FILE,		    ///value type: TXT or LNK
-	MO_PARAM_OBJECT,		///value type: TXT or LNK
+	MO_PARAM_MOLDEO_OBJECT,		///value type: TXT or LNK, or XML
+	MO_PARAM_OBJECT,		///value type: TXT or LNK, or XML
   MO_PARAM_VIDEO,			///value type: TXT or LNK
 	MO_PARAM_SOUND,			///value type: TXT or LNK
 	MO_PARAM_NUMERIC,		///value type: NUM
