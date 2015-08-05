@@ -542,8 +542,13 @@ moData::Text() {
 
 moText
 moData::TypeToText() {
+  return moData::TypeToText( m_DataType );
+}
 
-    switch((int)m_DataType) {
+moText
+moData::TypeToText( moDataType p_data_type ) {
+
+    switch((int)p_data_type) {
         case MO_DATA_NUMBER:
             return moText("MO_DATA_NUMBER");
             break;

@@ -241,6 +241,7 @@ class LIBMOLDEO_API moData {
 
 		//conversion
 		moText                  ToText() const;
+		static moText           TypeToText( moDataType p_data_type );
 		moText                  TypeToText();
 		moDataType              TextToType( moText texttype );
 
