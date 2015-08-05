@@ -505,6 +505,16 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		 */
 		moConfig*	GetConfig() { return &m_Config; }
 
+    /**
+		 * función que guarda la información de conectores y conexiones.
+		 */
+		void  SyncConnections();
+
+    /**
+		 * función que guarda el objeto a disco.
+		 */
+		 int Save( const moText& p_save_filename = moText("") );
+
 		/**
 		 * función que especifica el nombre del archivo de configuración del objeto.
 		 */

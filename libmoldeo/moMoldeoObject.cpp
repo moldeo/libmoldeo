@@ -961,6 +961,35 @@ moMoldeoObject::GetResourceManager() {
 }
 
 void
+moMoldeoObject::SyncConnections( ) {
+/** TODO: implement */
+}
+
+int
+moMoldeoObject::Save( const moText& p_save_filename ) {
+
+  /** TODO: connections are dynamic in nature: so we must save them first in our old config file */
+  SyncConnections();
+
+  /** TODO: first create dynamic outlets and inlets in: moConfig ( even if no succesfull connections were made ):
+  *
+  *   Save full files: maybe we can make here an XML "connection"
+  *   <outlet>
+  *     <connection object="ICON" inlet="BEATFREQ"/>
+  *     <connection object="ICON" inlet="BEATVAL"/>
+  *     ...
+  *     ...
+  *   </outlet>
+  */
+
+  if (p_save_filename == moText("")) {
+    return GetConfig()->SaveConfig();
+  } else {
+    return GetConfig()->SaveConfig( p_save_filename );
+  }
+}
+
+void
 moMoldeoObject::SetConfigName( const moText& p_configname ) {
 	m_MobDefinition.SetConfigName( p_configname );
 }
