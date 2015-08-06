@@ -315,7 +315,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         /**
         * Renderiza una sesión
         */
-        void ConsoleRenderSession();
+        void ConsoleRenderSession( const moText& p_frame_quality=moText("JPGGOOD") );
 
         /// salva la sesión a un archivo
         /**

@@ -2682,7 +2682,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_CONSOLE_RENDER_SESSION:
       {
-        ConsoleRenderSession();
+        arg0  = p_pDataMessage->Get(1).ToText();//QUALITY! JPG,JPGGOOD...
+        ConsoleRenderSession( arg0 );
 
 
         moText rendered_folder = DataMan()->GetSession()->GetRenderedFolder();
@@ -3238,10 +3239,10 @@ void moConsole::ConsoleRecordSession() {
 
 }
 
-void moConsole::ConsoleRenderSession() {
+void moConsole::ConsoleRenderSession( const moText& p_frame_quality ) {
   MODebug2->Message("moConsole::ConsoleRenderSession");
   if (m_pResourceManager==NULL) return;
-
+  m_ConsoleState.m_RenderFrameQuality = p_frame_quality;
   m_pResourceManager->GetDataMan()->GetSession()->Render( m_ConsoleState );
 }
 

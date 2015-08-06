@@ -65,6 +65,8 @@ class LIBMOLDEO_API moConsoleState : public moEffectState
 
     moConsoleMode m_Mode;
 
+    moText        m_RenderFrameQuality;
+
     MOswitch pause;
     MOswitch automatic;
     MOswitch reinit;

@@ -48,6 +48,7 @@ moConsoleState::moConsoleState() {
 	frame = 0;
 
   m_Mode = MO_CONSOLE_MODE_LIVE;
+  m_RenderFrameQuality = "JPGGOOD";
 }
 
 moConsoleState::~moConsoleState() {
