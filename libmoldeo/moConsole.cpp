@@ -1568,12 +1568,12 @@ moConsole::Draw() {
                         RenderMan->BeginDrawEffect();
                         pEffect->Draw(&m_ConsoleState.tempo);
                         RenderMan->EndDrawEffect();
-                        RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
+                        //RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
                 }
             }
         }
 
-        //RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
+        RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
     }
 
 		//sedibujan los post Effects

@@ -305,8 +305,8 @@ void moRenderManager::BeginUpdateObject()
 
 void moRenderManager::EndUpdateObject()
 {
-    m_pGLManager->RestoreGLState();
-    Unlock();
+  m_pGLManager->RestoreGLState();
+  Unlock();
 }
 
 void moRenderManager::BeginDraw()
@@ -317,7 +317,7 @@ void moRenderManager::BeginDraw()
 
 void moRenderManager::BeginDrawEffect()
 {
-    Lock();
+  Lock();
 	if (m_pGLManager) m_pGLManager->SaveGLState();
 	if (m_pGLManager) m_pGLManager->SetPerspectiveView(m_render_width, m_render_height);
 	m_saved_screen = false;

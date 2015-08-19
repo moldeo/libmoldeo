@@ -93,7 +93,7 @@ moEffect::PreInit() {
 	devicecode = NULL;
 	m_EffectState.Init();
 
-    glewInit();
+    //glewInit();
 
     /** Crea INLETS INTERNOS, es decir que no tienen un parametro asociado... (especificamente para su uso generico*/
     moInlet* Inlet = new moInlet();
@@ -282,10 +282,11 @@ void moEffect::EndDraw() {
     if (m_pResourceManager->GetGLMan())
         m_pResourceManager->GetGLMan()->CheckErrors( GetName()+"::"+GetConfigName()+"::"+GetLabelName() );
 */
-
+/*
   if (m_pResourceManager)
     if (m_pResourceManager->GetRenderMan())
       m_pResourceManager->GetRenderMan()->EndDrawEffect();
+*/
 }
 
 
