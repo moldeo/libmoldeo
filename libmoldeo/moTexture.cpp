@@ -348,11 +348,11 @@ MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
 	glBindTexture(m_param.target, this->m_glid);
 	/**  Copiamos los bytes de la textura al buffer*/
 	if ( p_buffer == NULL ) {
-      MODebug2->Error("moTexture::GetBuffer > p_buffer: " + IntToStr((int)p_buffer));
+      MODebug2->Error("moTexture::GetBuffer > p_buffer: " + IntToStr((long)p_buffer));
       return false;
 	}
   if ( p_format!=GL_BGR && p_format!=GL_BGRA && p_format!=GL_RGB && p_format!=GL_RGBA ) {
-      MODebug2->Error("moTexture::GetBuffer > p_format: " + IntToStr((int)p_format));
+      MODebug2->Error("moTexture::GetBuffer > p_format: " + IntToStr((long)p_format));
       return false;
   }
   if ( p_type!=GL_UNSIGNED_BYTE && p_type!=GL_FLOAT && p_type!=GL_BYTE ) {
@@ -362,7 +362,7 @@ MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
 	try {
     glGetTexImage( m_param.target, 0, p_format, p_type, p_buffer);
 	} catch(...) {
-    MODebug2->Error("moTexture::GetBuffer > exception getting texture buffer. p_buffer: " + IntToStr((int)p_buffer));
+    MODebug2->Error("moTexture::GetBuffer > exception getting texture buffer. p_buffer: " + IntToStr((long)p_buffer));
 	}
 	glBindTexture( m_param.target, 0);
 
