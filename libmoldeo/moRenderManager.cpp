@@ -222,7 +222,8 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 /// && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU)
 
-	if (GLEW_EXT_framebuffer_object /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
+	if (GLEW_EXT_framebuffer_object
+     /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
 	{
 	    m_pGLManager->SetFrameBufferObjectActive();
         MODebug2->Message( moText("moRenderManager::Init > Using framebuffer_object: creating one fbo per predefined textures (4). ") );
@@ -304,8 +305,8 @@ void moRenderManager::BeginUpdateObject()
 
 void moRenderManager::EndUpdateObject()
 {
-    m_pGLManager->RestoreGLState();
-    Unlock();
+  m_pGLManager->RestoreGLState();
+  Unlock();
 }
 
 void moRenderManager::BeginDraw()
@@ -316,7 +317,7 @@ void moRenderManager::BeginDraw()
 
 void moRenderManager::BeginDrawEffect()
 {
-    Lock();
+  Lock();
 	if (m_pGLManager) m_pGLManager->SaveGLState();
 	if (m_pGLManager) m_pGLManager->SetPerspectiveView(m_render_width, m_render_height);
 	m_saved_screen = false;

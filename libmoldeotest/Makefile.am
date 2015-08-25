@@ -44,15 +44,8 @@ libmoldeotest_la_LIBADD = -ldl\
 	${BOOST_FILESYSTEM_LIB} \
 	${BOOST_SYSTEM_LIB} \
 	${LUA51_LIBS} \
-<<<<<<< HEAD
-	${GST_LIBS}
-    
-#${FREEALUT_LIBS} \
-#${GLE_LIBS}
-=======
 	${GST_LIBS} \
     $(GST_INTERFACES_LIBS)
->>>>>>> 07d580acff452fd164ae75f228d975b53175fa98
 
 libmoldeotest_includedir = $(includedir)/libmoldeotest
 

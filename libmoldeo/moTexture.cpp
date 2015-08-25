@@ -574,13 +574,22 @@ void moTexture::SetParam()
 
 void moTexture::CalculateSize(MOuint p_width, MOuint p_height)
 {
+
+  p_width = ( p_width / 4 ) * 4;
+  p_height = ( p_height / 4 ) * 4;
+
   if ((m_gl != NULL) && m_gl->RectTexture(m_param.target))
 	{
 		m_width = p_width;
 		m_height = p_height;
 		m_max_coord_s = p_width;
 		m_max_coord_t = p_height;
-	}/*
+
+
+
+
+	}
+	/*
 	else
 	{
 		m_width = p_width;
@@ -588,9 +597,7 @@ void moTexture::CalculateSize(MOuint p_width, MOuint p_height)
 		m_max_coord_s = 1.0;
 		m_max_coord_t = 1.0;
 	}*/
-	else if (m_pResourceManager
-	&& m_pResourceManager->GetRenderMan()
-	&& m_pResourceManager->GetRenderMan()->IsTextureNonPowerOf2Disabled())
+	else if (RenderMan()->IsTextureNonPowerOf2Disabled())
 	{
 
         m_width = NextPowerOf2(p_width);
@@ -833,18 +840,11 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
     }
 
     pitch = bytesperpixel * GetWidth();
+    //pitch = ((GetWidth() * bpp + 31) /31 ) *4;
 
     if (gcomponenttype==GL_UNSIGNED_BYTE)
       ResetBufferData( true, bytesperpixel );
-/*
-    if (m_pBufferData==NULL) {
-      if (gcomponenttype==GL_UNSIGNED_BYTE) {
-        m_pBufferData = new BYTE [ pitch * GetHeight() ];
-      } else {
-        //CONVERT
-      }
-    }
-*/
+
     if (m_pBufferData==NULL) {
         MODebug2->Error("moTexture::CreateThumbnail > no memory for buffer data allocation or invalid component type.");
         return moText("");
@@ -930,8 +930,11 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
                   fbitmap2 = FreeImage_Copy( fbitmap, 0, 0, w, h);
                   if (fbitmap2 && fbitmap) { FreeImage_Unload( fbitmap ); fbitmap=fbitmap2; }
                 }
+
     } else {
         //MODebug2->Message("FreeImage_Rescale");
+        w = (w / 4 ) * 4;
+        h = (h / 4 ) * 4;
         if (w!=(int)GetWidth() || h!=(int)GetHeight()) fbitmap2 = FreeImage_Rescale( fbitmap, w, h, FILTER_BICUBIC );
         if (fbitmap2 && fbitmap) { FreeImage_Unload( fbitmap ); fbitmap=fbitmap2; }
     }
@@ -1707,6 +1710,9 @@ moMovie::moMovie() : moTextureAnimated()
 	m_type = MO_TYPE_MOVIE;
 	m_pGraph = NULL;
 	m_PlayMode = MO_PLAYMODE_TIMEBASE;
+	m_pFilename = "";
+	m_bIsPlaying = false;
+	m_bIsPaused = false;
 }
 
 moMovie::~moMovie()
@@ -1748,6 +1754,7 @@ void moMovie::Play() {
   if (m_pGraph) {
     m_pGraph->Play();
     m_bIsPlaying = true;
+    m_bIsPaused = false;
   }
 }
 
@@ -1755,6 +1762,7 @@ void moMovie::Pause() {
   if (m_pGraph) {
     m_pGraph->Pause();
     m_bIsPlaying = false;
+    m_bIsPaused = true;
   }
 }
 
@@ -1762,6 +1770,7 @@ void moMovie::Continue() {
   if (m_pGraph) {
     m_pGraph->Play();
     m_bIsPlaying = true;
+    m_bIsPaused = false;
   }
 }
 /*
@@ -1780,8 +1789,9 @@ void moMovie::Stop() {
     //if (GetPosition()==0 && m_pGraph->GetState()!=MO_STREAMSTATE_STOPPED) {
 
       m_pGraph->Stop();
-      m_bIsPlaying = false;
 
+      m_bIsPlaying = false;
+      m_bIsPaused = false;
 
     //} else if ( GetPosition()!=0) {
      // m_pGraph->Pause();
@@ -1814,9 +1824,15 @@ moStreamState moMovie::State()  {
     switch(stream_state) {
       case MO_STREAMSTATE_PLAYING:
         m_bIsPlaying = true;
+        m_bIsPaused = false;
+        break;
+      case MO_STREAMSTATE_PAUSED:
+        m_bIsPlaying = false;
+        m_bIsPaused = true;
         break;
       default:
         m_bIsPlaying = false;
+        m_bIsPaused = false;
         break;
     }
 
@@ -1836,7 +1852,16 @@ bool moMovie::IsPlaying() {
   return m_bIsPlaying;
 }
 
+bool moMovie::IsPaused() {
 
+  if (m_pGraph) {
+    //MODebug2->Message("moMovie::IsPlaying > calling m_pGraph->GetState()");
+    //m_pGraph->GetState();
+    this->State();
+    //MODebug2->Message("moMovie::IsPlaying > GetState returned");
+  }
+  return m_bIsPaused;
+}
 
 
 void  moMovie::SetBrightness( float brightness ) {
@@ -1968,7 +1993,10 @@ MOboolean moMovie::LoadMovieFile(moText p_filename)
 		}
 	}
 
-	if (result) m_bBuildedFromFile = true;
+	if (result) {
+      m_bBuildedFromFile = true;
+      m_pFilename = p_filename;
+	}
 
 	return result;
 }
@@ -1988,6 +2016,14 @@ MOboolean moMovie::Load(moValue * p_value)
 	namefull = m_pDataMan->GetDataPath() + moSlash + (moText)m_name;
 
 	return LoadMovieFile(namefull);
+}
+
+MOboolean moMovie::Reload( bool force_kill ) {
+  if (force_kill) {
+    //kill moGsGraph!!
+    //check m_pFilename and reload!!
+
+  }
 }
 
 void moMovie::EnableVideo(int enable) {

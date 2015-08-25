@@ -689,6 +689,7 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
 
     moPlayMode    m_PlayMode;
     MOboolean     m_bIsPlaying;
+    MOboolean     m_bIsPaused;
 
 		MOuint				m_nFrames;
 		MOfloat				m_fFramesPerSecond;
@@ -877,6 +878,7 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
     virtual void Stop();
     virtual void Seek( long frame, float rate = 1.0 );
     virtual bool IsPlaying();
+    virtual bool IsPaused();
     virtual MOulong GetPosition();
     virtual moStreamState State();
 
@@ -906,6 +908,7 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
          */
 		MOboolean Load( moParam* p_param );
 		MOboolean Load( moValue* p_value );
+		MOboolean Reload( bool force_kill=true );
 
 		void EnableVideo(int);
 		bool HasVideo();
@@ -921,6 +924,7 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
 
 		MOint frameprevious;
 		MOint lastframe;
+		moText m_pFilename;
 		moBucketsPool	m_BucketsPool;
 
     moVideoGraph*	m_pGraph;

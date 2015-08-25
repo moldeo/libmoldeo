@@ -264,7 +264,7 @@ moDataSession::StopRender(moConsoleState& p_console_state) {
 }
 
 bool
-moDataSession::Render(moConsoleState& p_console_state) {
+moDataSession::Render( moConsoleState& p_console_state ) {
   m_SessionRenderMode = MO_DATASESSION_RENDER_TOMEMORY;
 
   if (p_console_state.m_Mode==MO_CONSOLE_MODE_RENDER_SESSION) {
@@ -316,7 +316,7 @@ moDataSession::StepRender( moConsoleState& p_console_state ) {
     //temp_render+="_"+IntToStr(mod1000);
     moText frame_filename = "frame_" + IntToStr( m_Rendered_Frames, 7 );
     if (m_pResourceManager && m_pResourceManager->GetRenderMan())
-      RenderMan()->Screenshot( DataMan()->GetSession()->GetRenderedFolder(), frame_result, "JPGGOOD", frame_filename );
+      RenderMan()->Screenshot( DataMan()->GetSession()->GetRenderedFolder(), frame_result, p_console_state.m_RenderFrameQuality, frame_filename );
 
     //MODebug2->Message("moDataSession::StepRender > 24/1 frame number:" + IntToStr(m_Rendered_Frames)+" frame_result:" + frame_result);
     m_Rendered_Frames+=1;

@@ -100,6 +100,9 @@ moParamDefinition::ParamTypeFromStr( const moText& p_type ) {
 		if ( p_type == moText("3DMODEL") ) {
 			p_Type = MO_PARAM_3DMODEL;
 		} else
+		if ( p_type == moText("MOLDEOOBJECT") ) {
+			p_Type = MO_PARAM_MOLDEO_OBJECT;
+		} else
 		if ( p_type == moText("OBJECT") ) {
 			p_Type = MO_PARAM_OBJECT;
 		} else
@@ -239,6 +242,9 @@ moParamDefinition::moParamDefinition( const moText& p_name,
 		} else
 		if ( p_type == moText("3DMODEL") ) {
 			m_Type = MO_PARAM_3DMODEL;
+		} else
+		if ( p_type == moText("MOLDEOOBJECT") ) {
+			m_Type = MO_PARAM_MOLDEO_OBJECT;
 		} else
 		if ( p_type == moText("OBJECT") ) {
 			m_Type = MO_PARAM_OBJECT;
@@ -415,6 +421,9 @@ moParamDefinition::GetTypeStr() const {
         case MO_PARAM_3DMODEL:
             return moText("3DMODEL");
             break;
+        case MO_PARAM_MOLDEO_OBJECT:
+            return moText("MOLDEOOBJECT");
+            break;
         case MO_PARAM_OBJECT:
             return moText("OBJECT");
             break;
@@ -512,6 +521,11 @@ moParamDefinition::SetDefault( const moValue& p_defaultvalue ) {
       case MO_PARAM_OBJECT:
       case MO_PARAM_3DMODEL:
         m_DefaultValue = moValue( "", "TXT" );
+        break;
+
+      case MO_PARAM_MOLDEO_OBJECT:
+        /** TODO: removing subvalues if any*/
+        m_DefaultValue.RemoveSubValues();
         break;
 
       case MO_PARAM_INLET:
@@ -1137,6 +1151,9 @@ void moParam::SetDefaultValue() {
                 valuebase.SetType( MO_VALUE_TXT );
                 xvalue.AddSubValue( valuebase );
                 break;
+            case MO_PARAM_MOLDEO_OBJECT:
+              return;
+              break;
             case MO_PARAM_FONT:
                 valuebase.SetText( "fonts/Tuffy.ttf" );
                 valuebase.SetType( MO_VALUE_TXT );

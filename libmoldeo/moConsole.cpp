@@ -705,8 +705,8 @@ moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
 	N = m_Config.GetValuesCount(efx);
 
 	if (MODebug2) {
-		MODebug2->Message( moText("moConsole::LoadEffects > Loading Effects configs...") );
-		MODebug2->Message( moText("moConsole::LoadEffects > Effects number: ") + IntToStr(N)  );
+		MODebug2->Message( moText("moConsole::LoadObjects > Loading Effects configs...") );
+		MODebug2->Message( moText("moConsole::LoadObjects > Effects number: ") + IntToStr(N)  );
 	}
 
 	if(N>0) {
@@ -743,7 +743,7 @@ moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
                 }
 			} else {
 			    MODebug2->Error(moText("moConsole::LoadEffects > Error: Config File doesn't exist : ") + (moText)completecfname);
-            }
+      }
 			m_Config.NextValue();
 		}
 	}
@@ -1568,12 +1568,12 @@ moConsole::Draw() {
                         RenderMan->BeginDrawEffect();
                         pEffect->Draw(&m_ConsoleState.tempo);
                         RenderMan->EndDrawEffect();
-                        RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
+                        //RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
                 }
             }
         }
 
-        //RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
+        RenderMan->CopyRenderToTexture(MO_EFFECTS_TEX);
     }
 
 		//sedibujan los post Effects
@@ -2682,7 +2682,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_CONSOLE_RENDER_SESSION:
       {
-        ConsoleRenderSession();
+        arg0  = p_pDataMessage->Get(1).ToText();//QUALITY! JPG,JPGGOOD...
+        ConsoleRenderSession( arg0 );
 
 
         moText rendered_folder = DataMan()->GetSession()->GetRenderedFolder();
@@ -2971,12 +2972,12 @@ moConsole::GetDefinition( moConfigDefinition *p_configdefinition ) {
 
 	//default: alpha, color, syncro
 	p_configdefinition = moMoldeoObject::GetDefinition( p_configdefinition );
-	p_configdefinition->Add( moText("devices"), MO_PARAM_TEXT, CONSOLE_DEVICES );
-	p_configdefinition->Add( moText("preeffect"), MO_PARAM_TEXT, CONSOLE_PREEFFECT );
-	p_configdefinition->Add( moText("effect"), MO_PARAM_TEXT, CONSOLE_EFFECT );
-	p_configdefinition->Add( moText("posteffect"), MO_PARAM_TEXT, CONSOLE_POSTEFFECT );
-	p_configdefinition->Add( moText("mastereffect"), MO_PARAM_TEXT, CONSOLE_MASTEREFFECT );
-	p_configdefinition->Add( moText("resources"), MO_PARAM_TEXT, CONSOLE_RESOURCES );
+	p_configdefinition->Add( moText("devices"), MO_PARAM_MOLDEO_OBJECT, CONSOLE_DEVICES );
+	p_configdefinition->Add( moText("preeffect"), MO_PARAM_MOLDEO_OBJECT, CONSOLE_PREEFFECT );
+	p_configdefinition->Add( moText("effect"), MO_PARAM_MOLDEO_OBJECT, CONSOLE_EFFECT );
+	p_configdefinition->Add( moText("posteffect"), MO_PARAM_MOLDEO_OBJECT, CONSOLE_POSTEFFECT );
+	p_configdefinition->Add( moText("mastereffect"), MO_PARAM_MOLDEO_OBJECT, CONSOLE_MASTEREFFECT );
+	p_configdefinition->Add( moText("resources"), MO_PARAM_MOLDEO_OBJECT, CONSOLE_RESOURCES );
 
 	p_configdefinition->Add( moText("mastereffects_on"), MO_PARAM_NUMERIC, (MOint)CONSOLE_ON, moValue("0","NUM").Ref(), moText("off,on") );
 	p_configdefinition->Add( moText("fulldebug"), MO_PARAM_NUMERIC, CONSOLE_FULLDEBUG, moValue("0","NUM").Ref()  );
@@ -3238,10 +3239,10 @@ void moConsole::ConsoleRecordSession() {
 
 }
 
-void moConsole::ConsoleRenderSession() {
+void moConsole::ConsoleRenderSession( const moText& p_frame_quality ) {
   MODebug2->Message("moConsole::ConsoleRenderSession");
   if (m_pResourceManager==NULL) return;
-
+  m_ConsoleState.m_RenderFrameQuality = p_frame_quality;
   m_pResourceManager->GetDataMan()->GetSession()->Render( m_ConsoleState );
 }
 

@@ -1,6 +1,7 @@
-ENGLISH:
+# libmoldeo
+## Moldeo Library Core in C/C++/Lua/OpenGL
 
-Introduction:
+## Introduction
 
 Moldeo is an open source framework that allows the experimentation of new
 artistic, scientific and communicational concepts with new computer graphics
@@ -8,80 +9,17 @@ technologies. It is an open source development that allows the development of
 interactive environments with 2D, 3D animation and video elements as well as
 digital effects in real time.
 
-SPANISH:
+libmoldeo is the neural system in Moldeo framework
 
-Introducción:
+## Installation
 
-Moldeo es una plataforma que permite la experimentación tanto con nuevas
-tecnologías en computación gráfica, así como con nuevos conceptos
-artísticos, comunicacionales y científicos. Es un desarrollo de código
-fuente abierto que posibilita la realización de entornos interactivos con
-elementos de video y animación -en dos y tres dimensiones- y con efectos
-digitales en tiempo real.
-
-FRENCH:
-
-Moldeo est une plateforme qui permet expérimenter avec les nouvelles
-technologies en graphismes numériques ainsi qu'avec les nouveaux concepts
-artistiques, communicationelles et scientifiques. C'est un dévellopement open
-source qui permet la réalisation d'espaces interactivfs avec des éléments de
-vidéo et d'animation - en deux et trois dimensions - et des effets numériques
-en temps réel.
-
-Instalación del TUIO.
----------------------
-
-El TUIO no viene como paquete actualmente y tampoco tiene una forma sencilla de instalación.
-
-Hay que bajar la API C++ de http://www.tuio.org/?software
-
-luego de bajarlo hay que agregar las siguientes lineas al Makefile luego del "endif"
-
-"""
-CFLAGS += -fPIC
-install_root=/usr/local
-install_libdir=${install_root}/lib
-install_includedir=${install_root}/include/TUIO
-
-INSTALL = /usr/bin/install -c
-MKDIR_P = /bin/mkdir -p
-
-TUIO_INCLUDES = TUIO/TuioClient.h \
-	       	TUIO/TuioContainer.h \
-	       	TUIO/TuioCursor.h \
-	       	TUIO/TuioListener.h \
-	       	TUIO/TuioObject.h \
-	       	TUIO/TuioPoint.h \
-		TUIO/TuioServer.h \
-	       	TUIO/TuioTime.h
-
-install: all install_lib install_include
-	
-install_lib: $(TUIO_SHARED)
-	test -z "$(install_libdir)" || $(MKDIR_P) "$(install_libdir)"
-	${INSTALL} $? ${install_libdir}
-	ldconfig
-
-install_include: $(TUIO_INCLUDES)
-	test -z "$(install_includedir)" || $(MKDIR_P) "$(install_includedir)"
-	${INSTALL} $? ${install_includedir}
-"""
-
-y luego ejecutar
-
-$ make all
-$ sudo make install
-
-a partir de ahí ya se puede ejecutar el ./configure
+In a linux terminal run:
+git clone http://github.com/moldeo/libmoldeo
+cd libmoldeo
+./autogen.sh
+make
+sudo make install
 
 
-TODO:
-
-	Eliminar archivos de datos de la libreria!
-
-	arial.ttf, Tuffy.ttf y moldeologo.3ds
-
-	Esos son parte de la demo o de moldeodirector!!!
-
-
+We recommend to visit http://github.com/moldeo/moldeoinstaller to check the best way to compile and install the full software
 

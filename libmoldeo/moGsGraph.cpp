@@ -85,7 +85,7 @@ static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
       case GST_MESSAGE_EOS:
       {
           //g_message ("End-of-stream");
-          //pGsGraph->MODebug2->Message(moText("moGsGraph:: EOS <End-of-stream> "));
+          pGsGraph->MODebug2->Message(moText("moGsGraph:: EOS <End-of-stream> "));
           pGsGraph->SetEOS(true);
           //g_main_loop_quit (loop);
           break;
@@ -475,8 +475,8 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
 
             //pGsGraph->BuildAudioFilters();
 
-            if (pGsGraph->m_pAudioConverter && 1==2) {
-                /*
+            if (pGsGraph->m_pAudioConverter && 1==1) {
+
                 gboolean link_audioresult = gst_element_link_many( (GstElement*)pGsGraph->m_pAudioConverter,
                                       (GstElement*)pGsGraph->m_pAudioVolume,
                                       (GstElement*)pGsGraph->m_pAudioPanorama,
@@ -490,7 +490,7 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
                     if (padlink==GST_PAD_LINK_OK) {
                         pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
                     }
-                }*/
+                }
             } else if (pGsGraph->m_pAudioSink && 1==1) {
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioSink, "sink");
                 padlink = gst_pad_link (Gpad, audiopadinconverter);
@@ -2342,7 +2342,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                         ///agrega sonido en sincro
 
                         //if (m_pAudioConverter)
-                        //  link_audio_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
+                          //link_audio_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
 
 
                         if (link_result) {
@@ -2853,6 +2853,7 @@ moGsGraph::Play() {
 void
 moGsGraph::Stop() {
   /*set state to NULL*/
+  SetEOS(false);
   CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_NULL) );
   //moGsGraph::Pause();
 }
