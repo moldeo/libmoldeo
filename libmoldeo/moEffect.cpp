@@ -277,16 +277,16 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 void moEffect::EndDraw() {
 
   ScriptExeDraw();
-/*
+
   if (m_pResourceManager)
     if (m_pResourceManager->GetGLMan())
         m_pResourceManager->GetGLMan()->CheckErrors( GetName()+"::"+GetConfigName()+"::"+GetLabelName() );
-*/
-/*
+
+
   if (m_pResourceManager)
     if (m_pResourceManager->GetRenderMan())
       m_pResourceManager->GetRenderMan()->EndDrawEffect();
-*/
+
 }
 
 

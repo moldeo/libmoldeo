@@ -21,13 +21,227 @@
   *                                                                          *
   ****************************************************************************
 
-  Copyright(C) 2006 Fabricio Costa
+  \copyright copyright(C) 2006 Fabricio Costa
 
-  Authors:
-  Fabricio Costa
-  Andrés Colubri
+  \author Fabricio Costa
+  \author Andrés Colubri
 
 *******************************************************************************/
+
+/**
+* \page MoldeoFunctions
+* \brief \if spanish Funciones en Moldeo, sintaxis y operaciones. \else Functions in Moldeo platform, syntax and operations. \endif
+*
+* Las funciones son fórmulas permiten expresar un valor
+* como una función dinámica dependiente de números, funciones exponenciales, logarítmicas ( exp, log ),
+* funciones trigonométricas ( cos, sin, tan, acos, asin, atan ), y variables relacionadas con el tiempo transcurrido ( tempo, time ),
+* y también parámetros personalizados (alpha, translatex, translatey, translatez, ... )
+*
+*
+* Algunos ejemplos:
+*
+* \f$ alpha + translatex*cos(time)) \f$
+* se escribe sencillamente:
+*  \code alpha+translatex*cos(time)) \endcode
+*
+* \f$ \sqrt{(translatex+translatey )^2} ) \f$
+* se escribe sencillamente:
+*  \code sqrt(exp(translatex+translatey),2)) \endcode
+*
+* \anchor muparser
+*
+* \if spanish
+* Funciones predefinidas:
+* \else
+* Built in functions:
+* \endif
+*
+* \if spanish	Seno \else	Sine function	\endif
+* \image html function_sin.png
+* \code sin(t) \endcode
+* \if spanish	Coseno	\else	Cosine function	\endif
+* \image html function_cos.png
+* \code cos(t) \endcode
+* \if spanish	Tangente	\else	Tangens function	\endif
+* \image html function_tan.png
+* \code tan(t) \endcode
+* \if spanish	Arcoseno	\else	Arcus sine function	\endif
+* \image html function_asin.png
+* \code asin(t) \endcode
+* \if spanish	Arco coseno	\else	Arcus cosine function	\endif
+* \image html function_acos.png
+* \code acos(t) \endcode
+* \if spanish	Arco tangente	\else	Arcus tangens function	\endif
+* \image html function_atan.png
+* \code atan(t) \endcode
+* \if spanish	Seno hyperbolico	\else	Hyperbolic sine function	\endif
+* \image html function_sinh.png
+* \code sinh(t) \endcode
+* \if spanish	Coseno hyperbólico	\else	Hyperbolic cosine	\endif
+* \image html function_cosh.png
+* \code cosh(t) \endcode
+* \if spanish	Tangente hyperbólica	\else	Hyperbolic tangens function	\endif
+* \image html function_tanh.png
+* \code tanh(t) \endcode
+* \if spanish	Arcoseno hyperbólico	\else	hyperbolic arcus sine function	\endif
+* \image html function_asinh.png
+* \code asinh(t) \endcode
+* \if spanish	arco coseno hyperbólico	\else	hyperbolic arcus cosine function	\endif
+* \image html function_acosh.png
+* \code acosh(t) \endcode
+* \if spanish	arco tangente hyperbólico	\else	hyperbolic arcus tangens function	\endif
+* \image html function_atanh.png
+* \code atanh(t) \endcode
+* \if spanish	logaritmo de base 2	\else	logarithm to the base 2	\endif
+* \image html function_log2.png
+* \code log2(t) \endcode
+* \if spanish	logaritmo de base 10	\else	logarithm to the base 10	\endif
+* \image html function_log10.png
+* \code log10(t) \endcode
+* \if spanish	logaritmo de base 10	\else	logarithm to the base 10	\endif
+* \image html function_log.png
+* \code log(t) \endcode
+* \if spanish	logaritmo de base e (2.71828...)	\else	logarithm to base e (2.71828...)	\endif
+* \image html function_ln.png
+* \code ln(t) \endcode
+* \if spanish	e elevado a la potencia de x	\else	e raised to the power of x	\endif
+* \image html function_exp.png
+* \code exp(t) \endcode
+* \if spanish	raiz cuadrada	\else	square root of a value	\endif
+* \image html function_sqrt.png
+* \code sqrt(t) \endcode
+* \if spanish	Signo, 1 si x positivo, -1 si x negativo	\else	sign function -1 if x<0; 1 if x>0 \endif
+* \image html function_sign.png
+* \code sign(t) \endcode
+* \if spanish	redondeo al entero más cercano	\else	round to nearest integer	\endif
+* \code rint(t) \endcode
+* \if spanish	valor absoluto	\else	absolute value	\endif
+* \code abs(t) \endcode
+* \if spanish	mínimo de todos los argumentos	\else	min of all arguments	\endif
+* \code min(x,y,z,...) \endcode
+* \if spanish	máximo de todos los argumentos	\else	max of all arguments	\endif
+* \code max(x,y,z,...) \endcode
+* \if spanish	suma de todos los argumentos	\else	sum of all arguments	\endif
+* \code sum(x,y,z,...) \endcode
+* \if spanish	promedio de todos los argumentos	\else	mean value of all arguments	\endif
+* \code avg(x,y,z,...) \endcode
+*
+* \if spanish
+* Funciones especiales:
+* \else
+* Special functions:
+* \endif
+* \if spanish Valor aleatorio entre 0 y 1 \else random number between 0 and 1 \endif dónde \c s es la semilla y puede ser 0 u otro número.
+* \code UnitRandom(s) \endcode
+* \if spanish Valor aleatorio simétrico entre -1 y 1 \else symmetric random number between -1 and 1 \endif
+* \code SymetricRandom( s ) \endcode
+* \if spanish Valor alteatorio en el intervalo (\c a,\c b) con la semilla \c s. \else random number between \c a and \c b with the seed \c s. \endif
+* \code IntervalRandom( a, b, s ) \endcode
+*
+* \if spanish
+* Operadores predefinidos:
+* \else
+* Built in operators:
+* \endif
+*
+*	\li	\c =		\if spanish	asignación	\else	assignement	\endif
+*	\li	\c &&		\if spanish	y lógico	\else	logical and	\endif
+*	\li	\c ||		\if spanish	o lógico	\else	logical or	\endif
+*	\li	\c <=		\if spanish	inferior o igual	\else	less or equal	\endif
+*	\li	\c >=		\if spanish	superior o igual	\else	greater or equal	\endif
+*	\li	\c !=		\if spanish	distinto de	\else	not equal	\endif
+*	\li	\c ==		\if spanish	igual a	\else	equal	\endif
+*	\li	\c >		\if spanish	superior a	\else	greater than	\endif
+*	\li	\c <		\if spanish	inferior a	\else	less than	\endif
+*	\li	\c +		\if spanish	adición	\else	addition	\endif
+*	\li	\c -		\if spanish	substracción	\else	subtraction	\endif
+*	\li	\c *		\if spanish	multiplicación	\else	multiplication	\endif
+*	\li	\c /		\if spanish	division	\else	division	\endif
+*	\li	\c ^		\if spanish	elevar x a la potencia de y	\else	raise x to the power of y	\endif
+*
+*
+* \if spanish	Ejemplos de funciones:	\else	Function example:	\endif
+*
+* \b Oscilación (inicia su valor en 1 y luego oscila entre 1 y -1):
+* \code
+* 1.0*cos(time)
+* \endcode
+*
+* \b Oscilación (inicia su valor en 0 y luego oscila entre 1 y -1):
+* \code
+* 1.0*sin(time)
+* \endcode
+*
+* \b Agrandamiento infinito ( de 0 a oo ):
+* \code
+* time*0.1
+* \endcode
+*
+* \b Achicamiento infinito ( de 1.0 a 0.0):
+* \code
+* 1.0/(1.0+time*0.1)
+* \endcode
+*
+* <H3>Funciones paramétricas</H3>
+* \b Movimiento CIRCULAR dónde \c v es la velocidad y \c r es el radio.
+* \image html funcion_circular.png
+* \code
+* r*cos( v*time )
+* \endcode
+* \code
+* r*sin( v*time )
+* \endcode
+*
+* \b Movimiento DIAGONAL dónde \c v es la velocidad y \c a el ancho y b el alto de la diagonal.
+* \image html funcion_diagonal.png
+* \code
+* a*cos( v*time )
+* \endcode
+* \code
+* b*cos( v*time )
+* \endcode
+*
+*
+* \b Movimiento BUCLE: dónde \c v es la velocidad y \c a y \c b el ancho y alto del bucle
+* \image html funcion_bucle.png
+* \code
+* a*0.5*cos( v*time )
+* \endcode
+* \code
+* b*0.5*sin( v*2*time )
+* \endcode
+*
+* \b Movimiento BUCLE TREBOL: dónde \c v es la velocidad y \c a y \c b el ancho y alto del bucle
+* \image html funcion_bucle_trebol.png
+* \code
+* a*0.5*cos( v*time )*cos( v*time )*sin( v*time )
+* \endcode
+* \code
+* b*0.5*cos( v*time )*sin( v*time )*sin( v*time )
+* \endcode
+*
+* \b Movimiento BUCLE CUADRADO
+* \image html funcion_bucle_trebol.png
+* \code
+* (cos(3*t)-2*sin(t))*cos(t)*cos(t)
+* \endcode
+* \code
+* (sin(3*t)-2*cos(t))*sin(t)*sin(t)
+* \endcode
+*
+* \b Movimiento BUCLE BUO
+* \image html funcion_bucle_buo.png
+* \code
+* (cos(t)-sin(t))*cos(2*t)
+* \endcode
+* \code
+* (sin(t)-cos(t))*sin(2*t)
+* \endcode
+*
+*
+* \endif
+*
+*/
 
 #ifndef __MO_MATH_FUNCTION_H__
 #define __MO_MATH_FUNCTION_H__
@@ -48,10 +262,33 @@ moDeclareExportedDynamicArray( MOuint, moIntArray );
 moDeclareExportedDynamicArray( bool, moBoolArray );
 moDeclareExportedDynamicArray( float, moFloatArray );
 
+/// moMathVariable
 /**
  * Clase que encapsula una variable flotante de precisión doble. Esta clase almacena
  * el nombre y valor actual de la variable, y es utilizada para generar la lista de
  * variables y parámetros en la clase 'moMathFunction'.
+ *
+ * una variable se define como una etiqueta con o sin numeros, por ejemplo: variable1, variable2, varx, vary
+ * que indica un valor en memoria.
+ *
+ * Hay variables predefinidas para el sistema de funciones como son:
+ * \li "tempo" el reloj interno rítmico, su ciclo interno.
+ * \li "time" el reloj interno absoluto, el tiempo interno.
+ *
+ * A su vez, por cada parámetro definido en un objeto configurado, se definirá una variable del mismo nombre,
+ * por ejemplo: "translatex", o "alpha".
+ * Esa variable puede ser usada localmente por cualquier función e incluso combinarlas: por ejemplo:
+ *
+ * \f$ 1.0*sin( 1.618 * tempo ) \f$
+ * \f$ cos( time )*alpha + translatey \f$
+ * \f$ sin( time ) \f$
+ *
+ * \li
+ *
+ * La variable particletime, es definida en el plugin de ParticlesSimple y representa un parámetro
+ * de referencia de tiempo particular en un grupo de elementos.
+ * \li particletime
+ *
  * @see moMathFunction
  */
 class moMathVariable : public moAbstract
@@ -126,8 +363,14 @@ private:
 typedef moMathVariable* moMathVariablePtr;
 moDeclareExportedDynamicArray( moMathVariablePtr, moMathVariableArray );
 
+/// moMathFunction
 /**
  * Clase base para definir funciones matemáticas.
+ *
+ * Las funciones son fórmulas permiten expresar un valor
+ * como una función dinámica dependiente de números, funciones exponenciales, logarítmicas,
+ * funciones trigonométricas ( cos, sin, tan, acos, ... ), y variables ( tempo, time, )
+ *
  */
 class LIBMOLDEO_API moMathFunction : public moAbstract
 {
