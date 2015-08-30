@@ -8,7 +8,7 @@
 *   \mainpage
 *   \if spanish
 *
-*   \image html MoldeoHeaderLogoTransicionTierra2.png "Moldeo     http://www.moldeo.org"
+*   \link http://www.moldeo.org/documentation#head
 *
 *   Bienvenidos a la documentación de Moldeo, una plataforma de desarrollo para aplicaciones multimediales interactivas en tiempo real.
 *
