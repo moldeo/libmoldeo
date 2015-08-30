@@ -7,7 +7,7 @@ libmoldeo is the core system of Moldeo framework.
 
 **Moldeo** is an open source framework that allows the experimentation of new
 artistic, scientific and communicational concepts with new computer graphics
-technologies. It is an open source development that allows the development of
+technologies. It is an open source development that allows the creation of
 interactive environments with 2D, 3D animation and video elements as well as
 digital effects in real time.
 
@@ -17,29 +17,31 @@ digital effects in real time.
 
 ### Moldeo Platform Modules
 
-Module | Description | Language | Dependencies
------- | ----------- | -------- | ---------
-libmoldeo | Core Library | C/C++ | Boost, OpenGL, muParser, FreeImage
-moldeoplayer | Player (command line project player) | C/C++ | SDL2, SDL1, GLUT
-moldeonet | Graphical User Interface (GUI) | Javascript, HTML5 | libmoldeo, [nw.js](https://github.com/nwjs/nw.js/), d3.js, jQuery, bootstrap
-moldeoplugins | Plugins | C/C++ | libmoldeo...
-moldeodirector | Interface Development Interface (IDE) | C/C++ | libmoldeo, wxWidgets
+Moldeo Module | Description | Language | Dependencies
+------------- | ----------- | -------- | ---------
+[libmoldeo](http://github.com/moldeo/libmoldeo) | Core Library | C/C++ | Boost, OpenGL, muParser, FreeImage
+[moldeoplayer](http://github.com/moldeo/moldeoplayer) | Player (command line project player) | C/C++ | SDL2, SDL1, GLUT
+[moldeonet](http://github.com/moldeo/moldeonet) | Graphical User Interface (GUI) | Javascript, HTML5 | libmoldeo, [nw.js](https://github.com/nwjs/nw.js/), d3.js, jQuery, bootstrap
+[moldeoplugins](http://github.com/moldeo/moldeoplugins) | Plugins | C/C++ | libmoldeo...
+[moldeodirector](http://github.com/moldeo/moldeodirector) | Interface Development Interface (IDE) | C/C++ | libmoldeo, wxWidgets
+[moldeosamples](http://github.com/moldeo/moldeosamples) | Full examples | XML/Lua | libmoldeo, moldeoplayer
 
 ### Documentation
 
-[Moldeo's Official Site](http://www.moldeo.org).
-[libmoldeo Documentation [english]](http://www.moldeo.org/documentation/libmoldeo/doc/en/html/index.html).
-[libmoldeo Documentation [spanish]](http://www.moldeo.org/documentation/libmoldeo/doc/es/html/index.html).
+* [Moldeo's Official Site](http://www.moldeo.org)
+* [libmoldeo Documentation [english]](http://www.moldeo.org/documentation/libmoldeo/doc/en/html/index.html)
+* [libmoldeo Documentation [spanish]](http://www.moldeo.org/documentation/libmoldeo/doc/es/html/index.html)
 
 
 ## Installation
 
 In a linux terminal run:
-	git clone http://github.com/moldeo/libmoldeo
-	cd libmoldeo
-	./autogen.sh
-	make
-	sudo make install
+
+    git clone http://github.com/moldeo/libmoldeo
+    cd libmoldeo
+    ./autogen.sh
+    make
+    sudo make install
 
 
 We recommend to visit http://github.com/moldeo/moldeoinstaller to check the best way to compile and install the full software
