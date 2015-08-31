@@ -44,6 +44,10 @@ moEffect::moEffect() {
 	SetType( MO_OBJECT_EFFECT );
 	devicecode = NULL;
 	ncodes = 0;
+
+	InletTime = InletT = InletTimems = NULL;
+	InletTimes = InletMilliseconds = InletScreenWidth = NULL;
+	InletScreenHeight = InletSeconds = InletMilliseconds = InletTimeabs = NULL;
 }
 
 moEffect::~moEffect() {
@@ -94,46 +98,88 @@ moEffect::PreInit() {
 	m_EffectState.Init();
 
     //glewInit();
+    InletTimems = new moInlet();
+    if (InletTimems) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletTimems)->Init( moText("timems"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletTimems);
+    }
+
+    InletTimes = new moInlet();
+    if (InletTimes) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletTimes)->Init( moText("times"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletTimes);
+    }
+
+    InletTimeabs = new moInlet();
+    if (InletTimeabs) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletTimeabs)->Init( moText("timeabs"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletTimeabs);
+    }
 
     /** Crea INLETS INTERNOS, es decir que no tienen un parametro asociado... (especificamente para su uso generico*/
-    moInlet* Inlet = new moInlet();
-    if (Inlet) {
+    InletTime = new moInlet();
+    if (InletTime) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)Inlet)->Init( moText("time"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(Inlet);
+      ((moConnector*)InletTime)->Init( moText("time"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletTime);
     }
 
-    Inlet = new moInlet();
-    if (Inlet) {
+    InletTempo = new moInlet();
+    if (InletTempo) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)Inlet)->Init( moText("t"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(Inlet);
+      ((moConnector*)InletTempo)->Init( moText("tempo"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletTempo);
     }
 
-    Inlet = new moInlet();
-    if (Inlet) {
+    InletT = new moInlet();
+    if (InletT) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)Inlet)->Init( moText("tempo"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(Inlet);
+      ((moConnector*)InletT)->Init( moText("t"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletT);
     }
 
-    Inlet = new moInlet();
-    if (Inlet) {
+
+    InletMilliseconds = new moInlet();
+    if (InletMilliseconds) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)Inlet)->Init( moText("screen_width"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(Inlet);
+      ((moConnector*)InletMilliseconds)->Init( moText("milliseconds"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMilliseconds);
     }
 
-    Inlet = new moInlet();
-    if (Inlet) {
+    InletSeconds = new moInlet();
+    if (InletSeconds) {
       //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
       //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)Inlet)->Init( moText("screen_height"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(Inlet);
+      ((moConnector*)InletSeconds)->Init( moText("seconds"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletSeconds);
+    }
+
+
+
+    InletScreenWidth = new moInlet();
+    if (InletScreenWidth) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletScreenWidth)->Init( moText("screen_width"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletScreenWidth);
+    }
+
+    InletScreenHeight = new moInlet();
+    if (InletScreenHeight) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletScreenHeight)->Init( moText("screen_height"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletScreenHeight);
     }
 
 
@@ -248,13 +294,21 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 	}
 
 	if (m_Inlets.Count()>2) {
-	  moInlet* InletTime = m_Inlets.Get(this->GetInletIndex("time"));
-	  moInlet* InletT = m_Inlets.Get(this->GetInletIndex("t"));
-	  moInlet* InletTempo = m_Inlets.Get(this->GetInletIndex("tempo"));
-	  moInlet* InletScreenWidth = m_Inlets.Get(this->GetInletIndex("screen_width"));
-	  moInlet* InletScreenHeight = m_Inlets.Get(this->GetInletIndex("screen_height"));
+
 	  if (InletTime) {
         if (InletTime->GetData()) InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
+    }
+	  if (InletTimems) {
+        if (InletTimems->GetData()) InletTimems->GetData()->SetDouble( (double)m_EffectState.tempo.Duration() );
+    }
+	  if (InletMilliseconds) {
+        if (InletMilliseconds->GetData()) InletMilliseconds->GetData()->SetDouble( (double)m_EffectState.tempo.Duration() );
+    }
+	  if (InletTimes) {
+        if (InletTimes->GetData()) InletTimes->GetData()->SetDouble( (double)m_EffectState.tempo.Duration()/1000.0 );
+    }
+	  if (InletSeconds) {
+        if (InletSeconds->GetData()) InletSeconds->GetData()->SetDouble( (double)m_EffectState.tempo.Duration()/1000.0 );
     }
 	  if (InletT) {
         if (InletT->GetData()) InletT->GetData()->SetDouble( m_EffectState.tempo.ang );
@@ -267,6 +321,9 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
     }
     if (InletScreenHeight) {
         if (InletScreenHeight->GetData()) InletScreenHeight->GetData()->SetDouble( m_pResourceManager->GetRenderMan()->ScreenHeight() );
+    }
+	  if (InletTimeabs) {
+        if (InletTimeabs->GetData()) InletTimeabs->GetData()->SetDouble( moGetDuration() );
     }
   }
 
