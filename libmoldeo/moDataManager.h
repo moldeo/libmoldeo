@@ -190,6 +190,12 @@ class LIBMOLDEO_API moDataSessionKey {
                             moMoldeoActionType p_ActionType,
                             long p_MoldeoObjectId,
                             long p_ParamId,
+                            long p_ValueId );
+
+        moDataSessionKey(   long p_Timecode,
+                            moMoldeoActionType p_ActionType,
+                            long p_MoldeoObjectId,
+                            long p_ParamId,
                             long p_ValueId,
                             const moValue& p_Value );
 

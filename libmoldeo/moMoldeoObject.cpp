@@ -589,7 +589,12 @@ void moMoldeoObject::ScriptExeRun() {
 }
 
 MOboolean
-moMoldeoObject::ResolveValue( moParam& param, int value_index ) {
+moMoldeoObject::RefreshValue( moParam& param, int value_index ) {
+  return ResolveValue( param, value_index, true );
+}
+
+MOboolean
+moMoldeoObject::ResolveValue( moParam& param, int value_index, bool p_refresh ) {
 
   int idx = -1;
   moValue& value( param.GetValue(value_index) );
@@ -603,6 +608,10 @@ moMoldeoObject::ResolveValue( moParam& param, int value_index ) {
       moValueBase& VB( value.GetSubValue( ivb ) );
       if (VB.GetType() == MO_VALUE_FUNCTION ) {
           idx = -1;
+          if (p_refresh)
+            if (m_pResourceManager->GetMathMan())
+              idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
+
           if (m_pResourceManager->GetMathMan())
             idx = m_pResourceManager->GetMathMan()->AddFunction( VB.Text(), (MOboolean)true, this );
           if (idx>-1) {
@@ -632,7 +641,9 @@ moMoldeoObject::ResolveValue( moParam& param, int value_index ) {
           if ( ! (valuebase0.Text().Trim() == moText("")) ) {
 
               ///si tenemos un segundo parametro deberia ser el formato del buffer (JPG o PNG)
+              if (p_refresh) {
 
+              }
               idx = m_pResourceManager->GetTextureMan()->GetTextureBuffer( valuebase0.Text(), true, "PNG" );
               if (idx>-1) {
 
@@ -656,7 +667,12 @@ moMoldeoObject::ResolveValue( moParam& param, int value_index ) {
       case MO_PARAM_TEXTURE:
       case MO_PARAM_FILTER:
           if ( ! (valuebase0.Text().Trim() == moText("")) ) {
-              idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( valuebase0.Text(), true);
+
+              if (p_refresh) {
+                idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( valuebase0.Text(), true, true );
+              }
+
+              idx = m_pResourceManager->GetTextureMan()->GetTextureMOId( valuebase0.Text(), true );
               if (idx>-1) {
                   moTexture*  pTexture = m_pResourceManager->GetTextureMan()->GetTexture(idx);
                   valuebase0.SetTexture( pTexture );

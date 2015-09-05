@@ -736,6 +736,12 @@ MOboolean moTexture::Build()
 	return true;
 }
 
+MOboolean moTexture::Refresh() {
+  m_glid = 0;//reset gl texture id
+  moText namefull = m_pDataMan->GetDataPath() + moSlash + (moText)m_name;
+  return BuildFromFile( namefull );
+}
+
 moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText newfilename ) {
 
     moText thumbnailfilename;

@@ -179,7 +179,7 @@ class LIBMOLDEO_API moTextureManager : public moResource
          * @param p_create_tex si es true y la textura no es encontrada, entonces una nueva textura es creada.
          * @return Moldeo ID.
          */
-		MOint GetTextureMOId(moText p_name, MOboolean p_create_tex);
+		MOint GetTextureMOId(moText p_name, MOboolean p_create_tex, bool p_refresh=false );
 
         /**
          * Devuelve el Moldeo ID interno de la textura con OpenGL ID p_glid.

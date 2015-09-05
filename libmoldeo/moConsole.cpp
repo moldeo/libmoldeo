@@ -1891,6 +1891,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
     case MO_ACTION_VALUE_ADD:
     case MO_ACTION_VALUE_DELETE:
     case MO_ACTION_VALUE_SET:
+    case MO_ACTION_VALUE_REFRESH:
     case MO_ACTION_VALUE_GET:
     case MO_ACTION_VALUE_SAVE:
 {
@@ -1919,6 +1920,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           MappedType==MO_ACTION_VALUE_ADD
           ||
           MappedType==MO_ACTION_VALUE_DELETE
+          ||
+          MappedType==MO_ACTION_VALUE_REFRESH
           )
         arg2Text  = p_pDataMessage->Get(3).ToText();//PARAMVALUEINDEX ///si es 0:1 > indice 0, subindice 1...
 
@@ -2105,7 +2108,10 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
               case MO_PARAM_TEXTURE:
                 if (m_pResourceManager->GetDataMan()->InData(arg3Text)) {
                   //make relative to datapath
-                  arg3Text = m_pResourceManager->GetDataMan()->MakeRelativeToData(arg3Text);
+                  moText relpath = m_pResourceManager->GetDataMan()->MakeRelativeToData(arg3Text);
+                  if (relpath!="") {
+                     arg3Text = relpath;
+                  }
                 } else {
                   //try to import file
                   moFile importFile( arg3Text );
@@ -2157,7 +2163,12 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
       moValue fullValueToCopy = rValue;
 
-      SetValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, fullValueToCopy );
+      if (MappedType==MO_ACTION_VALUE_REFRESH) {
+        RefreshValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, true );
+        MappedType = MO_ACTION_VALUE_GET;
+      } else {
+        SetValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, fullValueToCopy );
+      }
 
       MappedType = MO_ACTION_VALUE_GET;
 
@@ -3347,6 +3358,26 @@ int moConsole::SetValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, con
 
     if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
       moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_VALUE_SET, Object->GetId(),  m_ParamId, m_ValueId, p_value );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+
+    return 1;
+  }
+
+  return 0;
+}
+
+int moConsole::RefreshValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, bool p_Refresh ) {
+
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+
+  if (Object && Object->GetConfig()) {
+    moParam& Param( Object->GetConfig()->GetParam(m_ParamId));
+    moValue& Value( Param.GetValue(m_ValueId) );
+    Object->RefreshValue( Param, m_ValueId );
+
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_VALUE_REFRESH, Object->GetId(),  m_ParamId, m_ValueId, -1 );
       GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
     }
 

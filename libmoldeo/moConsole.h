@@ -364,6 +364,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int SetEffectState( int m_MoldeoObjectId, const moEffectState& p_effect_state );
         int SetParam( int m_MoldeoObjectId, int m_ParamId, const moParamDefinition &p_param_definition );
         int SetValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, const moValue &p_value );
+        int RefreshValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, bool p_Refresh=true );
         int EffectPlay( int m_MoldeoObjectId );
         int EffectPause( int m_MoldeoObjectId );
         int EffectStop( int m_MoldeoObjectId );

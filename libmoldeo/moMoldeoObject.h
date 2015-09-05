@@ -429,11 +429,17 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		virtual MOboolean UpdateConnectors();
 
 
+    /**
+		* Recarga un valor de un parámetro
+		* Esta función reasigna o recarga funciones, filtros, imagenes (se carga de disco nuevamente), sonidos, y todo tipo de recursos asociados a los valores descriptos en los parámetros
+		*/
+		virtual MOboolean RefreshValue( moParam& param, int value_index );
+
 		/**
 		* Resuelve un valor de un parámetro
 		* Esta función asigna funciones, filtros, sonidos, y todo tipo de recursos asociados a los valores descriptos en los parámetros
 		*/
-		virtual MOboolean ResolveValue( moParam& param, int value_index );
+		virtual MOboolean ResolveValue( moParam& param, int value_index, bool p_refresh=false );
 
 
 		/**

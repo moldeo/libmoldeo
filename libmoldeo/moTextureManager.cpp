@@ -599,15 +599,19 @@ MOint moTextureManager::GetTextureMOId(moValue *value, MOboolean p_create_tex)
 		else return -1;
 }
 
-MOint moTextureManager::GetTextureMOId(moText p_name, MOboolean p_create_tex)
+MOint moTextureManager::GetTextureMOId(moText p_name, MOboolean p_create_tex, bool p_refresh)
 {
 	moTexture* ptex;
 	if (p_name.Trim() == moText("")) return -1;
 	for (MOuint i = 0; i < m_textures_array.Count(); i++)
 	{
 		ptex = m_textures_array[i];
-		if ((ptex != NULL) && (!stricmp(ptex->GetName(), p_name))) return i;
+		if ((ptex != NULL) && (!stricmp(ptex->GetName(), p_name))) {
+        if (p_refresh) ptex->Refresh();
+        return i;
+		}
 	}
+
 	if (p_create_tex) return AddTexture(p_name);
 	else return -1;
 }

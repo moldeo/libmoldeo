@@ -108,6 +108,18 @@ enum moMoldeoActionType {
   */
   MO_ACTION_VALUE_SAVE, /** save a value ( objectname|objectid, paramname|paramid, valueid, value )*/
 
+  /// "valuerefresh" > MO_ACTION_VALUE_REFRESH
+  /**
+  * Envia un mensaje para volver a cargar un valor de su origen. Si se trata del parámetro de una textura, este comando hará que
+  * la imagen se vuelva a cargar.
+  *
+  *
+  * param 1: object name | object id
+  * param 2: parameter name | parameter id
+  * param 3: value index | value index:sub value index
+  */
+  MO_ACTION_VALUE_REFRESH, /** refresh a value ( objectname|objectid, paramname|paramid, valueid, value )*/
+
   /// "valueset" > MO_ACTION_VALUE_SET
   /**
   * Fija un valor

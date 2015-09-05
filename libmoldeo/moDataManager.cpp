@@ -458,6 +458,20 @@ moDataSessionKey::moDataSessionKey(   long p_Timecode,
                             moMoldeoActionType p_ActionType,
                             long p_MoldeoObjectId,
                             long p_ParamId,
+                            long p_ValueId ) {
+  m_TimeCode = p_Timecode;
+  m_ActionType = p_ActionType;
+
+  m_ObjectId = p_MoldeoObjectId;
+  m_ParamId = p_ParamId;
+  m_ValueId = p_ValueId;
+
+}
+
+moDataSessionKey::moDataSessionKey(   long p_Timecode,
+                            moMoldeoActionType p_ActionType,
+                            long p_MoldeoObjectId,
+                            long p_ParamId,
                             long p_ValueId,
                             const moValue& p_Value ) {
   m_TimeCode = p_Timecode;

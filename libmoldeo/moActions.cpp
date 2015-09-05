@@ -98,6 +98,7 @@ moReactionListenerManager::moReactionListenerManager() {
   m_MapStrToActionType["valuedelete"] = MO_ACTION_VALUE_DELETE;
   m_MapStrToActionType["valueget"] = MO_ACTION_VALUE_GET;
   m_MapStrToActionType["valueset"] = MO_ACTION_VALUE_SET;
+  m_MapStrToActionType["valuerefresh"] = MO_ACTION_VALUE_REFRESH;
   m_MapStrToActionType["valuegetcomputed"] = MO_ACTION_VALUE_GETCOMPUTED;
 
   /** preconfigs map actions*/

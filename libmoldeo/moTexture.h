@@ -375,6 +375,7 @@ class LIBMOLDEO_API moTexture : public moAbstract {
         int  GetLuminance() const { return Luminance; }
         int  GetContrast() const { return Contrast; }
         static MOuint NextPowerOf2(MOuint p_seed);
+        MOboolean Refresh();
 
 protected:
 
