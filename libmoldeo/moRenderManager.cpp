@@ -152,7 +152,25 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 	}
 
+  GLint max_tex_size = 0.0f;
+  GLint max_tex_rect_size = 0.0f;
+  GLint max_tex_buf_size = 0.0f;
+  GLint64 max_tex_buf_size64 = 0.0f;
+  GLint max_tex_buf_size_arb = 0.0f;
+  GLint gl_major_version = 0.0f;
+  GLint gl_minor_version = 0.0f;
+
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex_size);
+  glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &max_tex_rect_size);
+  glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &max_tex_buf_size);
+  glGetInteger64v(GL_MAX_TEXTURE_BUFFER_SIZE, &max_tex_buf_size64);
+  glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE_ARB, &max_tex_buf_size_arb);
+  glGetIntegerv(GL_MAJOR_VERSION, &gl_major_version );
+  glGetIntegerv(GL_MINOR_VERSION, &gl_minor_version );
+
   MODebug2->Message( moText("moRenderManager::Init > Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)) );
+  MODebug2->Message( moText("moRenderManager::Init >       OpenGL Major Version: ") + IntToStr( gl_major_version ) );
+  MODebug2->Message( moText("moRenderManager::Init >       OpenGL Minor Version: ") + IntToStr( gl_minor_version ) );
   MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + IntToStr( (long)glActiveTextureARB) );
   MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + IntToStr( (long)glMultiTexCoord2fARB ) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + IntToStr(GLEW_ARB_texture_non_power_of_two) );
@@ -163,6 +181,11 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + IntToStr(GLEW_ARB_imaging) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + IntToStr(GLEW_ARB_shading_language_100) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
+  MODebug2->Message( moText("moRenderManager::Init >       Max Texture Size: ") + IntToStr(max_tex_size) );
+  MODebug2->Message( moText("moRenderManager::Init >       Max Texture Rectangle Size: ") + IntToStr(max_tex_rect_size) );
+  MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size: ") + IntToStr(max_tex_buf_size) );
+  MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size (64): ") + IntToStr(max_tex_buf_size64) );
+  MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size Arb: ") + IntToStr(max_tex_buf_size_arb) );
 
 	if (m_render_tex_moid[0]==-1) {
 	    m_render_tex_moid[0] = m_pTextureManager->AddTexture("render_texture", m_render_width, m_render_height);

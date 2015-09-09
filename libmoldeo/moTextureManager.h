@@ -144,7 +144,7 @@ class LIBMOLDEO_API moTextureManager : public moResource
         /**
          * Destructor genérico de la clase.
          */
-		~moTextureManager();
+		virtual ~moTextureManager();
 
         /**
          * Inicializador.
@@ -448,6 +448,8 @@ class LIBMOLDEO_API moTextureManager : public moResource
          * @return el tipo de textura.
          */
 		MOuint GetTypeForFile(moText p_filename);
+
+    void RefreshAll();
 
 		virtual void Update(moEventList *Events);
 

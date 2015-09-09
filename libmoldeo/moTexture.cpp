@@ -733,6 +733,7 @@ MOboolean moTexture::Build()
 
   ResetBufferData();
 	//if (m_gl != NULL) return !m_gl->CheckErrors("texture build");
+	if (m_gl != NULL) m_gl->CheckErrors("texture build");
 	return true;
 }
 

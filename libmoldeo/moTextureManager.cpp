@@ -616,6 +616,23 @@ MOint moTextureManager::GetTextureMOId(moText p_name, MOboolean p_create_tex, bo
 	else return -1;
 }
 
+void
+moTextureManager::RefreshAll() {
+
+  moTexture* ptex;
+
+  for (MOuint i = 0; i < m_textures_array.Count(); i++)
+	{
+		ptex = m_textures_array[i];
+		if (ptex) {
+      if (ptex->IsBuildedFromFile() && ptex->GetName()!="default" ) {
+          moDebugManager::Message( moText("Refreshing:") + ptex->GetName() );
+          ptex->Refresh();
+      }
+		}
+	}
+}
+
 MOint moTextureManager::GetTextureBuffer( moText p_foldername, MOboolean p_create_tex, moText p_bufferformat ) {
 
     moTextureBuffer* ptexbuffer;
