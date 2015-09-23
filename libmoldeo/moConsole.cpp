@@ -1226,6 +1226,7 @@ moConsole::LoadResources() {
 			if (presource) {
                 presource->SetConfigName(cfname);
                 presource->SetLabelName(lblname);
+                presource->SetResourceManager( m_pResourceManager );
                 if (presource->Init()) {
                     MODebug2->Message( moText("moConsole::LoadResources > Loaded plugin resource: ") + (moText)resname );
                 } else MODebug2->Error( moText("moConsole::LoadResources > Error: Loading plugin resource: ") + (moText)resname );

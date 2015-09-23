@@ -151,7 +151,7 @@ moResourceManager::NewResource( moText p_resname,  moText p_configname, moText p
       MDef.SetActivate(p_activate);
 
       pResource->SetMobDefinition(MDef);
-
+      AddResource( pResource  );
     } else {
         MODebug2->Error("moResourceManager::NewResource Error creating resource "+p_resname);
     }
