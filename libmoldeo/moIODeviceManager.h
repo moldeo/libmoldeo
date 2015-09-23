@@ -182,7 +182,7 @@ class LIBMOLDEO_API moIODeviceManager : public moAbstract {
         /**
          * constructor genérico de la clase.
          */
-		moIODevice*		NewIODevice( moText p_devname,  moText p_configname, moText p_labelname, moMoldeoObjectType p_type, int paramindex = -1, int valueindex = -1 );
+		moIODevice*		NewIODevice( moText p_devname,  moText p_configname, moText p_labelname, moMoldeoObjectType p_type, int paramindex = -1, int valueindex = -1, bool p_activate=true );
 
         /**
          * constructor genérico de la clase.

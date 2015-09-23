@@ -6,11 +6,12 @@
 
 /**
 *   \mainpage
+*
 *   \if spanish
-*
-*   \link http://www.moldeo.org/documentation#head
-*
 *   Bienvenidos a la documentación de Moldeo, una plataforma de desarrollo para aplicaciones multimediales interactivas en tiempo real.
+*   \else
+*   Welcome to the Moldeo's documentation, Moldeo is a software and a development platform for interactive multimedia applications in real time.
+*   \endif
 *
 *   \code
 
@@ -28,10 +29,10 @@
             // Mientras interactuamos
             while( MoldeoConsole.Interaction() ) {
 
-                //Actualizamos
+                //Update
                 MoldeoConsole.Update();
 
-                //Dibujamos
+                //Draw
                 MoldeoConsole.Draw();
             }
          }
@@ -41,10 +42,8 @@
 *
 *
 *   \author     Moldeo Interactive
-*   \author
 *   \author     Fabricio Costa Alisedo
-*   \author
-*   \endif
+*
 *
 */
 

@@ -93,7 +93,7 @@ class LIBMOLDEO_API moEffectManager : public moAbstract {
          * @see moEffectIndex
          * @see moConfig
          */
-		moEffect*				NewEffect( const moText& p_resname, const moText& p_configname, const moText& p_labelname, const moText& p_keyname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex );
+		moEffect*				NewEffect( const moText& p_resname, const moText& p_configname, const moText& p_labelname, const moText& p_keyname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex, bool p_activate=true );
 
         /**
          * Agrega un efecto previamente creado con la función NewEffect

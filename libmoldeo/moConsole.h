@@ -251,6 +251,8 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
                        MO_DISPLAY p_Display  = NULL);
 
 
+        virtual int Save( const moText& p_save_filename = moText("") );
+
         /// asignación del administrador de dispositivos
         /**
          * Crea el administrador de dispositivos o asigna el predeterminado.

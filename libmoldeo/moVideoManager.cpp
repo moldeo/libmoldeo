@@ -433,7 +433,7 @@ moCircularVideoBuffer::LoadSample( moVideoSample* pvideosample ) {
 
 	} else pImageResult = pImage;
 
-	//RESCALE
+	///RESCALE
 	if ( m_width != m_SourceWidth || m_height != m_SourceHeight ) {
 		/*
 		FILTER_BOX Box, pulse, Fourier window, 1st order (constant) B-Spline

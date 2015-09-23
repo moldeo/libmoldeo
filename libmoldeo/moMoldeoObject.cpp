@@ -142,6 +142,7 @@ moMobDefinition::operator = ( const moMobDefinition& mb) {
   m_MoldeoFatherId = mb.m_MoldeoFatherId;
   m_MoldeoFatherLabelName = mb.m_MoldeoFatherLabelName;
   m_KeyName = mb.m_KeyName;
+  m_Activate = mb.m_Activate;
   return(*this);
 }
 
@@ -335,6 +336,11 @@ moMobDefinition::SetFatherLabelName( const moText& p_labelname ) {
 void
 moMobDefinition::SetDescription( const moText& p_Description ) {
     m_Description  = p_Description;
+}
+
+void
+moMobDefinition::SetActivate( bool p_activate ) {
+  m_Activate = p_activate;
 }
 
 void

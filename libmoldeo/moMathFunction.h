@@ -40,9 +40,9 @@
 *
 * Algunos ejemplos:
 *
-* \f$ alpha + translatex*cos(time)) \f$
+* \f$ 1 + 2 x coseno( time ) \f$
 * se escribe sencillamente:
-*  \code alpha+translatex*cos(time)) \endcode
+*  \code 1 + 2 * cos( time ) \endcode
 *
 * \f$ \sqrt{(translatex+translatey )^2} ) \f$
 * se escribe sencillamente:

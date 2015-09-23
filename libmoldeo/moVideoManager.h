@@ -305,14 +305,20 @@ typedef moVideoBuffer* moVideoBufferPtr;
 moDeclareExportedDynamicArray(moVideoBufferPtr,moVideoBuffers);
 
 
-/// Buffer Circular de imágenes para video
+/// \if spanish Buffer Circular de imágenes para video \else Circular Video Buffer for live loop video recording.
 /**
+    \if spanish
     Este buffer permite cargar de manera gradual una sucesión de imágenes
     manteniendo siempre una cantidad fija histórica de cuadros para ser reproducidos desde la memoria.
     El circular buffer comprime en el formato seleccionado cada cuadro.
 
     Un uso común es el de aplicar un circularbuffer a una cámara para grabar en memoria una cantidad de cuadros
     para ser referenciados de manera desfazada, para crear el efecto de blur por ejemplo de movimiento.
+    \else
+    This special video buffer loads gradually a sequence of images in memory
+    keeping always a number of maximum of frames in a loop. Circular or Loop means you have for example 200 video frames available.
+    The 201th frame will be saved in the 1th video frame in the circular buffer.
+    \endif
 */
 
 class LIBMOLDEO_API moCircularVideoBuffer : public moTextureAnimated {

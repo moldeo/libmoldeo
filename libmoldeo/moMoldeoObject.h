@@ -186,6 +186,8 @@ class LIBMOLDEO_API moMobDefinition
         m_MobIndex = p_MobIndex;
         m_MoldeoFatherId = -1;
         m_MoldeoFatherLabelName = "";
+        m_Activate = true;
+        m_KeyName = "";
     }
 
     /// Destructor
@@ -295,7 +297,6 @@ class LIBMOLDEO_API moMobDefinition
       return m_Description;
     }
 
-
     /// Fija la descripción de este objeto
     /**
     *  La descripción describe la funcionalidad de este objeto
@@ -305,6 +306,22 @@ class LIBMOLDEO_API moMobDefinition
     void SetConsoleParamIndex( MOint p_paramindex );
 
     void SetConsoleValueIndex(MOint p_valueindex);
+
+
+    /// Devuelve el modo de activación al inicio del proyecto
+    /**
+    *   Si este valor es verdadero, este objeto se activará al iniciar el proyecto al que pertenece.
+    */
+    bool GetActivate() const {
+      return m_Activate;
+    }
+
+    /// Fija el modo de activación al inicio del proyecto
+    /**
+    *  Fija si el objeto está activo al iniciar el proyecto.
+    */
+    void SetActivate( bool p_activate );
+
 
     const moText& ToJSON();
 
@@ -324,6 +341,7 @@ class LIBMOLDEO_API moMobDefinition
       moMobIndex            m_MobIndex; /// Índice referente al archivo de configuración que describe a este objeto
 
       moText                m_KeyName;/// nombre de la tecla que activa el objeto
+      bool                  m_Activate;/// activo al iniciar el proyecto
       moText                m_FullJSON;
 };
 
@@ -519,7 +537,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
     /**
 		 * función que guarda el objeto a disco.
 		 */
-		 int Save( const moText& p_save_filename = moText("") );
+		virtual int Save( const moText& p_save_filename = moText("") );
 
 		/**
 		 * función que especifica el nombre del archivo de configuración del objeto.

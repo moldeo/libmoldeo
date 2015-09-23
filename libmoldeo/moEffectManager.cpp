@@ -55,12 +55,13 @@ moEffectManager::New( moMobDefinition& p_MobDefinition ) {
                         p_MobDefinition.GetKeyName(),
                         p_MobDefinition.GetType(),
                         p_MobDefinition.GetMobIndex().GetParamIndex(),
-                        p_MobDefinition.GetMobIndex().GetValueIndex()
+                        p_MobDefinition.GetMobIndex().GetValueIndex(),
+                        p_MobDefinition.GetActivate()
                     );
 }
 
 moEffect*
-moEffectManager::NewEffect( const moText& p_resname, const moText& p_configname, const moText& p_labelname, const moText& p_keyname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex ) {
+moEffectManager::NewEffect( const moText& p_resname, const moText& p_configname, const moText& p_labelname, const moText& p_keyname, moMoldeoObjectType p_type, MOint p_paramindex, MOint p_valueindex, bool p_activate ) {
 
 	moEffect* peffect = NULL;
 
@@ -98,21 +99,22 @@ moEffectManager::NewEffect( const moText& p_resname, const moText& p_configname,
 	}
 
 	if (peffect) {
-    peffect->SetConfigName( p_configname );
-    peffect->SetLabelName( p_labelname );
-    peffect->SetKeyName( p_keyname );
+    moMobDefinition MDef = peffect->GetMobDefinition();
+    MDef.SetConfigName( p_configname );
+    MDef.SetLabelName( p_labelname );
+    MDef.SetKeyName( p_keyname );
 
-    peffect->SetConsoleParamIndex(p_paramindex);
-    peffect->SetConsoleValueIndex(p_valueindex);
+    MDef.SetConsoleParamIndex(p_paramindex);
+    MDef.SetConsoleValueIndex(p_valueindex);
+    MDef.SetActivate(p_activate);
 
-    if (peffect) {
-        //m_pMoldeoObjects->Add( (moMoldeoObject*) peffect );
-        peffect->SetResourceManager( m_pResourceManager );
+    peffect->SetMobDefinition( MDef );
+    //m_pMoldeoObjects->Add( (moMoldeoObject*) peffect );
+    peffect->SetResourceManager( m_pResourceManager );
 
-        if ( peffect->GetName()==moText("scene") || peffect->GetName()==moText("sequence") ) {
-          moMasterEffect* pmastereffect = (moMasterEffect*)peffect;
-          pmastereffect->Set( m_pEffectManager, NULL);
-        }
+    if ( peffect->GetName()==moText("scene") || peffect->GetName()==moText("sequence") ) {
+      moMasterEffect* pmastereffect = (moMasterEffect*)peffect;
+      pmastereffect->Set( m_pEffectManager, NULL);
     }
 
     m_AllEffects.Add((moEffect*) peffect);

@@ -696,17 +696,18 @@ moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
 
   moText text,fxname,cfname,lblname,keyname;
 	MOint efx,i,N;
+	bool activate = true;
 	moEffect*	peffect = NULL;
 
 	moText fx_string = moMobDefinition::GetTypeToName(fx_type);
 
-  efx = m_Config.GetParamIndex("effect");
+  efx = m_Config.GetParamIndex(fx_string);
   m_Config.SetCurrentParamIndex(efx);
 	N = m_Config.GetValuesCount(efx);
 
 	if (MODebug2) {
-		MODebug2->Message( moText("moConsole::LoadObjects > Loading Effects configs...") );
-		MODebug2->Message( moText("moConsole::LoadObjects > Effects number: ") + IntToStr(N)  );
+		MODebug2->Message( moText("moConsole::LoadObjects > Loading Object configs...") );
+		MODebug2->Message( moText("moConsole::LoadObjects > Objects number: ") + IntToStr(N)  );
 	}
 
 	if(N>0) {
@@ -716,8 +717,13 @@ moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
 			fxname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT).Text();
 			cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
+
       if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
         keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
+
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
+        activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
+
 
 			moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
 			moFile FullCF( completecfname );
@@ -725,13 +731,14 @@ moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
 			if ( FullCF.Exists() ) {
                 if ((moText)fxname!=moText("nil")) {
 
-                    peffect = (moEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname, MO_OBJECT_EFFECT, efx, i );
+                    peffect = (moEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname, MO_OBJECT_EFFECT, efx, i, activate );
 
-                    if (peffect)
+                    if (peffect) {
                       m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
+                    }
 
                     if (MODebug2) {
-                      MODebug2->Message( moText("moConsole::LoadingEffect > ") + completecfname );
+                      MODebug2->Message( moText("moConsole::LoadObjects > ") + completecfname );
                     }
 
 
@@ -742,13 +749,13 @@ moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
                 }
 			} else {
-			    MODebug2->Error(moText("moConsole::LoadEffects > Error: Config File doesn't exist : ") + (moText)completecfname);
+			    MODebug2->Error(moText("moConsole::LoadObjects > Error: Config File doesn't exist : ") + (moText)completecfname);
       }
 			m_Config.NextValue();
 		}
 	}
 
-	if (MODebug2) MODebug2->Message(moText("moConsole::LoadEffects > Effects loaded !"));
+	if (MODebug2) MODebug2->Message(moText("moConsole::LoadObjects > Effects loaded !"));
 
 }
 
@@ -762,6 +769,7 @@ moConsole::LoadIODevices() {
 
 	moText text, fxname, cfname, lblname;
 	MOint devices, i, ndevices;
+	bool activate = true;
 	moIODevice*	pdevice = NULL;
 
 	devices = m_Config.GetParamIndex("devices");
@@ -776,16 +784,19 @@ moConsole::LoadIODevices() {
 		cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
 		lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
 
-        moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
-        moFile FullCF( completecfname );
+    if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
+      activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
 
-        if ( FullCF.Exists() ) {
-            pdevice = m_pIODeviceManager->NewIODevice( fxname, cfname, lblname,  MO_OBJECT_IODEVICE, devices, i );
-            if (pdevice) {
-                m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
-                pdevice->SetResourceManager( m_pResourceManager );
-                pdevice->Init();
-            } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText(fxname));
+    moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
+    moFile FullCF( completecfname );
+
+    if ( FullCF.Exists() ) {
+        pdevice = m_pIODeviceManager->NewIODevice( fxname, cfname, lblname,  MO_OBJECT_IODEVICE, devices, i, activate );
+        if (pdevice) {
+            m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
+            pdevice->SetResourceManager( m_pResourceManager );
+            pdevice->Init();
+        } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText(fxname));
 		} else {
 		    MODebug2->Error(moText("moConsole::LoadIODevices > Error: Config File doesn't exist : ") + (moText)completecfname);
         }
@@ -885,6 +896,7 @@ void
 moConsole::LoadMasterEffects() {
 	moText text, fxname, cfname, lblname, keyname;
 	MOint N,i,mtfx;
+	bool activate = true;
 	moMasterEffect*	pmastereffect = NULL;
 
 	mtfx = m_Config.GetParamIndex("mastereffect");
@@ -904,12 +916,14 @@ moConsole::LoadMasterEffects() {
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
       if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
         keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
+        activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
 
-            moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
+      moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
 			moFile FullCF( completecfname );
 
 			if ( FullCF.Exists() ) {
-                pmastereffect = (moMasterEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_MASTEREFFECT, mtfx, i);
+                pmastereffect = (moMasterEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_MASTEREFFECT, mtfx, i, activate);
                 if (pmastereffect) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) pmastereffect );
                     pmastereffect->SetResourceManager( m_pResourceManager );
@@ -949,6 +963,7 @@ moConsole::LoadPreEffects() {
 
 	moText text,fxname,cfname,lblname,keyname;
 	MOint prfx,i,N;
+  bool activate = true;
 	moPreEffect* ppreeffect;
 
 	prfx = m_Config.GetParamIndex("preeffect");
@@ -972,14 +987,15 @@ moConsole::LoadPreEffects() {
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
       if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
         keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
-
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
+        activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
 
       moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname + moText(".cfg");
 			moFile FullCF( completecfname );
 
 			if ( FullCF.Exists() ) {
 
-                ppreeffect = (moPreEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_PREEFFECT, prfx, i);
+                ppreeffect = (moPreEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_PREEFFECT, prfx, i, activate);
 
                 if (ppreeffect) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) ppreeffect );
@@ -1033,6 +1049,7 @@ moConsole::LoadEffects() {
 
 	moText text,fxname,cfname,lblname,keyname;
 	MOint efx,i,N;
+	bool activate = true;
 	moEffect*	peffect = NULL;
 
     efx = m_Config.GetParamIndex("effect");
@@ -1053,6 +1070,8 @@ moConsole::LoadEffects() {
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
       if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
         keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
+        activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
 
 			moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
 			moFile FullCF( completecfname );
@@ -1060,10 +1079,11 @@ moConsole::LoadEffects() {
 			if ( FullCF.Exists() ) {
                 if ((moText)fxname!=moText("nil")) {
 
-                    peffect = (moEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname, MO_OBJECT_EFFECT, efx, i );
+                    peffect = (moEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname, MO_OBJECT_EFFECT, efx, i, activate );
 
-                    if (peffect)
+                    if (peffect) {
                       m_MoldeoObjects.Add( (moMoldeoObject*) peffect );
+                    }
 
                     if (MODebug2) {
                       MODebug2->Message( moText("moConsole::LoadingEffect > ") + completecfname );
@@ -1071,6 +1091,7 @@ moConsole::LoadEffects() {
 
 
                 } else {
+                    ///add a NIL effect...dangerous!
                     peffect = NULL;
                     m_EffectManager.Effects().Add(peffect);
                     m_EffectManager.AllEffects().Add(peffect);
@@ -1105,6 +1126,7 @@ moConsole::LoadPostEffects() {
 
 	moText text, fxname, cfname, lblname, keyname;
 	MOint ptfx,i,N;
+	bool activate = true;
 	moPostEffect*	posteffect = NULL;
 
 	ptfx = m_Config.GetParamIndex("posteffect");
@@ -1125,13 +1147,15 @@ moConsole::LoadPostEffects() {
 			lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
       if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
         keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
+      if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
+        activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
 
             moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
 			moFile FullCF( completecfname );
 
 			if ( FullCF.Exists() ) {
 
-                posteffect = (moPostEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_POSTEFFECT, ptfx , i );
+                posteffect = (moPostEffect*)m_EffectManager.NewEffect( fxname, cfname, lblname, keyname,  MO_OBJECT_POSTEFFECT, ptfx , i, activate );
                 if (posteffect) {
                     m_MoldeoObjects.Add( (moMoldeoObject*) posteffect );
                     //posteffect->SetResourceManager( m_pResourceManager );
@@ -1172,6 +1196,7 @@ moConsole::LoadResources() {
 	moText resname;
 	moText cfname;
 	moText lblname;
+	bool activate = true;
 
 	int paramindex = m_Config.GetParamIndex(moText("resources"));
 	///TODO: chequear validez de este indice
@@ -1185,6 +1210,8 @@ moConsole::LoadResources() {
 		resname = presources[MO_SELECTED][MO_CFG_RESOURCE].Text();
 		cfname = presources[MO_SELECTED][MO_CFG_RESOURCE_CONFIG].Text();
 		lblname = presources[MO_SELECTED][MO_CFG_RESOURCE_LABEL].Text();
+    if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
+      activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
 
 		MOint rid = m_pResourceManager->GetResourceIndex( lblname );
 
@@ -1195,7 +1222,7 @@ moConsole::LoadResources() {
 		} else {
 			//maybe a plugin
 			resource_valueindex = r;
-			presource = m_pResourceManager->NewResource(resname, cfname, lblname, paramindex, resource_valueindex);
+			presource = m_pResourceManager->NewResource(resname, cfname, lblname, paramindex, resource_valueindex, activate);
 			if (presource) {
                 presource->SetConfigName(cfname);
                 presource->SetLabelName(lblname);
@@ -2570,9 +2597,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       //ScreenShot();
       ///SAVING ALL
       MODebug2->Message("moConsole::Processing > Saving ALL");
-      for( int fx=0; fx<(int)m_MoldeoObjects.Count(); fx++ ) {
-        m_MoldeoObjects[fx]->GetConfig()->SaveConfig();
-      }
+      Save("");
 
       pMessageToSend = new moDataMessage();
       if (pMessageToSend) {
@@ -3151,6 +3176,39 @@ int moConsole::ProcessSessionEventKey( const moDataSessionEventKey & p_session_e
 
 }
 
+int
+moConsole::Save( const moText& p_save_filename ) {
+  bool save_success = true;
+  int fx=0;
+  for( fx=0; fx<(int)m_MoldeoObjects.Count(); fx++ ) {
+    moMoldeoObject* MObj = m_MoldeoObjects[fx];
+    if (MObj) {
+        moMobDefinition MobDef = MObj->GetMobDefinition();
+        int valueindex = MobDef.GetMobIndex().GetValueIndex();
+        int paramindex = MobDef.GetMobIndex().GetParamIndex();
+
+        moValueBase& vCFG_Effect_Config( GetConfig()->GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_CONFIG) );
+        vCFG_Effect_Config.SetText( MobDef.GetConfigName() );
+
+        moValueBase& vCFG_Effect_Label( GetConfig()->GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_LABEL) );
+        vCFG_Effect_Label.SetText( MobDef.GetLabelName() );
+
+        moValueBase& vCFG_Effect_Name( GetConfig()->GetParam( paramindex ).GetValue( valueindex ).GetSubValue(0) );
+        vCFG_Effect_Name.SetText( MobDef.GetName() );
+
+        moValueBase& vCFG_Effect_Activate( GetConfig()->GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_ON) );
+        vCFG_Effect_Activate.SetInt( (int)(MobDef.GetActivate()) );
+
+        moValueBase& vCFG_Effect_KeyName( GetConfig()->GetParam( paramindex ).GetValue( valueindex ).GetSubValue(MO_CFG_EFFECT_KEY) );
+        vCFG_Effect_KeyName.SetText( MobDef.GetKeyName() );
+
+        save_success = save_success && (MObj->Save( "" )>0);
+    }
+  }
+  int res = moMoldeoObject::Save( p_save_filename );
+  save_success = save_success && (res>0);
+  return res;
+}
 
 
 void moConsole::ConsoleModeUpdate() {
@@ -3373,8 +3431,8 @@ int moConsole::RefreshValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId,
 
   if (Object && Object->GetConfig()) {
     moParam& Param( Object->GetConfig()->GetParam(m_ParamId));
-    moValue& Value( Param.GetValue(m_ValueId) );
-    Object->RefreshValue( Param, m_ValueId );
+    //moValue& Value( Param.GetValue(m_ValueId) );
+    if (p_Refresh) Object->RefreshValue( Param, m_ValueId );
 
     if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
       moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_VALUE_REFRESH, Object->GetId(),  m_ParamId, m_ValueId, -1 );
