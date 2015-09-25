@@ -2598,7 +2598,10 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       //ScreenShot();
       ///SAVING ALL
       MODebug2->Message("moConsole::Processing > Saving ALL");
-      Save("");
+      //Save("");
+      for( int fx=0; fx<(int)m_MoldeoObjects.Count(); fx++ ) {
+        m_MoldeoObjects[fx]->GetConfig()->SaveConfig();
+      }
 
       pMessageToSend = new moDataMessage();
       if (pMessageToSend) {
