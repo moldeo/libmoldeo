@@ -3251,8 +3251,9 @@ void moConsole::ConsoleModeUpdate() {
 
         // 1000 / 20fps = 50 ms
         // 1000 / 24fps = 41 ms = 24 frames + 16/24
+        // 1000 / 25fps = 40 ms = 25 frames
         // 1000 / 30fps = 50 ms
-        m_ConsoleState.step_interval = 41;
+        m_ConsoleState.step_interval = 40;
 
         moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
 

@@ -102,6 +102,17 @@ MOuint moTextureIndex::GetGLId(MOuint p_idx, moTempo *p_tempo) // With synchro.
 	else return 0;
 }
 
+MOuint moTextureIndex::GetGLId(MOuint p_idx, moMoldeoObject *p_mob) // With synchro.
+{
+	if (ValidIndex(p_idx)) {
+    if (p_mob!=NULL) {
+      return m_textures_array[p_idx]->GetGLId( p_mob );
+    } else {
+      return m_textures_array[p_idx]->GetGLId();
+    }
+	} else return 0;
+}
+
 MOint moTextureIndex::GetType(MOuint p_idx)
 {
 	if (ValidIndex(p_idx)) return (m_textures_array[p_idx]->GetType());

@@ -496,6 +496,11 @@ MOuint moTexture::GetDataHeight() const
 	else return (MOuint)(m_max_coord_t * m_height);
 }
 
+MOuint moTexture::GetGLId( moMoldeoObject* p_src_mob ) {
+  if (p_src_mob==NULL) return GetGLId();
+
+}
+
 void moTexture::FlipBufferVert(MOubyte *pBuffer, MOint p_depth)
 {
 	MOubyte *top;

@@ -30,7 +30,7 @@
 *******************************************************************************/
 
 #include "moTextureFilter.h"
-
+#include "moEffect.h"
 #include "moArray.h"
 moDefineDynamicArray(moTextureFilterArray)
 
@@ -700,7 +700,32 @@ void moTextureFilter::Apply(moTempo *p_tempo, MOfloat p_fade, moTextFilterParam 
 	RestoreGLConf();
 }
 
-void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilter::Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, moTextFilterParam *p_params ) {
+
+  if (p_src_mob==NULL) return;
+  if (m_shader==NULL) return;
+
+  MOint w = m_dest_tex[0]->GetWidth();
+	MOint h = m_dest_tex[0]->GetHeight();
+	SetGLConf(w, h);
+
+	m_shader->StartShader();
+	SetupShader(w, h, NULL, p_fade, p_params, p_src_mob);
+
+	BindSrcTex( p_src_mob );
+	m_shader->DrawGrid(w, h, m_src_tex.Count());
+	UnbindSrcTex();
+
+	m_shader->StopShader();
+
+	UnbindDestFBO();
+
+	RestoreGLConf();
+
+}
+
+
+void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params, moMoldeoObject* p_src_object)
 {
 	for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
@@ -744,6 +769,8 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
         glUniform1fARB(m_fade_const, p_fade);
 	    //(m_shader->GetType() == (MOuint)MO_SHADER_GLSL) ? glUniform1fARB(m_fade_const, p_fade) : m_fade_const=0;/*cgGLSetParameter1f( (CGparameter)m_fade_const, p_fade )*/
 	}
+
+	///TODO: load and evaluate each parameter of m_shader->config using also p_src_object as parameters!!!
 
     if (p_params != NULL)
     {
@@ -841,6 +868,34 @@ void moTextureFilter::BindSrcTex(moTempo *p_tempo)
 		glBindTexture(m_src_tex[i]->GetTexTarget(), m_src_tex.GetGLId(i, p_tempo));
 	}
 }
+
+void moTextureFilter::BindSrcTex( moMoldeoObject* p_mob ) {
+
+  if (p_mob==NULL) return;
+
+  moTempo* src_tempo  = NULL;
+
+  if (  p_mob->GetType()==MO_OBJECT_EFFECT
+      || p_mob->GetType()==MO_OBJECT_PREEFFECT
+      || p_mob->GetType()==MO_OBJECT_POSTEFFECT
+      || p_mob->GetType()==MO_OBJECT_MASTEREFFECT ) {
+
+    moEffect* pFx = (moEffect*) p_mob;
+
+    if (pFx) {
+      moEffectState fs = pFx->GetEffectState();
+      src_tempo = &fs.tempo;
+    }
+
+  }
+
+  for (MOuint i = 0; i < m_src_tex.Count(); i++)
+	{
+		glActiveTextureARB(GL_TEXTURE0_ARB + i);
+		glBindTexture(m_src_tex[i]->GetTexTarget(), m_src_tex.GetGLId(i, src_tempo));
+	}
+}
+
 
 void moTextureFilter::UnbindSrcTex()
 {

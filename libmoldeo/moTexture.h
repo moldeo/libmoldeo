@@ -223,6 +223,12 @@ class LIBMOLDEO_API moTexture : public moAbstract {
          */
 		MOuint GetGLId() const { return m_glid; }
         /**
+         * Devuelve el identificador OpenGL de la textura.
+         * @param p_src_mob puntero a un moMoldeoObject para evaluar sus parámetros
+         * @return OpenGL ID de la textura.
+         */
+		MOuint GetGLId( moMoldeoObject* p_src_mob );
+        /**
          * Devuelve el identificador Moldeo de la textura.
          * @return Moldeo ID de la textura.
          */

@@ -1096,6 +1096,52 @@ moData::GetGLId( MOfloat p_fade, moTextFilterParam *p_filterparam ) {
     else return 0;
 }
 
+
+GLint
+moData::GetGLId( moMoldeoObject* p_mob, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+
+    moTexture*	pTexture = NULL;
+    moTempo* p_tempo = NULL;
+
+    if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
+        moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
+        if (pTF) {
+
+            if (m_bFilteredAlpha) {
+                p_fade = m_AlphaFilter;
+                if (m_pAlphaFilter) {
+                    moMathFunction* mFun = m_pAlphaFilter->Fun();
+                    mFun->Init( mFun->GetExpression(), p_mob );
+                    p_fade = m_pAlphaFilter->Fun()->Eval();
+                }
+            }
+            if (m_pFilterParam)
+                p_filterparam = m_pFilterParam;
+
+            pTF->Apply( p_mob, p_fade, p_filterparam);
+            moTextureIndex* PTI = pTF->GetDestTex();
+            if (PTI) {
+                pTexture = PTI->GetTexture(0);
+            }
+        }
+    } else pTexture = this->Texture();
+
+    if (pTexture) {
+        if ( (p_tempo != NULL) && (
+                (pTexture->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
+								(pTexture->GetType() == MO_TYPE_MOVIE) ||
+								(pTexture->GetType() == MO_TYPE_VIDEOBUFFER)
+              )
+            )
+        {
+          moTextureAnimated* ptex_anim = (moTextureAnimated*)pTexture;
+          return ptex_anim ->GetGLId((moTempo *) p_tempo);
+        }
+        else return pTexture->GetGLId();
+
+    } else return 0;
+}
+
 //================================================================
 //	moValueDefinition
 //================================================================

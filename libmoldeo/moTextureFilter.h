@@ -36,6 +36,8 @@
 #include "moAbstract.h"
 #include "moConfig.h"
 #include "moParam.h"
+#include "moMoldeoObject.h"
+
 #include "moShader.h"
 #include "moShaderGLSL.h"
 
@@ -207,6 +209,9 @@ public:
      */
 	void Apply(moTempo *p_tempo, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL);
 
+
+  void Apply( moMoldeoObject *p_src_mob = NULL, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL );
+
     /**
      * Devuelve el puntero a la lista de texturas de orígen.
      * @return puntero a la lista de texturas de orígen.
@@ -263,7 +268,7 @@ protected:
 	MOboolean m_use_screen_tex;
 	MOboolean m_reattach_dest_tex;
 
-	void SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params);
+	void SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params, moMoldeoObject* p_src_object = NULL);
 	void SetGLConf(MOint w, MOint h);
 	void RestoreGLConf();
 	void BindDestFBO();
@@ -272,6 +277,7 @@ protected:
 	void BindSrcTex(MOuint p_i);
 	void BindSrcTex(MOfloat p_cycle);
 	void BindSrcTex(moTempo *p_tempo);
+	void BindSrcTex( moMoldeoObject* p_mob );
 	void UnbindSrcTex();
 	void RenderTexQuad(MOint w, MOint h);
 };

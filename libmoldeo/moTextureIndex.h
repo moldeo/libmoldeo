@@ -36,6 +36,7 @@
 #include "moAbstract.h"
 #include "moConfig.h"
 #include "moParam.h"
+#include "moMoldeoObject.h"
 
 class moTextureManager;
 
@@ -123,6 +124,15 @@ public:
      * @return OpenGL ID de la textura.
      */
 	MOuint GetGLId(MOuint p_idx, moTempo *p_tempo);
+
+
+    /**
+     * Devuelve el OpenGL ID de textura que corresponde a los parametros para la textura con índice p_idx.
+     * @param p_idx índice de la textura.
+     * @param p_mob puntero al objeto.
+     * @return OpenGL ID de la textura.
+     */
+	MOuint GetGLId(MOuint p_idx, moMoldeoObject *p_mob);
     /**
      * Devuelve el tipo de la textura con índice p_idx.
      * @param p_idx índice de la textura.
