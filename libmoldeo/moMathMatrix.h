@@ -2868,25 +2868,6 @@ template class LIBMOLDEO_API moMatrix3<MOdouble>;
 typedef moMatrix3<MOdouble> moMatrix3d;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // moMatrix4 class ------------------------------------------------------------
 /*
 template <class Real>

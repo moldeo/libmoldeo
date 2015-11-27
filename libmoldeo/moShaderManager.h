@@ -154,8 +154,9 @@ private:
     *   parametro de alpha (mezcla de este sombreador)
     */
 	moTextureFilterIndex*    m_pTextureFilterIndex;
+  moShaderArray m_shaders_array;
 
-	moShaderArray m_shaders_array;
+  /*moDirectories            m_ShaderDirectories;*/
 };
 
 
