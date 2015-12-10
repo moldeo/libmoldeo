@@ -399,6 +399,7 @@ moMoldeoObject::moMoldeoObject() {
 	m_Outlets.Init( 0 , NULL );
 	m_bConnectorsLoaded = false;
 	__iscript = -1;
+	InletScreenWidth = InletScreenHeight = InletTimeabs = NULL;
 }
 
 moMoldeoObject::~moMoldeoObject() {
@@ -469,6 +470,30 @@ bool moMoldeoObject::Selected() const {
 
 MOboolean
 moMoldeoObject::Init() {
+
+    InletScreenWidth = new moInlet();
+    if (InletScreenWidth) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletScreenWidth)->Init( moText("screen_width"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletScreenWidth);
+    }
+
+    InletScreenHeight = new moInlet();
+    if (InletScreenHeight) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletScreenHeight)->Init( moText("screen_height"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletScreenHeight);
+    }
+
+    InletTimeabs = new moInlet();
+    if (InletTimeabs) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletTimeabs)->Init( moText("timeabs"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletTimeabs);
+    }
 
     moText confignamecompleto="";
 
@@ -1105,6 +1130,17 @@ ATENCION: NO PUEDEN ENVIARSE MENSAJES DE UN PROPIO OUTLET A UN PROPIO INLET (nun
 */
 void
 moMoldeoObject::Update( moEventList* p_EventList ) {
+
+
+    if (InletScreenWidth) {
+        if (InletScreenWidth->GetData()) InletScreenWidth->GetData()->SetDouble( m_pResourceManager->GetRenderMan()->ScreenWidth() );
+    }
+    if (InletScreenHeight) {
+        if (InletScreenHeight->GetData()) InletScreenHeight->GetData()->SetDouble( m_pResourceManager->GetRenderMan()->ScreenHeight() );
+    }
+	  if (InletTimeabs) {
+        if (InletTimeabs->GetData()) InletTimeabs->GetData()->SetDouble( moGetDuration() );
+    }
 
 	moEvent *actual,*tmp;
 	moMessage *pmessage;

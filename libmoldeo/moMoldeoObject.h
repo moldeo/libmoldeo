@@ -691,6 +691,10 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		/// Conectores de entrada, Arreglo de moInlet's
 		moInlets				m_Inlets;
 
+    moInlet*        InletScreenWidth;
+    moInlet*        InletScreenHeight;
+    moInlet*        InletTimeabs;
+
 		MOboolean m_bConnectorsLoaded;
 
     int __iscript;

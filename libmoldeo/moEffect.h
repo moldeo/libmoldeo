@@ -224,17 +224,13 @@ public:
         int luaSetEffectState(moLuaVirtualMachine& vm);
         int luaGetEffectState(moLuaVirtualMachine& vm);
 
-
-        moInlet* InletTime;
-        moInlet* InletTimems;
-        moInlet* InletMilliseconds;
-        moInlet* InletTimes;
-        moInlet* InletSeconds;
-        moInlet* InletT;
-        moInlet* InletTempo;
-        moInlet* InletScreenWidth;
-        moInlet* InletScreenHeight;
-        moInlet* InletTimeabs;
+        moInlet*        InletTime;
+        moInlet*        InletTimems;
+        moInlet*        InletMilliseconds;
+        moInlet*        InletTimes;
+        moInlet*        InletSeconds;
+        moInlet*        InletT;
+        moInlet*        InletTempo;
 
     void ScriptExeDraw();
     void ScriptExeInteraction();

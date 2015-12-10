@@ -46,8 +46,8 @@ moEffect::moEffect() {
 	ncodes = 0;
 
 	InletTime = InletT = InletTimems = NULL;
-	InletTimes = InletMilliseconds = InletScreenWidth = NULL;
-	InletScreenHeight = InletSeconds = InletMilliseconds = InletTimeabs = NULL;
+	InletTimes = InletMilliseconds = NULL;
+	InletSeconds = InletMilliseconds = NULL;
 }
 
 moEffect::~moEffect() {
@@ -114,14 +114,6 @@ moEffect::PreInit() {
       m_Inlets.Add(InletTimes);
     }
 
-    InletTimeabs = new moInlet();
-    if (InletTimeabs) {
-      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
-      //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)InletTimeabs)->Init( moText("timeabs"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(InletTimeabs);
-    }
-
     /** Crea INLETS INTERNOS, es decir que no tienen un parametro asociado... (especificamente para su uso generico*/
     InletTime = new moInlet();
     if (InletTime) {
@@ -162,24 +154,6 @@ moEffect::PreInit() {
       //param.SetExternData( Inlet->GetData() );
       ((moConnector*)InletSeconds)->Init( moText("seconds"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(InletSeconds);
-    }
-
-
-
-    InletScreenWidth = new moInlet();
-    if (InletScreenWidth) {
-      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
-      //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)InletScreenWidth)->Init( moText("screen_width"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(InletScreenWidth);
-    }
-
-    InletScreenHeight = new moInlet();
-    if (InletScreenHeight) {
-      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
-      //param.SetExternData( Inlet->GetData() );
-      ((moConnector*)InletScreenHeight)->Init( moText("screen_height"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
-      m_Inlets.Add(InletScreenHeight);
     }
 
 
@@ -293,38 +267,26 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 		m_EffectState = *parentstate;
 	}
 
-	if (m_Inlets.Count()>2) {
-
-	  if (InletTime) {
-        if (InletTime->GetData()) InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
-    }
-	  if (InletTimems) {
-        if (InletTimems->GetData()) InletTimems->GetData()->SetDouble( (double)m_EffectState.tempo.Duration() );
-    }
-	  if (InletMilliseconds) {
-        if (InletMilliseconds->GetData()) InletMilliseconds->GetData()->SetDouble( (double)m_EffectState.tempo.Duration() );
-    }
-	  if (InletTimes) {
-        if (InletTimes->GetData()) InletTimes->GetData()->SetDouble( (double)m_EffectState.tempo.Duration()/1000.0 );
-    }
-	  if (InletSeconds) {
-        if (InletSeconds->GetData()) InletSeconds->GetData()->SetDouble( (double)m_EffectState.tempo.Duration()/1000.0 );
-    }
-	  if (InletT) {
-        if (InletT->GetData()) InletT->GetData()->SetDouble( m_EffectState.tempo.ang );
-    }
-	  if (InletTempo) {
-        if (InletTempo->GetData()) InletTempo->GetData()->SetDouble( moMathd::FMod( m_EffectState.tempo.ang , moMathd::TWO_PI ) );
-    }
-    if (InletScreenWidth) {
-        if (InletScreenWidth->GetData()) InletScreenWidth->GetData()->SetDouble( m_pResourceManager->GetRenderMan()->ScreenWidth() );
-    }
-    if (InletScreenHeight) {
-        if (InletScreenHeight->GetData()) InletScreenHeight->GetData()->SetDouble( m_pResourceManager->GetRenderMan()->ScreenHeight() );
-    }
-	  if (InletTimeabs) {
-        if (InletTimeabs->GetData()) InletTimeabs->GetData()->SetDouble( moGetDuration() );
-    }
+  if (InletTime) {
+      if (InletTime->GetData()) InletTime->GetData()->SetDouble( m_EffectState.tempo.ang );
+  }
+  if (InletTimems) {
+      if (InletTimems->GetData()) InletTimems->GetData()->SetDouble( (double)m_EffectState.tempo.Duration() );
+  }
+  if (InletMilliseconds) {
+      if (InletMilliseconds->GetData()) InletMilliseconds->GetData()->SetDouble( (double)m_EffectState.tempo.Duration() );
+  }
+  if (InletTimes) {
+      if (InletTimes->GetData()) InletTimes->GetData()->SetDouble( (double)m_EffectState.tempo.Duration()/1000.0 );
+  }
+  if (InletSeconds) {
+      if (InletSeconds->GetData()) InletSeconds->GetData()->SetDouble( (double)m_EffectState.tempo.Duration()/1000.0 );
+  }
+  if (InletT) {
+      if (InletT->GetData()) InletT->GetData()->SetDouble( m_EffectState.tempo.ang );
+  }
+  if (InletTempo) {
+      if (InletTempo->GetData()) InletTempo->GetData()->SetDouble( moMathd::FMod( m_EffectState.tempo.ang , moMathd::TWO_PI ) );
   }
 
   ScriptExeRun();
