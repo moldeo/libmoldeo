@@ -156,8 +156,8 @@ moEffectState::ToJSON() {
   m_Selected = src.m_Selected;
   */
   fullJSON = "{";
-  fullJSON+= "'Activated': '"+IntToStr(m_Activated)+"'";
-  fullJSON+= fieldSeparation+"'Selected': '"+IntToStr(m_Selected)+"'";
+  fullJSON+= "'activated': '"+IntToStr(m_Activated)+"'";
+  fullJSON+= fieldSeparation+"'selected': '"+IntToStr(m_Selected)+"'";
 
   fullJSON+= fieldSeparation+ "'tempo': {";
   fullJSON+= "'tempo': '"+FloatToStr(tempo.getTempo())+"'";

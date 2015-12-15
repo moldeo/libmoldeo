@@ -1193,9 +1193,7 @@ void moConsole::UnloadPostEffects() {
 void
 moConsole::LoadResources() {
 
-	moText resname;
-	moText cfname;
-	moText lblname;
+	moText resname, cfname, lblname, keyname;
 	bool activate = true;
 
 	int paramindex = m_Config.GetParamIndex(moText("resources"));
@@ -1210,8 +1208,10 @@ moConsole::LoadResources() {
 		resname = presources[MO_SELECTED][MO_CFG_RESOURCE].Text();
 		cfname = presources[MO_SELECTED][MO_CFG_RESOURCE_CONFIG].Text();
 		lblname = presources[MO_SELECTED][MO_CFG_RESOURCE_LABEL].Text();
-    if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
-      activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
+    if (presources[MO_SELECTED].GetSubValueCount()>=4)
+      activate = (presources[MO_SELECTED].GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
+    if (presources[MO_SELECTED].GetSubValueCount()>=6)
+      keyname = presources[MO_SELECTED].GetSubValue(MO_CFG_EFFECT_KEY).Text();
 
 		MOint rid = m_pResourceManager->GetResourceIndex( lblname );
 
@@ -1222,7 +1222,7 @@ moConsole::LoadResources() {
 		} else {
 			//maybe a plugin
 			resource_valueindex = r;
-			presource = m_pResourceManager->NewResource(resname, cfname, lblname, paramindex, resource_valueindex, activate);
+			presource = m_pResourceManager->NewResource(resname, cfname, lblname, keyname, paramindex, resource_valueindex, activate);
 			if (presource) {
                 presource->SetConfigName(cfname);
                 presource->SetLabelName(lblname);
@@ -1891,6 +1891,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 /**/
 
   moEffect* fxObject;
+  moMoldeoObject* MObject;
   moText arg0;
   int arg1Int;
   moText arg1Text;
@@ -1926,9 +1927,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       //MODebug2->Message("MO_ACTION_VALUE_SET");
       arg0  = p_pDataMessage->Get(1).ToText();//MOBLABEL
       MODebug2->Message(arg0);
-      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
-
-      if (fxObject) {
+      //fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      MObject = GetObjectByIdx( GetObjectId( arg0 ) );
+      moConfig* pConfig = NULL;
+      if (MObject) {
+         pConfig = MObject->GetConfig();
         //MODebug2->Message("MO_ACTION_VALUE_SET fxObject ok");
         arg1Text  = p_pDataMessage->Get(2).ToText();//PARAMNAME or ID
       }
@@ -1939,7 +1942,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       if (MappedType==MO_ACTION_VALUE_SAVE) {
         //guardar ese valor en el config!!!
         // guardamos el config completo mejor...
-        fxObject->GetConfig()->SaveConfig();
+        MObject->GetConfig()->SaveConfig();
         return -1;
       }
 
@@ -1965,14 +1968,14 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       if (arg1Text=="particlecolor_3") { arg1Text = "particlecolor"; subvalue=3;issubvalue=true; }
 
 
-      moParam& rParam( fxObject->GetConfig()->GetParam(arg1Text));
+      moParam& rParam( pConfig->GetParam(arg1Text));
 
       arg2Int = atoi( arg2Text );
 
-      moConfig* pConfig = fxObject->GetConfig();
+
       if ( MappedType==MO_ACTION_VALUE_ADD && (int)rParam.GetValuesCount()<=arg2Int && pConfig ) {
 
-        MODebug2->Message("moConsole::ProcessMoldeoAPIMessage Adding > value for "+fxObject->GetLabelName()+" preconfig: "+arg2Text);
+        MODebug2->Message("moConsole::ProcessMoldeoAPIMessage Adding > value for "+MObject->GetLabelName()+" preconfig: "+arg2Text);
         moText pName = rParam.GetParamDefinition().GetName();
         moParamDefinition pParamDef = pConfig->GetConfigDefinition()->GetParamDefinition( pName );
         moValue newValue = pParamDef.GetDefaultValue();
@@ -1987,7 +1990,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
             MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > Adding Value at index:" + IntToStr( rParam.GetValuesCount() )
                               + " newvalue: " + newValue.ToJSON() );
             rParam.AddValue( newValue );
-            SetValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), rParam.GetValuesCount()-1, newValue );
+            SetValue( MObject->GetId(), rParam.GetParamDefinition().GetIndex(), rParam.GetValuesCount()-1, newValue );
         }
         arg3Text = newValue.GetSubValue(0).ToText();
 
@@ -2008,8 +2011,6 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                 (o sea si hay 2 valores y el preconfig es el 3, automaticamente definira <P name="alpha">2</P>)
         */
 
-
-        pConfig = fxObject->GetConfig();
         if (pConfig==NULL) return -1;
         moPreConfig preCfg;
         bool param_exist = false;
@@ -2192,10 +2193,10 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       moValue fullValueToCopy = rValue;
 
       if (MappedType==MO_ACTION_VALUE_REFRESH) {
-        RefreshValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, true );
+        RefreshValue( MObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, true );
         MappedType = MO_ACTION_VALUE_GET;
       } else {
-        SetValue( fxObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, fullValueToCopy );
+        SetValue( MObject->GetId(), rParam.GetParamDefinition().GetIndex(), arg2Int, fullValueToCopy );
       }
 
       MappedType = MO_ACTION_VALUE_GET;
@@ -2223,7 +2224,68 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
     // OBJECTS
 
     case MO_ACTION_OBJECT_ENABLE:
-      return 0;
+      {
+      arg0  = p_pDataMessage->Get(1).ToText();
+
+      //buscar este efecto y prenderlo...
+      MObject = GetObjectByIdx(GetObjectId( arg0 ));
+      if (MObject) {
+          ObjectEnable( MObject->GetId() );
+
+          /** SEND IT UPDATED!!!*/
+          MoldeoApiCommandData.SetText( "objectgetstate" );
+          p_pDataMessage->Set( 0, MoldeoApiCommandData );
+          p_pDataMessage->Set( 2, moData("") );
+          ProcessMoldeoAPIMessage( p_pDataMessage );
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_ENABLE > [" + arg0+"] not found!" );
+      }
+      break;
+
+    case MO_ACTION_OBJECT_DISABLE:
+      {
+      arg0  = p_pDataMessage->Get(1).ToText();
+
+      //buscar este efecto y prenderlo...
+      MObject = GetObjectByIdx(GetObjectId( arg0 ));
+      if (MObject) {
+          ObjectDisable( MObject->GetId() );
+
+          /** SEND IT UPDATED!!!*/
+          MoldeoApiCommandData.SetText( "objectgetstate" );
+          p_pDataMessage->Set( 0, MoldeoApiCommandData );
+          p_pDataMessage->Set( 2, moData("") );
+          ProcessMoldeoAPIMessage( p_pDataMessage );
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_ENABLE > [" + arg0+"] not found!" );
+      }
+      break;
+
+    case MO_ACTION_OBJECT_GETSTATE:
+      {
+      arg0  = p_pDataMessage->Get(1).ToText();
+      MObject = GetObjectByIdx( GetObjectId( arg0 ) );
+      if (MObject) {
+          moMobState ObjectState = MObject->GetState();
+          moText ObjectStateJSON = ObjectState.ToJSON();
+
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("objectgetstate") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( ObjectStateJSON ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + ObjectStateJSON );
+              /** send it: but we need an id */
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
+
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETSTATE > [" + arg0+"] not found!" );
+      }
       break;
 
     // EFFECTS
@@ -2397,13 +2459,13 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return -1;
         }
         arg0  = p_pDataMessage->Get(1).ToText();
-        fxObject = m_EffectManager.GetEffectByLabel( arg0 );//mob_label
-        if (fxObject) {
+        MObject = GetObjectByIdx(GetObjectId(arg0) );
+        if (MObject) {
           arg1Text  = p_pDataMessage->Get(2).ToText();//param
           arg2Text  = p_pDataMessage->Get(3).ToText();//attribute
         } else return -1;
 
-        moParam& pparam( fxObject->GetConfig()->GetParam( arg1Text ));
+        moParam& pparam( MObject->GetConfig()->GetParam( arg1Text ));
         if (arg2Text=="property") {
           arg3Text  = p_pDataMessage->Get(4).ToText();//property value "empty" or "published"
           pparam.GetParamDefinition().SetProperty( arg3Text );
@@ -2417,7 +2479,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           pparam.GetParamDefinition().GetInterpolation().SetDuration( atoi(arg3Text) );
         }
 
-        SetParam( fxObject->GetId(), pparam.GetParamDefinition().GetIndex(), pparam.GetParamDefinition() );
+        SetParam( MObject->GetId(), pparam.GetParamDefinition().GetIndex(), pparam.GetParamDefinition() );
       }
 
       /** SEND IT UPDATED!!!*/
@@ -2435,16 +2497,16 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         //MODebug2->Message("MO_ACTION_VALUE_SET");
         arg0  = p_pDataMessage->Get(1).ToText();//MOBLABEL
         MODebug2->Message(arg0);
-        fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+        MObject = GetObjectByIdx(GetObjectId(arg0) );
 
-        if (fxObject) {
+        if (MObject) {
           //MODebug2->Message("MO_ACTION_VALUE_SET fxObject ok");
           arg1Text  = p_pDataMessage->Get(2).ToText();//PARAMNAME or ID
         }
         else
           return -1;
 
-        moParam mParam = fxObject->GetConfig()->GetParam(arg1Text);
+        moParam mParam = MObject->GetConfig()->GetParam(arg1Text);
 
         moText FullParamJSON = mParam.GetParamDefinition().ToJSON();
         MODebug2->Message( FullParamJSON );
@@ -2474,11 +2536,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       arg0  = p_pDataMessage->Get(1).ToText();
       arg1Int = p_pDataMessage->Get(2).Int();
 
-      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
-      if (fxObject) {
+      MObject = GetObjectByIdx(GetObjectId(arg0) );
+      if (MObject) {
           //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
-          if ( 0 <= arg1Int && arg1Int<fxObject->GetConfig()->GetPreConfCount()) {
-            this->SetPreconf( fxObject->GetId(), arg1Int );
+          if ( 0 <= arg1Int && arg1Int<MObject->GetConfig()->GetPreConfCount()) {
+            this->SetPreconf( MObject->GetId(), arg1Int );
           } else {
             MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > preconfig index [" + IntToStr(arg1Int)+"] not found!" );
           }
@@ -2490,15 +2552,15 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       arg0  = p_pDataMessage->Get(1).ToText();//label object
       arg1Int = p_pDataMessage->Get(2).Int();//preconfig index
 
-      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
-      if (fxObject) {
+      MObject = GetObjectByIdx(GetObjectId(arg0) );
+      if (MObject) {
           //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
-          if ( 0 <= arg1Int && arg1Int<fxObject->GetConfig()->GetPreConfCount()) {
+          if ( 0 <= arg1Int && arg1Int<MObject->GetConfig()->GetPreConfCount()) {
             //this->SetPreconf( fxObject->GetId(), arg1Int );
             //do nothing
           } else {
-            fxObject->GetConfig()->AddPreconfig( arg1Int );
-            FullObjectJSON = fxObject->ToJSON();
+            MObject->GetConfig()->AddPreconfig( arg1Int );
+            FullObjectJSON = MObject->ToJSON();
             MODebug2->Message(FullObjectJSON);
 
             pMessageToSend = new moDataMessage();
@@ -2524,11 +2586,22 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_OBJECT_GET:
       arg0  = p_pDataMessage->Get(1).ToText();
+      MObject = NULL;
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
           FullObjectJSON = fxObject->ToJSON();
           MODebug2->Message(FullObjectJSON);
+      } else {
+        int idobj = GetObjectId( arg0 );
+        MObject = GetObjectByIdx( idobj );
+        if (MObject) {
+          FullObjectJSON = "{ 'object': " + MObject->ToJSON();
+          FullObjectJSON+= "}";
+          MODebug2->Message( FullObjectJSON );
+        }
+      }
 
+      if (fxObject || MObject) {
           pMessageToSend = new moDataMessage();
           if (pMessageToSend) {
               pMessageToSend->Add( moData("objectget") );
@@ -2756,13 +2829,28 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       FullObjectJSON+= fieldSeparation+"'appdatapath': '"+m_pResourceManager->GetDataMan()->GetAppDataPath()+"'";
       FullObjectJSON+= fieldSeparation+"'configname': '"+m_pResourceManager->GetDataMan()->GetConsoleConfigName()+"'";
       FullObjectJSON+= fieldSeparation+"'config': "+this->m_Config.ToJSON();
-      FullObjectJSON+= fieldSeparation+"'MapEffects':  {";
+      //FullObjectJSON+= fieldSeparation+"'MapEffects':  {";
+      FullObjectJSON+= fieldSeparation+"'MapObjects':  {";
       fieldSeparation = "";
+      /*
       for(int i=0;i<(int)this->m_EffectManager.AllEffects().Count(); i++ ) {
         moEffect* Fx = m_EffectManager.AllEffects().Get(i);
         FullObjectJSON+= fieldSeparation+"'"+Fx->GetLabelName()+"': '" + Fx->GetKeyName() +"'";
         fieldSeparation = ",";
       }
+      */
+
+      for(int i=0;i<(int)this->m_MoldeoObjects.Count(); i++ ) {
+        moMoldeoObject* Mobj = m_MoldeoObjects.Get(i);
+        FullObjectJSON+= fieldSeparation+"'"+Mobj->GetLabelName()+"': {";
+        FullObjectJSON+= "'name': '" + Mobj->GetName() +"',";
+        FullObjectJSON+= "'configname': '" + Mobj->GetConfigName() +"',";
+        FullObjectJSON+= "'keyname': '" + Mobj->GetKeyName() +"',";
+        FullObjectJSON+= "'classname': '" + Mobj->GetMobDefinition().GetTypeToClass( Mobj->GetMobDefinition().GetType() ) +"'";
+        FullObjectJSON+= "}";
+        fieldSeparation = ",";
+      }
+
       FullObjectJSON+= "}";
 
       FullObjectJSON+= "}";

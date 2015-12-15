@@ -220,7 +220,7 @@ class LIBMOLDEO_API moResourceManager : public moAbstract {
          *
          *
          */
-		moResource*				NewResource( moText p_resname, moText p_configname, moText p_labelname, int paramindex = -1, int valueindex = -1, bool p_activate=true );
+		moResource*				NewResource( const moText& p_resname, const moText& p_configname, const moText& p_labelname, const moText& p_keyname, int paramindex = -1, int valueindex = -1, bool p_activate=true );
 
         /**
          * crea un nuevo recurso

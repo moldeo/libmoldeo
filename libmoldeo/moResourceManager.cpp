@@ -137,7 +137,7 @@ moResourceManager::~moResourceManager() {
 }
 
 moResource*
-moResourceManager::NewResource( moText p_resname,  moText p_configname, moText p_labelname, int paramindex, int valueindex, bool p_activate  ) {
+moResourceManager::NewResource( const moText& p_resname,  const moText& p_configname, const moText& p_labelname, const moText& p_keyname, int paramindex, int valueindex, bool p_activate  ) {
 
     moResource* pResource = moNewResource( p_resname, m_Plugins );
     if (pResource) {
@@ -149,6 +149,7 @@ moResourceManager::NewResource( moText p_resname,  moText p_configname, moText p
       MDef.SetConfigName( p_configname );
       MDef.SetLabelName( p_labelname );
       MDef.SetActivate(p_activate);
+      MDef.SetKeyName(p_keyname);
 
       pResource->SetMobDefinition(MDef);
       AddResource( pResource  );

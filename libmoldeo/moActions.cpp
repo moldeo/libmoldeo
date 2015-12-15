@@ -114,6 +114,8 @@ moReactionListenerManager::moReactionListenerManager() {
 
 
   /** object map actions*/
+  m_MapStrToActionType["objectenable"] = MO_ACTION_OBJECT_ENABLE;
+  m_MapStrToActionType["objectdisable"] = MO_ACTION_OBJECT_DISABLE;
   m_MapStrToActionType["objectadd"] = MO_ACTION_OBJECT_ADD;
   m_MapStrToActionType["objectget"] = MO_ACTION_OBJECT_GET;
   m_MapStrToActionType["objectgetstate"] = MO_ACTION_OBJECT_GETSTATE;
