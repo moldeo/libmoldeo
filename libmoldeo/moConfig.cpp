@@ -146,9 +146,41 @@ moConfigDefinition::Add( const moText& p_name, moParamType p_type, int p_index, 
   moParamDefinition pdef( p_name, p_type );
 
   pdef.SetIndex( p_index );
+
   if (p_type!=MO_PARAM_MOLDEO_OBJECT)
       pdef.SetDefault( p_defaultvalue );
+
   pdef.SetOptions(p_OptionsStr);
+
+  //IF TYPE IS COLOR > sub 0: RED, 1: GREEN, 2: BLUE, 3: ALPHA
+  if (p_type==MO_PARAM_COLOR) {
+      moValueDefinition vd;
+      vd = pdef.GetDefaultValue().GetSubValue((int)MO_RED).GetValueDefinition();
+      vd.SetCodeName( "RED" );
+      pdef.GetDefaultValue().GetSubValue((int)MO_RED).SetValueDefinition(vd);
+
+      vd = pdef.GetDefaultValue().GetSubValue((int)MO_GREEN).GetValueDefinition();
+      vd.SetCodeName( "GREEN" );
+      pdef.GetDefaultValue().GetSubValue((int)MO_GREEN).SetValueDefinition(vd);
+
+      vd = pdef.GetDefaultValue().GetSubValue((int)MO_BLUE).GetValueDefinition();
+      vd.SetCodeName( "BLUE" );
+      pdef.GetDefaultValue().GetSubValue((int)MO_BLUE).SetValueDefinition(vd);
+
+      vd = pdef.GetDefaultValue().GetSubValue((int)MO_ALPHA).GetValueDefinition();
+      vd.SetCodeName( "ALPHA" );
+      pdef.GetDefaultValue().GetSubValue((int)MO_ALPHA).SetValueDefinition(vd);
+
+      /*
+      p_defaultvalue.GetSubValue(MO_GREEN).GetValueDefinition().SetCodeName( "GREEN" );
+      p_defaultvalue.GetSubValue(MO_BLUE).GetValueDefinition().SetCodeName( "BLUE" );
+      p_defaultvalue.GetSubValue(MO_ALPHA).GetValueDefinition().SetCodeName( "ALPHA" );
+      */
+  }
+
+  if (p_type==MO_PARAM_FONT) {
+      //p_defaultvalue.GetSubValue(0).GetValueDefinition().SetCodeName( "RED" );
+  }
 
   m_ParamDefinitions.Add( pdef );
 
@@ -236,6 +268,7 @@ moConfigDefinition::ToJSON() {
 moConfig::moConfig() {
 	m_CurrentParam = -1;
 	m_ConfigLoaded = false;
+	m_PreconfActual = -1;
 }
 
 moConfig::~moConfig() {
@@ -297,12 +330,14 @@ moConfig::FixConfig() {
             pParamLoaded.FixType( paramDefType );
 
           }
+          /// TODO: perform a JSON test of the full Options object instead of only checking the list size
           if (pDef.GetOptions().Count()!=pParamLoaded.GetParamDefinition().GetOptions().Count()) {
             pParamLoaded.FixOptions( pDef.GetOptions() );
           }
         }
     }
   }
+
 
   ///RE-INDEXAMOS....
   for( MOuint i=0; i< m_Params.Count(); i++ ) {
@@ -314,6 +349,7 @@ moConfig::FixConfig() {
         moParamDefinitions* pd = m_ConfigDefinition.GetParamDefinitions();
         moParamDefinition pDef = pd->Get(j);
 
+
         if (pd) {
             if ( param.GetParamDefinition().GetName() == pDef.GetName() ) {
                 pDef.SetIndex(i);
@@ -321,9 +357,43 @@ moConfig::FixConfig() {
                 break;
             }
         }
-
     }
     param.GetParamDefinition().SetIndex(i);
+  }
+
+  ///ACTUALIZAMOS LOS VALUE DEFINITION ( CODENAME, MIN, MAX, etc...)
+  //for( MOuint i=0; i< m_Params.Count(); i++ ) {
+
+  //moParam& param(m_Params[i]);
+
+  for( MOuint j=0; j< m_ConfigDefinition.GetParamDefinitions()->Count(); j++ ) {
+
+      moParamDefinitions* pd = m_ConfigDefinition.GetParamDefinitions();
+      moParamDefinition pDef = pd->Get(j);
+      int pdefindex = pDef.GetIndex();
+
+      if (pDef.GetName()=="color") {
+        //break here
+        pDef.GetTypeStr();
+      }
+
+      moParam& param( m_Params[pdefindex] );
+      //moValue defaultValue = param.GetParamDefinition().GetDefaultValue();
+      moValue defaultValue = pDef.GetDefaultValue();
+
+      for( MOuint k=0; k< param.GetValuesCount(); k++ ) {
+        for( MOuint l=0; l< param.GetValue(k).GetSubValueCount(); l++ ) {
+          moValueBase &vb( param.GetValue(k).GetSubValue(l) );
+          moValueBase &dfvb( defaultValue.GetSubValue(l) );
+          //compare vb.
+          moValueDefinition vd = vb.GetValueDefinition();
+          moValueDefinition dfvd = dfvb.GetValueDefinition();
+          if(vd.GetCodeName()!=dfvd.GetCodeName())
+              vd.SetCodeName( dfvd.GetCodeName() );
+          vb.SetValueDefinition( vd );
+
+        }
+      }
   }
 
 }
@@ -1556,7 +1626,7 @@ moConfig::AddPreconfig( int preconfig_index) {
           int nvalues = GetParam(pi).GetValuesCount();
           min_index = nvalues - 1;
 
-          if ( nvalues > 1 ) {
+          if ( nvalues > 1 || ( preconfig_index==0 && rParam2.GetParamDefinition().GetName()!="inlet" && rParam2.GetParamDefinition().GetName()!="outlet" ) ) {
 
             moPreconfigParamIndex preIndexA;
 

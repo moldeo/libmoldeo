@@ -747,6 +747,10 @@ moEffect::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("color"), MO_PARAM_COLOR, -1, moValue("1.0","FUNCTION","1.0","FUNCTION","1.0","FUNCTION","1.0","FUNCTION").Ref() );
 	p_configdefinition->Add( moText("syncro"), MO_PARAM_SYNC, -1, moValue("1.0","FUNCTION").Ref() );
 	p_configdefinition->Add( moText("phase"), MO_PARAM_PHASE, -1, moValue("0.0","FUNCTION").Ref() );
+	//p_configdefinition->Add( moText("showguides"), MO_PARAM_SHOWGUIDES, -1,  );
+	//p_configdefinition->Add( moText("blending"), MO_PARAM_, -1,  );
+	//p_configdefinition->Add( moText("polygonmode"), MO_PARAM_, -1,  );
+	//p_configdefinition->Add( moText("depthtest"), MO_PARAM_, -1,  );
 	return p_configdefinition;
 }
 

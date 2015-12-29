@@ -1057,6 +1057,7 @@ moMoldeoObject::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("inlet"), MO_PARAM_INLET );
 	p_configdefinition->Add( moText("outlet"), MO_PARAM_OUTLET );
 	p_configdefinition->Add( moText("script"), MO_PARAM_SCRIPT );
+	//TODO: add ""
 
 	return p_configdefinition;
 }
