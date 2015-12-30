@@ -100,12 +100,16 @@ template <class Real>
 moDVector<Real> operator* (Real fScalar, const moDVector<Real>& rkV);
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moDVector<MOfloat>;
+#endif
 #endif
 typedef moDVector<MOfloat> moDVectorf;
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moDVector<MOdouble>;
+#endif
 #endif
 typedef moDVector<MOdouble> moDVectord;
 

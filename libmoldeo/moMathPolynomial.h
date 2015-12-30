@@ -121,9 +121,11 @@ moPolynomial1<Real> operator* (Real fScalar, const moPolynomial1<Real>& rkPoly)
 }
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 #ifndef MO_WIN32
 template class LIBMOLDEO_API moPolynomial1<MOfloat>;
 template class LIBMOLDEO_API moPolynomial1<MOdouble>;
+#endif
 #endif
 #endif
 

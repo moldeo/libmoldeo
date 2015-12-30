@@ -625,12 +625,16 @@ inline LIBMOLDEO_API moVector2<Real> operator* (const moVector2<Real>& rkV,
 }
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moMatrix2<MOfloat>;
+#endif
 #endif
 typedef moMatrix2<MOfloat> moMatrix2f;
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moMatrix2<MOdouble>;
+#endif
 #endif
 typedef moMatrix2<MOdouble> moMatrix2d;
 
