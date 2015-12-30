@@ -292,9 +292,11 @@ inline moVector4<Real> operator* (Real fScalar, const moVector4<Real>& rkV)
 
 #ifndef MO_MACOSX
 #ifndef MO_WIN32
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moVector4<MOlong>;
 template class LIBMOLDEO_API moVector4<MOfloat>;
 template class LIBMOLDEO_API moVector4<MOdouble>;
+#endif
 #endif
 #endif
 

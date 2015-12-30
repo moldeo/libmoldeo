@@ -200,6 +200,8 @@ using namespace std;
     typedef __int16_t moWord;
     typedef __int32_t moDWord;
 
+    #undef MO_RASPBIAN
+    #define MO_RASPBIAN 0
 #endif
 
 /*WINDOWS*/

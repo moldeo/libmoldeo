@@ -625,9 +625,11 @@ inline moVector3<Real> operator* (Real fScalar, const moVector3<Real>& rkV)
 }
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moVector3<MOlong>;
 template class LIBMOLDEO_API moVector3<MOfloat>;
 template class LIBMOLDEO_API moVector3<MOdouble>;
+#endif
 #endif
 
 typedef moVector3<MOlong> moVector3i;
