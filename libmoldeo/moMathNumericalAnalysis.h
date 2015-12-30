@@ -100,12 +100,16 @@ public:
 };
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moIntegrate1<MOfloat>;
+#endif
 #endif
 typedef moIntegrate1<MOfloat> moIntegrate1f;
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moIntegrate1<MOdouble>;
+#endif
 #endif
 typedef moIntegrate1<MOdouble> moIntegrate1d;
 
@@ -143,9 +147,11 @@ private:
 };
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 #ifndef MO_WIN32
 template class LIBMOLDEO_API moMinimize1<MOfloat>;
 template class LIBMOLDEO_API moMinimize1<MOdouble>;
+#endif
 #endif
 #endif
 
