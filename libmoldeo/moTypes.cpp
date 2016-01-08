@@ -162,3 +162,15 @@ moText moGetVersionStr() {
 
 }
 
+void moColor4f(float r, float g, float b, float a) {
+
+}
+
+void moNormal3f(float x, float y, float z) {
+
+}
+
+void moColor3f(float r, float g, float b) {
+
+}
+

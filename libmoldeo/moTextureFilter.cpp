@@ -783,11 +783,13 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
 void moTextureFilter::SetGLConf(MOint w, MOint h)
 {
 	m_blend_on = glIsEnabled(GL_BLEND);
+#ifndef OPENGLESV2
 	glGetIntegerv(GL_POLYGON_MODE, &m_poly_mode);
-
+#endif
 	glDisable(GL_BLEND);
+#ifndef OPENGLESV2
     glPolygonMode(GL_FRONT, GL_FILL);
-
+#endif
 	m_glman->SaveView();
 	m_glman->SetOrthographicView(w, h);
 }
@@ -797,7 +799,9 @@ void moTextureFilter::RestoreGLConf()
 	m_glman->RestoreView();
 
 	if (m_blend_on) glEnable(GL_BLEND);
+#ifndef OPENGLESV2
 	glPolygonMode(GL_FRONT, m_poly_mode);
+#endif
 }
 
 void moTextureFilter::BindDestFBO()
@@ -828,8 +832,9 @@ void moTextureFilter::BindDestFBO()
 				m_draw_buffers[i] = fbo->GetColorAttachPoint(j);
 			}
 		}
-
+#ifndef OPENGLESV2
 		glDrawBuffers(n, m_draw_buffers);
+#endif
 	}
 }
 

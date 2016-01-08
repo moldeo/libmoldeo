@@ -27,5 +27,5 @@ dist_iodevices_DATA =
 dist_resources_DATA = 
 dist_moldeoversion_DATA = moldeoversion.txt
 
-AM_CPPFLAGS = -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
-
+AM_CPPFLAGS = -I/opt/vc/include -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\" -DOPENGLESV2
+AM_LDFLAGS = -L/opt/vc/lib

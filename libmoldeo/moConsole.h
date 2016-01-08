@@ -439,6 +439,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
 
         void ProcessConsoleMessage( moMessage* p_pMessage );
+	
 
         /// Procesa los mensajes de la Moldeo API 1.0
         /**
@@ -457,6 +458,8 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         const moText& ToJSON() {
           return moMoldeoObject::ToJSON();
         }
+
+	void TestScreen( int p_display = 0 );
 
     protected:
 

@@ -90,8 +90,78 @@ using namespace std;
 
 
 /*MOLDEO SETUP DEFINITIONS*/
-
+#ifndef OPENGLESV2
 #define USE_GL_EXTENSIONS
+#else
+#define  glFramebufferTexture2DEXT glFramebufferTexture2D
+#define  glCheckFramebufferStatusEXT glCheckFramebufferStatus
+#define  glGenFramebuffersEXT glGenFramebuffers
+#define  glDeleteFramebuffersEXT glDeleteFramebuffers
+typedef char GLcharARB;
+typedef unsigned int GLhandleARB;
+#define glColor4f moColor4f
+#define glNormal3f moNormal3f
+#define glColor3f moColor3f
+#define GL_FRAMEBUFFER_EXT GL_FRAMEBUFFER
+#define GL_FRAMEBUFFER_COMPLETE_EXT GL_FRAMEBUFFER_COMPLETE
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS
+#define GL_FRAMEBUFFER_UNSUPPORTED_EXT GL_FRAMEBUFFER_UNSUPPORTED
+#define GL_COLOR_ATTACHMENT0_EXT GL_COLOR_ATTACHMENT0
+#define glBindFramebufferEXT glBindFramebuffer
+#define GL_TEXTURE_RECTANGLE_ARB 0x84F5
+#define GL_RGBA16F_ARB 0x84F5
+#define GL_LUMINANCE16F_ARB 0x881E
+#define GL_RGBA32F_ARB 0x8814
+#define GL_LUMINANCE32F_ARB 0x8818
+#define GLEW_EXT_framebuffer_object 1
+#define GLEW_ARB_multitexture 1
+#define GLEW_ARB_shader_objects 1
+#define GLEW_ARB_vertex_shader 1
+#define GLEW_ARB_fragment_shader 1
+#define GLEW_ARB_shading_language_100 1
+#define GLEW_ARB_texture_non_power_of_two 1
+#define GL_TEXTURE0_ARB GL_TEXTURE0
+
+#define GL_VERTEX_SHADER_ARB GL_VERTEX_SHADER
+#define GL_FRAGMENT_SHADER_ARB GL_FRAGMENT_SHADER
+#define GL_OBJECT_LINK_STATUS_ARB GL_LINK_STATUS
+#define glCreateProgramObjectARB glCreateProgram
+#define glDeleteObjectARB glDeleteShader
+#define glCreateShaderObjectARB glCreateShader
+#define glAttachObjectARB glAttachShader
+#define glDetachObjectARB glDetachShader
+#define glUseProgramObjectARB glUseProgram
+#define glGetUniformLocationARB glGetUniformLocation
+#define glGetAttribLocationARB glGetAttribLocation
+#define glShaderSourceARB glShaderSource
+#define glLinkProgramARB glLinkProgram
+#define glGetObjectParameterivARB glGetShaderiv
+#define GL_OBJECT_INFO_LOG_LENGTH_ARB GL_INFO_LOG_LENGTH
+#define glGetInfoLogARB glGetShaderInfoLog
+#define glCompileShaderARB glCompileShader
+#define glUniform1fARB glUniform1f
+#define glUniform2fARB glUniform2f
+#define glUniform3fARB glUniform3f
+#define glUniform4fARB glUniform4f
+#define glUniform1iARB glUniform1i
+#define glUniform2iARB glUniform2i
+#define glUniform3iARB glUniform3i
+#define glUniform4iARB glUniform4i
+#define glUniformMatrix2fvARB glUniformMatrix2fv
+#define glUniformMatrix3fvARB glUniformMatrix3fv
+#define glUniformMatrix4fvARB glUniformMatrix4fv
+#define glUniform1fvARB glUniform1fv
+#define glUniform2fvARB glUniform2fv
+#define glUniform3fvARB glUniform3fv
+#define glUniform4fvARB glUniform4fv
+#define glUniform1ivARB glUniform1iv
+#define glUniform2ivARB glUniform2iv
+#define glUniform3ivARB glUniform3iv
+#define glUniform4ivARB glUniform4iv
+#define glActiveTextureARB glActiveTexture
+#endif
 
 //#define USE_QUICKTIME
 //#define USE_SDLIMAGE
@@ -167,24 +237,22 @@ using namespace std;
     #define MO_HANDLE Window
     #define MO_DISPLAY void*
 
-/*
-	#include <SDL/SDL.h>
-	#include <SDL/SDL_thread.h>
-	#include <SDL/SDL_mutex.h>
-	#include <SDL/SDL_net.h>
-	#include <SDL/SDL_image.h>
-	#include <SDL/SDL_syswm.h>
-*/
 	#ifdef USE_GL_EXTENSIONS
 		// GLEW provides gl.h, glu.h and glext.h
 		#include <GL/glew.h>
 	#else
-		#include <GL/gl.h>
-		#include <GL/glu.h>
-		#include <GL/glext.h>
+#ifdef OPENGLESV2
+	//#include <GLES/gl.h>
+	#include <GLES2/gl2.h>
+#else
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+	#include <GL/glext.h>
+	#include <GL/glut.h>
+#endif
 	#endif
 
-	#include <GL/glut.h>
+	
 
 	#define MO_GSTREAMER 1
 
@@ -201,7 +269,7 @@ using namespace std;
     typedef __int32_t moDWord;
 
     #undef MO_RASPBIAN
-    #define MO_RASPBIAN 0
+    #define MO_RASPBIAN 1
 #endif
 
 /*WINDOWS*/
@@ -314,10 +382,10 @@ using namespace std;
 #define MO_MAX_TEXTURAS	512
 #define MO_MAX_MODELOS	256
 
-#define MOboolean       GLuint
+#define MOboolean       unsigned int
 #define MOswitch        signed char
-#define MOuint          GLuint
-#define MOint           GLint
+#define MOuint          unsigned int
+#define MOint           int
 #define MOint64         moint64
 #define MOuint64        unsigned moint64
 #define MOlong          long
@@ -328,14 +396,14 @@ using namespace std;
 #define MOdword         moDWord
 #define MOchar          char
 #define MOuchar         unsigned char
-#define MOubyte			unsigned char
-#define MObyte			char
+#define MOubyte		unsigned char
+#define MObyte		char
 #define MOshort         short
 #define MOushort        unsigned short
-#define MOfloat         GLfloat
-#define MOdouble        GLdouble
-#define MOtexture       GLuint
-#define MOefectoid		GLuint
+#define MOfloat         float
+#define MOdouble        double
+#define MOtexture       unsigned int
+#define MOefectoid	unsigned int
 
 
 #define MOpointer		void*
@@ -445,6 +513,9 @@ enum moStereoSides {
 LIBMOLDEO_API MOfloat morand();
 LIBMOLDEO_API MOint moRand(MOint);
 LIBMOLDEO_API void HSVtoRGB(short,short,short,float*,float*,float*);
+LIBMOLDEO_API void moColor4f(float r, float g, float b, float a);
+LIBMOLDEO_API void moNormal3f(float x, float y, float z);
+LIBMOLDEO_API void moColor3f(float r, float g, float b);
 
 /// Tipos de objetos en Moldeo
 /**

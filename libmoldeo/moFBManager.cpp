@@ -193,7 +193,9 @@ void moFBManager::SetDrawTextures(MOuint p_num_attach_points, MOuint *p_attach_p
 		GLsizei n = p_num_attach_points;
 
 		for (int i = 0; i < n; i++) m_color_buffers[i] = m_fbo_array[m_current_fbo]->GetColorAttachPoint(p_attach_point_list[i]);
+#ifndef OPENGLESV2
 		glDrawBuffers(n, m_color_buffers);
+#endif
 	}
 }
 
@@ -216,8 +218,11 @@ void moFBManager::SetDrawTexturesByGLId(MOuint p_num_glids, MOuint *p_glid_list,
 		for (int i = 0; i < n; i++)
 		    m_fbo_array[m_current_fbo]->SetDrawTexture(p_glid_list[i], p_width, p_height, p_param, i);
 
+
 		for (int i = 0; i < n; i++) m_color_buffers[i] = m_fbo_array[m_current_fbo]->GetColorAttachPoint(i);
+#ifndef OPENGLESV2
 		glDrawBuffers(n, m_color_buffers);
+#endif
 	}
 }
 
@@ -260,8 +265,11 @@ MOint moFBManager::SetDrawTextures(moTextureArray &p_tex_array)
 			if (p_tex_array[i] != NULL)
 				m_fbo_array[m_current_fbo]->SetDrawTexture(p_tex_array[i]->GetGLId(), p_tex_array[i]->GetWidth(), p_tex_array[i]->GetHeight(), p_tex_array[i]->GetTexParam(), i);
 
+		
 		for (int i = 0; i < n; i++) m_color_buffers[i] = m_fbo_array[m_current_fbo]->GetColorAttachPoint(i);
+#ifndef OPENGLESV2
 		glDrawBuffers(n, m_color_buffers);
+#endif
 	}
 	return result;
 }
@@ -326,7 +334,9 @@ void moFBManager::UnbindAllFBO()
 
 void moFBManager::GetScreenBuffers()
 {
+#ifndef OPENGLESV2
 	glGetIntegerv(GL_DRAW_BUFFER, &m_screen_draw_buffer);
 	glGetIntegerv(GL_READ_BUFFER, &m_screen_read_buffer);
+#endif
 }
 

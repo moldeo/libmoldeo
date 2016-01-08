@@ -56,11 +56,15 @@ moP5::moP5()
 void moP5::triangle(float x1, float y1, float x2, float y2, float x3, float y3)
 {
 	// Propper handling of stroke, fill color and line weight
+#ifndef OPENGLESV2
 	glBegin(GL_TRIANGLES);
 		glVertex2f(x1, y1);
 		glVertex2f(x2, y2);
 		glVertex2f(x3, y3);
 	glEnd();
+#else
+	
+#endif
 }
 
 void moP5::line(float x1, float y1, float x2, float y2)
@@ -68,10 +72,14 @@ void moP5::line(float x1, float y1, float x2, float y2)
     glEnable( GL_TEXTURE_2D );
   glBindTexture(GL_TEXTURE_2D,0);
 	glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
+#ifndef OPENGLESV2
 	glBegin(GL_LINES);
 		glVertex2f(x1, y1);
 		glVertex2f(x2, y2);
 	glEnd();
+#else
+	
+#endif
 }
 
 void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
@@ -79,10 +87,14 @@ void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
 	glEnable( GL_TEXTURE_2D );
 	glBindTexture(GL_TEXTURE_2D,0);
 	glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
+#ifndef OPENGLESV2
 	glBegin(GL_LINES);
 		glVertex3f(x1, y1, z1);
 		glVertex3f(x2, y2, z2);
 	glEnd();
+#else
+	
+#endif
 }
 
 void moP5::arc(float x, float y, float width, float height, float start, float stop, int slices,  float band )
@@ -100,18 +112,26 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
 	switch(fillMode) {
 
         case MO_P5_NOFILL:
+#ifndef OPENGLESV2
             glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
             glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
             glBegin(GL_LINE_LOOP);
+#else
+	
+#endif
             break;
 
         case MO_P5_FILL:
+#ifndef OPENGLESV2
             glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
             glColor4f(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
 
             if ( band>0.0 ) {
                 glBegin(GL_TRIANGLE_STRIP);
             } else glBegin(GL_TRIANGLE_FAN);
+#else
+	
+#endif
             break;
 
         default:
@@ -120,7 +140,7 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
 
 	}
 
-
+#ifndef OPENGLESV2
         if ( band==0.0 ) {
             /** Triangle Fan*/
             glVertex2f( (float)x, (float)y);
@@ -136,32 +156,47 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
 
         }
     glEnd();
+#else
+	
+#endif
 
 }
 
 void moP5::point(float x, float y)
 {
+#ifndef OPENGLESV2
     glBegin(GL_POINTS);
         glVertex2f(x, y);
     glEnd();
+#else
+	
+#endif
 }
 
 
 void moP5::point(float x, float y, float z)
 {
+#ifndef OPENGLESV2
     glBegin(GL_POINTS);
         glVertex3f(x, y, z);
     glEnd();
+#else
+	
+#endif
 }
 
 void moP5::quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
 {
+#ifndef OPENGLESV2
 	glBegin(GL_QUADS);
 		glVertex2f(x1, y1);
 		glVertex2f(x2, y2);
 		glVertex2f(x3, y3);
 		glVertex2f(x4, y4);
 	glEnd();
+#else
+	
+#endif
 }
 
 void moP5::ellipse(float x, float y, float width, float height, int slices )
@@ -170,7 +205,7 @@ void moP5::ellipse(float x, float y, float width, float height, int slices )
 	// and scale it to the right size.
   glEnable( GL_TEXTURE_2D );
   glBindTexture(GL_TEXTURE_2D,0);
-
+#ifndef OPENGLESV2
 	float N;
 
 	N = (float)slices;
@@ -195,7 +230,9 @@ void moP5::ellipse(float x, float y, float width, float height, int slices )
             glEnd();
             break;
 	}
-
+#else
+	
+#endif
 }
 
 void moP5::rect(float x, float y, float width, float height)
@@ -204,7 +241,7 @@ void moP5::rect(float x, float y, float width, float height)
 	int N;
 
 	N = 12;
-
+#ifndef OPENGLESV2
 	switch(fillMode) {
 
         case MO_P5_NOFILL:
@@ -221,6 +258,9 @@ void moP5::rect(float x, float y, float width, float height)
 	}
 
 	glRectf(x, y, x + width, y + height);
+#else
+	
+#endif
 }
 
 void moP5::strokeWeight(float width)
@@ -391,7 +431,11 @@ void moP5::stroke(float value1, float value2, float value3, float alpha)
 void moP5::noFill()
 {
     fillMode = MO_P5_NOFILL;
+#ifndef OPENGLESV2
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+#else
+	
+#endif
 }
 
 void moP5::noStroke()
@@ -420,7 +464,11 @@ void moP5::fill(float value1, float value2, float value3)
 void moP5::fill(float value1, float value2, float value3, float alpha)
 {
     fillMode = MO_P5_FILL;
+#ifndef OPENGLESV2
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+#else
+	
+#endif
     fillColor[0] = value1;
     fillColor[1] = value2;
     fillColor[2] = value3;
@@ -429,40 +477,68 @@ void moP5::fill(float value1, float value2, float value3, float alpha)
 
 void moP5::pushMatrix()
 {
+#ifndef OPENGLESV2
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
+#else
+	
+#endif
 }
 
 void moP5::popMatrix()
 {
+#ifndef OPENGLESV2
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
+#else
+	
+#endif
 }
 
 void moP5::resetMatrix()
 {
+#ifndef OPENGLESV2
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+#else
+	
+#endif
 }
 
 void moP5::scale(float size)
 {
+#ifndef OPENGLESV2
 	glScalef(size, size, size);
+#else
+	
+#endif
 }
 
 void moP5::scale(float x, float y, float z)
 {
+#ifndef OPENGLESV2
 	glScalef(x, y, z);
+#else
+	
+#endif
 }
 
 void moP5::translate(float x, float y, float z)
 {
+#ifndef OPENGLESV2
 	glTranslatef(x, y, z);
+#else
+	
+#endif
 }
 
 void moP5::rotate(float angle, float x, float y, float z)
 {
+#ifndef OPENGLESV2
 	glRotatef(angle * moMathf::RAD_TO_DEG, x, y, z);
+#else
+	
+#endif
 }
 
 void moP5::generateTmpColor(float comp1, float comp2, float comp3)

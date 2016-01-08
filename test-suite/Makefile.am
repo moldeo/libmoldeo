@@ -23,7 +23,6 @@ check_libmoldeo_LDADD       = @CHECK_LIBS@ \
 	@GLE_LIBS@ \
 	@FREEIMAGE_LIBS@ \
 	@FREEALUT_LIBS@ \
-	@GLEW_LIBS@ \
 	@LUA51_LIBS@ \
 	@GST_LIBS@ \
 	@TINYXML_LIBS@ \

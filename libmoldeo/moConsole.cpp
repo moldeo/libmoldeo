@@ -1443,19 +1443,17 @@ void moConsole::ScriptExeDraw() {
         if (ScriptHasFunction("Draw")) {
 
             m_pResourceManager->GetGLMan()->SaveGLState();
-
+#ifndef OPENGLESV2
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-
+#endif
             m_pResourceManager->GetGLMan()->SetOrthographicView();
             m_pResourceManager->GetGLMan()->SetMoldeoGLState();
 
-            //glDisable(GL_DEPTH_TEST);
-            //glDisable(GL_ALPHA_TEST);
-            //glAlphaFunc(GL_GREATER,0.1);
+#ifndef OPENGLESV2
             glEnable(GL_BLEND);
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
+#endif
             SelectScriptFunction("Draw");
             RunSelectedFunction();
             m_pResourceManager->GetGLMan()->RestoreGLState();
@@ -4621,9 +4619,50 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
     return 1;
 
 }
+
+void
+moConsole::TestScreen( int p_display = 0 ) {
+    
+#ifndef OPENGLESV2
+    //draw something
+    //draw the Moldeo Logo... and rotate 1 cycle in Y axis
+    //with a line border
+
+
+
+
+
+#else
+
+const float texices[] =  {     
+ 0,1,
+ 1,1,
+ 0,0,
+ 1,0
+};
 /*
-const moText& moConsole::ToJSON() {
-  return moMoldeoObject::ToJSON();
+const float vertices[] = {
 }
+
+glEnableVertexAttribArray(texcoord_attrib_index); // Attribute indexes were received from calls to glGetAttribLocation, or passed into glBindAttribLocation.
+glEnableVertexAttribArray(normal_attrib_index);
+glEnableVertexAttribArray(color_attrib_index);
+glEnableVertexAttribArray(position_attrib_index);
+
+glVertexAttribPointer(texcoord_attrib_index, 2, GL_FLOAT, false, 0, texcoords_data); // texcoords_data is a float*, 2 per vertex, representing UV coordinates.
+glVertexAttribPointer(normal_attrib_index, 3, GL_FLOAT, false, 0, normals_data); // normals_data is a float*, 3 per vertex, representing normal vectors.
+glVertexAttribPointer(color_attrib_index, 3, GL_UNSIGNED_BYTE, true, sizeof(unsigned char)*3, colors_data); // colors_data is a unsigned char*, 3 per vertex, representing the color of each vertex.
+glVertexAttribPointer(position_attrib_index, 3, GL_FLOAT, false, 0, vertex_data); // vertex_data is a float*, 3 per vertex, representing the position of each vertex
+
+glDrawArrays(GL_TRIANGLES, 0, vertex_count); // vertex_count is an integer containing the number of indices to be rendered
+
+glDisableVertexAttribArray(position_attrib_index);
+glDisableVertexAttribArray(texcoord_attrib_index);
+glDisableVertexAttribArray(normal_attrib_index);
+glDisableVertexAttribArray(color_attrib_index);
 */
+
+#endif 
+
+}
 

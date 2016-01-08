@@ -2873,7 +2873,7 @@ typedef moMatrix3<MOdouble> moMatrix3d;
 
 
 // moMatrix4 class ------------------------------------------------------------
-/*
+
 template <class Real>
 class moMatrix4 : public moAbstract
 {
@@ -3334,10 +3334,18 @@ inline moVector4<Real> operator* (const moVector4<Real>& rkV,
 }
 
 #ifndef MO_MACOSX
+#ifndef MO_WIN32
 template class LIBMOLDEO_API moMatrix4<MOfloat>;
 #endif
-
+#endif
 typedef moMatrix4<MOfloat> moMatrix4f;
-*/
+
+#ifndef MO_MACOSX
+#ifndef MO_WIN32
+template class LIBMOLDEO_API moMatrix4<MOdouble>;
+#endif
+#endif
+typedef moMatrix4<MOdouble> moMatrix4d;
+
 #endif
 

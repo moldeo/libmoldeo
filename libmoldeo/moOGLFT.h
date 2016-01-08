@@ -255,7 +255,7 @@ namespace OGLFT
 			//! \param p vertex position in glyph's local coordinate system. Argument is
 			//! a GLdouble[3].
 			//! \return GLfloat[4] (RGBA) color specification.
-			virtual GLfloat *color (GLdouble * p) = 0;
+			virtual MOfloat *color (MOdouble * p) = 0;
 	};
 
 	//! During tesselation of a polygonal Face (outline, filled or solid),
@@ -272,7 +272,7 @@ namespace OGLFT
 			//! \param p vertex position in glyph's local coordinate system. Argument is
 			//! a GLdouble[3].
 			//! \return GLfloat[2] (s,t) texture coordinates.
-			virtual GLfloat *texCoord (GLdouble * p) = 0;
+			virtual MOfloat *texCoord (MOdouble * p) = 0;
 	};
 
 	//! The argument to setCharacterDisplayLists is an STL vector of

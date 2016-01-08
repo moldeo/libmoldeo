@@ -41,6 +41,8 @@ PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
 
 dnl check for opengl
 PKG_CHECK_MODULES([GL], [gl] ,has_gl=yes)
+PKG_CHECK_MODULES([EGL], [egl] ,has_egl=yes)
+PKG_CHECK_MODULES([GLESV2], [glesv2] ,has_glesv2=yes)
 
 #dnl check for openal
 #PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
@@ -49,8 +51,8 @@ dnl check for glu
 PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
 
 dnl check for glew
-AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
-AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GLEW_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]), )
+#AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
+#AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GLEW_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]), )
 
 dnl check for glut
 AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))

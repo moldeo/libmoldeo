@@ -85,6 +85,7 @@ MOboolean moFBO::Finish()
 
 MOboolean moFBO::AddDepthStencilBuffer()
 {
+#ifndef OPENGLESV2
 	if (!m_has_depth_buffer && !m_has_stencil_buffer && (0 < m_width) && (0 < m_height))
 	{
 		glGenTextures(1, &m_DepthStencilTex);
@@ -95,9 +96,11 @@ MOboolean moFBO::AddDepthStencilBuffer()
 					 GL_UNSIGNED_INT_24_8_EXT, NULL);
 
 		Bind();
+
 		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
 			                      GL_DEPTH_ATTACHMENT_EXT,
 				                  GL_TEXTURE_2D, m_DepthStencilTex, 0);
+
 	    Unbind();
 
 		m_has_depth_buffer = true;
@@ -105,6 +108,7 @@ MOboolean moFBO::AddDepthStencilBuffer()
 		return true;
 	}
 	else return false;
+#endif
 }
 
 void moFBO::Bind()
@@ -288,6 +292,7 @@ MOuint moFBO::CheckStatus()  const
 		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
 			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT");
 			break;
+#ifndef OPENGLESV2
 		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
 			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT");
 			break;
@@ -297,6 +302,7 @@ MOuint moFBO::CheckStatus()  const
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
 			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT");
    			break;
+#endif
 		case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
 			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_UNSUPPORTED_EXT");
 			break;
