@@ -837,10 +837,12 @@ public:
 };
 
 #ifndef MO_MACOSX
+#ifndef MO_RASPBIAN
 #ifndef MO_WIN32
 template class LIBMOLDEO_API moMath<long>;
 template class LIBMOLDEO_API moMath<double>;
 template class LIBMOLDEO_API moMath<float>;
+#endif
 #endif
 #endif
 
