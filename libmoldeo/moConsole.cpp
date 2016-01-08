@@ -4621,9 +4621,25 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
     return 1;
 
 }
-/*
+
 const moText& moConsole::ToJSON() {
   return moMoldeoObject::ToJSON();
 }
-*/
+
+int
+moConsole::TestScreen( int p_display ) {
+
+  float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
+  float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
+
+  glVertexPointer( 2, GL_FLOAT, 0, coords );  // Set data type and location.
+  glColorPointer( 3, GL_FLOAT, 0, colors );
+
+  glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
+  glEnableClientState( GL_COLOR_ARRAY );
+
+  glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
+
+  return 1;
+}
 
