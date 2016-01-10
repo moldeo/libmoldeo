@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [1.0.0.0], [info@moldeo.coop], [libmoldeo])
+AC_INIT([libmoldeo], [1.0.0.0], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -54,7 +54,7 @@ AC_ARG_ENABLE(host,
   elif test "x$enableval" = "xraspbian" ; then
 	host_name="raspbian"
 	host_cflags="-I/opt/vc/include -DOPENGLESV2"
-	host_ldflags=" -ldl -L/opt/vc/lib"
+	host_ldflags="-L/opt/vc/lib"
   else
 	echo 
 	echo "Error!"
@@ -62,9 +62,6 @@ AC_ARG_ENABLE(host,
 	exit -1
   fi
 ])
-
-
-
 AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
 

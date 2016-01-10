@@ -4689,5 +4689,6 @@ moConsole::TestScreen( int p_display ) {
      m_BasicShader.StopShader();
 
 #endif
+
   return 1;
 }
