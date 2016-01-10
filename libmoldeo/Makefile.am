@@ -10,8 +10,9 @@ datadir = ${prefix}/share/moldeo/data
 modulesdir = ${libdir}/moldeo
 docdir = ${prefix}/share/doc/moldeo
 
-AM_CPPFLAGS = ${DFLAGS} $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
-AM_CXXFLAGS = ${DFLAGS} $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
+AM_CPPFLAGS = ${DFLAGS} ${HOSTCFLAGS} $(all_includes) -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
+AM_CXXFLAGS = ${AM_CPPFLAGS}
+AM_LDFLAGS = -ldl ${HOSTLDFLAGS}
 
 lib_LTLIBRARIES = libmoldeo.la
 libmoldeo_la_SOURCES = mo3dModelManager.cpp \
@@ -63,7 +64,6 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moMoldeoObject.cpp \
 	moMotion.cpp \
 	moNetManager.cpp \
-	moOGLFT.cpp \
 	moP5.cpp \
 	moParam.cpp \
 	moPlugin.cpp \
@@ -100,7 +100,6 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moVdpauGraph.cpp \
 	moVideoGraph.cpp \
 	moVideoManager.cpp \
-	moXmlConfig.cpp \
 	mo3ds.cpp \
 	moFilterManager.cpp 
 
@@ -114,16 +113,15 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${MUPARSER_CFLAGS} \
 	${BOOST_CPPFLAGS} \
 	${SDL_CFLAGS} \
+	${GL_CFLAGS} \
 	${LUA51_CFLAGS} 
 
-libmoldeo_la_LIBADD = -ldl\
-	${FT2_LIBS} \
+libmoldeo_la_LIBADD = ${FT2_LIBS} \
 	${GTK2_LIBS} \
 	${SDL_LIBS} \
 	${TINYXML_LIBS} \
 	${GL_LIBS} \
 	${GLE_LIBS} \
-	${GLEW_LIBS} \
 	${FTGL_LIBS} \
 	${GLUT_LIBS} \
 	${GLU_LIBS} \
@@ -207,7 +205,6 @@ libmoldeo_include_HEADERS = \
 	moMoldeoObject.h \
 	moMotion.h \
 	moNetManager.h \
-	moOGLFT.h \
 	moP5.h \
 	moParam.h \
 	moPlugin.h \
@@ -245,7 +242,6 @@ libmoldeo_include_HEADERS = \
 	moVdpauGraph.h \
 	moVideoGraph.h \
 	moVideoManager.h \
-	moXmlConfig.h \
 	moPort.h \
 	mo3ds.h 
 

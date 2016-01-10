@@ -1045,7 +1045,9 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
             glDisable( GL_TEXTURE_2D );
             //glEnable( GL_BLEND );
             //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+#ifndef OPENGLESV2
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+#endif
 
             for (int f = 0; f < GetFeaturesCount(); f++)
             {
@@ -1094,13 +1096,14 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                       d = 3.0;
                       glColor4f(1.0, 0.0, 0.0, 1.0);
                     }
+#ifndef OPENGLESV2
                     glBegin(GL_QUADS);
                         glVertex2f((x - 0.008*d)*w, (y - 0.008*d)*h);
                         glVertex2f((x - 0.008*d)*w, (y + 0.008*d)*h);
                         glVertex2f((x + 0.008*d)*w, (y + 0.008*d)*h);
                         glVertex2f((x + 0.008*d)*w, (y - 0.008*d)*h);
                     glEnd();
-
+#endif
 
 
                     glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -1110,11 +1113,13 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                     glBindTexture(GL_TEXTURE_2D,0);
                     glDisable(GL_TEXTURE_2D);
                     glLineWidth((GLfloat)3.0);
+#ifndef OPENGLESV2
+
                     glBegin(GL_LINES);
                         glVertex2f( x*w, y*h);
                         glVertex2f( tr_x*w, tr_y*h);
                     glEnd();
-
+#endif
 
                     /*if ( vel > 0.001 ) {
                         glDisable(GL_TEXTURE_2D);
@@ -1212,8 +1217,9 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
     ***********************************************************************************/
 
             /** Only show segments */
+#ifndef OPENGLESV2
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
+#endif
             moVector2f m_TrackerBarycenter = moVector2f(    GetBarycenter().X() - offsetx,
                                                             GetBarycenter().Y() - offsety );
             moVector2f m_TrackerMin = moVector2f(   GetMin().X() - offsetx,
@@ -1228,7 +1234,7 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
 
             //GL_MAX_TEXTURE_UNITS_ARB
             //GL_TEXTURE0_ARB
-
+#ifndef OPENGLESV2
             glBegin(GL_QUADS);
                 //glColor4f(0.7, 1.0, 0.5, 0.2);
                 glVertex2f((m_TrackerBarycenter.X() - 0.02)*w, (m_TrackerBarycenter.Y() - 0.02)*h);
@@ -1239,13 +1245,14 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                 //glColor4f(0.7, 1.0, 0.5, 0.2);
                 glVertex2f((m_TrackerBarycenter.X() + 0.02)*w, (m_TrackerBarycenter.Y() - 0.02)*h);
             glEnd();
-
+#endif
             moVector2f m_TrackerVariance = moVector2f(  GetVariance().X(),
                                                         GetVariance().Y());
 
             ///Max min  green
             glColor4f(0.0, 1.0, 0.0, 1.0);
             glLineWidth((GLfloat)1.0);
+#ifndef OPENGLESV2
             glBegin(GL_QUADS);
                 //glColor4f(0.7, 1.0, 0.5, 0.5);
                 glVertex2f( m_TrackerMin.X()*w, m_TrackerMax.Y()*h);
@@ -1253,18 +1260,19 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                 glVertex2f( m_TrackerMax.X()*w, m_TrackerMin.Y()*h);
                 glVertex2f( m_TrackerMin.X()*w, m_TrackerMin.Y()*h);
             glEnd();
+#endif
 
             ///Variance cyan
             glColor4f(0.0, 1.0, 1.0, 1.0);
             glLineWidth((GLfloat)1.5);
-
+#ifndef OPENGLESV2
             glBegin(GL_QUADS);
                 glVertex2f( m_TrackerBarycenter.X()*w - m_TrackerVariance.X()*w*5, m_TrackerBarycenter.Y()*h-m_TrackerVariance.Y()*h*5);
                 glVertex2f( m_TrackerBarycenter.X()*w + m_TrackerVariance.X()*w*5, m_TrackerBarycenter.Y()*h-m_TrackerVariance.Y()*h*5);
                 glVertex2f( m_TrackerBarycenter.X()*w + m_TrackerVariance.X()*w*5, m_TrackerBarycenter.Y()*h+m_TrackerVariance.Y()*h*5);
                 glVertex2f( m_TrackerBarycenter.X()*w - m_TrackerVariance.X()*w*5, m_TrackerBarycenter.Y()*h+m_TrackerVariance.Y()*h*5);
             glEnd();
-
+#endif
             /*
             moDebugManager::Push(moText("varianza: vx:")+FloatToStr(m_TrackerVariance.X()*w*10)
                              +moText(" vy")+FloatToStr(m_TrackerVariance.Y()*h*10) );
@@ -1307,36 +1315,44 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                     //matrix = matrix + moText(" ")+IntToStr(npz);
                     poscuad = moVector2f( poscuad.X()-offsetx, poscuad.Y()-offsety);
                     if ( npz > 0 ) {
+#ifndef OPENGLESV2
                             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+#endif
                             //glColor4f( 0.5+0.5*(float)z/(m_Zones-1), 0.5+0.5*(float)z/(m_Zones-1), 0.0, 0.25);
                             glColor4f(0.5, 0.5, 0.0, 0.002);
+#ifndef OPENGLESV2
                             glBegin(GL_QUADS);
                                 glVertex2f((poscuad.X() - off_w)*w, (poscuad.Y() - off_h)*h);
                                 glVertex2f((poscuad.X() - off_w)*w, (poscuad.Y() + off_h)*h);
                                 glVertex2f((poscuad.X() + off_w)*w, (poscuad.Y() + off_h)*h);
                                 glVertex2f((poscuad.X() + off_w)*w, (poscuad.Y() - off_h)*h);
                             glEnd();
+#endif
                     }
                     if ( nmz > 0 ) {
 
                             ///DRAW ZONE WITH FEATURES IN MOTION
-
+#ifndef OPENGLESV2
                             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+#endif
                             //glColor4f( 0.0, 0.0, 0.5+0.5*(float)z/(m_Zones-1), 0.25);
                             glColor4f(0.0, 0.0, 0.5, 0.02);
+#ifndef OPENGLESV2
                             glBegin(GL_QUADS);
                                 glVertex2f((poscuad.X() - off_w_m)*w, (poscuad.Y() - off_h_m)*h);
                                 glVertex2f((poscuad.X() - off_w_m)*w, (poscuad.Y() + off_h_m)*h);
                                 glVertex2f((poscuad.X() + off_w_m)*w, (poscuad.Y() + off_h_m)*h);
                                 glVertex2f((poscuad.X() + off_w_m)*w, (poscuad.Y() - off_h_m)*h);
                             glEnd();
+#endif
 
                     }
             }
 
             /**CIRCULAR MATRIX*/
-
+#ifndef OPENGLESV2
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+#endif
             if (n>0)
             for(int cc=0; cc < m_ZonesC; cc++) {
 
@@ -1366,17 +1382,20 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                     p4 = moVector2f( p4.X()-offsetx, p4.Y()-offsety );
                    if ( npz == 0 ) {
                             glColor4f( 0.3+0.2*(float)cc/(m_ZonesC-1), 0.3+0.2*(float)cc/(m_ZonesC-1), 0.2, 0.0015);
+#ifndef OPENGLESV2
                             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+#endif
                    } else {
                        glColor4f( 0.7+0.3*(float)cc/(m_ZonesC-1), 0.0, 0.0, 0.0025);
+#ifndef OPENGLESV2
                        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
+#endif
                     }
 
 
                             //moVector2f p3 = m_pTrackerData->ZoneToPositionC( cc + 1 + 12 );
                             //moVector2f p4 = m_pTrackerData->ZoneToPositionC( cc + 12 );
-
+#ifndef OPENGLESV2
                             glBegin(GL_QUADS);
                                 glVertex2f( poscuadC.X()*w, poscuadC.Y()*h);
                                 glVertex2f( p2.X()*w, p2.Y()*h);
@@ -1385,6 +1404,7 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                                 //glVertex2f( p3.X()*w, p3.Y()*h);
                                 //glVertex2f( p4.X()*w, p4.Y()*h);
                             glEnd();
+#endif
 
                    //}
                     if ( nmz > 0 ) {

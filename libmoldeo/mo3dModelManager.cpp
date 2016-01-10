@@ -164,6 +164,7 @@ void mo3DModelSceneNode::Draw(moEffectState *state, GLuint g_ViewMode) {
 		}
 
 		// This determines if we are in wireframe or normal mode
+#ifndef OPENGLESV2
 		glBegin(g_ViewMode);					// Begin drawing with our selected mode(triangles or lines)
 
 			// Go through all of the faces(polygons) of the object and draw them
@@ -238,7 +239,8 @@ void mo3DModelSceneNode::Draw(moEffectState *state, GLuint g_ViewMode) {
 				}
 			}
 
-		glEnd();								// End the drawing
+		glEnd();
+#endif								// End the drawing
 	}
 
 
@@ -421,7 +423,7 @@ void mo3dModelManager::MoldeoLogo(long ticks) {
 
 		glClearColor( 0.0f, 0.0f, 0.3f, 0.0f );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
+#ifndef OPENGLESV2
 		glDisable(GL_LIGHTING);
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_COLOR_MATERIAL);
@@ -441,7 +443,7 @@ void mo3dModelManager::MoldeoLogo(long ticks) {
 
         if (m_pMoldeoLogo)
             m_pMoldeoLogo->Draw( &pstate, GL_TRIANGLES);
-
+#endif
 }
 
 
@@ -627,6 +629,7 @@ void mo3dModelManagerRef::Draw(int imodel, moEffectState *state, GLuint g_ViewMo
 			glColor4f( state->tintr, state->tintg, state->tintb, state->alpha );
 		}
 
+#ifndef OPENGLESV2
 		// This determines if we are in wireframe or normal mode
 		glBegin(g_ViewMode);					// Begin drawing with our selected mode(triangles or lines)
 
@@ -703,6 +706,7 @@ void mo3dModelManagerRef::Draw(int imodel, moEffectState *state, GLuint g_ViewMo
 			}
 
 		glEnd();								// End the drawing
+#endif	
 	}
 
 

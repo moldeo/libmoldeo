@@ -1443,19 +1443,17 @@ void moConsole::ScriptExeDraw() {
         if (ScriptHasFunction("Draw")) {
 
             m_pResourceManager->GetGLMan()->SaveGLState();
-
+#ifndef OPENGLESV2
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-
+#endif
             m_pResourceManager->GetGLMan()->SetOrthographicView();
             m_pResourceManager->GetGLMan()->SetMoldeoGLState();
 
-            //glDisable(GL_DEPTH_TEST);
-            //glDisable(GL_ALPHA_TEST);
-            //glAlphaFunc(GL_GREATER,0.1);
+#ifndef OPENGLESV2
             glEnable(GL_BLEND);
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
+#endif
             SelectScriptFunction("Draw");
             RunSelectedFunction();
             m_pResourceManager->GetGLMan()->RestoreGLState();
@@ -4621,9 +4619,76 @@ int moConsole::luaScreenshot(moLuaVirtualMachine& vm) {
     return 1;
 
 }
-/*
-const moText& moConsole::ToJSON() {
-  return moMoldeoObject::ToJSON();
-}
-*/
 
+
+int
+moConsole::TestScreen( int p_display ) {
+
+#ifndef OPENGLESV2
+  float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
+  float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
+
+  glVertexPointer( 2, GL_FLOAT, 0, coords );  // Set data type and location.
+  glColorPointer( 3, GL_FLOAT, 0, colors );
+
+  glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
+  glEnableClientState( GL_COLOR_ARRAY );
+
+  glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
+#else
+
+  if (!m_BasicShader.Initialized()) {
+    MODebug2->Message("Creating basic shader!");
+    
+    m_BasicShader.Init();
+    m_BasicShader.CreateShader(                        
+                         moText("attribute vec4 position;")+moText("\n")
+                        +moText("attribute vec3 color;")+moText("\n")
+                        +moText("varying lowp vec3 colorVarying;")+moText("\n")
+                        +moText("void main() {")+moText("\n")
+                        +moText("colorVarying = color;")+moText("\n")
+                        +moText("gl_Position = position;")+moText("\n")
+                        +moText("}"),
+
+                         moText("varying lowp vec3 colorVarying;")+moText("\n")
+                        +moText("void main() {")+moText("\n")
+                        +moText("gl_FragColor = vec4(colorVarying, 1.0);")+moText("\n")
+                        +moText("}")
+    );
+    
+    m_BasicShader.PrintVertShaderLog();
+    m_BasicShader.PrintFragShaderLog();
+
+    vertices_index = m_BasicShader.GetAttribID(moText("position"));
+    color_index = m_BasicShader.GetAttribID(moText("color"));
+
+    MODebug2->Message( moText("Shader Attrib IDs, position:")+IntToStr(vertices_index)+moText(" color:")+IntToStr(color_index) );
+  } 
+
+  if (m_BasicShader.Initialized())
+     m_BasicShader.StartShader();
+
+  float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
+  float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
+	
+  glEnableVertexAttribArray( vertices_index );
+  glVertexAttribPointer( vertices_index, 2, GL_FLOAT, false, 0, coords );  // Set data type and location.
+
+  glEnableVertexAttribArray( color_index );
+  glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, colors );
+
+  //glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
+  //glEnableClientState( GL_COLOR_ARRAY );
+
+  glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
+
+  glDisableVertexAttribArray( vertices_index );
+  glDisableVertexAttribArray( color_index );
+
+  if (m_BasicShader.Initialized())
+     m_BasicShader.StopShader();
+
+#endif
+
+  return 1;
+}

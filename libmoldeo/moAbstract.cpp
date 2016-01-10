@@ -116,11 +116,13 @@ moAbstract::~moAbstract() {
 
 MOboolean
 moAbstract::Init() {
+	m_bInitialized = true;
 	return true;
 }
 
 MOboolean
 moAbstract::Finish() {
+	m_bInitialized = false;
 	return true;
 }
 

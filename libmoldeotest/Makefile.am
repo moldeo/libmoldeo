@@ -34,7 +34,6 @@ libmoldeotest_la_LIBADD = -ldl\
 	${TINYXML_LIBS} \
 	${GL_LIBS} \
 	${GLE_LIBS} \
-	${GLEW_LIBS} \
 	${FTGL_LIBS} \
 	${GLUT_LIBS} \
 	${GLU_LIBS} \

@@ -142,6 +142,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   }
 */
     /*** GLEW INIT */
+#ifndef OPENGLESV2
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
@@ -187,6 +188,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size (64): ") + IntToStr(max_tex_buf_size64) );
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size Arb: ") + IntToStr(max_tex_buf_size_arb) );
 
+#endif
 	if (m_render_tex_moid[0]==-1) {
 	    m_render_tex_moid[0] = m_pTextureManager->AddTexture("render_texture", m_render_width, m_render_height);
 	} else {
@@ -409,7 +411,7 @@ void moRenderManager::DrawTexture( MOint p_width, MOint p_height, MOint p_tex_nu
 		moTexture* ptex = m_pTextureManager->GetTexture( m_render_tex_moid[p_tex_num] );
 
         glBindTexture(GL_TEXTURE_2D, ptex->GetGLId());
-
+#ifndef OPENGLESV2
         glBegin(GL_QUADS);
             glTexCoord2f(0, 0.0);
             glVertex2f(0, 0);
@@ -423,7 +425,9 @@ void moRenderManager::DrawTexture( MOint p_width, MOint p_height, MOint p_tex_nu
             glTexCoord2f(0, ptex->GetMaxCoordT());
             glVertex2f(0, p_height);
         glEnd();
+#else
 
+#endif
         glBindTexture(GL_TEXTURE_2D, 0);
 
 	    m_pGLManager->RestoreGLState();

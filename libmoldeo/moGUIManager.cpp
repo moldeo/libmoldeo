@@ -262,6 +262,7 @@ moWindow::Draw() {
 	glBindTexture( GL_TEXTURE_2D, 0 );
 	glColor4f( 0.3, 0.3, 0.3, 0.75 );
 
+#ifndef OPENGLESV2
 	glBegin(GL_QUADS);
 		glTexCoord2f( 0, 0);
 		glVertex2f( m_X, m_Y);
@@ -275,7 +276,7 @@ moWindow::Draw() {
 		glTexCoord2f( 1, 0);
 		glVertex2f( m_X,  m_Y+m_Height);
 	glEnd();
-
+#endif
 	moFont* pFont = NULL;
 	pFont = m_pResourceManager->GetFontMan()->GetFonts()->Get(0);
 
@@ -285,7 +286,9 @@ moWindow::Draw() {
 		if (m_Texts.Count()>0 && m_Height>0) {
       float size = (float)m_Height / (float)m_Texts.Count();
       glColor4f( 1.0, 1.0, 1.0, 1.0 );
+#ifndef OPENGLESV2
       glScalef( size, size, size);
+#endif
       //MODebug2->Push("size:"+FloatToStr(size));
       for( MOuint i=0; i<m_Texts.Count(); i++ ) {
         //MODebug2->Push("text: i " +  m_Texts[i]+ "m_X:"+FloatToStr(m_X)+ "m_Y:"+FloatToStr(m_Y) );

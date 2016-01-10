@@ -432,7 +432,7 @@ void moEffect::SetColor( moParam& color, moParam& alpha, moEffectState& pstate )
 }
 
 void moEffect::SetPolygonMode( moPolygonModes polygonmode ) {
-
+#ifndef OPENGLESV2
     switch( polygonmode ) {
 
         case MO_POLYGONMODE_FILL:
@@ -450,7 +450,7 @@ void moEffect::SetPolygonMode( moPolygonModes polygonmode ) {
         default:
             break;
     }
-
+#endif
 }
 
 

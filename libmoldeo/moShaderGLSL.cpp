@@ -222,7 +222,7 @@ void moShaderGLSL::printInfoLog(GLhandleARB obj)
         infoLog = (char *)malloc(infologLength);
         glGetInfoLogARB(obj, infologLength, &charsWritten, infoLog);
 		moText msg = moText(infoLog);
-        if (MODebug2 != NULL) MODebug2->Push(msg);
+        if (MODebug2 != NULL) MODebug2->Message(msg);
         free(infoLog);
     }
 }

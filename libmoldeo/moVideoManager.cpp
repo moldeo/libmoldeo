@@ -297,13 +297,19 @@ void moVideoBuffer::GetFrame( MOuint p_i ) {
                         break;
                     case 24: // 24 bits
                         m_param.internal_format = GL_RGB;
+#ifndef OPENGLESV2
                         if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
-                        else p_format = GL_RGB;
+                        else 
+#endif
+			p_format = GL_RGB;
                         break;
                     case 32: // 32 bits
                         m_param.internal_format = GL_RGBA;
+#ifndef OPENGLESV2
                         if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGRA_EXT;
-                        else p_format = GL_RGBA;
+                        else 
+#endif
+			p_format = GL_RGBA;
                         break;
                     default:
                         break;
@@ -519,13 +525,19 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 					break;
 				case 24: // 24 bits
 					m_param.internal_format = GL_RGB;
+#ifndef OPENGLESV2
 					if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
-					else p_format = GL_RGB;
+					else 
+#endif
+p_format = GL_RGB;
 					break;
 				case 32: // 32 bits
 					m_param.internal_format = GL_RGBA;
+#ifndef OPENGLESV2
 					if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGRA_EXT;
-					else p_format = GL_RGBA;
+					else
+#endif
+p_format = GL_RGBA;
 					break;
 				default:
 					break;
@@ -1505,7 +1517,11 @@ void moVideoManager::Update(moEventList * p_EventList)
 
                 if (pbuffer) {
                   pbucket->Lock();
+#ifndef OPENGLESV2
                   ts->SetBuffer( pbuffer, GL_BGR_EXT);
+#else
+		  ts->SetBuffer( pbuffer, GL_RGB);
+#endif
                   pbucket->Unlock();
                 }
 
