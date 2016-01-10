@@ -260,6 +260,9 @@ class LIBMOLDEO_API moGLManager : public moResource
 
 		void SetFrameBufferObjectActive( bool active = true );
 
+    moMatrix4f& GetModelMatrix();
+    moMatrix4f& SetModelMatrix( const moMatrix4f p_mat4 );
+
     private:
 
     moGLContext m_Context;
@@ -279,6 +282,9 @@ class LIBMOLDEO_API moGLManager : public moResource
 		MOuint m_saved_fbo;
 		MOint m_saved_read_buffer;
 		MOint m_saved_draw_buffer;
+
+    moMatrix4f m_ModelMatrix;
+    moMatrix4f* m_StackMatrices;
 
 		bool    m_bFrameBufferObjectActive;
 

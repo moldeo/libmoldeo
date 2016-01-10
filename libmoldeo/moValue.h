@@ -64,6 +64,7 @@ NOTES:
 #include "moTempo.h"
 #include "moText.h"
 #include "moArray.h"
+#include "moMathMatrix.h"
 #include "moMathFunction.h"
 #include "moMathVector.h"
 #include "moMathVector3.h"

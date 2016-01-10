@@ -651,6 +651,17 @@ moGLManager::SetContext(moGLContext p_Context) {
     m_Context = p_Context;
 }
 
+moMatrix4f&
+moGLManager::GetModelMatrix() {
+  return m_ModelMatrix;
+}
+
+moMatrix4f&
+moGLManager::SetModelMatrix( const moMatrix4f& p_mat4 ) {
+
+  m_ModelMatrix = p_mat4;
+
+}
 
 
 

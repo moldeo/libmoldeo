@@ -14,29 +14,9 @@
 *   \endif
 *
 *   \code
-
-    #include "moldeo.h"
-
-    void main() {
-
-        moConsole MoldeoConsole;
-
-        // Inicializamos en primer lugar
-        if ( MoldeoConsole.Init( moText("test"),
-                                moText("test.mol") ) ) {
-
-            // Ciclo principal
-            // Mientras interactuamos
-            while( MoldeoConsole.Interaction() ) {
-
-                //Update
-                MoldeoConsole.Update();
-
-                //Draw
-                MoldeoConsole.Draw();
-            }
-         }
-    }
+*
+*   \link http://www.moldeo.org/documentacion
+*
 *   \endcode
 *
 *
