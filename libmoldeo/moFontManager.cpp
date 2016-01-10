@@ -127,7 +127,7 @@ moFontManager::GetFont( moText p_fontname, bool create, moFontType p_fonttype, M
 
     if (! (p_fontname.Trim().Length() == 0)) {
 
-        if (p_fontname.Trim()==moText("Default") || p_fontname.Trim()==moText("default")) {
+        if (p_fontname.Trim()==moText("Default") || p_fontname.Trim()==moText("default") || p_fontname.Trim()==moText("DEFAULT") ) {
             return m_Fonts.GetRef(0);
         }
 

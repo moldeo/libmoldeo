@@ -50,7 +50,7 @@ public:
     /**
      * El destructor por defecto de la clase.
      */
-	~moShaderGLSL();
+	virtual ~moShaderGLSL();
 
     /**
      * Método de inicialización.

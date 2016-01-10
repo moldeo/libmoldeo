@@ -209,7 +209,7 @@ moShader::~moShader()
 
 MOboolean moShader::Init()
 {
-	return true;
+	return moAbstract::Init();
 }
 
 MOboolean moShader::Finish()

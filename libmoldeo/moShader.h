@@ -229,7 +229,7 @@ public:
      * Devuelve el estado del shader.
      * @return true si el shader está activo, false en caso contrario.
      */
-    MOboolean ShaderActive();
+    virtual MOboolean ShaderActive();
 
     /**
      * Devuelve el código del último error ocurrido en el shader de vértices.
@@ -294,7 +294,7 @@ protected:
     virtual void compileVertShader(moText vert_source) = 0;
     virtual void compileFragShader(moText frag_source) = 0;
 
-    moText LoadShaderSource(moText p_fn);
+    virtual moText LoadShaderSource(moText p_fn);
 };
 
 moDeclareExportedDynamicArray( moShader*, moShaderArray);
