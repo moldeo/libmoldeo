@@ -476,6 +476,7 @@ moFont::BuildFont()								// Build Our Font Display List
 	float	cx;											// Holds Our X Character Coord
 	float	cy;											// Holds Our Y Character Coord
     GLint loop;
+#ifndef OPENGLESV2
 	m_GLBaseList = glGenLists(256);								// Creating 256 Display Lists
     glBindTexture( GL_TEXTURE_2D, m_FontGLId );
 	glEnable(GL_BLEND);
@@ -499,13 +500,15 @@ moFont::BuildFont()								// Build Our Font Display List
 			glEnd();									// Done Building Our Quad(Character)
 			glTranslated(10,0,0);						// Move To The Right Of The Character
 		glEndList();									// Done Building The Display List
-	}													// Loop Until All 256 Are Built
+	}
+#endif													// Loop Until All 256 Are Built
 }
 
 
 void
 moFont::glPrint( GLint x, GLint y, char *string, int set, float scx, float scy, float rt )	// Where The Printing Happens
 {
+#ifndef OPENGLESV2
 	if(set>1)
 	{
 		set=1;
@@ -531,11 +534,13 @@ moFont::glPrint( GLint x, GLint y, char *string, int set, float scx, float scy, 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glPopMatrix();										// Restore The Old Projection Matrix
 	//glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+#endif
 }
 
 void
 moFont::KillFont()									// Delete The Font From Memory
 {
-	glDeleteLists( m_GLBaseList, 256);							// Delete All 256 Display Lists
-
+#ifndef OPENGLESV2
+	glDeleteLists( m_GLBaseList, 256);	// Delete All 256 Display Lists
+#endif
 }

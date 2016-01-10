@@ -151,6 +151,7 @@ void moTexturedGrid::Draw(MOint w, MOint h, MOint l)
 
 	for (int j = 0; j < m_size_y - 1; j++)
 	{
+#ifndef OPENGLESV2
 		glBegin(GL_QUAD_STRIP);
 			for (int i = 0; i < m_size_x; i++)
 			{
@@ -167,6 +168,7 @@ void moTexturedGrid::Draw(MOint w, MOint h, MOint l)
 				glVertex2f(x1, y1);
 			}
 		glEnd();
+#endif
 	}
 }
 
@@ -176,7 +178,9 @@ void moTexturedGrid::SetTexCoord(MOint i, MOint j, MOint l)
 	for (int k = 1; k <= l; k++)
 	{
 		GetPoint(k, i, j, s, t);
+#ifndef OPENGLESV2
         glMultiTexCoord2fARB(GL_TEXTURE0_ARB + k - 1, s, t);
+#endif
 	}
 }
 

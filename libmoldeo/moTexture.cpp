@@ -255,19 +255,25 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 				break;
 			case 24: // 24 bits
 				m_param.internal_format = GL_RGB;
+#ifndef OPENGLESV2
 				if ( red_mask == 0x0000FF || red_mask==0) p_format = GL_BGR;
-				else p_format = GL_RGB;
-				//#ifdef WIN32
+				else
+#endif 
+				p_format = GL_RGB;
+#ifndef OPENGLESV2
         if (fif==FIF_JPEG) p_format = GL_BGR;
-        //#endif // WIN32
+#endif
 				break;
 			case 32: // 32 bits
 				m_param.internal_format = GL_RGBA;
+#ifndef OPENGLESV2
 				if ( blue_mask == 0xFF0000 || blue_mask==0 ) p_format = GL_BGRA_EXT;
-				else p_format = GL_RGBA;
-				//#ifdef WIN32
+				else
+#endif 
+				p_format = GL_RGBA;
+#ifndef OPENGLESV2
         if (fif==FIF_PNG) p_format = GL_BGRA_EXT;
-        //#endif
+#endif
 				break;
 			default:
 				break;
@@ -326,13 +332,14 @@ MOboolean moTexture::SetBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_
 
 	// Aqui hay que destruir la textura si los nuevos alto y anchos son diferentes de los actuales!!!!
   moMathi mathi;
-
+#ifndef OPENGLESV2
 	if ((m_gl != NULL) && m_gl->MipMapTexture(m_param.min_filter)
      && ( mathi.IsPowerOfTwo( p_width ) )
       && ( mathi.IsPowerOfTwo( p_height ) )
      )
 		gluBuild2DMipmaps(m_param.target, m_param.internal_format, p_width, p_height, p_format, p_type, p_buffer);
 	else
+#endif
         glTexSubImage2D(m_param.target, 0, 0, 0, p_width, p_height, p_format, p_type, p_buffer);
     glBindTexture(m_param.target, 0);
 
@@ -351,7 +358,12 @@ MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
       MODebug2->Error("moTexture::GetBuffer > p_buffer: " + IntToStr((int)p_buffer));
       return false;
 	}
-  if ( p_format!=GL_BGR && p_format!=GL_BGRA && p_format!=GL_RGB && p_format!=GL_RGBA ) {
+  if ( 
+#ifndef OPENGLESV2
+p_format!=GL_BGR &&
+p_format!=GL_BGRA &&
+#endif
+p_format!=GL_RGB && p_format!=GL_RGBA ) {
       MODebug2->Error("moTexture::GetBuffer > p_format: " + IntToStr((int)p_format));
       return false;
   }
@@ -360,7 +372,9 @@ MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
       return false;
   }
 	try {
+#ifndef OPENGLESV2
     glGetTexImage( m_param.target, 0, p_format, p_type, p_buffer);
+#endif
 	} catch(...) {
     MODebug2->Error("moTexture::GetBuffer > exception getting texture buffer. p_buffer: " + IntToStr((int)p_buffer));
 	}
@@ -698,6 +712,7 @@ MOboolean moTexture::Build()
       blankdata = new MOubyte [m_width*m_height*m_bytespp]();
       ub_blankdata = (MOubyte*) blankdata;
       break;
+#ifndef OPENGLESV2
     case GL_RGBA32I:
     case GL_RGBA16I:
       pixel_format = GL_RGBA_INTEGER;
@@ -714,6 +729,7 @@ MOboolean moTexture::Build()
       blankdata = new MOfloat [m_width*m_height*m_bytespp]();
       f_blankdata = (MOfloat*) blankdata;
       break;
+#endif
     default:
       pixel_format = GL_RGBA;
       pixel_type_format = GL_UNSIGNED_BYTE;
@@ -733,9 +749,11 @@ MOboolean moTexture::Build()
   if (i_blankdata) delete [] i_blankdata;
   if (ub_blankdata) delete [] ub_blankdata;
   if (f_blankdata) delete [] f_blankdata;
-
+#ifndef OPENGLESV2
 	glGetTexLevelParameteriv(m_param.target, 0, GL_TEXTURE_COMPONENTS, &m_components);
-
+#else
+	//glGetTexParameteriv(m_param.target, GL_TEXTURE_COMPONENTS, &m_components);
+#endif
   ResetBufferData();
 	//if (m_gl != NULL) return !m_gl->CheckErrors("texture build");
 	if (m_gl != NULL) m_gl->CheckErrors("texture build");
@@ -787,7 +805,11 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
     unsigned int  bpp = 24;
     unsigned int  bytesperpixel = 3;
     unsigned int  pitch = bytesperpixel * GetWidth();
+#ifndef OPENGLESV2
     GLenum gbufferformat = GL_BGR;
+#else
+    GLenum gbufferformat = GL_RGB;
+#endif
     GLenum gcomponenttype = GL_UNSIGNED_BYTE;
 
     if ( p_bufferformat == moText("PNGA")) {
@@ -797,8 +819,11 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
         thumbnailfilename+= moText(".png");
         bpp = 32;
         bytesperpixel = 4;
+#ifndef OPENGLESV2
         gbufferformat = GL_BGRA;
-
+#else
+	gbufferformat = GL_RGBA;
+#endif
     } else if ( p_bufferformat == moText("PNGF")) {
 
         fif = FIF_PNG;
@@ -806,7 +831,11 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
         thumbnailfilename+= moText(".png");
         bpp = 32;
         bytesperpixel = 4;
+#ifndef OPENGLESV2
         gbufferformat = GL_BGRA;
+#else
+	gbufferformat = GL_RGBA;
+#endif
         gcomponenttype = GL_FLOAT;
 
     } else if ( p_bufferformat == moText("PNG")) {
@@ -1167,16 +1196,24 @@ MOboolean moTextureMemory::BuildFromMemory() {
                 break;
             case 24: // 24 bits
                 m_param.internal_format = GL_RGB;
-                if (FreeImage_GetBlueMask(pImage) == 0x000000FF) _format = GL_BGR;
-                else _format = GL_RGB;
+#ifndef OPENGLESV2
+	        if (FreeImage_GetBlueMask(pImage) == 0x000000FF) _format = GL_BGR;
+                else
+#endif
+		_format = GL_RGB;
+#ifndef OPENGLESV2
                 #ifdef WIN32
                 _format = GL_BGR;
                 #endif // WIN32
+#endif
                 break;
             case 32: // 32 bits
                 m_param.internal_format = GL_RGBA;
+#ifndef OPENGLESV2
                 if (FreeImage_GetBlueMask(pImage) == 0x000000FF) _format = GL_BGRA_EXT;
-                else _format = GL_RGBA;
+                else 
+#endif
+		_format = GL_RGBA;
                 break;
             default:
                 m_param.internal_format = GL_RGBA;
@@ -1525,7 +1562,7 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 		m_FrameNext = min( int(ceilf(PeliV)), int(m_nFrames - 1) );
 		//MODebug2->Push( "peliv:" + FloatToStr(PeliV) + " fnext: " + IntToStr(m_FrameNext));
 		//PeliV = fmod( float( p_tempo->ang ), float(2*moMathf::PI)) /(2*moMathf::PI);
-		//m_FrameNext = min(MOuint(PeliV * m_nFrames), m_nFrames - 1);
+		//m_FrameNext = min(int(PeliV * m_nFrames), m_nFrames - 1);
 	}
 
 	if (NeedsInterpolation()) {
@@ -1561,7 +1598,7 @@ MOint moTextureAnimated::GetGLId( MOfloat p_cycle ) {
 	MOfloat PeliV;
 
 	PeliV = fmod( (float)p_cycle, (float)1.0 );
-	m_FrameNext = min(MOuint(PeliV * m_nFrames), m_nFrames - 1);
+	m_FrameNext = min(int(PeliV * m_nFrames), int(m_nFrames - 1));
 
 	if (NeedsInterpolation()) {
 		Interpolate();
@@ -2095,7 +2132,11 @@ void moMovie::GetFrame( MOuint p_i )
 
           ///lock to prevent any data or reference loss...
           pbucket->Lock();
+#ifndef OPENGLESV2
           SetBuffer(pbuffer, GL_BGR_EXT );
+#else
+	  SetBuffer(pbuffer, GL_RGB );
+#endif
           pbucket->Unlock();
 
           pbucket->EmptyBucket();

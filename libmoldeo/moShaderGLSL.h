@@ -37,6 +37,10 @@
 
 #include "moShader.h"
 
+#ifdef OPENGLESV2
+
+#endif
+
 /**
  * Clase que encapsula un shader escrito en el lenguaje GLSL.
  */

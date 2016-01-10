@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [0.9.1.0], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [1.0.0.0], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
@@ -31,16 +31,39 @@ PKG_CHECK_MODULES([GTK2], [gtk+-2.0], has_gtk2=yes )
 dnl check for sdl
 PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
 
-#dnl check for sdl-net
-#AC_CHECK_HEADER(SDL/SDL_net.h, , AC_MSG_ERROR([SDL_net header not found.]))
-#AC_CHECK_LIB(SDL_net, SDLNet_Init, AC_SUBST([SDL_NET_LIBS], [-lSDL_net]), AC_MSG_ERROR([SDL_net not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
-
-#dnl check for sdl-image
-#AC_CHECK_HEADER(SDL/SDL_image.h, , AC_MSG_ERROR([SDL_image header not found.]))
-#AC_CHECK_LIB(SDL_image, IMG_Load, AC_SUBST([SDL_IMAGE_LIBS], [-lSDL_image]), AC_MSG_ERROR([SDL_image not found.]), [${SDL_LIBS} ${WIN32_LIBS}])
-
 dnl check for opengl
-PKG_CHECK_MODULES([GL], [gl] ,has_gl=yes)
+AC_ARG_WITH( [gles],
+AS_HELP_STRING([--with-gles],
+[use open gl es 2, default: no]),
+[with_gles=check])
+
+
+AS_IF([test "x$with_gles" != xno],
+[PKG_CHECK_MODULES([GL], [glesv2, egl] ,has_glesv2=yes)],
+[PKG_CHECK_MODULES([GL], [gl, glew] ,has_gl=yes)])
+
+AC_ARG_ENABLE(host,
+[--enable-host[=host name] Specify the host os name:
+			64: 64 bit linux os [default]
+			86: 32 bits linux os
+                        raspbian: RASPBIAN/debian 8 32 bits],
+[ if test "x$enableval" = "x86" ; then
+	host_name=86
+  elif test "x$enableval" = "x64" ; then
+	host_name=64
+  elif test "x$enableval" = "xraspbian" ; then
+	host_name="raspbian"
+	host_cflags="-I/opt/vc/include -DOPENGLESV2"
+	host_ldflags="-L/opt/vc/lib"
+  else
+	echo 
+	echo "Error!"
+	echo "Unknown host name"
+	exit -1
+  fi
+])
+AC_SUBST([HOSTCFLAGS],$host_cflags)
+AC_SUBST([HOSTLDFLAGS],$host_ldflags)
 
 #dnl check for openal
 #PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
@@ -49,8 +72,9 @@ dnl check for glu
 PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
 
 dnl check for glew
-AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
-AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GLEW_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]), )
+#AS_IF([test "x$with_gles" != xno],
+#AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
+#AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GLEW_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]), )
 
 dnl check for glut
 AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
@@ -69,75 +93,6 @@ AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfree
 
 dnl check for alut
 PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
-
-dnl check for TUIO
-#AC_LANG_PUSH(C++)dnl
-#AC_CHECK_HEADER(TUIO/TuioObject.h, , AC_MSG_ERROR([TUIO header not found. Please read README.]))
-#PKG_CHECK_MODULES([TUIO], [libTUIO] ,has_tuio=yes)
-
-#SAVED_LDFLAGS=$LDFLAGS
-#LDFLAGS="$LDFLAGS -lTUIO"
-#AC_LINK_IFELSE(
-#  [AC_LANG_PROGRAM([#include <TUIO/TuioTime.h>],
-#    [using namespace TUIO],
-#    [TUIO::TuioTime::getSessionTime()])],
-#    AC_SUBST([TUIO_LIBS],[-lTUIO]),
-#    AC_MSG_ERROR([TUIO not found. Please read README.])
-#)
-#LDFLAGS=$SAVED_LDFLAGS
-#AC_LANG_POP(C++)
-
-dnl nvidia-cG-toolkit requires pthread
-AC_CHECK_LIB(pthread, pthread_attr_init, LIBS="$LIBS -lpthread")
-
-#dnl check for cg
-#AC_LANG_PUSH(C++)dnl
-#AC_CHECK_LIB(Cg, cgCreateContext,
-#[
-#	AC_CHECK_HEADERS(Cg/cg.h,
-#	[
-#		AC_DEFINE(HAVE_CG, 1, [define if you have libcg])
-#		AC_SUBST([CG_LIBS])
-#		CG_LIBS="-lCg"
-#		have_cg=yes
-#	],
-#	[
-#		AC_MSG_ERROR([cG header file missing or not in Cg/ include subdir])
-#	],
-#	)
-#
-#],
-#[
-#	AC_MSG_ERROR([
-#	* nvidia cG toolkit is missing.
-#	* You can download it from: http://developer.nvidia.com/object/cg_toolkit.html ])
-#],
-#)
-
-#AC_CHECK_LIB(CgGL, cgGLBindProgram,
-#[
-#	AC_CHECK_HEADERS(Cg/cgGL.h,
-#	[
-#		AC_DEFINE(HAVE_CGGL, 1, [define if you have libcg])
-#		AC_SUBST([CGGL_LIBS])
-#		CGGL_LIBS="-lCgGL -lGL"
-#		have_cggl=yes
-#	],
-#	[
-#		AC_MSG_ERROR([cGGL header file missing or not in Cg/ include subdir])
-#	])
-#
-#],
-#[
-#	AC_MSG_ERROR([
-#	* Something's wrong with nvidia cG toolkit
-#	* Probably bad installation
-#	* You can download it from: http://developer.nvidia.com/object/cg_toolkit.html ])
-#
-#],
-#[ -lGL ]
-#)
-#AC_LANG_POP(C++)
 
 dnl check for gstreamer
 GST_VERSION_MAJOR=0

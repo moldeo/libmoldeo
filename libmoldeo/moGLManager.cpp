@@ -80,9 +80,10 @@ MOboolean moGLManager::Init()
 	m_DisplayServer = NULL;
 	m_DisplayScreen = NULL;
 	m_DisplayWindow = NULL;
-
+#ifndef OPENGLESV2
 	glGetIntegerv(GL_DRAW_BUFFER, &m_current_draw_buffer);
 	glGetIntegerv(GL_READ_BUFFER, &m_current_read_buffer);
+#endif
 	return true;
 }
 
@@ -111,7 +112,10 @@ MOboolean moGLManager::CheckErrors(moText p_location)
 	  //GL_INVALID_ENUM
 
 		error = true;
-		errstr = moText(" GL error code:") + IntToStr(errnum) + moText(" message > ")+ (char *)gluErrorString(errnum);
+		errstr = moText(" GL error code:") + IntToStr(errnum) + moText(" message > ");
+#ifndef OPENGLESV2
+		errstr+ = (char *)gluErrorString(errnum);
+#endif
 		if (p_location != moText("")) errstr += moText(" at ") + moText(p_location);
 		moDebugManager::Error("moGLManager::CheckErrors > errors: " + errstr);
 	}
@@ -139,7 +143,7 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 	float screen_ratio = (float) p_width /(float) p_height;
 
 	glViewport(0, 0, p_width, p_height);
-
+#ifndef OPENGLESV2
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -147,16 +151,20 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+#endif
 }
 
 void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
 {
+#ifndef OPENGLESV2
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-
+#endif
     if (p_width!=0 || p_height!=0) {
       glViewport(0, 0, p_width, p_height);
+#ifndef OPENGLESV2
       gluOrtho2D(0.0, p_width, 0.0, p_height);
+#endif
     } else {
       float prop;
 
@@ -167,12 +175,17 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
         prop = (float) h / (float) w;
       }
       glViewport( 0, 0, w, h );
-      glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
+#ifndef OPENGLESV2
+	glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
+#else
+	//glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
+#endif
       // Set Up An Ortho Screen
     }
-
+#ifndef OPENGLESV2
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+#endif
 
 }
 
@@ -180,15 +193,19 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
 
 MOint moGLManager::GetRenderMode()
 {
-	MOint render_mode;
+	MOint render_mode = 0;
+#ifndef OPENGLESV2
 	glGetIntegerv(GL_RENDER_MODE, &render_mode);
+#endif
 	return render_mode;
 }
 
 void moGLManager::SetRenderMode(MOint p_mode)
 {
 	// Valid modes are GL_RENDER, GL_SELECT and GL_FEEDBACK.
+#ifndef OPENGLESV2
 	glRenderMode(p_mode);
+#endif
 }
 
 // Setting up rendering parameters commonly used in moldeo effects.
@@ -197,8 +214,11 @@ void moGLManager::SetMoldeoGLState()
 	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing.
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do.
 	glEnable(GL_BLEND);									// Enables blending.
-	glEnable(GL_TEXTURE_2D);							// Enables texturing.
+	glEnable(GL_TEXTURE_2D);
+#ifndef OPENGLESV2
+							// Enables texturing.
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);           // Polygon full filling mode, front and back
+#endif
 }
 
 // Sets the variables changed by SetMoldeoGLState to the default GL settings.
@@ -211,21 +231,22 @@ void moGLManager::SetDefaultGLState()
 
 void moGLManager::SetDefaultPixelStorageModes()
 {
-
+#ifndef OPENGLESV2
 	glPixelStorei(GL_PACK_SWAP_BYTES, GL_FALSE);
 	glPixelStorei(GL_PACK_LSB_FIRST, GL_FALSE);
 	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 	glPixelStorei(GL_PACK_SKIP_ROWS, 0);
 	glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
-	glPixelStorei(GL_PACK_ALIGNMENT, 4);
 
 	glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
 	glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+#endif
 
+	glPixelStorei(GL_PACK_ALIGNMENT, 4);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
 void moGLManager::SaveGLState()
@@ -234,23 +255,29 @@ void moGLManager::SaveGLState()
 	// http://cs-sdl.sourceforge.net/index.php/Red_Book_Appendix_B
 
 	SaveFramebuffer();
+#ifndef OPENGLESV2
     glPushAttrib(GL_ALL_ATTRIB_BITS);
+#endif
 	SaveGLMatrices();
 }
 
 void moGLManager::SaveGLMatrices()
 {
+#ifndef OPENGLESV2
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
     glPushMatrix();
 	glMatrixMode(GL_TEXTURE);
     glPushMatrix();
+#endif
 }
 
 void moGLManager::SaveView()
 {
+#ifndef OPENGLESV2
 	glPushAttrib(GL_VIEWPORT_BIT);
+#endif
 	SaveGLMatrices();
 }
 
@@ -265,23 +292,29 @@ void moGLManager::RestoreGLState()
 {
 	RestoreFramebuffer();
 	RestoreGLMatrices();
+#ifndef OPENGLESV2
     glPopAttrib();
+#endif
 }
 
 void moGLManager::RestoreGLMatrices()
 {
+#ifndef OPENGLESV2
 	glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 	glMatrixMode(GL_TEXTURE);
     glPopMatrix();
+#endif
 }
 
 void moGLManager::RestoreView()
 {
 	RestoreGLMatrices();
+#ifndef OPENGLESV2
 	glPopAttrib();
+#endif
 }
 
 void moGLManager::RestoreFramebuffer()
@@ -290,17 +323,19 @@ void moGLManager::RestoreFramebuffer()
     if (m_bFrameBufferObjectActive) glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_current_fbo);
 
 	m_current_read_buffer = m_saved_read_buffer;
+#ifndef OPENGLESV2
 	if (m_bFrameBufferObjectActive) glReadBuffer(m_current_read_buffer);
-
+#endif
 	m_current_draw_buffer = m_saved_draw_buffer;
+#ifndef OPENGLESV2
 	if (m_bFrameBufferObjectActive) glDrawBuffer(m_current_draw_buffer);
-
+#endif
 }
 
 moTexParam moGLManager::BuildFPTexParam(MOboolean p_16bits, MOushort p_num_components)
 {
     moTexParam result;
-
+#ifndef OPENGLESV2
     if (m_gpu_vendor_code == MO_GPU_NV)
     {
         result.target = GL_TEXTURE_RECTANGLE_NV;
@@ -322,6 +357,7 @@ moTexParam moGLManager::BuildFPTexParam(MOboolean p_16bits, MOushort p_num_compo
 			else result.internal_format = GL_LUMINANCE_FLOAT32_ATI;
     }
     else
+#endif
     {
         result.target = GL_TEXTURE_RECTANGLE_ARB;
         if (p_16bits)
@@ -343,13 +379,18 @@ moTexParam moGLManager::BuildFPTexParam(MOboolean p_16bits, MOushort p_num_compo
 
 MOboolean moGLManager::RectTexture(GLenum p_target) const
 {
-	return (p_target == GL_TEXTURE_RECTANGLE_NV) ||
+	return 
+#ifndef OPENGLESV2
+		(p_target == GL_TEXTURE_RECTANGLE_NV) ||
+#endif
 	       (p_target == GL_TEXTURE_RECTANGLE_ARB);
 }
 
 MOboolean moGLManager::FPTexture(GLint p_internal_format)
 {
-	return (p_internal_format == GL_FLOAT_RGBA16_NV) ||
+	return 
+#ifndef OPENGLESV2
+			(p_internal_format == GL_FLOAT_RGBA16_NV) ||
 			(p_internal_format == GL_FLOAT_RGBA32_NV) ||
 			(p_internal_format == GL_FLOAT_R16_NV) ||
 			(p_internal_format == GL_FLOAT_R32_NV) ||
@@ -357,6 +398,7 @@ MOboolean moGLManager::FPTexture(GLint p_internal_format)
 			(p_internal_format == GL_RGBA_FLOAT32_ATI) ||
 			(p_internal_format == GL_LUMINANCE_FLOAT16_ATI) ||
 			(p_internal_format == GL_LUMINANCE_FLOAT32_ATI) ||
+#endif
 			(p_internal_format == GL_RGBA16F_ARB) ||
 			(p_internal_format == GL_RGBA32F_ARB) ||
 			(p_internal_format == GL_LUMINANCE16F_ARB) ||
@@ -380,13 +422,17 @@ void moGLManager::SetCurrentFBO(MOuint m_fbo)
 void moGLManager::SetCurrentReadBuffer(MOint p_buffer)
 {
 	m_current_read_buffer = p_buffer;
+#ifndef OPENGLESV2
 	if (m_bFrameBufferObjectActive) glReadBuffer(m_current_read_buffer);
+#endif
 }
 
 void moGLManager::SetCurrentDrawBuffer(MOint p_buffer)
 {
 	m_current_draw_buffer = p_buffer;
+#ifndef OPENGLESV2
 	if (m_bFrameBufferObjectActive) glDrawBuffer(m_current_draw_buffer);
+#endif
 }
 
 void moGLManager::SaveFBOState()

@@ -439,6 +439,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
 
         void ProcessConsoleMessage( moMessage* p_pMessage );
+	
 
         /// Procesa los mensajes de la Moldeo API 1.0
         /**
@@ -457,6 +458,8 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         const moText& ToJSON();
 
         int TestScreen( int p_display = -1 );
+
+	int TestScreen( int p_display = -1 );
 
     protected:
 
@@ -551,7 +554,11 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         moEffectManager			m_EffectManager;
         moReactionListenerManager m_ReactionListenerManager;
 
+
         moText                  m_ConsoleScript;
+        moShaderGLSL            m_BasicShader;
+        MOuint vertices_index;
+        MOuint color_index;
 
         int idebug,iligia,iborrado;
 

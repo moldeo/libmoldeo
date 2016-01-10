@@ -411,11 +411,11 @@ void moSceneEffect::Draw( moTempo* tempogral, moEffectState* parentstate)
 
 
   BeginDraw( tempogral, parentstate );
-
+#ifndef OPENGLESV2
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();                                     // Store The Modelview Matrix
 	glLoadIdentity();
-
+#endif
   /** ACTIVAR EL PRE-EFFECT */
   for(i=1 /*starting from index 0+1 (first is expected to be ERASE*/; i<m_EffectManager.PreEffects().Count(); i++ ) {
     pEffect = m_EffectManager.PreEffects().GetRef(i);
@@ -509,13 +509,13 @@ void moSceneEffect::Draw( moTempo* tempogral, moEffectState* parentstate)
 
   /** GUARDAR LA TEXTURA -> scene_xxx_texture */
 
-
+#ifndef OPENGLESV2
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glPopMatrix();									// Restore The Old Projection Matrix
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glPopMatrix();										// Restore The Old Projection Matrix
-
+#endif
 	EndDraw();
 }
 
