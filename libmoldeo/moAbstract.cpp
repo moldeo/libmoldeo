@@ -121,8 +121,13 @@ moAbstract::Init() {
 }
 
 MOboolean
+<<<<<<< HEAD
 moAbstract::Finish() {
 	m_bInitialized = false;
+=======
+moAbstract::Finish() {
+  m_bInitialized = false;
+>>>>>>> 4b0556516c6983cc7a7372e67472fc9a74c06118
 	return true;
 }
 

@@ -455,9 +455,9 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
         void RegisterFunctions();
 
-        const moText& ToJSON() {
-          return moMoldeoObject::ToJSON();
-        }
+        const moText& ToJSON();
+
+        int TestScreen( int p_display = -1 );
 
 	int TestScreen( int p_display = -1 );
 
