@@ -4627,25 +4627,6 @@ const moText& moConsole::ToJSON() {
 int
 moConsole::TestScreen( int p_display ) {
 
-  float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
-  float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
-
-  glVertexPointer( 2, GL_FLOAT, 0, coords );  // Set data type and location.
-  glColorPointer( 3, GL_FLOAT, 0, colors );
-
-  glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
-  glEnableClientState( GL_COLOR_ARRAY );
-
-  glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
-
-  return 1;
-}
->>>>>>> 4b0556516c6983cc7a7372e67472fc9a74c06118
-
-
-int
-moConsole::TestScreen( int p_display ) {
-
 #ifndef OPENGLESV2
   float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
   float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
@@ -4661,9 +4642,9 @@ moConsole::TestScreen( int p_display ) {
 
   if (!m_BasicShader.Initialized()) {
     MODebug2->Message("Creating basic shader!");
-    
+
     m_BasicShader.Init();
-    m_BasicShader.CreateShader(                        
+    m_BasicShader.CreateShader(
                          moText("attribute vec4 position;")+moText("\n")
                         +moText("attribute vec3 color;")+moText("\n")
                         +moText("varying lowp vec3 colorVarying;")+moText("\n")
@@ -4677,7 +4658,7 @@ moConsole::TestScreen( int p_display ) {
                         +moText("gl_FragColor = vec4(colorVarying, 1.0);")+moText("\n")
                         +moText("}")
     );
-    
+
     m_BasicShader.PrintVertShaderLog();
     m_BasicShader.PrintFragShaderLog();
 
@@ -4685,14 +4666,14 @@ moConsole::TestScreen( int p_display ) {
     color_index = m_BasicShader.GetAttribID(moText("color"));
 
     MODebug2->Message( moText("Shader Attrib IDs, position:")+IntToStr(vertices_index)+moText(" color:")+IntToStr(color_index) );
-  } 
+  }
 
   if (m_BasicShader.Initialized())
      m_BasicShader.StartShader();
 
   float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
   float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
-	
+
   glEnableVertexAttribArray( vertices_index );
   glVertexAttribPointer( vertices_index, 2, GL_FLOAT, false, 0, coords );  // Set data type and location.
 

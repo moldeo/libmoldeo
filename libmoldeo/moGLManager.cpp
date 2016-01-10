@@ -114,7 +114,7 @@ MOboolean moGLManager::CheckErrors(moText p_location)
 		error = true;
 		errstr = moText(" GL error code:") + IntToStr(errnum) + moText(" message > ");
 #ifndef OPENGLESV2
-		errstr+ = (char *)gluErrorString(errnum);
+		errstr+= (char *)gluErrorString(errnum);
 #endif
 		if (p_location != moText("")) errstr += moText(" at ") + moText(p_location);
 		moDebugManager::Error("moGLManager::CheckErrors > errors: " + errstr);
@@ -143,6 +143,10 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 	float screen_ratio = (float) p_width /(float) p_height;
 
 	glViewport(0, 0, p_width, p_height);
+
+	moMatrix4f ProjectionMatrix;
+	ProjectionMatrix.MakePerspectiveProjection( moVector3f( 0.0, 1.0, 0.0 ), moVector3f(0.0, 0.0, 0.0), moVector3f(0.0, 0.0, -10.0) );
+
 #ifndef OPENGLESV2
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -379,7 +383,7 @@ moTexParam moGLManager::BuildFPTexParam(MOboolean p_16bits, MOushort p_num_compo
 
 MOboolean moGLManager::RectTexture(GLenum p_target) const
 {
-	return 
+	return
 #ifndef OPENGLESV2
 		(p_target == GL_TEXTURE_RECTANGLE_NV) ||
 #endif
@@ -388,7 +392,7 @@ MOboolean moGLManager::RectTexture(GLenum p_target) const
 
 MOboolean moGLManager::FPTexture(GLint p_internal_format)
 {
-	return 
+	return
 #ifndef OPENGLESV2
 			(p_internal_format == GL_FLOAT_RGBA16_NV) ||
 			(p_internal_format == GL_FLOAT_RGBA32_NV) ||
@@ -706,7 +710,7 @@ moMatrix4f&
 moGLManager::SetModelMatrix( const moMatrix4f& p_mat4 ) {
 
   m_ModelMatrix = p_mat4;
-
+  return m_ModelMatrix;
 }
 
 

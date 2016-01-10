@@ -2880,27 +2880,661 @@ class moMatrix4 : public moAbstract
 public:
     // If bZero is true, create the zero matrix.  Otherwise, create the
     // identity matrix.
-    moMatrix4 (bool bZero = true);
+    moMatrix4 (bool bZero = true)
+    {
+        if (bZero)
+        {
+            MakeZero();
+        }
+        else
+        {
+            MakeIdentity();
+        }
+    }
 
     // copy constructor
-    moMatrix4 (const moMatrix4& rkM);
+    moMatrix4 (const moMatrix4& rkM) : moAbstract(rkM)
+{
+    m_afEntry[ 0] = rkM.m_afEntry[ 0];
+    m_afEntry[ 1] = rkM.m_afEntry[ 1];
+    m_afEntry[ 2] = rkM.m_afEntry[ 2];
+    m_afEntry[ 3] = rkM.m_afEntry[ 3];
+    m_afEntry[ 4] = rkM.m_afEntry[ 4];
+    m_afEntry[ 5] = rkM.m_afEntry[ 5];
+    m_afEntry[ 6] = rkM.m_afEntry[ 6];
+    m_afEntry[ 7] = rkM.m_afEntry[ 7];
+    m_afEntry[ 8] = rkM.m_afEntry[ 8];
+    m_afEntry[ 9] = rkM.m_afEntry[ 9];
+    m_afEntry[10] = rkM.m_afEntry[10];
+    m_afEntry[11] = rkM.m_afEntry[11];
+    m_afEntry[12] = rkM.m_afEntry[12];
+    m_afEntry[13] = rkM.m_afEntry[13];
+    m_afEntry[14] = rkM.m_afEntry[14];
+    m_afEntry[15] = rkM.m_afEntry[15];
+}
 
     // input Mrc is in row r, column c.
     moMatrix4 (Real fM00, Real fM01, Real fM02, Real fM03,
              Real fM10, Real fM11, Real fM12, Real fM13,
              Real fM20, Real fM21, Real fM22, Real fM23,
-             Real fM30, Real fM31, Real fM32, Real fM33);
+             Real fM30, Real fM31, Real fM32, Real fM33) {
+    m_afEntry[ 0] = fM00;
+    m_afEntry[ 1] = fM01;
+    m_afEntry[ 2] = fM02;
+    m_afEntry[ 3] = fM03;
+    m_afEntry[ 4] = fM10;
+    m_afEntry[ 5] = fM11;
+    m_afEntry[ 6] = fM12;
+    m_afEntry[ 7] = fM13;
+    m_afEntry[ 8] = fM20;
+    m_afEntry[ 9] = fM21;
+    m_afEntry[10] = fM22;
+    m_afEntry[11] = fM23;
+    m_afEntry[12] = fM30;
+    m_afEntry[13] = fM31;
+    m_afEntry[14] = fM32;
+    m_afEntry[15] = fM33;
+}
 
+moMatrix4 (const Real afEntry[16], bool bRowMajor)
+{
+    if (bRowMajor)
+    {
+        m_afEntry[ 0] = afEntry[ 0];
+        m_afEntry[ 1] = afEntry[ 1];
+        m_afEntry[ 2] = afEntry[ 2];
+        m_afEntry[ 3] = afEntry[ 3];
+        m_afEntry[ 4] = afEntry[ 4];
+        m_afEntry[ 5] = afEntry[ 5];
+        m_afEntry[ 6] = afEntry[ 6];
+        m_afEntry[ 7] = afEntry[ 7];
+        m_afEntry[ 8] = afEntry[ 8];
+        m_afEntry[ 9] = afEntry[ 9];
+        m_afEntry[10] = afEntry[10];
+        m_afEntry[11] = afEntry[11];
+        m_afEntry[12] = afEntry[12];
+        m_afEntry[13] = afEntry[13];
+        m_afEntry[14] = afEntry[14];
+        m_afEntry[15] = afEntry[15];
+    }
+    else
+    {
+        m_afEntry[ 0] = afEntry[ 0];
+        m_afEntry[ 1] = afEntry[ 4];
+        m_afEntry[ 2] = afEntry[ 8];
+        m_afEntry[ 3] = afEntry[12];
+        m_afEntry[ 4] = afEntry[ 1];
+        m_afEntry[ 5] = afEntry[ 5];
+        m_afEntry[ 6] = afEntry[ 9];
+        m_afEntry[ 7] = afEntry[13];
+        m_afEntry[ 8] = afEntry[ 2];
+        m_afEntry[ 9] = afEntry[ 6];
+        m_afEntry[10] = afEntry[10];
+        m_afEntry[11] = afEntry[14];
+        m_afEntry[12] = afEntry[ 3];
+        m_afEntry[13] = afEntry[ 7];
+        m_afEntry[14] = afEntry[11];
+        m_afEntry[15] = afEntry[15];
+    }
+}
+
+void MakeZero ()
+{
+    m_afEntry[ 0] = (Real)0.0;
+    m_afEntry[ 1] = (Real)0.0;
+    m_afEntry[ 2] = (Real)0.0;
+    m_afEntry[ 3] = (Real)0.0;
+    m_afEntry[ 4] = (Real)0.0;
+    m_afEntry[ 5] = (Real)0.0;
+    m_afEntry[ 6] = (Real)0.0;
+    m_afEntry[ 7] = (Real)0.0;
+    m_afEntry[ 8] = (Real)0.0;
+    m_afEntry[ 9] = (Real)0.0;
+    m_afEntry[10] = (Real)0.0;
+    m_afEntry[11] = (Real)0.0;
+    m_afEntry[12] = (Real)0.0;
+    m_afEntry[13] = (Real)0.0;
+    m_afEntry[14] = (Real)0.0;
+    m_afEntry[15] = (Real)0.0;
+}
+
+void MakeIdentity ()
+{
+    m_afEntry[ 0] = (Real)1.0;
+    m_afEntry[ 1] = (Real)0.0;
+    m_afEntry[ 2] = (Real)0.0;
+    m_afEntry[ 3] = (Real)0.0;
+    m_afEntry[ 4] = (Real)0.0;
+    m_afEntry[ 5] = (Real)1.0;
+    m_afEntry[ 6] = (Real)0.0;
+    m_afEntry[ 7] = (Real)0.0;
+    m_afEntry[ 8] = (Real)0.0;
+    m_afEntry[ 9] = (Real)0.0;
+    m_afEntry[10] = (Real)1.0;
+    m_afEntry[11] = (Real)0.0;
+    m_afEntry[12] = (Real)0.0;
+    m_afEntry[13] = (Real)0.0;
+    m_afEntry[14] = (Real)0.0;
+    m_afEntry[15] = (Real)1.0;
+}
+
+void SetRow (int iRow, const moVector4<Real>& rkV)
+{
+    int i0 = 4*iRow, i1 = i0+1, i2 = i1+1, i3 = i2+1;
+    m_afEntry[i0] = rkV[0];
+    m_afEntry[i1] = rkV[1];
+    m_afEntry[i2] = rkV[2];
+    m_afEntry[i3] = rkV[3];
+}
+
+moVector4<Real> GetRow (int iRow) const
+{
+    int i0 = 4*iRow, i1 = i0+1, i2 = i1+1, i3 = i2+1;
+    return moVector4<Real>(m_afEntry[i0],m_afEntry[i1],m_afEntry[i2],
+        m_afEntry[i3]);
+}
+
+void SetColumn (int iCol, const moVector4<Real>& rkV)
+{
+    m_afEntry[iCol] = rkV[0];
+    m_afEntry[iCol+4] = rkV[1];
+    m_afEntry[iCol+8] = rkV[2];
+    m_afEntry[iCol+12] = rkV[3];
+}
+
+moVector4<Real> GetColumn (int iCol) const
+{
+    return moVector4<Real>(m_afEntry[iCol],m_afEntry[iCol+4],m_afEntry[iCol+8],
+        m_afEntry[iCol+12]);
+}
+
+void GetColumnMajor (Real* afCMajor) const
+{
+    afCMajor[ 0] = m_afEntry[ 0];
+    afCMajor[ 1] = m_afEntry[ 4];
+    afCMajor[ 2] = m_afEntry[ 8];
+    afCMajor[ 3] = m_afEntry[12];
+    afCMajor[ 4] = m_afEntry[ 1];
+    afCMajor[ 5] = m_afEntry[ 5];
+    afCMajor[ 6] = m_afEntry[ 9];
+    afCMajor[ 7] = m_afEntry[13];
+    afCMajor[ 8] = m_afEntry[ 2];
+    afCMajor[ 9] = m_afEntry[ 6];
+    afCMajor[10] = m_afEntry[10];
+    afCMajor[11] = m_afEntry[14];
+    afCMajor[12] = m_afEntry[ 3];
+    afCMajor[13] = m_afEntry[ 7];
+    afCMajor[14] = m_afEntry[11];
+    afCMajor[15] = m_afEntry[15];
+}
+
+bool operator== (const moMatrix4& rkM) const
+{
+    return CompareArrays(rkM) == 0;
+}
+
+bool operator!= (const moMatrix4& rkM) const
+{
+    return CompareArrays(rkM) != 0;
+}
+
+bool operator<  (const moMatrix4& rkM) const
+{
+    return CompareArrays(rkM) < 0;
+}
+
+bool operator<= (const moMatrix4& rkM) const
+{
+    return CompareArrays(rkM) <= 0;
+}
+
+bool operator>  (const moMatrix4& rkM) const
+{
+    return CompareArrays(rkM) > 0;
+}
+
+bool operator>= (const moMatrix4& rkM) const
+{
+    return CompareArrays(rkM) >= 0;
+}
+
+moMatrix4<Real> Transpose () const
+{
+    return moMatrix4<Real>(
+        m_afEntry[ 0],
+        m_afEntry[ 4],
+        m_afEntry[ 8],
+        m_afEntry[12],
+        m_afEntry[ 1],
+        m_afEntry[ 5],
+        m_afEntry[ 9],
+        m_afEntry[13],
+        m_afEntry[ 2],
+        m_afEntry[ 6],
+        m_afEntry[10],
+        m_afEntry[14],
+        m_afEntry[ 3],
+        m_afEntry[ 7],
+        m_afEntry[11],
+        m_afEntry[15]);
+}
+
+moMatrix4<Real> TransposeTimes (const moMatrix4& rkM) const
+{
+    // P = A^T*B
+    return moMatrix4<Real>(
+        m_afEntry[ 0]*rkM.m_afEntry[ 0] +
+        m_afEntry[ 4]*rkM.m_afEntry[ 4] +
+        m_afEntry[ 8]*rkM.m_afEntry[ 8] +
+        m_afEntry[12]*rkM.m_afEntry[12],
+
+        m_afEntry[ 0]*rkM.m_afEntry[ 1] +
+        m_afEntry[ 4]*rkM.m_afEntry[ 5] +
+        m_afEntry[ 8]*rkM.m_afEntry[ 9] +
+        m_afEntry[12]*rkM.m_afEntry[13],
+
+        m_afEntry[ 0]*rkM.m_afEntry[ 2] +
+        m_afEntry[ 4]*rkM.m_afEntry[ 6] +
+        m_afEntry[ 8]*rkM.m_afEntry[10] +
+        m_afEntry[12]*rkM.m_afEntry[14],
+
+        m_afEntry[ 0]*rkM.m_afEntry[ 3] +
+        m_afEntry[ 4]*rkM.m_afEntry[ 7] +
+        m_afEntry[ 8]*rkM.m_afEntry[11] +
+        m_afEntry[12]*rkM.m_afEntry[15],
+
+        m_afEntry[ 1]*rkM.m_afEntry[ 0] +
+        m_afEntry[ 5]*rkM.m_afEntry[ 4] +
+        m_afEntry[ 9]*rkM.m_afEntry[ 8] +
+        m_afEntry[13]*rkM.m_afEntry[12],
+
+        m_afEntry[ 1]*rkM.m_afEntry[ 1] +
+        m_afEntry[ 5]*rkM.m_afEntry[ 5] +
+        m_afEntry[ 9]*rkM.m_afEntry[ 9] +
+        m_afEntry[13]*rkM.m_afEntry[13],
+
+        m_afEntry[ 1]*rkM.m_afEntry[ 2] +
+        m_afEntry[ 5]*rkM.m_afEntry[ 6] +
+        m_afEntry[ 9]*rkM.m_afEntry[10] +
+        m_afEntry[13]*rkM.m_afEntry[14],
+
+        m_afEntry[ 1]*rkM.m_afEntry[ 3] +
+        m_afEntry[ 5]*rkM.m_afEntry[ 7] +
+        m_afEntry[ 9]*rkM.m_afEntry[11] +
+        m_afEntry[13]*rkM.m_afEntry[15],
+
+        m_afEntry[ 2]*rkM.m_afEntry[ 0] +
+        m_afEntry[ 6]*rkM.m_afEntry[ 4] +
+        m_afEntry[10]*rkM.m_afEntry[ 8] +
+        m_afEntry[14]*rkM.m_afEntry[12],
+
+        m_afEntry[ 2]*rkM.m_afEntry[ 1] +
+        m_afEntry[ 6]*rkM.m_afEntry[ 5] +
+        m_afEntry[10]*rkM.m_afEntry[ 9] +
+        m_afEntry[14]*rkM.m_afEntry[13],
+
+        m_afEntry[ 2]*rkM.m_afEntry[ 2] +
+        m_afEntry[ 6]*rkM.m_afEntry[ 6] +
+        m_afEntry[10]*rkM.m_afEntry[10] +
+        m_afEntry[14]*rkM.m_afEntry[14],
+
+        m_afEntry[ 2]*rkM.m_afEntry[ 3] +
+        m_afEntry[ 6]*rkM.m_afEntry[ 7] +
+        m_afEntry[10]*rkM.m_afEntry[11] +
+        m_afEntry[14]*rkM.m_afEntry[15],
+
+        m_afEntry[ 3]*rkM.m_afEntry[ 0] +
+        m_afEntry[ 7]*rkM.m_afEntry[ 4] +
+        m_afEntry[11]*rkM.m_afEntry[ 8] +
+        m_afEntry[15]*rkM.m_afEntry[12],
+
+        m_afEntry[ 3]*rkM.m_afEntry[ 1] +
+        m_afEntry[ 7]*rkM.m_afEntry[ 5] +
+        m_afEntry[11]*rkM.m_afEntry[ 9] +
+        m_afEntry[15]*rkM.m_afEntry[13],
+
+        m_afEntry[ 3]*rkM.m_afEntry[ 2] +
+        m_afEntry[ 7]*rkM.m_afEntry[ 6] +
+        m_afEntry[11]*rkM.m_afEntry[10] +
+        m_afEntry[15]*rkM.m_afEntry[14],
+
+        m_afEntry[ 3]*rkM.m_afEntry[ 3] +
+        m_afEntry[ 7]*rkM.m_afEntry[ 7] +
+        m_afEntry[11]*rkM.m_afEntry[11] +
+        m_afEntry[15]*rkM.m_afEntry[15]);
+}
+
+moMatrix4<Real> TimesTranspose (const moMatrix4& rkM) const
+{
+    // P = A*B^T
+    return moMatrix4<Real>(
+        m_afEntry[ 0]*rkM.m_afEntry[ 0] +
+        m_afEntry[ 1]*rkM.m_afEntry[ 1] +
+        m_afEntry[ 2]*rkM.m_afEntry[ 2] +
+        m_afEntry[ 3]*rkM.m_afEntry[ 3],
+
+        m_afEntry[ 0]*rkM.m_afEntry[ 4] +
+        m_afEntry[ 1]*rkM.m_afEntry[ 5] +
+        m_afEntry[ 2]*rkM.m_afEntry[ 6] +
+        m_afEntry[ 3]*rkM.m_afEntry[ 7],
+
+        m_afEntry[ 0]*rkM.m_afEntry[ 8] +
+        m_afEntry[ 1]*rkM.m_afEntry[ 9] +
+        m_afEntry[ 2]*rkM.m_afEntry[10] +
+        m_afEntry[ 3]*rkM.m_afEntry[11],
+
+        m_afEntry[ 0]*rkM.m_afEntry[12] +
+        m_afEntry[ 1]*rkM.m_afEntry[13] +
+        m_afEntry[ 2]*rkM.m_afEntry[14] +
+        m_afEntry[ 3]*rkM.m_afEntry[15],
+
+        m_afEntry[ 4]*rkM.m_afEntry[ 0] +
+        m_afEntry[ 5]*rkM.m_afEntry[ 1] +
+        m_afEntry[ 6]*rkM.m_afEntry[ 2] +
+        m_afEntry[ 7]*rkM.m_afEntry[ 3],
+
+        m_afEntry[ 4]*rkM.m_afEntry[ 4] +
+        m_afEntry[ 5]*rkM.m_afEntry[ 5] +
+        m_afEntry[ 6]*rkM.m_afEntry[ 6] +
+        m_afEntry[ 7]*rkM.m_afEntry[ 7],
+
+        m_afEntry[ 4]*rkM.m_afEntry[ 8] +
+        m_afEntry[ 5]*rkM.m_afEntry[ 9] +
+        m_afEntry[ 6]*rkM.m_afEntry[10] +
+        m_afEntry[ 7]*rkM.m_afEntry[11],
+
+        m_afEntry[ 4]*rkM.m_afEntry[12] +
+        m_afEntry[ 5]*rkM.m_afEntry[13] +
+        m_afEntry[ 6]*rkM.m_afEntry[14] +
+        m_afEntry[ 7]*rkM.m_afEntry[15],
+
+        m_afEntry[ 8]*rkM.m_afEntry[ 0] +
+        m_afEntry[ 9]*rkM.m_afEntry[ 1] +
+        m_afEntry[10]*rkM.m_afEntry[ 2] +
+        m_afEntry[11]*rkM.m_afEntry[ 3],
+
+        m_afEntry[ 8]*rkM.m_afEntry[ 4] +
+        m_afEntry[ 9]*rkM.m_afEntry[ 5] +
+        m_afEntry[10]*rkM.m_afEntry[ 6] +
+        m_afEntry[11]*rkM.m_afEntry[ 7],
+
+        m_afEntry[ 8]*rkM.m_afEntry[ 8] +
+        m_afEntry[ 9]*rkM.m_afEntry[ 9] +
+        m_afEntry[10]*rkM.m_afEntry[10] +
+        m_afEntry[11]*rkM.m_afEntry[11],
+
+        m_afEntry[ 8]*rkM.m_afEntry[12] +
+        m_afEntry[ 9]*rkM.m_afEntry[13] +
+        m_afEntry[10]*rkM.m_afEntry[14] +
+        m_afEntry[11]*rkM.m_afEntry[15],
+
+        m_afEntry[12]*rkM.m_afEntry[ 0] +
+        m_afEntry[13]*rkM.m_afEntry[ 1] +
+        m_afEntry[14]*rkM.m_afEntry[ 2] +
+        m_afEntry[15]*rkM.m_afEntry[ 3],
+
+        m_afEntry[12]*rkM.m_afEntry[ 4] +
+        m_afEntry[13]*rkM.m_afEntry[ 5] +
+        m_afEntry[14]*rkM.m_afEntry[ 6] +
+        m_afEntry[15]*rkM.m_afEntry[ 7],
+
+        m_afEntry[12]*rkM.m_afEntry[ 8] +
+        m_afEntry[13]*rkM.m_afEntry[ 9] +
+        m_afEntry[14]*rkM.m_afEntry[10] +
+        m_afEntry[15]*rkM.m_afEntry[11],
+
+        m_afEntry[12]*rkM.m_afEntry[12] +
+        m_afEntry[13]*rkM.m_afEntry[13] +
+        m_afEntry[14]*rkM.m_afEntry[14] +
+        m_afEntry[15]*rkM.m_afEntry[15]);
+}
+
+moMatrix4<Real> Inverse () const
+{
+    Real fA0 = m_afEntry[ 0]*m_afEntry[ 5] - m_afEntry[ 1]*m_afEntry[ 4];
+    Real fA1 = m_afEntry[ 0]*m_afEntry[ 6] - m_afEntry[ 2]*m_afEntry[ 4];
+    Real fA2 = m_afEntry[ 0]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 4];
+    Real fA3 = m_afEntry[ 1]*m_afEntry[ 6] - m_afEntry[ 2]*m_afEntry[ 5];
+    Real fA4 = m_afEntry[ 1]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 5];
+    Real fA5 = m_afEntry[ 2]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 6];
+    Real fB0 = m_afEntry[ 8]*m_afEntry[13] - m_afEntry[ 9]*m_afEntry[12];
+    Real fB1 = m_afEntry[ 8]*m_afEntry[14] - m_afEntry[10]*m_afEntry[12];
+    Real fB2 = m_afEntry[ 8]*m_afEntry[15] - m_afEntry[11]*m_afEntry[12];
+    Real fB3 = m_afEntry[ 9]*m_afEntry[14] - m_afEntry[10]*m_afEntry[13];
+    Real fB4 = m_afEntry[ 9]*m_afEntry[15] - m_afEntry[11]*m_afEntry[13];
+    Real fB5 = m_afEntry[10]*m_afEntry[15] - m_afEntry[11]*m_afEntry[14];
+
+    Real fDet = fA0*fB5-fA1*fB4+fA2*fB3+fA3*fB2-fA4*fB1+fA5*fB0;
+    if (moMath<Real>::FAbs(fDet) <= moMath<Real>::ZERO_TOLERANCE)
+    {
+        return moMatrix4<Real>::ZERO;
+    }
+
+    moMatrix4 kInv;
+    kInv.m_afEntry[ 0] =
+        + m_afEntry[ 5]*fB5 - m_afEntry[ 6]*fB4 + m_afEntry[ 7]*fB3;
+    kInv.m_afEntry[ 4] =
+        - m_afEntry[ 4]*fB5 + m_afEntry[ 6]*fB2 - m_afEntry[ 7]*fB1;
+    kInv.m_afEntry[ 8] =
+        + m_afEntry[ 4]*fB4 - m_afEntry[ 5]*fB2 + m_afEntry[ 7]*fB0;
+    kInv.m_afEntry[12] =
+        - m_afEntry[ 4]*fB3 + m_afEntry[ 5]*fB1 - m_afEntry[ 6]*fB0;
+    kInv.m_afEntry[ 1] =
+        - m_afEntry[ 1]*fB5 + m_afEntry[ 2]*fB4 - m_afEntry[ 3]*fB3;
+    kInv.m_afEntry[ 5] =
+        + m_afEntry[ 0]*fB5 - m_afEntry[ 2]*fB2 + m_afEntry[ 3]*fB1;
+    kInv.m_afEntry[ 9] =
+        - m_afEntry[ 0]*fB4 + m_afEntry[ 1]*fB2 - m_afEntry[ 3]*fB0;
+    kInv.m_afEntry[13] =
+        + m_afEntry[ 0]*fB3 - m_afEntry[ 1]*fB1 + m_afEntry[ 2]*fB0;
+    kInv.m_afEntry[ 2] =
+        + m_afEntry[13]*fA5 - m_afEntry[14]*fA4 + m_afEntry[15]*fA3;
+    kInv.m_afEntry[ 6] =
+        - m_afEntry[12]*fA5 + m_afEntry[14]*fA2 - m_afEntry[15]*fA1;
+    kInv.m_afEntry[10] =
+        + m_afEntry[12]*fA4 - m_afEntry[13]*fA2 + m_afEntry[15]*fA0;
+    kInv.m_afEntry[14] =
+        - m_afEntry[12]*fA3 + m_afEntry[13]*fA1 - m_afEntry[14]*fA0;
+    kInv.m_afEntry[ 3] =
+        - m_afEntry[ 9]*fA5 + m_afEntry[10]*fA4 - m_afEntry[11]*fA3;
+    kInv.m_afEntry[ 7] =
+        + m_afEntry[ 8]*fA5 - m_afEntry[10]*fA2 + m_afEntry[11]*fA1;
+    kInv.m_afEntry[11] =
+        - m_afEntry[ 8]*fA4 + m_afEntry[ 9]*fA2 - m_afEntry[11]*fA0;
+    kInv.m_afEntry[15] =
+        + m_afEntry[ 8]*fA3 - m_afEntry[ 9]*fA1 + m_afEntry[10]*fA0;
+
+    Real fInvDet = ((Real)1.0)/fDet;
+    kInv.m_afEntry[ 0] *= fInvDet;
+    kInv.m_afEntry[ 1] *= fInvDet;
+    kInv.m_afEntry[ 2] *= fInvDet;
+    kInv.m_afEntry[ 3] *= fInvDet;
+    kInv.m_afEntry[ 4] *= fInvDet;
+    kInv.m_afEntry[ 5] *= fInvDet;
+    kInv.m_afEntry[ 6] *= fInvDet;
+    kInv.m_afEntry[ 7] *= fInvDet;
+    kInv.m_afEntry[ 8] *= fInvDet;
+    kInv.m_afEntry[ 9] *= fInvDet;
+    kInv.m_afEntry[10] *= fInvDet;
+    kInv.m_afEntry[11] *= fInvDet;
+    kInv.m_afEntry[12] *= fInvDet;
+    kInv.m_afEntry[13] *= fInvDet;
+    kInv.m_afEntry[14] *= fInvDet;
+    kInv.m_afEntry[15] *= fInvDet;
+
+    return kInv;
+}
+
+moMatrix4<Real> Adjoint () const
+{
+    Real fA0 = m_afEntry[ 0]*m_afEntry[ 5] - m_afEntry[ 1]*m_afEntry[ 4];
+    Real fA1 = m_afEntry[ 0]*m_afEntry[ 6] - m_afEntry[ 2]*m_afEntry[ 4];
+    Real fA2 = m_afEntry[ 0]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 4];
+    Real fA3 = m_afEntry[ 1]*m_afEntry[ 6] - m_afEntry[ 2]*m_afEntry[ 5];
+    Real fA4 = m_afEntry[ 1]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 5];
+    Real fA5 = m_afEntry[ 2]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 6];
+    Real fB0 = m_afEntry[ 8]*m_afEntry[13] - m_afEntry[ 9]*m_afEntry[12];
+    Real fB1 = m_afEntry[ 8]*m_afEntry[14] - m_afEntry[10]*m_afEntry[12];
+    Real fB2 = m_afEntry[ 8]*m_afEntry[15] - m_afEntry[11]*m_afEntry[12];
+    Real fB3 = m_afEntry[ 9]*m_afEntry[14] - m_afEntry[10]*m_afEntry[13];
+    Real fB4 = m_afEntry[ 9]*m_afEntry[15] - m_afEntry[11]*m_afEntry[13];
+    Real fB5 = m_afEntry[10]*m_afEntry[15] - m_afEntry[11]*m_afEntry[14];
+
+    return moMatrix4<Real>(
+        + m_afEntry[ 5]*fB5 - m_afEntry[ 6]*fB4 + m_afEntry[ 7]*fB3,
+        - m_afEntry[ 1]*fB5 + m_afEntry[ 2]*fB4 - m_afEntry[ 3]*fB3,
+        + m_afEntry[13]*fA5 - m_afEntry[14]*fA4 + m_afEntry[15]*fA3,
+        - m_afEntry[ 9]*fA5 + m_afEntry[10]*fA4 - m_afEntry[11]*fA3,
+        - m_afEntry[ 4]*fB5 + m_afEntry[ 6]*fB2 - m_afEntry[ 7]*fB1,
+        + m_afEntry[ 0]*fB5 - m_afEntry[ 2]*fB2 + m_afEntry[ 3]*fB1,
+        - m_afEntry[12]*fA5 + m_afEntry[14]*fA2 - m_afEntry[15]*fA1,
+        + m_afEntry[ 8]*fA5 - m_afEntry[10]*fA2 + m_afEntry[11]*fA1,
+        + m_afEntry[ 4]*fB4 - m_afEntry[ 5]*fB2 + m_afEntry[ 7]*fB0,
+        - m_afEntry[ 0]*fB4 + m_afEntry[ 1]*fB2 - m_afEntry[ 3]*fB0,
+        + m_afEntry[12]*fA4 - m_afEntry[13]*fA2 + m_afEntry[15]*fA0,
+        - m_afEntry[ 8]*fA4 + m_afEntry[ 9]*fA2 - m_afEntry[11]*fA0,
+        - m_afEntry[ 4]*fB3 + m_afEntry[ 5]*fB1 - m_afEntry[ 6]*fB0,
+        + m_afEntry[ 0]*fB3 - m_afEntry[ 1]*fB1 + m_afEntry[ 2]*fB0,
+        - m_afEntry[12]*fA3 + m_afEntry[13]*fA1 - m_afEntry[14]*fA0,
+        + m_afEntry[ 8]*fA3 - m_afEntry[ 9]*fA1 + m_afEntry[10]*fA0);
+}
+
+Real Determinant () const
+{
+    Real fA0 = m_afEntry[ 0]*m_afEntry[ 5] - m_afEntry[ 1]*m_afEntry[ 4];
+    Real fA1 = m_afEntry[ 0]*m_afEntry[ 6] - m_afEntry[ 2]*m_afEntry[ 4];
+    Real fA2 = m_afEntry[ 0]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 4];
+    Real fA3 = m_afEntry[ 1]*m_afEntry[ 6] - m_afEntry[ 2]*m_afEntry[ 5];
+    Real fA4 = m_afEntry[ 1]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 5];
+    Real fA5 = m_afEntry[ 2]*m_afEntry[ 7] - m_afEntry[ 3]*m_afEntry[ 6];
+    Real fB0 = m_afEntry[ 8]*m_afEntry[13] - m_afEntry[ 9]*m_afEntry[12];
+    Real fB1 = m_afEntry[ 8]*m_afEntry[14] - m_afEntry[10]*m_afEntry[12];
+    Real fB2 = m_afEntry[ 8]*m_afEntry[15] - m_afEntry[11]*m_afEntry[12];
+    Real fB3 = m_afEntry[ 9]*m_afEntry[14] - m_afEntry[10]*m_afEntry[13];
+    Real fB4 = m_afEntry[ 9]*m_afEntry[15] - m_afEntry[11]*m_afEntry[13];
+    Real fB5 = m_afEntry[10]*m_afEntry[15] - m_afEntry[11]*m_afEntry[14];
+    Real fDet = fA0*fB5-fA1*fB4+fA2*fB3+fA3*fB2-fA4*fB1+fA5*fB0;
+    return fDet;
+}
+
+Real QForm (const moVector4<Real>& rkU,
+    const moVector4<Real>& rkV) const
+{
+    return rkU.Dot((*this)*rkV);
+}
+
+void MakeObliqueProjection (const moVector3<Real>& rkNormal,
+    const moVector3<Real>& rkPoint, const moVector3<Real>& rkDirection)
+{
+    // The projection plane is Dot(N,X-P) = 0 where N is a 3-by-1 unit-length
+    // normal vector and P is a 3-by-1 point on the plane.  The projection
+    // is oblique to the plane, in the direction of the 3-by-1 vector D.
+    // Necessarily Dot(N,D) is not zero for this projection to make sense.
+    // Given a 3-by-1 point U, compute the intersection of the line U+t*D
+    // with the plane to obtain t = -Dot(N,U-P)/Dot(N,D).  Then
+    //
+    //   projection(U) = P + [I - D*N^T/Dot(N,D)]*(U-P)
+    //
+    // A 4-by-4 homogeneous transformation representing the projection is
+    //
+    //       +-                               -+
+    //   M = | D*N^T - Dot(N,D)*I   -Dot(N,P)D |
+    //       |          0^T          -Dot(N,D) |
+    //       +-                               -+
+    //
+    // where M applies to [U^T 1]^T by M*[U^T 1]^T.  The matrix is chosen so
+    // that M[3][3] > 0 whenever Dot(N,D) < 0 (projection is onto the
+    // "positive side" of the plane).
+
+    Real fNdD = rkNormal.Dot(rkDirection);
+    Real fNdP = rkNormal.Dot(rkPoint);
+    m_afEntry[ 0] = rkDirection[0]*rkNormal[0] - fNdD;
+    m_afEntry[ 1] = rkDirection[0]*rkNormal[1];
+    m_afEntry[ 2] = rkDirection[0]*rkNormal[2];
+    m_afEntry[ 3] = -fNdP*rkDirection[0];
+    m_afEntry[ 4] = rkDirection[1]*rkNormal[0];
+    m_afEntry[ 5] = rkDirection[1]*rkNormal[1] - fNdD;
+    m_afEntry[ 6] = rkDirection[1]*rkNormal[2];
+    m_afEntry[ 7] = -fNdP*rkDirection[1];
+    m_afEntry[ 8] = rkDirection[2]*rkNormal[0];
+    m_afEntry[ 9] = rkDirection[2]*rkNormal[1];
+    m_afEntry[10] = rkDirection[2]*rkNormal[2] - fNdD;
+    m_afEntry[11] = -fNdP*rkDirection[2];
+    m_afEntry[12] = 0.0f;
+    m_afEntry[13] = 0.0f;
+    m_afEntry[14] = 0.0f;
+    m_afEntry[15] = -fNdD;
+}
+
+void MakePerspectiveProjection (const moVector3<Real>& rkNormal,
+    const moVector3<Real>& rkPoint, const moVector3<Real>& rkEye)
+{
+    //     +-                                                 -+
+    // M = | Dot(N,E-P)*I - E*N^T    -(Dot(N,E-P)*I - E*N^T)*E |
+    //     |        -N^t                      Dot(N,E)         |
+    //     +-                                                 -+
+    //
+    // where E is the eye point, P is a point on the plane, and N is a
+    // unit-length plane normal.
+
+    Real fNdEmP = rkNormal.Dot(rkEye-rkPoint);
+
+    m_afEntry[ 0] = fNdEmP - rkEye[0]*rkNormal[0];
+    m_afEntry[ 1] = -rkEye[0]*rkNormal[1];
+    m_afEntry[ 2] = -rkEye[0]*rkNormal[2];
+    m_afEntry[ 3] = -(m_afEntry[0]*rkEye[0] + m_afEntry[1]*rkEye[1] +
+        m_afEntry[2]*rkEye[2]);
+    m_afEntry[ 4] = -rkEye[1]*rkNormal[0];
+    m_afEntry[ 5] = fNdEmP - rkEye[1]*rkNormal[1];
+    m_afEntry[ 6] = -rkEye[1]*rkNormal[2];
+    m_afEntry[ 7] = -(m_afEntry[4]*rkEye[0] + m_afEntry[5]*rkEye[1] +
+        m_afEntry[6]*rkEye[2]);
+    m_afEntry[ 8] = -rkEye[2]*rkNormal[0];
+    m_afEntry[ 9] = -rkEye[2]*rkNormal[1];
+    m_afEntry[10] = fNdEmP- rkEye[2]*rkNormal[2];
+    m_afEntry[11] = -(m_afEntry[8]*rkEye[0] + m_afEntry[9]*rkEye[1] +
+        m_afEntry[10]*rkEye[2]);
+    m_afEntry[12] = -rkNormal[0];
+    m_afEntry[13] = -rkNormal[1];
+    m_afEntry[14] = -rkNormal[2];
+    m_afEntry[15] = rkNormal.Dot(rkEye);
+}
+
+void MakeReflection (const moVector3<Real>& rkNormal,
+    const moVector3<Real>& rkPoint)
+{
+    //     +-                         -+
+    // M = | I-2*N*N^T    2*Dot(N,P)*N |
+    //     |     0^T            1      |
+    //     +-                         -+
+    //
+    // where P is a point on the plane and N is a unit-length plane normal.
+
+    Real fTwoNdP = ((Real)2.0)*(rkNormal.Dot(rkPoint));
+
+    m_afEntry[ 0] = (Real)1.0 - ((Real)2.0)*rkNormal[0]*rkNormal[0];
+    m_afEntry[ 1] = -((Real)2.0)*rkNormal[0]*rkNormal[1];
+    m_afEntry[ 2] = -((Real)2.0)*rkNormal[0]*rkNormal[2];
+    m_afEntry[ 3] = fTwoNdP*rkNormal[0];
+    m_afEntry[ 4] = -((Real)2.0)*rkNormal[1]*rkNormal[0];
+    m_afEntry[ 5] = (Real)1.0 - ((Real)2.0)*rkNormal[1]*rkNormal[1];
+    m_afEntry[ 6] = -((Real)2.0)*rkNormal[1]*rkNormal[2];
+    m_afEntry[ 7] = fTwoNdP*rkNormal[1];
+    m_afEntry[ 8] = -((Real)2.0)*rkNormal[2]*rkNormal[0];
+    m_afEntry[ 9] = -((Real)2.0)*rkNormal[2]*rkNormal[1];
+    m_afEntry[10] = (Real)1.0 - ((Real)2.0)*rkNormal[2]*rkNormal[2];
+    m_afEntry[11] = fTwoNdP*rkNormal[2];
+    m_afEntry[12] = (Real)0.0;
+    m_afEntry[13] = (Real)0.0;
+    m_afEntry[14] = (Real)0.0;
+    m_afEntry[15] = (Real)1.0;
+}
     // Create a matrix from an array of numbers.  The input array is
     // interpreted based on the Boolean input as
     //   true:  entry[0..15]={m00,m01,m02,m03,m10,m11,m12,m13,m20,m21,m22,
     //                        m23,m30,m31,m32,m33} [row major]
     //   false: entry[0..15]={m00,m10,m20,m30,m01,m11,m21,m31,m02,m12,m22,
     //                        m32,m03,m13,m23,m33} [col major]
-    moMatrix4 (const Real afEntry[16], bool bRowMajor);
-
-    void MakeZero ();
-    void MakeIdentity ();
 
 	// member access
     inline operator const Real* () const { return m_afEntry; }
@@ -2909,14 +3543,10 @@ public:
     inline Real* operator[] (int iRow) { return &m_afEntry[4*iRow]; }
     inline Real operator() (int iRow, int iCol) const { return m_afEntry[iCol+4*iRow]; }
     inline Real& operator() (int iRow, int iCol) { return m_afEntry[iCol+4*iRow]; }
-    void SetRow (int iRow, const moVector4<Real>& rkV);
-    moVector4<Real> GetRow (int iRow) const;
-    void SetColumn (int iCol, const moVector4<Real>& rkV);
-    moVector4<Real> GetColumn (int iCol) const;
-    void GetColumnMajor (Real* afCMajor) const;
+
 
     // assignment
-    inline moMatrix4& operator= (const moMatrix4& rkM)
+    inline moMatrix4<Real>& operator= (const moMatrix4& rkM)
 	{
 		m_afEntry[ 0] = rkM.m_afEntry[ 0];
 		m_afEntry[ 1] = rkM.m_afEntry[ 1];
@@ -2938,15 +3568,9 @@ public:
 	}
 
     // comparison
-    bool operator== (const moMatrix4& rkM) const;
-    bool operator!= (const moMatrix4& rkM) const;
-    bool operator<  (const moMatrix4& rkM) const;
-    bool operator<= (const moMatrix4& rkM) const;
-    bool operator>  (const moMatrix4& rkM) const;
-    bool operator>= (const moMatrix4& rkM) const;
 
     // arithmetic operations
-    inline moMatrix4 operator+ (const moMatrix4& rkM) const
+    inline moMatrix4<Real> operator+ (const moMatrix4& rkM) const
 	{
 		return moMatrix4<Real>(
 			m_afEntry[ 0] + rkM.m_afEntry[ 0],
@@ -2966,7 +3590,7 @@ public:
 			m_afEntry[14] + rkM.m_afEntry[14],
 			m_afEntry[15] + rkM.m_afEntry[15]);
 	}
-    inline moMatrix4 operator- (const moMatrix4& rkM) const
+    inline moMatrix4<Real> operator- (const moMatrix4& rkM) const
 	{
 		return moMatrix4<Real>(
 			m_afEntry[ 0] - rkM.m_afEntry[ 0],
@@ -2986,7 +3610,7 @@ public:
 			m_afEntry[14] - rkM.m_afEntry[14],
 			m_afEntry[15] - rkM.m_afEntry[15]);
 	}
-    inline moMatrix4 operator* (const moMatrix4& rkM) const
+    inline moMatrix4<Real> operator* (const moMatrix4& rkM) const
 	{
 		return moMatrix4<Real>(
 			m_afEntry[ 0]*rkM.m_afEntry[ 0] +
@@ -3069,7 +3693,7 @@ public:
 		    m_afEntry[14]*rkM.m_afEntry[11] +
 			m_afEntry[15]*rkM.m_afEntry[15]);
 	}
-    inline moMatrix4 operator* (Real fScalar) const
+    inline moMatrix4<Real> operator* (Real fScalar) const
 	{
 		return moMatrix4<Real>(
 			fScalar*m_afEntry[ 0],
@@ -3089,7 +3713,7 @@ public:
 			fScalar*m_afEntry[14],
 			fScalar*m_afEntry[15]);
 	}
-    inline moMatrix4 operator/ (Real fScalar) const
+    inline moMatrix4<Real> operator/ (Real fScalar) const
 	{
 		if (fScalar != (Real)0.0)
 		{
@@ -3131,7 +3755,7 @@ public:
 		    moMath<Real>::MAX_REAL,
 			moMath<Real>::MAX_REAL);
 	}
-    inline moMatrix4 operator- () const
+    inline moMatrix4<Real> operator- () const
 	{
 		return moMatrix4<Real>(
 			-m_afEntry[ 0],
@@ -3153,7 +3777,7 @@ public:
 	}
 
     // arithmetic updates
-    inline moMatrix4& operator+= (const moMatrix4& rkM)
+    inline moMatrix4<Real>& operator+= (const moMatrix4& rkM)
 	{
 		m_afEntry[ 0] += rkM.m_afEntry[ 0];
 		m_afEntry[ 1] += rkM.m_afEntry[ 1];
@@ -3173,7 +3797,7 @@ public:
 		m_afEntry[15] += rkM.m_afEntry[15];
 		return *this;
 	}
-    inline moMatrix4& operator-= (const moMatrix4& rkM)
+    inline moMatrix4<Real>& operator-= (const moMatrix4& rkM)
 	{
 		m_afEntry[ 0] -= rkM.m_afEntry[ 0];
 		m_afEntry[ 1] -= rkM.m_afEntry[ 1];
@@ -3193,7 +3817,7 @@ public:
 		m_afEntry[15] -= rkM.m_afEntry[15];
 		return *this;
 	}
-    inline moMatrix4& operator*= (Real fScalar)
+    inline moMatrix4<Real>& operator*= (Real fScalar)
 	{
 		m_afEntry[ 0] *= fScalar;
 		m_afEntry[ 1] *= fScalar;
@@ -3213,7 +3837,7 @@ public:
 		m_afEntry[15] *= fScalar;
 		return *this;
 	}
-    inline moMatrix4& operator/= (Real fScalar)
+    inline moMatrix4<Real>& operator/= (Real fScalar)
 	{
 	    if (fScalar != (Real)0.0)
 		{
@@ -3283,33 +3907,17 @@ public:
 			m_afEntry[15]*rkV[3]);
 	}
 
-    // other operations
-    moMatrix4 Transpose () const;  // M^T
-    moMatrix4 TransposeTimes (const moMatrix4& rkM) const;  // this^T * M
-    moMatrix4 TimesTranspose (const moMatrix4& rkM) const;  // this * M^T
-    moMatrix4 Inverse () const;
-    moMatrix4 Adjoint () const;
-    Real Determinant () const;
-    Real QForm (const moVector4<Real>& rkU,
-        const moVector4<Real>& rkV) const;  // u^T*M*v
-
-    // projection matrices onto a specified plane
-    void MakeObliqueProjection (const moVector3<Real>& rkNormal,
-        const moVector3<Real>& rkPoint, const moVector3<Real>& rkDirection);
-    void MakePerspectiveProjection (const moVector3<Real>& rkNormal,
-        const moVector3<Real>& rkPoint, const moVector3<Real>& rkEye);
-
-    // reflection matrix through a specified plane
-    void MakeReflection (const moVector3<Real>& rkNormal,
-        const moVector3<Real>& rkPoint);
-
     // special matrices
     static const moMatrix4 ZERO;
     static const moMatrix4 IDENTITY;
 
 private:
     // support for comparisons
-    int CompareArrays (const moMatrix4& rkM) const;
+  int CompareArrays (const moMatrix4& rkM) const
+  {
+      return memcmp(m_afEntry,rkM.m_afEntry,16*sizeof(Real));
+  }
+
 
     Real m_afEntry[16];
 };

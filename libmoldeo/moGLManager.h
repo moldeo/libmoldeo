@@ -39,6 +39,8 @@
 
 #include "moTypes.h"
 #include "moText.h"
+#include "moMathMatrix.h"
+#include "moShaderGLSL.h"
 #include "moFBO.h"
 
 #include "moResourceManager.h"
@@ -261,7 +263,7 @@ class LIBMOLDEO_API moGLManager : public moResource
 		void SetFrameBufferObjectActive( bool active = true );
 
     moMatrix4f& GetModelMatrix();
-    moMatrix4f& SetModelMatrix( const moMatrix4f p_mat4 );
+    moMatrix4f& SetModelMatrix( const moMatrix4f& p_mat4 );
 
     private:
 
@@ -284,7 +286,11 @@ class LIBMOLDEO_API moGLManager : public moResource
 		MOint m_saved_draw_buffer;
 
     moMatrix4f m_ModelMatrix;
-    moMatrix4f* m_StackMatrices;
+    moMatrix4f m_ProjectionMatrix;
+    moShaderGLSL m_RenderShader;
+
+    moMatrix4f* m_StackModelMatrices;
+    moMatrix4f* m_StackProjectionMatrices;
 
 		bool    m_bFrameBufferObjectActive;
 
