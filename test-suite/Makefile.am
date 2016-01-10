@@ -2,24 +2,31 @@ INCLUDES                    = @CHECK_CFLAGS@ -I../libmoldeo -Ilibmoldeo -I../../
 TESTS                       = check_libmoldeo
 noinst_PROGRAMS             = $(TESTS)
 check_libmoldeo_SOURCES     = check_libmoldeo.cpp
-check_libmoldeo_CPPFLAGS    = ${FT2_CFLAGS} \
+check_libmoldeo_CPPFLAGS    = ${HOSTCFLAGS} \
+        ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
+	${GL_CFLAGS} \
 	$(GST_INTERFACES_CFLAGS) \
-    ${MUPARSER_CFLAGS} \
+    	${MUPARSER_CFLAGS} \
 	${BOOST_CPPFLAGS} \
 	${SDL_CFLAGS} \
-	${LUA51_CFLAGS} 
+	${LUA51_CFLAGS}
+ 
 check_libmoldeo_LIBS    = ${FT2_LIBS} \
 	${GST_LIBS} \
-    $(GST_INTERFACES_LIBS)
+	${GL_LIBS} \
+    	$(GST_INTERFACES_LIBS)
 	${BOOST_ASIO_LIB} \
 	${BOOST_THREAD_LIB} \
 	${BOOST_FILESYSTEM_LIB} \
-	${LUA51_LIBS} 
-check_libmoldeo_LDADD       = @CHECK_LIBS@ \
+	${LUA51_LIBS}
+ 
+check_libmoldeo_LDADD       = ${HOSTLDFLAGS} \
+	@CHECK_LIBS@ \
 	-L../libmoldeo -lmoldeo \
 	@MUPARSER_LIBS@ \
 	@SDL_LIBS@ \
+	@GL_LIBS@ \
 	@GLE_LIBS@ \
 	@FREEIMAGE_LIBS@ \
 	@FREEALUT_LIBS@ \
@@ -31,10 +38,7 @@ check_libmoldeo_LDADD       = @CHECK_LIBS@ \
 	@BOOST_FILESYSTEM_LIB@ \
 	@BOOST_THREAD_LIB@ \
 	@FTGL_LIBS@ 
-#\
-#	@CG_LIBS@ \
-#	@CGGL_LIBS@ \
-	#@TUIO_LIBS@
+
 
 CLEANFILES                  = check_libmoldeo.log
 

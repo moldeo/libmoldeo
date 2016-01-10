@@ -27,5 +27,5 @@ dist_iodevices_DATA =
 dist_resources_DATA = 
 dist_moldeoversion_DATA = moldeoversion.txt
 
-AM_CPPFLAGS = ${HOSTCFLAGS} -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\" -DOPENGLESV2
+AM_CPPFLAGS = ${HOSTCFLAGS} -DDATADIR=\"$(datadir)\" -DMODULESDIR=\"$(modulesdir)\"
 AM_LDFLAGS = ${HOSTLDFLAGS}
