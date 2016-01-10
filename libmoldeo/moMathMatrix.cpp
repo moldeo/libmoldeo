@@ -2401,11 +2401,6 @@ template<> const moMatrix3<MOdouble> moMatrix3<MOdouble>::IDENTITY(
 // momoMatrix4 class ------------------------------------------------------------
 
 
-
-
-
-
-
 template<> const moMatrix4<MOfloat> moMatrix4<MOfloat>::ZERO(
     0.0f,0.0f,0.0f,0.0f,
     0.0f,0.0f,0.0f,0.0f,

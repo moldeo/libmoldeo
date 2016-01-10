@@ -147,6 +147,8 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 	moMatrix4f ProjectionMatrix;
 	ProjectionMatrix.MakePerspectiveProjection( moVector3f( 0.0, 1.0, 0.0 ), moVector3f(0.0, 0.0, 0.0), moVector3f(0.0, 0.0, -10.0) );
 
+  m_ProjectionMatrix = ProjectionMatrix;
+
 #ifndef OPENGLESV2
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -171,14 +173,15 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
 #endif
     } else {
       float prop;
-
-      int w = m_pResourceManager->GetRenderMan()->RenderWidth();
-      int h = m_pResourceManager->GetRenderMan()->RenderHeight();
-      if ( w == 0 || h == 0 ) { w  = 1; h = 1; prop = 1.0; }
-      else {
-        prop = (float) h / (float) w;
+      if (m_pResourceManager) {
+        p_width = m_pResourceManager->GetRenderMan()->RenderWidth();
+        p_height = m_pResourceManager->GetRenderMan()->RenderHeight();
       }
-      glViewport( 0, 0, w, h );
+      if ( p_width == 0 || p_height == 0 ) { p_width  = 1; p_height = 1; prop = 1.0; }
+      else {
+        prop = (float) p_height / (float) p_width;
+      }
+      glViewport( 0, 0, p_width, p_height );
 #ifndef OPENGLESV2
 	glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
 #else

@@ -3943,14 +3943,18 @@ inline moVector4<Real> operator* (const moVector4<Real>& rkV,
 
 #ifndef MO_MACOSX
 #ifndef MO_WIN32
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moMatrix4<MOfloat>;
+#endif
 #endif
 #endif
 typedef moMatrix4<MOfloat> moMatrix4f;
 
 #ifndef MO_MACOSX
 #ifndef MO_WIN32
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moMatrix4<MOdouble>;
+#endif
 #endif
 #endif
 typedef moMatrix4<MOdouble> moMatrix4d;

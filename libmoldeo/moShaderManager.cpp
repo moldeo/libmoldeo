@@ -66,7 +66,42 @@ MOboolean moShaderManager::Init()
     m_pTextureFilterIndex->Init( m_glmanager, m_fbmanager, this, m_pResourceManager->GetTextureMan(), m_pResourceManager->GetRenderMan());
   }
 
-	return (m_glmanager && m_fbmanager);
+  if (!m_RenderShader.Initialized()) {
+    MODebug2->Message("moShaderManager::Init > Creating basic Render Shader...");
+
+    m_RenderShader.Init();
+    m_RenderShader.CreateShader(
+                         moText("attribute vec4 position;")+moText("\n")
+                        +moText("attribute vec3 color;")+moText("\n")
+                        +moText("attribute vec2 tcoord;")+moText("\n")
+                        +moText("uniform mat4 model;")+moText("\n")
+                        +moText("varying lowp vec3 colorVarying;")+moText("\n")
+                        +moText("void main() {")+moText("\n")
+                        +moText("colorVarying = color;")+moText("\n")
+                        +moText("gl_Position = position;")+moText("\n")
+                        +moText("}"),
+
+                         moText("varying lowp vec3 colorVarying;")+moText("\n")
+                        +moText("void main() {")+moText("\n")
+                        +moText("gl_FragColor = vec4(colorVarying, 1.0);")+moText("\n")
+                        +moText("}")
+        );
+
+       m_RenderShader.PrintVertShaderLog();
+       m_RenderShader.PrintFragShaderLog();
+
+       m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
+       m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
+       m_RenderShaderTextureIndex = m_RenderShader.GetAttribID(moText("tcoord"));
+       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("model");
+
+       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Attrib IDs, position:")+IntToStr(m_RenderShaderPositionIndex)
+                         +moText(" color:")+IntToStr(m_RenderShaderColorIndex) );
+       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs, model:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
+                         +moText(" color:")+IntToStr(m_RenderShaderProjectionMatrixIndex) );
+    }
+
+    return (m_glmanager && m_fbmanager);
 }
 
 MOboolean moShaderManager::Finish()

@@ -141,9 +141,20 @@ public:
 	    return m_pTextureFilterIndex;
     }
 
+  moShaderGLSL& GetRenderShader() {
+    return m_RenderShader;
+  }
+
 private:
 	moGLManager* m_glmanager;
 	moFBManager* m_fbmanager;
+
+	moShaderGLSL m_RenderShader;
+	MOuint m_RenderShaderColorIndex;
+	MOuint m_RenderShaderPositionIndex;
+	MOuint m_RenderShaderTextureIndex;
+	MOuint m_RenderShaderNormalIndex;
+	MOuint m_RenderShaderProjectionMatrixIndex;
 
     /**
     *  Objeto que referencia cada sombreador aplicadp
