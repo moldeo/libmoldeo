@@ -53,7 +53,8 @@ MOboolean moShaderManager::Init()
 		m_fbmanager = m_pResourceManager->GetFBMan();
 	} else return false;
 
-    m_pTextureFilterIndex = new moTextureFilterIndex();
+	if (m_pTextureFilterIndex==NULL)
+    		m_pTextureFilterIndex = new moTextureFilterIndex();
 
 	m_shaders_array.Init(0, NULL);
 
@@ -74,11 +75,11 @@ MOboolean moShaderManager::Init()
                          moText("attribute vec4 position;")+moText("\n")
                         +moText("attribute vec3 color;")+moText("\n")
                         +moText("attribute vec2 tcoord;")+moText("\n")
-                        +moText("uniform mat4 projectionmatrix;")+moText("\n")
+                        +moText("uniform mat4 projmatrix;")+moText("\n")
                         +moText("varying lowp vec3 colorVarying;")+moText("\n")
                         +moText("void main() {")+moText("\n")
                         +moText("colorVarying = color;")+moText("\n")
-                        +moText("gl_Position = position * projectionmatrix;")+moText("\n")
+                        +moText("gl_Position = projmatrix*position;")+moText("\n")
                         +moText("}"),
 
                          moText("varying lowp vec3 colorVarying;")+moText("\n")
@@ -93,12 +94,11 @@ MOboolean moShaderManager::Init()
        m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
        m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
        m_RenderShaderTextureIndex = m_RenderShader.GetAttribID(moText("tcoord"));
-       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projectionmatrix");
+       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projmatrix");
 
        MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Attrib IDs, position:")+IntToStr(m_RenderShaderPositionIndex)
                          +moText(" color:")+IntToStr(m_RenderShaderColorIndex) );
-       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs, model:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
-                         +moText(" color:")+IntToStr(m_RenderShaderProjectionMatrixIndex) );
+       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs, pmatrix:")+IntToStr(m_RenderShaderProjectionMatrixIndex) );
     }
 
     return (m_glmanager && m_fbmanager);
