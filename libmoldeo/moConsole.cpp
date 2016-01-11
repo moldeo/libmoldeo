@@ -4628,18 +4628,24 @@ int
 moConsole::TestScreen( int p_display ) {
 
 
-  moResourceManager moRES;
-  moConfig config;
-  moRES.Init("","",config);
-
   moShaderManager* pSMan;
   moGLManager* pGLMan;
 
-  pSMan = moRES.GetShaderMan();
-  if (!pSMan) return 0;
+  //moResourceManager moRES;
+  //moConfig config;
+  //moRES.Init("","",config);
+  if (m_pResourceManager==NULL) {
+    m_pResourceManager = new moResourceManager();
+    m_pResourceManager->Init("","",m_Config);
+  }
 
-  pGLMan = moRES.GetGLMan();
-  if (!pGLMan) return 0;
+  if (m_pResourceManager) {
+    pSMan = m_pResourceManager->GetShaderMan();
+    if (!pSMan) return 0;
+
+    pGLMan = m_pResourceManager->GetGLMan();
+    if (!pGLMan) return 0;
+  } else return 0;
 
   if ( pSMan->GetRenderShader().Initialized() ) {
      pSMan->GetRenderShader().StartShader();
