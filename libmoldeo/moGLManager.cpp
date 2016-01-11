@@ -147,6 +147,7 @@ void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
 	moMatrix4f ProjectionMatrix;
 	ProjectionMatrix.MakePerspectiveProjection( moVector3f( 0.0, 1.0, 0.0 ), moVector3f(0.0, 0.0, 0.0), moVector3f(0.0, 0.0, -10.0) );
   m_ProjectionMatrix = ProjectionMatrix;
+//  float* pfv = m_ProjectionMatrix[0];
 
 #ifndef OPENGLESV2
 	glMatrixMode(GL_PROJECTION);

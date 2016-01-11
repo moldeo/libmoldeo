@@ -4627,32 +4627,23 @@ const moText& moConsole::ToJSON() {
 int
 moConsole::TestScreen( int p_display ) {
 
-#ifndef OPENGLESV2
-  float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
-  float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
 
-  glVertexPointer( 2, GL_FLOAT, 0, coords );  // Set data type and location.
-  glColorPointer( 3, GL_FLOAT, 0, colors );
-
-  glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
-  glEnableClientState( GL_COLOR_ARRAY );
-
-  glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
-#else
   moResourceManager moRES;
   moConfig config;
   moRES.Init("","",config);
+
   moShaderManager* pSMan;
   moGLManager* pGLMan;
-  pSMan = moRES.GetShaderMan();
-  if (!pSMan) return;
-  pGLMan = moRES.GetGLMan();
-  if (!pGLMan) return;
 
+  pSMan = moRES.GetShaderMan();
+  if (!pSMan) return 0;
+
+  pGLMan = moRES.GetGLMan();
+  if (!pGLMan) return 0;
 
   if ( pSMan->GetRenderShader().Initialized() ) {
      pSMan->GetRenderShader().StartShader();
-  } else return;
+  } else return 0;
 
   MOuint color_index = pSMan->GetRSHColorIndex();
   MOuint position_index = pSMan->GetRSHPositionIndex();
@@ -4662,11 +4653,25 @@ moConsole::TestScreen( int p_display ) {
   float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
   float tcoords[6] = { 0.0,0.0,  0.0,0.1,  1.0,1.0 }; // two texture coords per vertex.
 
+  pGLMan->SetPerspectiveView( 320, 240 );
+  moMatrix4f PM(pGLMan->GetModelMatrix());
 
   if (pSMan->GetRenderShader().Initialized()) {
-    pGLMan->SetPerspectiveView( 320, 240 );
-    glUniformMatrix4fv( matrix_index, 1, GL_FALSE, &pGLMan->GetModelMatrix()[0] );
+    float* pfv = PM[0];
+    glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
   }
+
+
+#ifndef OPENGLESV2
+
+  glVertexPointer( 2, GL_FLOAT, 0, coords );  // Set data type and location.
+  glColorPointer( 3, GL_FLOAT, 0, colors );
+
+  glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
+  glEnableClientState( GL_COLOR_ARRAY );
+
+  glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
+#else
 
   glEnableVertexAttribArray( position_index );
   glVertexAttribPointer( position_index, 2, GL_FLOAT, false, 0, coords );  // Set data type and location.
@@ -4683,10 +4688,10 @@ moConsole::TestScreen( int p_display ) {
   glDisableVertexAttribArray( color_index );
   glDisableVertexAttribArray( texture_index );
 
+#endif
+
   if (pSMan->GetRenderShader().Initialized())
      pSMan->GetRenderShader().StopShader();
-
-#endif
 
   return 1;
 }
