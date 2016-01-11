@@ -287,7 +287,6 @@ class LIBMOLDEO_API moGLManager : public moResource
 
     moMatrix4f m_ModelMatrix;
     moMatrix4f m_ProjectionMatrix;
-    moShaderGLSL m_RenderShader;
 
     moMatrix4f* m_StackModelMatrices;
     moMatrix4f* m_StackProjectionMatrices;

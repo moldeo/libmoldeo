@@ -74,11 +74,11 @@ MOboolean moShaderManager::Init()
                          moText("attribute vec4 position;")+moText("\n")
                         +moText("attribute vec3 color;")+moText("\n")
                         +moText("attribute vec2 tcoord;")+moText("\n")
-                        +moText("uniform mat4 model;")+moText("\n")
+                        +moText("uniform mat4 projectionmatrix;")+moText("\n")
                         +moText("varying lowp vec3 colorVarying;")+moText("\n")
                         +moText("void main() {")+moText("\n")
                         +moText("colorVarying = color;")+moText("\n")
-                        +moText("gl_Position = position;")+moText("\n")
+                        +moText("gl_Position = position * projectionmatrix;")+moText("\n")
                         +moText("}"),
 
                          moText("varying lowp vec3 colorVarying;")+moText("\n")
@@ -93,7 +93,7 @@ MOboolean moShaderManager::Init()
        m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
        m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
        m_RenderShaderTextureIndex = m_RenderShader.GetAttribID(moText("tcoord"));
-       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("model");
+       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projectionmatrix");
 
        MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Attrib IDs, position:")+IntToStr(m_RenderShaderPositionIndex)
                          +moText(" color:")+IntToStr(m_RenderShaderColorIndex) );

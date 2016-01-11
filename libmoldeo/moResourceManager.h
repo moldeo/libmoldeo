@@ -201,13 +201,13 @@ class LIBMOLDEO_API moResourceManager : public moAbstract {
          *
          */
 		virtual MOboolean	Init(	const moText& p_apppath,
-                                    const moText& p_datapath,
+                  const moText& p_datapath,
 									moConfig& p_consoleconfig,
-									MOint p_render_to_texture_mode,
-									MOint p_screen_width,
-									MOint p_screen_height,
-									MOint p_render_width,
-									MOint p_render_height,
+									MOint p_render_to_texture_mode=0,
+									MOint p_screen_width=320,
+									MOint p_screen_height=240,
+									MOint p_render_width=320,
+									MOint p_render_height=240,
 									MO_HANDLE p_OpWindowHandle = 0,
 									MO_DISPLAY p_Display  = NULL );
         /**

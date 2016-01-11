@@ -554,9 +554,6 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
 
         moText                  m_ConsoleScript;
-        moShaderGLSL            m_BasicShader;
-        MOuint vertices_index;
-        MOuint color_index;
 
         int idebug,iligia,iborrado;
 

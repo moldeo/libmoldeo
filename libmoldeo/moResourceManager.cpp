@@ -259,9 +259,6 @@ moResourceManager::GetResourceByType( moResourceType p_type )
 	return NULL;//not found
 }
 
-
-
-
 MOboolean
 moResourceManager::Init(
                         const moText& p_apppath,
@@ -339,7 +336,7 @@ moResourceManager::Init(
 	moText lblname;
 
   ///TODO: chequear errores...
-	moParam& presources(p_consoleconfig.GetParam(moText("resources")));
+	moParam& presources( p_consoleconfig.GetParam(moText("resources")) );
 
 	presources.FirstValue();
 

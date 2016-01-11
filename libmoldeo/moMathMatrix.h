@@ -2859,14 +2859,18 @@ inline moVector3<Real> operator* (const moVector3<Real>& rkV,
 
 #ifndef MO_MACOSX
 #ifndef MO_WIN32
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moMatrix3<MOfloat>;
+#endif
 #endif
 #endif
 typedef moMatrix3<MOfloat> moMatrix3f;
 
 #ifndef MO_MACOSX
 #ifndef MO_WIN32
+#ifndef MO_RASPBIAN
 template class LIBMOLDEO_API moMatrix3<MOdouble>;
+#endif
 #endif
 #endif
 typedef moMatrix3<MOdouble> moMatrix3d;

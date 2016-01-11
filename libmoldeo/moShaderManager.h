@@ -70,6 +70,7 @@ public:
      * @return true si la operación fue exitosa, false en caso contrario.
      */
 	virtual MOboolean Init();
+
     /**
      * Método de finalización.
      * @return true si la operación fue exitosa, false en caso contrario.
@@ -143,6 +144,26 @@ public:
 
   moShaderGLSL& GetRenderShader() {
     return m_RenderShader;
+  }
+
+  MOuint GetRSHPositionIndex() {
+    return m_RenderShaderPositionIndex;
+  }
+
+  MOuint GetRSHColorIndex() {
+    return m_RenderShaderColorIndex;
+  }
+
+  MOuint GetRSHTextureIndex() {
+    return m_RenderShaderTextureIndex;
+  }
+
+  MOuint GetRSHNormalIndex() {
+    return m_RenderShaderNormalIndex;
+  }
+
+  MOuint GetRSHProjectionMatrixIndex() {
+    return m_RenderShaderProjectionMatrixIndex;
   }
 
 private:

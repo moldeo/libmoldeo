@@ -4639,57 +4639,51 @@ moConsole::TestScreen( int p_display ) {
 
   glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
 #else
+  moResourceManager moRES;
+  moConfig config;
+  moRES.Init("","",config);
+  moShaderManager* pSMan;
+  moGLManager* pGLMan;
+  pSMan = moRES.GetShaderMan();
+  if (!pSMan) return;
+  pGLMan = moRES.GetGLMan();
+  if (!pGLMan) return;
 
-  if (!m_BasicShader.Initialized()) {
-    MODebug2->Message("Creating basic shader!");
 
-    m_BasicShader.Init();
-    m_BasicShader.CreateShader(
-                         moText("attribute vec4 position;")+moText("\n")
-                        +moText("attribute vec3 color;")+moText("\n")
-                        +moText("varying lowp vec3 colorVarying;")+moText("\n")
-                        +moText("void main() {")+moText("\n")
-                        +moText("colorVarying = color;")+moText("\n")
-                        +moText("gl_Position = position;")+moText("\n")
-                        +moText("}"),
+  if ( pSMan->GetRenderShader().Initialized() ) {
+     pSMan->GetRenderShader().StartShader();
+  } else return;
 
-                         moText("varying lowp vec3 colorVarying;")+moText("\n")
-                        +moText("void main() {")+moText("\n")
-                        +moText("gl_FragColor = vec4(colorVarying, 1.0);")+moText("\n")
-                        +moText("}")
-    );
-
-    m_BasicShader.PrintVertShaderLog();
-    m_BasicShader.PrintFragShaderLog();
-
-    vertices_index = m_BasicShader.GetAttribID(moText("position"));
-    color_index = m_BasicShader.GetAttribID(moText("color"));
-
-    MODebug2->Message( moText("Shader Attrib IDs, position:")+IntToStr(vertices_index)+moText(" color:")+IntToStr(color_index) );
-  }
-
-  if (m_BasicShader.Initialized())
-     m_BasicShader.StartShader();
-
+  MOuint color_index = pSMan->GetRSHColorIndex();
+  MOuint position_index = pSMan->GetRSHPositionIndex();
+  MOuint texture_index = pSMan->GetRSHTextureIndex();
+  MOuint matrix_index = pSMan->GetRSHProjectionMatrixIndex();
   float coords[6] = { -0.9,-0.9,  0.9,-0.9,  0,0.7 }; // two coords per vertex.
   float colors[9] = { 1,0,0,  0,1,0,  1,0,0 };  // three RGB values per vertex.
+  float tcoords[6] = { 0.0,0.0,  0.0,0.1,  1.0,1.0 }; // two texture coords per vertex.
 
-  glEnableVertexAttribArray( vertices_index );
-  glVertexAttribPointer( vertices_index, 2, GL_FLOAT, false, 0, coords );  // Set data type and location.
+
+  if (pSMan->GetRenderShader().Initialized()) {
+    glUniformMatrix4fv( matrix_index, 1, GL_FALSE, mvp);
+  }
+
+  glEnableVertexAttribArray( position_index );
+  glVertexAttribPointer( position_index, 2, GL_FLOAT, false, 0, coords );  // Set data type and location.
 
   glEnableVertexAttribArray( color_index );
   glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, colors );
 
-  //glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
-  //glEnableClientState( GL_COLOR_ARRAY );
+  glEnableVertexAttribArray( texture_index );
+  glVertexAttribPointer( texture_index, 2, GL_FLOAT, false, 0, tcoords );  // Set data type and location.
 
   glDrawArrays( GL_TRIANGLES, 0, 3 ); // Use 3 vertices, starting with vertex 0.
 
-  glDisableVertexAttribArray( vertices_index );
+  glDisableVertexAttribArray( position_index );
   glDisableVertexAttribArray( color_index );
+  glDisableVertexAttribArray( texture_index );
 
-  if (m_BasicShader.Initialized())
-     m_BasicShader.StopShader();
+  if (pSMan->GetRenderShader().Initialized())
+     pSMan->GetRenderShader().StopShader();
 
 #endif
 
