@@ -4664,7 +4664,8 @@ moConsole::TestScreen( int p_display ) {
 
 
   if (pSMan->GetRenderShader().Initialized()) {
-    glUniformMatrix4fv( matrix_index, 1, GL_FALSE, mvp);
+    pGLMan->SetPerspectiveView( 320, 240 );
+    glUniformMatrix4fv( matrix_index, 1, GL_FALSE, &pGLMan->GetModelMatrix()[0] );
   }
 
   glEnableVertexAttribArray( position_index );
