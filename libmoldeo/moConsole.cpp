@@ -4686,7 +4686,7 @@ moConsole::TestScreen( int p_display ) {
   PM.SetRow(3, moVector4f( 0.0, 0.0, 0.0, 1.0));
   PM = PM.Transpose();
 
-  //glEnable( GL_TEXTURE_2D );
+  glEnable( GL_TEXTURE_2D );
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, logoglid );
 
