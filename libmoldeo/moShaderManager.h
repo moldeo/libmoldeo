@@ -166,6 +166,10 @@ public:
     return m_RenderShaderProjectionMatrixIndex;
   }
 
+  MOuint GetRSHTexCoordIndex() {
+    return m_RenderShaderTexCoordIndex;
+  }
+
 private:
 	moGLManager* m_glmanager;
 	moFBManager* m_fbmanager;
@@ -176,6 +180,7 @@ private:
 	MOuint m_RenderShaderTextureIndex;
 	MOuint m_RenderShaderNormalIndex;
 	MOuint m_RenderShaderProjectionMatrixIndex;
+	MOuint m_RenderShaderTexCoordIndex;
 
     /**
     *  Objeto que referencia cada sombreador aplicadp

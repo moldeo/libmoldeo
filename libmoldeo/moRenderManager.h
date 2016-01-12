@@ -64,9 +64,13 @@ class LIBMOLDEO_API moResolution {
 
   public:
 
+        int Width() const { return width; }
+        int Height() const { return height; }
+
+
         int width;
         int height;
-        int aspect;
+        float aspect;
 
 
 };
@@ -84,15 +88,27 @@ class LIBMOLDEO_API moRenderClip {
 moDeclareExportedDynamicArray( moRenderClip*, moRenderClips);
 
 
-class LIBMOLDEO_API moDisplayOutput {
+class LIBMOLDEO_API moDisplay : public moAbstract {
 
   public:
-        moResolution    m_DisplayResolution;
-        int             m_renderclip;/// index to corresponding render clip
+
+    moDisplay();
+    moDisplay( int w, int h);
+    moDisplay( const moDisplay& p_src );
+    virtual ~moDisplay();
+    const moDisplay& operator= ( const moDisplay& p_src );
+
+    const moResolution& Resolution() const {
+      return m_DisplayResolution;
+    }
+
+  private:
+
+    moResolution    m_DisplayResolution;
 
 };
 
-moDeclareExportedDynamicArray( moDisplayOutput*, moDisplayOutputs);
+moDeclareExportedDynamicArray( moDisplay*, moDisplays);
 
 
 class LIBMOLDEO_API moRenderOutputConfiguration {
@@ -110,7 +126,7 @@ class LIBMOLDEO_API moRenderOutputConfiguration {
 
         moRenderClips  Clips;///clip or section of render resolution
 
-        moDisplayOutputs Output1;///each with diff resolution or not
+        moDisplays Displays;///each with diff resolution or not
 
 };
 

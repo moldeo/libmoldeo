@@ -560,6 +560,7 @@ MOboolean moTextureManager::Init()
                     moText("icons") +
                     moSlash +
                     moText("moldeologo.png");
+	MODebug2->Message(moText("moTextureManager::Init > loading logo file:")+logoFile);
 
     if (DefaultTexture) {
         bool loaded = DefaultTexture->BuildFromFile(logoFile);

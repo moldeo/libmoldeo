@@ -53,7 +53,8 @@ MOboolean moShaderManager::Init()
 		m_fbmanager = m_pResourceManager->GetFBMan();
 	} else return false;
 
-    m_pTextureFilterIndex = new moTextureFilterIndex();
+	if (m_pTextureFilterIndex==NULL)
+    		m_pTextureFilterIndex = new moTextureFilterIndex();
 
 	m_shaders_array.Init(0, NULL);
 
@@ -71,20 +72,36 @@ MOboolean moShaderManager::Init()
 
     m_RenderShader.Init();
     m_RenderShader.CreateShader(
-                         moText("attribute vec4 position;")+moText("\n")
-                        +moText("attribute vec3 color;")+moText("\n")
-                        +moText("attribute vec2 tcoord;")+moText("\n")
-                        +moText("uniform mat4 projectionmatrix;")+moText("\n")
-                        +moText("varying lowp vec3 colorVarying;")+moText("\n")
-                        +moText("void main() {")+moText("\n")
-                        +moText("colorVarying = color;")+moText("\n")
-                        +moText("gl_Position = position * projectionmatrix;")+moText("\n")
-                        +moText("}"),
-
-                         moText("varying lowp vec3 colorVarying;")+moText("\n")
-                        +moText("void main() {")+moText("\n")
-                        +moText("gl_FragColor = vec4(colorVarying, 1.0);")+moText("\n")
-                        +moText("}")
+	moText(
+	""
+	""
+	"attribute vec4 position;"
+	"attribute vec3 color;"
+	"attribute vec2 t_coord;"
+	"uniform mat4 projmatrix;"
+	"varying vec3 colorVarying;"
+	"varying vec2 v_texcoord;"
+	""
+	"void main() {"
+	"	colorVarying = color;"
+	"	v_texcoord = t_coord;"
+	"	gl_Position = projmatrix*position;"
+	"}"
+	),
+	moText(
+	""
+#ifdef OPENGLESV2
+  "precision mediump float;"
+#endif
+	"varying vec3 colorVarying;"
+	"uniform sampler2D t_image;"
+	"varying vec2 v_texcoord;"
+	""
+	"void main() {"
+	"	vec4 texcolor = texture2D( t_image, v_texcoord );/*gl_FragCoord.st*/"
+	"	gl_FragColor = mix(vec4( v_texcoord.x, v_texcoord.y, 0.0, 1.0),texcolor,0.9);"
+        "}"
+	)
         );
 
        m_RenderShader.PrintVertShaderLog();
@@ -92,13 +109,19 @@ MOboolean moShaderManager::Init()
 
        m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
        m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
-       m_RenderShaderTextureIndex = m_RenderShader.GetAttribID(moText("tcoord"));
-       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projectionmatrix");
+       m_RenderShaderTexCoordIndex = m_RenderShader.GetAttribID(moText("t_coord"));
+       m_RenderShaderTextureIndex = m_RenderShader.GetUniformID(moText("t_image"));
+       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projmatrix");
 
-       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Attrib IDs, position:")+IntToStr(m_RenderShaderPositionIndex)
-                         +moText(" color:")+IntToStr(m_RenderShaderColorIndex) );
-       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs, model:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
-                         +moText(" color:")+IntToStr(m_RenderShaderProjectionMatrixIndex) );
+
+       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Attrib IDs,") +
+			+ moText(" position:")+IntToStr(m_RenderShaderPositionIndex)
+                         +moText(" color:")+IntToStr(m_RenderShaderColorIndex)
+			+moText(" t_coord:")+IntToStr(m_RenderShaderTexCoordIndex) );
+       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs,")
+			+moText(" projmatrix:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
+			+moText(" t_image:")+IntToStr(m_RenderShaderTextureIndex)
+ );
     }
 
     return (m_glmanager && m_fbmanager);

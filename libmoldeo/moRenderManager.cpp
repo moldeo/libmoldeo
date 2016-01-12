@@ -34,7 +34,35 @@
 
 #include "moArray.h"
 moDefineDynamicArray( moRenderClips )
-moDefineDynamicArray( moDisplayOutputs )
+moDefineDynamicArray( moDisplays )
+
+moDisplay::moDisplay() {
+  m_DisplayResolution.width = 0;
+  m_DisplayResolution.height = 0;
+}
+
+moDisplay::moDisplay( int w, int h) {
+  m_DisplayResolution.width = w;
+  m_DisplayResolution.height = h;
+}
+
+moDisplay::moDisplay( const moDisplay& p_src ) {
+  (*this)=p_src;
+}
+
+moDisplay::~moDisplay() {
+
+}
+const moDisplay&
+moDisplay::operator= ( const moDisplay& p_src ) {
+
+  m_DisplayResolution = p_src.m_DisplayResolution;
+  return (*this);
+}
+
+
+
+
 
 moRenderManager::moRenderManager() {
 

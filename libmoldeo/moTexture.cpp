@@ -273,6 +273,8 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 				p_format = GL_RGBA;
 #ifndef OPENGLESV2
         if (fif==FIF_PNG) p_format = GL_BGRA_EXT;
+#else
+	
 #endif
 				break;
 			default:
