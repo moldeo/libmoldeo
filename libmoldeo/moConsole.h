@@ -457,7 +457,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         const moText& ToJSON();
 
-        int TestScreen( int p_display = -1 );
+        int TestScreen( const moDisplay& p_display_info );
 
     protected:
 

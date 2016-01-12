@@ -90,7 +90,9 @@ MOboolean moShaderManager::Init()
 	),
 	moText(
 	""
-	"precision mediump float;"
+#ifdef OPENGLESV2
+  "precision mediump float;"
+#endif
 	"varying vec3 colorVarying;"
 	"uniform sampler2D t_image;"
 	"varying vec2 v_texcoord;"
