@@ -5,7 +5,8 @@ iconsdir = ${datadir}/icons
 
 dist_data_DATA = moldeologo.3ds 
 
-dist_icons_DATA = icons/moldeologo.png
+dist_icons_DATA = icons/moldeologo.png icons/moldeom.png icons/moldeonegro.png icons/moldeotrans.png
+
 
 dist_fonts_DATA = fonts/Tuffy.ttf
 
