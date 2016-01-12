@@ -155,6 +155,39 @@ void moShaderGLSL::compileVertShader(moText vert_source)
 	const char **psource = &source;
     glShaderSourceARB(m_VertexShader, 1, psource, NULL);
     glCompileShaderARB(m_VertexShader);
+
+    int IsCompiled_FS;
+    int maxLength;
+    char *vertexInfoLog;
+
+    glGetShaderiv(m_VertexShader, GL_COMPILE_STATUS, &IsCompiled_FS);
+	
+	glGetShaderiv(m_VertexShader, GL_INFO_LOG_LENGTH, &maxLength);
+	
+	/* The maxLength includes the NULL character */
+	vertexInfoLog = new char[maxLength];
+	
+	glGetShaderInfoLog(m_VertexShader, maxLength, &maxLength, vertexInfoLog);
+
+
+	if(IsCompiled_FS == MO_FALSE)
+	{
+    if (MODebug2 != NULL)
+      MODebug2->Error(moText("Vertex Shader compile error:")
+                      + "("+GetName()+")"
+                      + moText(vertexInfoLog) );
+
+		/* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
+		/* In this simple program, we'll just leave */
+		
+		//return;
+	} else {
+MODebug2->Message(moText("Vertex Shader compile log:")
+                      + "("+GetName()+")"
+                      + moText(vertexInfoLog) );
+	}
+delete [] vertexInfoLog;
+
     glAttachObjectARB(m_ProgramObject, m_VertexShader);
 }
 
@@ -181,7 +214,7 @@ void moShaderGLSL::compileFragShader(moText frag_source)
 		glGetShaderInfoLog(m_FragmentShader, maxLength, &maxLength, fragmentInfoLog);
 
     if (MODebug2 != NULL)
-      MODebug2->Error(moText("Shader compile error:")
+      MODebug2->Error(moText("Fragment Shader compile error:")
                       + "("+GetName()+")"
                       + moText(fragmentInfoLog) );
 
