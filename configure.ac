@@ -35,10 +35,9 @@ dnl check for opengl
 AC_ARG_WITH( [gles],
 AS_HELP_STRING([--with-gles],
 [use open gl es 2, default: no]),
-[with_gles=check])
+[with_gles=yes])
 
-
-AS_IF([test "x$with_gles" != xno],
+AS_IF([test "x$with_gles" = "xyes"],
 [PKG_CHECK_MODULES([GL], [glesv2, egl] ,has_glesv2=yes)],
 [PKG_CHECK_MODULES([GL], [gl, glew] ,has_gl=yes)])
 
@@ -181,6 +180,11 @@ AC_ARG_WITH(pkgconfigdir,
 	[pkgconfigdir='${libdir}/pkgconfig'])
 
 AC_SUBST([pkgconfigdir])
+
+echo "GLES: $with_gles"
+echo "HOSTCFLAGS: $host_cflags"
+echo "HOSTLDFLAGS: $host_ldflags"
+
 
 dnl Makefile outputs
 AC_OUTPUT([
