@@ -61,6 +61,7 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moMathVector3.cpp \
 	moMathVector4.cpp \
 	moMathVector.cpp \
+	moMathMatrix.cpp \
 	moMoldeoObject.cpp \
 	moMotion.cpp \
 	moNetManager.cpp \
@@ -101,10 +102,10 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 	moVideoGraph.cpp \
 	moVideoManager.cpp \
 	mo3ds.cpp \
-	moFilterManager.cpp 
+	moFilterManager.cpp
 
 #	moMathMatrix.cpp \
-#	moMathQuaternion.cpp 
+#	moMathQuaternion.cpp
 
 libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
@@ -114,7 +115,7 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${BOOST_CPPFLAGS} \
 	${SDL_CFLAGS} \
 	${GL_CFLAGS} \
-	${LUA51_CFLAGS} 
+	${LUA51_CFLAGS}
 
 libmoldeo_la_LIBADD = ${FT2_LIBS} \
 	${GTK2_LIBS} \
@@ -243,7 +244,7 @@ libmoldeo_include_HEADERS = \
 	moVideoGraph.h \
 	moVideoManager.h \
 	moPort.h \
-	mo3ds.h 
+	mo3ds.h
 
 METASOURCES = AUTO
 
