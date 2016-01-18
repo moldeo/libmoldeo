@@ -205,8 +205,8 @@ class LIBMOLDEO_API moLuaResourceManager : public moAbstract
  * Esta clase encapsula moMathd.
  * @see moMath
  */
- /*
-class LIBMOLDEO_API moLuaMath : public moMathd
+
+class LIBMOLDEO_API moLuaMath : public moAbstract, public moMathd
 {
 	DECLARE_SCRIPT_CLASS(moLuaMath)
 
@@ -235,8 +235,10 @@ class LIBMOLDEO_API moLuaMath : public moMathd
 	SCRIPT_FUNCTION_DECLARATION(UnitRandom)
 	SCRIPT_FUNCTION_DECLARATION(SymmetricRandom)
 	SCRIPT_FUNCTION_DECLARATION(IntervalRandom)
+
+    moMathd Mathd;
 };
-*/
+
 
 /**
  * Esta clase encapsula moParserFunction.

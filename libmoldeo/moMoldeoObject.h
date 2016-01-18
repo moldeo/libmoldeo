@@ -661,11 +661,11 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
         /// \if spanish Carga las definiciones de parámetros del archivo de configuración \endif \if english Loads parameter's config definitions \endif
 		virtual void LoadDefinition();
 
-        /// Corre la funcion de script Run o Compila el nuevo script
-        void ScriptExeInit();
-		void ScriptExeRun();
-		void ScriptExeUpdate();
-		void ScriptExeFinish();
+    /// Corre la funcion de script Run o Compila el nuevo script
+    virtual void ScriptExeInit();
+		virtual void ScriptExeRun();
+		virtual void ScriptExeUpdate();
+		virtual void ScriptExeFinish();
 
 		void SetScript( const moText& p_script );
 

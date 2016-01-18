@@ -39,11 +39,19 @@ moDefineDynamicArray( moDisplays )
 moDisplay::moDisplay() {
   m_DisplayResolution.width = 0;
   m_DisplayResolution.height = 0;
+  m_DisplayResolution.aspect = 1.0;
 }
 
 moDisplay::moDisplay( int w, int h) {
   m_DisplayResolution.width = w;
   m_DisplayResolution.height = h;
+  m_DisplayResolution.aspect = 1.0;
+  if ( !(h==0) != !(w==0) ) {
+    m_DisplayResolution.aspect = (int)(h==0) - (int) (w==0);
+  }
+  if (h!=0 && w!=0) {
+    m_DisplayResolution.aspect = w / h;
+  }
 }
 
 moDisplay::moDisplay( const moDisplay& p_src ) {

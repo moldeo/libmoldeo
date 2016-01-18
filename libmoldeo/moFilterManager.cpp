@@ -1038,16 +1038,51 @@ int moTrackerSystemData::GetMotionMatrixC( int zone ) {
 
 #include "moDebugManager.h"
 
-void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offsety ) {
+void moTrackerSystemData::DrawFeatures( float w, float h, float offsetx, float offsety ) {
+
+    float x=0.0,y=0.0;
+    float d = 1.0;
+
+    //m_pResourceManager->GetGuiMan()->DisplayInfoWindow( m_DisplayX , m_DisplayY, m_DisplayW, m_DisplayH, pInfo );
+
+    glColor4f( 1.0, 0.0, 0.0, 1.0 );
+
+#ifndef OPENGLESV2
+    glDisable( GL_TEXTURE_2D );
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    //glEnable( GL_BLEND );
+    //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+    glLineWidth((GLfloat)2.0);
+    glBegin(GL_QUADS);
+        glVertex2f((x - 0.5*d)*w, (y - 0.5*d)*h);
+        glVertex2f((x - 0.5*d)*w, (y + 0.5*d)*h);
+        glVertex2f((x + 0.5*d)*w, (y + 0.5*d)*h);
+        glVertex2f((x + 0.5*d)*w, (y - 0.5*d)*h);
+    glEnd();
+
+    glLineWidth((GLfloat)1.0);
+    glBegin(GL_LINES);
+
+        glVertex2f( x*w, (y - 0.1*d)*h);
+        glVertex2f( x*w, (y + 0.1*d)*h);
+
+        //flecha (puntita arriba en el eje Y)
+        glVertex2f( x*w, (y + 0.1*d)*h);
+        glVertex2f( (x-0.0008*d)*w, (y + 0.1*d - 0.0008*d)*h);
+
+        glVertex2f((x - 0.1*d)*w, y*d*h);
+        glVertex2f((x + 0.1*d)*w, y*d*h);
+
+        //flecha (puntita )
+        glVertex2f((x + 0.1*d)*w, y*d*h);
+        glVertex2f((x + 0.1*d - 0.0008*d)*w, (y+0.0008)*h);
+
+
+    glEnd();
+
+#endif // OPENGLESV2
 
     if (GetFeaturesCount()>0) {
-
-            glDisable( GL_TEXTURE_2D );
-            //glEnable( GL_BLEND );
-            //glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-#ifndef OPENGLESV2
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-#endif
 
             for (int f = 0; f < GetFeaturesCount(); f++)
             {
@@ -1058,8 +1093,8 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                 if (pF && pF->val>=MO_TRACKER_TRACKED) {
               //if (pF) {
 
-                float x = (pF->x) - offsetx;
-                float y = (pF->y) - offsety;
+                x = (pF->x) - offsetx;
+                y = (pF->y) - offsety;
                 float tr_x = (pF->tr_x) - offsetx;
                 float tr_y = (pF->tr_y) - offsety;
                 ///float v_x = (pF->v_x);
@@ -1081,16 +1116,6 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                 else if (v == MO_TRACKER_LARGE_RESIDUE) glColor4f(1.0, 0.0, 1.0, 1.0);
 
                 if ( pF->val>=MO_TRACKER_TRACKED ) {
-                  /*
-                    glBegin(GL_QUADS);
-                        glVertex2f((tr_x - 0.008)*w, (tr_y - 0.008)*h);
-                        glVertex2f((tr_x - 0.008)*w, (tr_y + 0.008)*h);
-                        glVertex2f((tr_x + 0.008)*w, (tr_y + 0.008)*h);
-                        glVertex2f((tr_x + 0.008)*w, (tr_y - 0.008)*h);
-                    glEnd();
-                    */
-
-                    float d = 1.0;
 
                     if (f==0) {
                       d = 3.0;
@@ -1112,7 +1137,7 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
                     }
                     glBindTexture(GL_TEXTURE_2D,0);
                     glDisable(GL_TEXTURE_2D);
-                    glLineWidth((GLfloat)3.0);
+                    glLineWidth((GLfloat)1.2);
 #ifndef OPENGLESV2
 
                     glBegin(GL_LINES);
@@ -1418,6 +1443,10 @@ void moTrackerSystemData::DrawFeatures( int w, int h, float offsetx, float offse
         }
 
     }
+
+    #ifndef OPENGLESV2
+      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    #endif
 
 }
 

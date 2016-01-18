@@ -66,7 +66,7 @@ class LIBMOLDEO_API moResolution {
 
         int Width() const { return width; }
         int Height() const { return height; }
-
+        int Aspect() const { return aspect; }
 
         int width;
         int height;
@@ -94,12 +94,21 @@ class LIBMOLDEO_API moDisplay : public moAbstract {
 
     moDisplay();
     moDisplay( int w, int h);
+    moDisplay( float w, float h);
     moDisplay( const moDisplay& p_src );
     virtual ~moDisplay();
     const moDisplay& operator= ( const moDisplay& p_src );
 
     const moResolution& Resolution() const {
       return m_DisplayResolution;
+    }
+
+    float HeightToProportion( float p_height ) const {
+      return p_height/Proportion();
+    }
+
+    float Proportion() const {
+      return m_DisplayResolution.Aspect();
     }
 
   private:

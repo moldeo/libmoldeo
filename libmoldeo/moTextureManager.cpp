@@ -552,7 +552,6 @@ MOboolean moTextureManager::Init()
 	//AddTexture("texture_clip1", 1024, 768);
 	//AddTexture("texture_clip2", 1024, 768);
 	//AddTexture("texture_clip3", 1024, 768);
-
 	int m_id_default = AddTexture( "default", 256, 256);
 	moTexture* DefaultTexture =  GetTexture(m_id_default);
 	moText logoFile = m_pResourceManager->GetDataMan()->GetAppDataPath() +
@@ -560,13 +559,23 @@ MOboolean moTextureManager::Init()
                     moText("icons") +
                     moSlash +
                     moText("moldeologo.png");
+	MODebug2->Message(moText("moTextureManager::Init > loading default file:")+logoFile);
+
+  if (DefaultTexture) if (!DefaultTexture->BuildFromFile(logoFile)) {
+    MODebug2->Error("moTextureManager::Init > error loading " + logoFile );
+  }
+
+  m_id_default = AddTexture( "moldeonegro", 1800, 600);
+	DefaultTexture =  GetTexture(m_id_default);
+	logoFile = m_pResourceManager->GetDataMan()->GetAppDataPath() +
+                    moSlash +
+                    moText("icons") +
+                    moSlash +
+                    moText("moldeonegro.png");
 	MODebug2->Message(moText("moTextureManager::Init > loading logo file:")+logoFile);
 
-    if (DefaultTexture) {
-        bool loaded = DefaultTexture->BuildFromFile(logoFile);
-        if (!loaded) {
-          MODebug2->Error("moTextureManager::Init > error loading " + logoFile );
-        }
+  if (DefaultTexture) if (!DefaultTexture->BuildFromFile(logoFile)) {
+    MODebug2->Error("moTextureManager::Init > error loading " + logoFile );
   }
 
 	return (m_glmanager && m_fbmanager);

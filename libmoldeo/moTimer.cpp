@@ -25,6 +25,11 @@ MOulong moGetTicksAbsolute( bool force_real_absolute ) {
     return clockt.total_milliseconds();
 }
 
+MOulong moResetTicksAbsoluteStep( long reset_value ) {
+  virtual_total_milliseconds = reset_value;
+  return virtual_total_milliseconds;
+}
+
 MOulong moGetTicksAbsoluteStep( long step_interval ) {
 
   virtual_total_milliseconds+= step_interval;

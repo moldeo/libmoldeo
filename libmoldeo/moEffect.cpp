@@ -779,7 +779,7 @@ void moEffect::RegisterFunctions()
 
 int moEffect::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
 {
-
+    m_iMethodBase = 36;
     switch ( iFunctionNumber - m_iMethodBase )
     {
         case 0:
@@ -820,9 +820,12 @@ int moEffect::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
             return luaSetEffectState(vm);
 
         default:
+            //MODebug2->Message( moText("Called moEffect::ScriptCalling, NextScriptCalling, from m_iMethodBase: ") + IntToStr(m_iMethodBase) );
             NextScriptCalling();
+            //MODebug2->Message( moText("Called moEffect::ScriptCalling, NextScriptCalling, to m_iMethodBase: ") + IntToStr(m_iMethodBase) );
             return moMoldeoObject::ScriptCalling( vm, iFunctionNumber );
 	}
+	return 0;
 }
 
 
@@ -878,7 +881,7 @@ int moEffect::luaSetTicks(moLuaVirtualMachine& vm)
 int moEffect::luaGetTicks(moLuaVirtualMachine& vm)
 {
     lua_State *luastate = (lua_State *) vm;
-
+    //MODebug2->Message(moText("moEffect::luaGetTicks() > ")+IntToStr(moGetTicks()) );
     lua_pushnumber(luastate, (lua_Number) moGetTicks() );
 
     return 1;

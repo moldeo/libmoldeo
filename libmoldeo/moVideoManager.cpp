@@ -299,7 +299,7 @@ void moVideoBuffer::GetFrame( MOuint p_i ) {
                         m_param.internal_format = GL_RGB;
 #ifndef OPENGLESV2
                         if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
-                        else 
+                        else
 #endif
 			p_format = GL_RGB;
                         break;
@@ -307,7 +307,7 @@ void moVideoBuffer::GetFrame( MOuint p_i ) {
                         m_param.internal_format = GL_RGBA;
 #ifndef OPENGLESV2
                         if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGRA_EXT;
-                        else 
+                        else
 #endif
 			p_format = GL_RGBA;
                         break;
@@ -527,7 +527,7 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 					m_param.internal_format = GL_RGB;
 #ifndef OPENGLESV2
 					if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
-					else 
+					else
 #endif
 p_format = GL_RGB;
 					break;
@@ -955,7 +955,7 @@ MOboolean moVideoManager::Init()
       moText videobuffername;
       moText videobufferformat;
       MOint	xsource, ysource, width, height, sourcewidth, sourceheight, frames;
-      MOint	interpolation, interpolationjump, interpolationtime;
+      MOint	interpolation, interpolation_jump, interpolation_time;
 
       if (circularbuffer>0)
       for(MOuint i=0; i<m_Config.GetValuesCount(circularbuffer); i++ ) {
@@ -1018,8 +1018,8 @@ MOboolean moVideoManager::Init()
             sourceheight = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEHEIGHT).Int();
 
             interpolation = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATION).Int();
-            interpolationjump = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONJUMP).Int();
-            interpolationtime = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONTIME).Int();
+            interpolation_jump = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONJUMP).Int();
+            interpolation_time = m_Config.GetParam(videobuffer).GetValue(i).GetSubValue(j*11+MO_VIDEO_SOURCEINTERPOLATIONTIME).Int();
 
             if(videobufferpath!=moText("")) {
               moVideoBuffer* pVideoBuffer = NULL;
@@ -1028,7 +1028,7 @@ MOboolean moVideoManager::Init()
                 pVideoBuffer =  (moVideoBuffer*) m_pResourceManager->GetTextureMan()->GetTexture(tid);
               }
               if (pVideoBuffer) {
-                pVideoBuffer->Init(  videobufferpath, videobufferformat, GetResourceManager(), width, height, xsource, ysource, sourcewidth, sourceheight, interpolation, interpolationjump, interpolationtime);
+                pVideoBuffer->Init(  videobufferpath, videobufferformat, GetResourceManager(), width, height, xsource, ysource, sourcewidth, sourceheight, interpolation, interpolation_jump, interpolation_time);
                 pVideoBufferPath->m_VideoBuffers.Add(pVideoBuffer);
               }
             }

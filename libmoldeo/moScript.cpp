@@ -143,6 +143,7 @@ moScript::moScript ()
  m_iMethodBaseIterator(0),
  m_iMethodBaseAncestors(0)
 {
+  m_iMethodBase = -1;
 	memset( m_MethodBases, -1, sizeof(int)*256);
 }
 
@@ -341,6 +342,7 @@ int moScript::RegisterBaseFunction (const char *strFuncName) {
     int MethodBase = m_iMethodBase;
 
     m_iMethodBase = RegisterFunction( strFuncName );
+    moDebugManager::Message(moText("RegisterFunction > m_iMethodBase: ") + IntToStr(m_iMethodBase)+ moText("for: ") + strFuncName  );
 
     if (MethodBase!=m_iMethodBase && m_iMethodBase!=-1) {
         ///Function was correctly registered so beginning new MethodBase for this derivation

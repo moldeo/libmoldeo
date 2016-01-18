@@ -636,9 +636,9 @@ typedef moVector3<MOlong> moVector3i;
 typedef moVector3<MOfloat> moVector3f;
 typedef moVector3<MOdouble> moVector3d;
 
-moDeclareExportedDynamicArray( moVector3i*, moVector3iArray );
-moDeclareExportedDynamicArray( moVector3f*, moVector3fArray );
-moDeclareExportedDynamicArray( moVector3d*, moVector3dArray );
+moDeclareExportedDynamicArray( moVector3i, moVector3iArray );
+moDeclareExportedDynamicArray( moVector3f, moVector3fArray );
+moDeclareExportedDynamicArray( moVector3d, moVector3dArray );
 
 #endif
 

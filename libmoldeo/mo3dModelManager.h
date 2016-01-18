@@ -9,6 +9,8 @@
 //#include <mo3ds.h>
 //#include <moMathVector.h>
 //#include <moMathVector3.h>
+#include "moGLManager.h"
+
 
 #define MO_3DMODEL_ERROR NULL
 
@@ -30,6 +32,7 @@ typedef struct {
 
 #include "moMathVector.h"
 #include "moMathVector3.h"
+#include "moMathMatrix.h"
 
 class LIBMOLDEO_API moCoord {
 public:
@@ -160,9 +163,24 @@ class LIBMOLDEO_API moSceneNode : public moAbstract {
         virtual moSceneNode*    GetParent();
         virtual void            SetParent( moSceneNode* p_SceneNode );
 
+        void SetProjection( const moGLMatrixf& p_projection_matrix ) {
+          m_Projection = p_projection_matrix;
+        }
+        void SetModel( const moGLMatrixf& p_model_matrix ) {
+          m_Model = p_model_matrix;
+        }
+        moGLMatrixf& GetProjection() {
+          return m_Projection;
+        }
+        moGLMatrixf& GetModel() {
+          return m_Model;
+        }
+
     protected:
 
         void*   SceneNodeImplementation;
+        moGLMatrixf  m_Projection;
+        moGLMatrixf  m_Model;
 
 };
 

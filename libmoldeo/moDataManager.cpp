@@ -257,7 +257,7 @@ moDataSession::GetRenderedFrames() const {
 bool
 moDataSession::StopRender(moConsoleState& p_console_state) {
   //m_EndTimeCode = moGetTicks();
-  int zero = moGetTicksAbsoluteStep(-moGetTicksAbsoluteStep(0));
+  int zero = moResetTicksAbsoluteStep(0);
   p_console_state.m_Mode = MO_CONSOLE_MODE_LIVE;
   MODebug2->Message("moDataSession::StopRender > m_EndTimeCode:" + IntToStr(m_EndTimeCode)+" zero:" + IntToStr(zero));
   return true;
@@ -275,7 +275,7 @@ moDataSession::Render( moConsoleState& p_console_state ) {
 
   p_console_state.m_Mode = MO_CONSOLE_MODE_RENDER_SESSION;
   //RESET
-  int zero = moGetTicksAbsoluteStep(-moGetTicksAbsoluteStep(0));
+  int zero = moResetTicksAbsoluteStep(0);
   if (zero!=0) MODebug2->Error("moDataSession::Render> not zero! zero: " + IntToStr(zero));
   long tickis = moGetTicksAbsoluteStep( 41 );
   moStopTimer();

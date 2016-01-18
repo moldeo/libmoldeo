@@ -63,6 +63,7 @@ LIBMOLDEO_API MOulong moGetTicksAbsolute( bool force_real_absolute=false );
 */
 LIBMOLDEO_API MOulong moGetTicksAbsoluteStep( long step_interval=0 );
 
+LIBMOLDEO_API MOulong moResetTicksAbsoluteStep( long reset_value=0 );
 
 
 

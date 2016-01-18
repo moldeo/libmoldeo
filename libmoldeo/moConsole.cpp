@@ -3339,7 +3339,7 @@ void moConsole::ConsoleModeUpdate() {
         // 1000 / 24fps = 41 ms = 24 frames + 16/24
         // 1000 / 25fps = 40 ms = 25 frames
         // 1000 / 30fps = 50 ms
-        m_ConsoleState.step_interval = 40;
+        m_ConsoleState.step_interval = 41;
 
         moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
 
@@ -4654,7 +4654,7 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
     int moid = pTMan->GetTextureMOId( "default", false );
     moTexture* logoT = pTMan->GetTexture(moid);
     if (logoT) logoglid = logoT->GetGLId();
-    MODebug2->Message("logoglid"+IntToStr(logoglid));
+    //MODebug2->Message("logoglid"+IntToStr(logoglid));
 
   } else return 0;
 
@@ -4667,7 +4667,15 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   MOuint texcoord_index = pSMan->GetRSHTexCoordIndex();
   MOuint matrix_index = pSMan->GetRSHProjectionMatrixIndex();
   MOuint texture_index = pSMan->GetRSHTextureIndex();
-  float coords[12] = { -1,-1,0.0,  -1,1,0.0,  1,-1,0.0, 1,1,0.0, }; // three coords per vertex.
+  //int tick = moGetTicksAbsolute( true );
+  m_ConsoleState.step_interval = 40;
+  float stepi = m_ConsoleState.step_interval;
+  float steps = moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
+
+  glClearColor( 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0 );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+  float coords[12] = { -1,-1,0.0,  -1,1,0.0,  1,-1,0.0, 1,1,0.0 }; // three coords per vertex.
   float colors[12] = { 0,0,0,  1,0,0,  0,1,0, 0,0,1 };  // three RGB values per vertex.
   float tcoords[8] = { 0.0,1.0,  0.0,0.0,  1.0,1.0, 1.0, 0.0 }; // two texture coords per vertex.
   float PMI[16]  = { 1.1, 0.0, 0.0, 0.0,
@@ -4675,20 +4683,34 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
                               0.0, 0.0, 1.1, 0.0,
                               0.5, 0.1, 0.1, 1.0 };
 
-  pGLMan->SetPerspectiveView( pRMan->ScreenWidth(), pRMan->ScreenHeight() );
-  moMatrix4f PM;
-  PM = pGLMan->GetModelMatrix();
-  PM.MakeIdentity();
-  float* pfv = PM;
-  PM.SetRow(0, moVector4f( 1.0, 0.0, 0.0, 0.0));
-  PM.SetRow(1, moVector4f( 0.0, 1.0, 0.0, 0.0));
-  PM.SetRow(2, moVector4f( 0.0, 0.0, 1.0, 0.0));
-  PM.SetRow(3, moVector4f( 0.0, 0.0, 0.0, 1.0));
-  PM = PM.Transpose();
+  pGLMan->SetDefaultPerspectiveView( pRMan->ScreenWidth(), pRMan->ScreenHeight() );
+  //pGLMan->SetOrthographicView( pRMan->ScreenWidth(), pRMan->ScreenHeight(), -0.5, 0.5, p_display_info.HeightToProportion(-0.5), p_display_info.HeightToProportion(0.5) );
+  //pGLMan->SetDefaultOrthographicView( pRMan->ScreenWidth(), pRMan->ScreenHeight());
+
+  moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
+  moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
+  moGLMatrixf Result;
+  MMatrix.MakeIdentity();
+  //MMatrix.Translate(0.5*cos( 0.03*steps/stepi ),0.5*sin( 0.03*steps/stepi ), 0.0f ).Rotate( 0.03*steps/stepi, 0.0, 0.0, 1.0);
+  //MMatrix.Rotate( 0.03*steps/stepi, 0.0, 0.0, 1.0);
+  MMatrix.Scale( 0.5, 0.5, 0.5 );
+  MMatrix.Rotate( ((float)steps/(float)stepi)*1.0*moMathf::DEG_TO_RAD, 1.0, 1.0, 1.0 );
+  MMatrix.Translate( 0.5f, 0.5f, -steps/1000.0f-3.0f );
+  MODebug2->Message( "model:\n"+MMatrix.ToJSON() );
+  MODebug2->Message( "projection\n"+PMatrix.ToJSON() );
+  Result = MMatrix*PMatrix;
+  //PM.MakeIdentity();
+  //PM = PM.Scale( 0.5, 0.5, 0.0 ).Rotate( 3.14/4.0, 0.0, 0.0, 1.0 ).Translate( -0.5, -0.5, 0.0 );
+  MODebug2->Message( "results:\n"+Result.ToJSON() );
+  MODebug2->Message( "steps:"+FloatToStr(steps)+
+                    "stepi:"+FloatToStr(stepi) );
+
+  float* pfv = Result.GetPointer();
 
   glEnable( GL_TEXTURE_2D );
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, logoglid );
+  //glBindTexture( GL_TEXTURE_2D, 0 );
 
   glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
   glUniform1i( texture_index, 0 );

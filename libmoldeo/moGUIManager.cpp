@@ -33,6 +33,67 @@
 
 #include "moArray.h"
 moDefineDynamicArray(moGuiObjectArray)
+
+moGeometry::moGeometry() {
+  m_Type = MO_GEOMETRY_UNDEFINED;
+}
+
+moGeometry::~moGeometry() {
+
+}
+
+MOboolean moGeometry::Init() {
+  return true;
+}
+
+MOboolean moGeometry::Init( moResourceManager* pResourceManager ) {
+  SetResourceManager(pResourceManager);
+  return pResourceManager!=NULL;
+}
+
+MOboolean moGeometry::Finish() {
+  return true;
+}
+
+void
+moGeometry::applyMatrix( const moGLMatrixf &p_ModelMatrix ) {
+
+}
+
+
+
+moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegments, int hsegments, int dsegments ) {
+  m_Type = MO_GEOMETRY_BOX;
+
+
+}
+
+moBoxGeometry::~moBoxGeometry(  ) {
+
+}
+
+moPolyhedronGeometry::moPolyhedronGeometry() {
+
+}
+moPolyhedronGeometry::moPolyhedronGeometry( const moVector3fArray& p_Vertices,
+                                           const moVector3iArray& p_Faces,
+                                           float radius,
+                                           float detail ) : moGeometry() {
+
+  //radius, detail
+  m_Vertices = p_Vertices;
+  m_Faces = p_Faces;
+  //calculate projection to sphere with radius
+  //tesselate using "detail" factor: 0 (no tesselation), 1 (1 subdivision), 2 (2 subdivisions), N (N subdivisions)
+}
+
+moPolyhedronGeometry::~moPolyhedronGeometry() {
+
+}
+
+
+
+
 //===========================================
 //
 //				moGUIManager

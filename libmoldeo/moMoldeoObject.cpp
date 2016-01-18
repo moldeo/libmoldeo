@@ -923,7 +923,8 @@ moMoldeoObject::CreateConnectors() {
   m_bConnectorsLoaded = true;
 
   ///Una vez establecidos los conectores, podemos inicializar el script a su vez....
-	moMoldeoObject::ScriptExeInit();
+	//moMoldeoObject::ScriptExeInit();
+	ScriptExeInit();
 
   MODebug2->Message("moMoldeoObject::CreateConnectors > OK! Object: " + GetName() + " config:" + GetConfigName() + " label: " + GetLabelName() );
 
@@ -1297,7 +1298,21 @@ void moMoldeoObject::RegisterFunctions()
 }
 
 int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) {
+/*
+    for(int i=0; i<m_iMethodBaseAncestors; i++ ) {
+       MODebug2->Message( moText("moMoldeoObject::ScriptCalling > baseancestor: ")+IntToStr(i)+moText(" base: ") + IntToStr(m_MethodBases[i]));
+       //m_iMethodBaseIterator
+    }
 
+    m_iMethodBase = m_MethodBases[m_iMethodBaseIterator];
+
+ MODebug2->Message( moText("Called moMoldeoObject::ScriptCalling, iFunctionNumber") + IntToStr(iFunctionNumber)
+                      +moText(" m_iMethodBase: ") + IntToStr(m_iMethodBase) );
+    MODebug2->Message( moText("m_iMethodBaseAncestors: ") + IntToStr( m_iMethodBaseAncestors ) );
+    MODebug2->Message( moText("m_iMethodBaseIterator: ") + IntToStr( m_iMethodBaseIterator ) );
+    MODebug2->Message( moText("m_iMethodBase: ") + IntToStr( m_iMethodBase ) );
+    */
+    m_iMethodBase = 1;
  switch ( iFunctionNumber - m_iMethodBase )
     {
         case 0:
@@ -1430,6 +1445,9 @@ int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) 
         case 34:
             ResetScriptCalling();
             return luaGetHistoryMinMax(vm);//34
+        default:
+            MODebug2->Error("moMoldeoObject::ScriptCalling > not a valid index (iFunctionNumber - m_iMethodBase) " + IntToStr(iFunctionNumber - m_iMethodBase));
+            break;
 
 	}
     return 0;
@@ -1472,7 +1490,7 @@ int moMoldeoObject::luaPushDebugString(moLuaVirtualMachine& vm) {
     lua_State *state = (lua_State *) vm;
 	if (lua_isboolean(state,1)) {
 		bool vb = lua_toboolean(state,1);
-		vb ? MODebug2->Message(moText("true")) : MODebug2->Push(moText("false"));
+		vb ? MODebug2->Message(moText("true")) : MODebug2->Message(moText("false"));
 	} else {
 		char *text = (char *) lua_tostring (state, 1);
 		MODebug2->Message(moText(text));

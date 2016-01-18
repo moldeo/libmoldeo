@@ -92,6 +92,41 @@ enum moResourceType {
 /// Recurso ( objeto para cargar y manipular objetos físicos de datos de imágenes, audio, video, 3d, 2d, fuentes, shaders y de cualquier otro tipo extendible por un plugin )
 /**
  *
+ *  Un plugin derivado de moResourcePlugin es usado típicamente para acceder a archivos de distintos formatos para luego
+ *  administrar estos contenidos en un arreglo interno dinámico evitando redundancias de datos.
+ *
+ * @see moResourceType
+ * @see moMoldeoObject
+ * @see moTextureManager
+ * @see mo3dModelManager
+ */
+ class LIBMOLDEO_API moResourceElement : public moAbstract {
+
+	public:
+	  moResourceElement() { }
+	  moResourceElement( moResourceType p_type) { m_ResourceType = MO_RESOURCETYPE_UNDEFINED; }
+	  virtual ~moResourceElement() {}
+    virtual MOboolean Init( moResourceManager* p_rm ) {
+      SetResourceManager(p_rm);
+    }
+    virtual void SetResourceManager( moResourceManager* p_rm ) {
+      m_pResourceManager = p_rm;
+    }
+    virtual moResourceManager* GetResourceManager() {
+      return m_pResourceManager;
+    }
+    moResourceType GetResourceType() {
+      return m_ResourceType;
+    }
+  protected:
+    moResourceType      m_ResourceType;
+		moResourceManager*	m_pResourceManager;
+};
+
+
+/// Recurso ( objeto para cargar y manipular objetos físicos de datos de imágenes, audio, video, 3d, 2d, fuentes, shaders y de cualquier otro tipo extendible por un plugin )
+/**
+ *
  *  Los recursos son aquellos objetos que implementan funciones de tratamiento de datos, generalmente
  *  localizados en dispositivos físicos, locales o remotos,o que tienen por destino algún tipo de representación.
  *

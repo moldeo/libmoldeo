@@ -825,7 +825,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaResourceManager, GetSoundMan)
 
 /** moLuaMath implementation ***************************************************
 */
-/*
+
 IMPLEMENT_SCRIPT_CLASS(moLuaMath)
 
 // Bind member functions to LUA
@@ -851,17 +851,19 @@ DEFINE_SCRIPT_CLASS_FUNCTIONS(moLuaMath)
     SCRIPT_FUNCTION(moLuaMath, Tan),
     SCRIPT_FUNCTION(moLuaMath, UnitRandom),
     SCRIPT_FUNCTION(moLuaMath, SymmetricRandom),
-    SCRIPT_FUNCTION(moLuaMath, IntervalRandom)
+    SCRIPT_FUNCTION(moLuaMath, IntervalRandom),
+    { 0, 0 }
 END_SCRIPT_CLASS_FUNCTIONS
 
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaMath)
-{0}
+{0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 
 SCRIPT_CONSTRUCTOR_IMPLEMENTATION(moLuaMath)
 {
+  MODebug2->Message("moLuaMath > constructor L: " + IntToStr( (long)(L) ) );
 }
 
 SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, ACos)
@@ -1044,7 +1046,7 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaMath, IntervalRandom)
 	lua_pushnumber(L, (lua_Number)rand);
     return 1;
 }
-*/
+
 
 /** moLuaParserFunction implementation **********************************************/
 /*
@@ -1066,7 +1068,7 @@ END_SCRIPT_CLASS_FUNCTIONS
 
 
 DEFINE_SCRIPT_CLASS_PROPERTIES(moLuaParserFunction)
-{0}
+{0,0,0}
 END_SCRIPT_CLASS_PROPERTIES
 
 

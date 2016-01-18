@@ -228,11 +228,11 @@ moConfigDefinition::SetParamIndex( int defined_array_index, moParamIndex paramin
   }
 
   if ( ! ( 0 <= defined_array_index && defined_array_index < (int)m_ParamIndexes.Count()) ) {
-        MODebug2->Error( moText("moConfigDefinition::SetParamIndex[" + m_ObjectName + "] > defined array entry index not in range : ")
+        MODebug2->Message( moText("WARNING!! moConfigDefinition::SetParamIndex[" + m_ObjectName + "] > defined array entry index not in range : ")
                         + IntToStr(defined_array_index)
                         + moText(" Max Indexes : ")
                         + IntToStr(m_ParamIndexes.Count()) );
-        MODebug2->Error( this->ToJSON() );
+        MODebug2->Message( this->ToJSON() );
         return false;
   }
 
@@ -293,7 +293,7 @@ moConfig::Indexation() {
             int pidx = (MOint)GetParamIndex(  pdef.GetName() );
             if (pidx>-1) {
               if (!GetConfigDefinition()->SetParamIndex( (int)pdef.GetIndex(), moParamIndex(pidx))) {
-                moDebugManager::Error( "moConfig::Indexation > <mo"+GetObjectClass()+"::"+GetObjectName()+"> Parameter \"" + moText(pdef.GetName()) + moText("\"  warning. Bad indexation could cause errors."));
+                moDebugManager::Message( "moConfig::Indexation > <mo"+GetObjectClass()+"::"+GetObjectName()+"> Parameter \"" + moText(pdef.GetName()) + moText("\"  warning. Bad indexation could cause errors."));
               }
             } else moDebugManager::Error( "moConfig::Indexation > <mo"+GetObjectClass()+"::"+GetObjectName()+"> > Parameter \"" + moText(pdef.GetName()) + moText("\" not found."));
         }

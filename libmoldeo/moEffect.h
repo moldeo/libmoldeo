@@ -204,7 +204,7 @@ public:
 
         moEffectState		m_EffectState;
 
-        int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
+        virtual int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
         void RegisterFunctions();
 
 
@@ -232,8 +232,8 @@ public:
         moInlet*        InletT;
         moInlet*        InletTempo;
 
-    void ScriptExeDraw();
-    void ScriptExeInteraction();
+    virtual void ScriptExeDraw();
+    virtual void ScriptExeInteraction();
 
 };
 

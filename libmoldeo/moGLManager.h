@@ -63,6 +63,87 @@ class moGLContext {
 */
 
 
+/// Matrices para transformaciones en Open GL
+/**
+ *
+ *
+ */
+class  LIBMOLDEO_API moGLMatrixf : public moMatrix4f {
+
+  public:
+    moGLMatrixf(bool bZero = true) : moMatrix4f(bZero) {}
+    moGLMatrixf( const moMatrix4f& p_src ) : moMatrix4f( p_src ) {}
+    moGLMatrixf( const moGLMatrixf& rkM );
+    const moGLMatrixf& operator= (const moGLMatrixf& rkM );
+    virtual ~moGLMatrixf() {}
+    //const moGLMatrixf& operator= (const moMatrix4f& p_src );
+
+//    operator const moMatrix4f* () const { return (moMatrix4f*) this; }
+    inline operator const float* () const { return moMatrix4f::GetPointer(); }
+    inline operator float* () { return moMatrix4f::GetPointer(); }
+    //inline const float* operator[] (int iRow) const { return moMatrix4f::GetRow(iRow); }
+    //inline float* operator[] (int iRow) { return moMatrix4f::GetRow(iRow); }
+   // inline float operator() (int iRow, int iCol) const { return moMatrix4f::Get( iRow, iCol); }
+   // inline float& operator() (int iRow, int iCol) { return m_afEntry[iCol+4*iRow]; }
+
+    moGLMatrixf& MakePerspective( float fovy,  float aspect,  float zNear,  float zFar );
+    moGLMatrixf& MakeLookAt( float eyeX=0.0,  float eyeY=0.0,  float eyeZ=-10.0,  float centerX=0.0,  float centerY=0.0,  float centerZ=0.0,  float upX=0.0,  float upY=0.0,  float upZ=1.0 );
+    moGLMatrixf& MakeFrustrum( float left=-1.0, float right=1.0, float bottom=-1.0, float top=1.0, float near=0.0001, float far=1000.0f  );
+    moGLMatrixf& MakeOrthographic( float left=-1.0, float right=1.0, float bottom=-1.0, float top=1.0, float near=0.0001, float far=1000.0f  );
+    moGLMatrixf& Translate( float x, float y, float z );
+    moGLMatrixf& Translate( const moGLMatrixf& m, float x, float y, float z );
+    moGLMatrixf& Rotate( float angle, float vx, float vy, float vz );
+    moGLMatrixf& Rotate( const moGLMatrixf& m, float rx, float ry, float rz );
+    moGLMatrixf& Scale( float sx, float sy, float sz );
+    moGLMatrixf& Scale( const moGLMatrixf& m, float sx, float sy, float sz );
+
+    moText ToJSON() const;
+    static const moGLMatrixf ZERO;
+    static const moGLMatrixf IDENTITY;
+
+};
+
+
+class  LIBMOLDEO_API moGLMatrixd : public moMatrix4d {
+  public:
+    moGLMatrixd() : moMatrix4d() {  }
+    virtual ~moGLMatrixd() { }
+};
+
+class  LIBMOLDEO_API moGLViewport : public moVector2f {
+
+  public:
+    moGLViewport( float p_width=1.0, float p_height=1.0 ): moVector2f() {
+      X()=p_width;
+      Y()=p_height;
+      Proportion = 1.0;
+      if (Y()>0.0) {
+        Proportion = X()/Y();
+      }
+  }
+    virtual ~moGLViewport() {}
+
+    moGLViewport( const moGLViewport& p_src ): moVector2f() {
+      (*this) = p_src;
+    }
+
+    const moGLViewport& operator= ( const moGLViewport& p_src ) {
+      X() = p_src.X();
+      Y() = p_src.Y();
+      Proportion = p_src.Proportion;
+      return (*this);
+    }
+
+    float GetWidth() { return X(); }
+    float GetHeight() { return Y(); }
+    float GetProportion() { return Proportion; }
+    float GetProportionInvert() { return 1.0/Proportion; }
+
+    float Proportion;
+
+};
+
+
 /// manejador de operaciones comunes de Open GL
 /**
  * Contiene funciones básicas de manejo de estado de OpenGL, manejo de errors y consulta de características
@@ -112,21 +193,55 @@ class LIBMOLDEO_API moGLManager : public moResource
         /**
          * Configura la matriz de proyección y el viewport a fin de generar una visualización en perspectiva
          * con el tamaño de ventana indicado.
+         *
          * @param p_width ancho de la ventana.
          * @param p_height alto de la ventana.
          */
-		void SetPerspectiveView(MOint p_width, MOint p_height);
+		void SetPerspectiveView(MOint p_width, MOint p_height, double fovy=60.0,  double aspect=1.0,  double znear=0.1,  double zfar=4000.0 );
+
+		/**
+         * Configura la matriz de proyección y el viewport a fin de generar una visualización en perspectiva
+         * con el tamaño de ventana indicado y conforme a la normalización del ancho a 1.0 y el alto a 0.75 (según la proporción).
+         * Esta proyección asegura que por un lado se mantenga el aspecto de los objetos que se represetan en la pantalla. Es decir
+         * que garantiza que un círculo se va como un círculo en cualquier pantalla y no con una deformación ovalada.
+         * Se recomienda utilizar esta función para el desarrollo de plugins.
+         *
+         * Default internal called values are:
+         * fovy: 45.0
+         * aspect: 1.0/ moDisplay( p_width, p_height).Proportion()
+         * znear: 0.1
+         * zfar: 4000.0f
+         *
+         * @param p_width ancho de la ventana.
+         * @param p_height alto de la ventana.
+         */
+		void SetDefaultPerspectiveView(MOint p_width, MOint p_height);
+
         /**
          * Configura la matriz de proyección y el viewport a fin de generar una visualización ortográfica (2D)
          * con el tamaño de ventana indicado.
          * @param p_width ancho de la ventana.
          * @param p_height alto de la ventana.
          */
-		void SetOrthographicView(MOint p_width=0, MOint p_height=0);
+		void SetOrthographicView(MOint p_width=0, MOint p_height=0, float left=-1.0, float right=1.0, float bottom=-1.0, float top=1.0, float znear=-1.0, float zfar=1.0);
 
         /**
-         * Devuelve el modo de render actual (GL_RENDER, GL_SELECT o GL_FEEDBACK).
-         * @return p_width modo de render.
+         * Configura la matriz de proyección y el viewport a fin de generar una visualización ortográfica (2D)
+         * con el tamaño de ventana indicado y conforme a la normalización del ancho a 1.0 y el alto a 0.75 (según la proporción).
+         * Esta proyección asegura que por un lado se mantenga el aspecto de los objetos que se represetan en la pantalla. Es decir
+         * que garantiza que un círculo se va como un círculo en cualquier pantalla y no con una deformación ovalada.
+         * Consideraciones en relación a la información de sensado: al estar las coordenadas sensadas normalizadas en valores entre 0 y 1.0 (0 es la esquina izquierda o el centro de la pantalla, y 1.0 suele ser el ancho total de la pantalla ),
+         * esta proyección es la idea para facilitar la relación de mapeo entre el sensado y la imagen proyectada.
+         * Se recomienda utilizar esta función para el desarrollo de plugins.
+         *
+         * @param p_width ancho de la ventana.
+         * @param p_height alto de la ventana.
+         */
+    void SetDefaultOrthographicView( MOint p_width=0, MOint p_height=0 );
+        /**
+         * Devuelve el modo de render actual.
+         *
+         * @return p_width modo de render (GL_RENDER | GL_SELECT | GL_FEEDBACK).
          */
 		MOint GetRenderMode();
         /**
@@ -252,6 +367,12 @@ class LIBMOLDEO_API moGLManager : public moResource
          */
 		void RestoreFBOState();
 
+    int GetGLMajorVersion() {
+      return m_major_version;
+    }
+    int GetGLMinorVersion() {
+     return m_minor_version;
+    }
 
 		int CreateContext( int p_width, int p_height );
     moGLContext GetContext();
@@ -262,8 +383,11 @@ class LIBMOLDEO_API moGLManager : public moResource
 
 		void SetFrameBufferObjectActive( bool active = true );
 
-    moMatrix4f& GetModelMatrix();
-    moMatrix4f& SetModelMatrix( const moMatrix4f& p_mat4 );
+    moGLMatrixf& GetModelMatrix();
+    moGLMatrixf& SetModelMatrix( const moGLMatrixf& p_mat4 );
+    moGLMatrixf& GetProjectionMatrix();
+    moGLMatrixf& SetProjectionMatrix( const moGLMatrixf& p_mat4 );
+    const moGLViewport& GetViewport() const { return m_Viewport; }
 
     private:
 
@@ -275,6 +399,9 @@ class LIBMOLDEO_API moGLManager : public moResource
 		MOuint m_gpu_vendor_code;
 		moText m_gpu_ventor_string;
 
+		MOint m_major_version;
+		MOint m_minor_version;
+
 		MOuint m_current_fbo;
 		MOint m_current_read_buffer;
 		MOint m_current_draw_buffer;
@@ -285,11 +412,11 @@ class LIBMOLDEO_API moGLManager : public moResource
 		MOint m_saved_read_buffer;
 		MOint m_saved_draw_buffer;
 
-    moMatrix4f m_ModelMatrix;
-    moMatrix4f m_ProjectionMatrix;
-
-    moMatrix4f* m_StackModelMatrices;
-    moMatrix4f* m_StackProjectionMatrices;
+    moGLViewport m_Viewport;
+    moGLMatrixf m_ModelMatrix;
+    moGLMatrixf m_ProjectionMatrix;
+    moGLMatrixf* m_StackModelMatrices;
+    moGLMatrixf* m_StackProjectionMatrices;
 
 		bool    m_bFrameBufferObjectActive;
 

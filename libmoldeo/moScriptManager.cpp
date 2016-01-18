@@ -93,7 +93,7 @@ void moScriptManager::RegisterLunaClasses()
 
 
 	REGISTER_CLASS(moLuaResourceManager, state);
-	//REGISTER_CLASS(moLuaMath, state);
+	REGISTER_CLASS(moLuaMath, state);
 	//REGISTER_CLASS(moLuaParserFunction, state);
 	REGISTER_CLASS(moLuaP5, state);
 

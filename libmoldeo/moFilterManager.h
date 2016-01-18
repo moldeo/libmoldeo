@@ -638,7 +638,7 @@ class LIBMOLDEO_API moTrackerSystemData {
     virtual int GetMotionMatrixC( int zone );
 
     virtual void ResetMatrix();
-    virtual void DrawFeatures( int w, int h, float offsetx, float offsety );
+    virtual void DrawFeatures( float w, float h, float offsetx, float offsety );
 
     virtual void SetMaxFeatures( int p_nFeatures ) { m_ActualRecord.m_nFeatures = p_nFeatures; }
     virtual int GetMaxFeatures() { return m_ActualRecord.m_nFeatures; }

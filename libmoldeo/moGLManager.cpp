@@ -41,6 +41,247 @@ extern "C"
 }
 #endif
 
+
+template<> const moGLMatrixf moGLMatrixf::ZERO( moMatrix4f(
+    0.0f,0.0f,0.0f,0.0f,
+    0.0f,0.0f,0.0f,0.0f,
+    0.0f,0.0f,0.0f,0.0f,
+    0.0f,0.0f,0.0f,0.0f) );
+template<> const moGLMatrixf moGLMatrixf::IDENTITY( moMatrix4f(
+    1.0f,0.0f,0.0f,0.0f,
+    0.0f,1.0f,0.0f,0.0f,
+    0.0f,0.0f,1.0f,0.0f,
+    0.0f,0.0f,0.0f,1.0f));
+
+moGLMatrixf::moGLMatrixf( const moGLMatrixf& rkM ) : moMatrix4f( rkM.GetPointer() ) {
+    //moMatrix4f *m = (moMatrix4f *) rkM;
+/*    SetRow( 0, rkM.GetRow(0));
+    SetRow( 1, rkM.GetRow(1));
+    SetRow( 2, rkM.GetRow(2));
+    SetRow( 3, rkM.GetRow(3));
+    */
+}
+
+
+
+const moGLMatrixf&
+moGLMatrixf::operator= (const moGLMatrixf& rkM ) {
+
+  SetRow( 0, rkM.GetRow(0));
+  SetRow( 1, rkM.GetRow(1));
+  SetRow( 2, rkM.GetRow(2));
+  SetRow( 3, rkM.GetRow(3));
+	return *this;
+}
+
+moGLMatrixf&
+moGLMatrixf::MakePerspective( float fovy,  float aspect,  float znear,  float zfar ) {
+
+    float ymax, xmax;
+    ymax = znear * tanf ( 0.5f * fovy * moMathf::DEG_TO_RAD );
+    xmax = ymax * aspect;
+    MakeFrustrum( -xmax, xmax, -ymax, ymax, znear, zfar );
+    return (*this);
+}
+
+moGLMatrixf&
+moGLMatrixf::MakeLookAt( float eyeX,  float eyeY,  float eyeZ,  float centerX,  float centerY,  float centerZ,  float upX,  float upY,  float upZ ) {
+//moGLMatrixf::MakeLookAt( float eyeX,  float eyeY,  float eyeZ,  float centerX,  float centerY,  float centerZ,  float upX,  float upY,  float upZ ) {
+  moVector3f center3D( centerX, centerY, centerZ );
+  moVector3f eyePosition3D( eyeX, eyeY, eyeZ );
+  moVector3f upVector3D( upX, upY, upZ );
+
+  moVector3f direction3D;
+  moGLMatrixf matrix2, resultMatrix;
+  //------------------
+  direction3D.X() = center3D[0] - eyePosition3D[0];
+  direction3D.Y()= center3D[1] - eyePosition3D[1];
+  direction3D.Z() = center3D[2] - eyePosition3D[2];
+  direction3D.Normalize();
+
+  /*
+  //------------------
+  //Side = forward x up
+  ComputeNormalOfPlane(side, forward, upVector3D);
+  NormalizeVector(side);
+  */
+  moVector3f side3D(upVector3D), up;
+  side3D.UnitCross( direction3D );
+/*
+  //------------------
+  //Recompute up as: up = side x forward
+  ComputeNormalOfPlane(up, side, forward);
+  //------------------
+  matrix2[0] = side[0];
+  matrix2[4] = side[1];
+  matrix2[8] = side[2];
+  matrix2[12] = 0.0;
+  //------------------
+  matrix2[1] = up[0];
+  matrix2[5] = up[1];
+  matrix2[9] = up[2];
+  matrix2[13] = 0.0;
+  //------------------
+  matrix2[2] = -forward[0];
+  matrix2[6] = -forward[1];
+  matrix2[10] = -forward[2];
+  matrix2[14] = 0.0;
+  //------------------
+  matrix2[3] = matrix2[7] = matrix2[11] = 0.0;
+  matrix2[15] = 1.0;
+  //------------------
+  MultiplyMatrices4by4OpenGL_FLOAT(resultMatrix, matrix, matrix2);
+  glhTranslatef2(resultMatrix,
+                -eyePosition3D[0], -eyePosition3D[1], -eyePosition3D[2]);
+*/
+
+  return (*this);
+}
+
+moGLMatrixf&
+moGLMatrixf::MakeFrustrum( float left, float right, float bottom, float top, float znear, float zfar  ) {
+  float r_l = right - left;
+  float t_b = top - bottom;
+  float f_n = zfar - znear;
+  float A = (right + left)/r_l;
+  float B = (top + bottom)/t_b;
+  float C = -(zfar + znear)/f_n;
+  float D = -2*(zfar*znear)/f_n;
+
+  MakeIdentity();
+  moGLMatrixf& Me( *this );
+  moGLMatrixf Result = moMatrix4f::IDENTITY;
+  Result.SetRow( 0, moVector4f(   2.0 * znear / r_l,  0.0,                A,        0.0 ) );
+  Result.SetRow( 1, moVector4f(   0.0,                2.0 * znear / t_b,  B,        0.0 ) );
+  Result.SetRow( 2, moVector4f(   0.0,                0.0,                C,        D ) );
+  Result.SetRow( 3, moVector4f(   0.0,                0.0,              -1.0,       0.0 ) );
+
+  Me = Me * (Result.Transpose());
+  return (*this);
+}
+
+
+/**
+
+*/
+moGLMatrixf&
+moGLMatrixf::MakeOrthographic( float left, float right, float bottom, float top, float znear, float zfar  ) {
+  float r_l = right - left;
+  float t_b = top - bottom;
+  float f_n = zfar - znear;
+  float tx = -(right + left)/r_l;
+  float ty = -(top + bottom)/t_b;
+  float tz = -(zfar + znear)/f_n;
+  MakeIdentity();
+  moGLMatrixf& Me( *this );
+  moGLMatrixf Result = moMatrix4f::IDENTITY;
+  Result.SetRow( 0, moVector4f(   2.0 / r_l,  0.0,        0.0,        tx ) );
+  Result.SetRow( 1, moVector4f(   0.0,        2.0 / t_b,  0.0,        ty ) );
+  Result.SetRow( 2, moVector4f(   0.0,        0.0,        -2.0 / f_n, tz ) );
+
+  Me = Me * (Result.Transpose());
+  return (*this);
+}
+
+moGLMatrixf&
+moGLMatrixf::Translate( float x, float y, float z ) {
+
+  //moVector3f tr = moVector3f( x, y, z);
+  moGLMatrixf& Me( *this );
+  moGLMatrixf Result;
+  Result.MakeIdentity();
+  //const moGLMatrixf& m
+
+  Result[0][3] = x;
+  Result[1][3] = y;
+  Result[2][3] = z;
+
+  Me = Me*Result.Transpose();
+
+	return (*this);
+}
+
+moGLMatrixf&
+moGLMatrixf::Rotate( float angle, float rx, float ry, float rz ) {
+
+  moGLMatrixf& Me( *this );
+  moGLMatrixf Result;
+  Result.MakeIdentity();
+
+  moVector3f rotAxe3D( rx, ry, rz );
+  rotAxe3D.Normalize();
+  rx = rotAxe3D.X();
+  ry = rotAxe3D.Y();
+  rz = rotAxe3D.Z();
+  float c = moMathf::Cos( angle );
+  float s = moMathf::Sin( angle );
+
+  if (rz!=0.0 && rx==0.0 && ry==0.0) {
+
+    Result[0][0] = moMathf::Cos( angle );
+    Result[0][1] = -moMathf::Sin( angle );
+    Result[1][0] = moMathf::Sin( angle );
+    Result[1][1] = moMathf::Cos( angle );
+    Me = Me*Result.Transpose();
+
+  } else {
+    Result[0][0] = rx*rx*(1-c) + c;
+    Result[0][1] = rx*ry*(1-c) - rz*s;
+    Result[0][2] = rx*rz*(1-c) + ry*s;
+    Result[0][3] = 0.0;
+
+    Result[1][0] = rx*ry*(1-c) + rz*s;
+    Result[1][1] = ry*ry*(1-c) + c;
+    Result[1][2] = ry*rz*(1-c) - rx*s;
+    Result[1][3] = 0.0;
+
+    Result[2][0] = rx*rz*(1-c) - ry*s;
+    Result[2][1] = ry*rz*(1-c) + rx*s;
+    Result[2][2] = rz*rz*(1-c) + c;
+    Result[2][3] = 0.0;
+
+    Result[3][0] = 0.0;
+    Result[3][1] = 0.0;
+    Result[3][2] = 0.0;
+    Result[3][3] = 1.0;
+    Me = Me*Result.Transpose();
+  }
+
+  return (*this);
+}
+
+moGLMatrixf&
+moGLMatrixf::Scale( float sx, float sy, float sz ) {
+
+  moGLMatrixf& Me( *this );
+  moGLMatrixf Result = moMatrix4f::IDENTITY;
+  Result[0][0] = sx;
+  Result[1][1] = sy;
+  Result[2][2] = sz;
+  Me = Me*Result.Transpose();
+
+  return (*this);
+}
+
+moText
+moGLMatrixf::ToJSON() const {
+  moText JSON = "[";
+  moText comma="",nline="";
+  for(int j=0;j<4; j++) {
+    JSON+= nline;
+    for(int i=0;i<4; i++) {
+      JSON+= comma + FloatToStr( (*this)[j][i] );
+      comma=",";
+    }
+    nline="\n";
+  }
+  JSON+= "]";
+  return JSON;
+}
+
+
+
+
 moGLManager::moGLManager()
 {
 
@@ -80,9 +321,16 @@ MOboolean moGLManager::Init()
 	m_DisplayServer = NULL;
 	m_DisplayScreen = NULL;
 	m_DisplayWindow = NULL;
+	m_major_version = 0;
+	m_minor_version = 0;
+
 #ifndef OPENGLESV2
 	glGetIntegerv(GL_DRAW_BUFFER, &m_current_draw_buffer);
 	glGetIntegerv(GL_READ_BUFFER, &m_current_read_buffer);
+
+	glGetIntegerv(GL_MAJOR_VERSION, &m_major_version);
+	glGetIntegerv(GL_MINOR_VERSION, &m_minor_version);
+
 #endif
 	return true;
 }
@@ -138,36 +386,58 @@ void moGLManager::QueryGPUVendorString()
     } else m_gpu_vendor_code = MO_GPU_OTHER;
 }
 
-void moGLManager::SetPerspectiveView(MOint p_width, MOint p_height)
+void moGLManager::SetPerspectiveView( MOint p_width, MOint p_height, double fovy,  double aspect,  double znear,  double zfar )
 {
-	float screen_ratio = (float) p_width /(float) p_height;
-
 	glViewport(0, 0, p_width, p_height);
+	m_Viewport = moGLViewport( p_width, p_height );
+  if (aspect==0.0) {
+    aspect = m_Viewport.GetProportion();
+  }
+  m_ProjectionMatrix.MakePerspective( fovy, aspect, znear, zfar );
+	//m_ProjectionMatrix.MakePerspectiveProjection( moVector3f( 0.0, 1.0, 0.0 ), moVector3f(0.0, 0.0, 0.0), moVector3f(0.0, 0.0, -10.0) );
 
-	moMatrix4f ProjectionMatrix;
-	ProjectionMatrix.MakePerspectiveProjection( moVector3f( 0.0, 1.0, 0.0 ), moVector3f(0.0, 0.0, 0.0), moVector3f(0.0, 0.0, -10.0) );
-  m_ProjectionMatrix = ProjectionMatrix;
+	//m_ProjectionMatrix.MakePerspective(  );
 //  float* pfv = m_ProjectionMatrix[0];
 
 #ifndef OPENGLESV2
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(60.0f, screen_ratio, 0.01f, 1000.0f);
+	gluPerspective(60.0f, m_Viewport.GetProportion(), 0.01f, 1000.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 #endif
 }
 
-void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
+void moGLManager::SetDefaultPerspectiveView( MOint p_width, MOint p_height ) {
+  SetPerspectiveView( p_width, p_height, 60.0f,  moDisplay(p_width,p_height).Proportion(),  0.01f,  1000.0f );
+}
+
+void moGLManager::SetDefaultOrthographicView( MOint p_width, MOint p_height ) {
+  SetOrthographicView(  p_width,
+                        p_height,
+                        -0.5,
+                        0.5,
+                        moDisplay( p_width, p_height ).HeightToProportion(-0.5),
+                        moDisplay( p_width, p_height ).HeightToProportion(0.5)
+                      );
+
+}
+
+void moGLManager::SetOrthographicView(MOint p_width, MOint p_height, float left, float right, float bottom, float top, float znear, float zfar)
 {
 #ifndef OPENGLESV2
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 #endif
+
+    m_ProjectionMatrix.MakeOrthographic( left, right, bottom, top, znear, zfar );
+
     if (p_width!=0 || p_height!=0) {
       glViewport(0, 0, p_width, p_height);
+      m_Viewport = moGLViewport( p_width, p_height );
+
 #ifndef OPENGLESV2
       gluOrtho2D(0.0, p_width, 0.0, p_height);
 #endif
@@ -182,6 +452,7 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height)
         prop = (float) p_height / (float) p_width;
       }
       glViewport( 0, 0, p_width, p_height );
+      m_Viewport = moGLViewport( p_width, p_height );
 #ifndef OPENGLESV2
 	glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
 #else
@@ -704,17 +975,28 @@ moGLManager::SetContext(moGLContext p_Context) {
     m_Context = p_Context;
 }
 
-moMatrix4f&
+moGLMatrixf&
 moGLManager::GetModelMatrix() {
   return m_ModelMatrix;
 }
 
-moMatrix4f&
-moGLManager::SetModelMatrix( const moMatrix4f& p_mat4 ) {
+moGLMatrixf&
+moGLManager::SetModelMatrix( const moGLMatrixf& p_mat4 ) {
 
   m_ModelMatrix = p_mat4;
   return m_ModelMatrix;
 }
 
+moGLMatrixf&
+moGLManager::GetProjectionMatrix() {
+  return m_ProjectionMatrix;
+}
+
+moGLMatrixf&
+moGLManager::SetProjectionMatrix( const moGLMatrixf& p_mat4 ) {
+
+  m_ProjectionMatrix = p_mat4;
+  return m_ProjectionMatrix;
+}
 
 

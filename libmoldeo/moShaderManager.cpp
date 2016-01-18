@@ -53,6 +53,8 @@ MOboolean moShaderManager::Init()
 		m_fbmanager = m_pResourceManager->GetFBMan();
 	} else return false;
 
+	if (!m_glmanager || !m_fbmanager) return false;
+
 	if (m_pTextureFilterIndex==NULL)
     		m_pTextureFilterIndex = new moTextureFilterIndex();
 
@@ -66,65 +68,69 @@ MOboolean moShaderManager::Init()
   } else {
     m_pTextureFilterIndex->Init( m_glmanager, m_fbmanager, this, m_pResourceManager->GetTextureMan(), m_pResourceManager->GetRenderMan());
   }
-
-  if (!m_RenderShader.Initialized()) {
-    MODebug2->Message("moShaderManager::Init > Creating basic Render Shader...");
-
-    m_RenderShader.Init();
-    m_RenderShader.CreateShader(
-	moText(
-	""
-	""
-	"attribute vec4 position;"
-	"attribute vec3 color;"
-	"attribute vec2 t_coord;"
-	"uniform mat4 projmatrix;"
-	"varying vec3 colorVarying;"
-	"varying vec2 v_texcoord;"
-	""
-	"void main() {"
-	"	colorVarying = color;"
-	"	v_texcoord = t_coord;"
-	"	gl_Position = projmatrix*position;"
-	"}"
-	),
-	moText(
-	""
-#ifdef OPENGLESV2
-  "precision mediump float;"
+#ifndef OPENGLESV2
+  if ( m_glmanager->GetGLMajorVersion() >=2 ) {
 #endif
-	"varying vec3 colorVarying;"
-	"uniform sampler2D t_image;"
-	"varying vec2 v_texcoord;"
-	""
-	"void main() {"
-	"	vec4 texcolor = texture2D( t_image, v_texcoord );/*gl_FragCoord.st*/"
-	"	gl_FragColor = mix(vec4( v_texcoord.x, v_texcoord.y, 0.0, 1.0),texcolor,0.9);"
-        "}"
-	)
-        );
+    if (!m_RenderShader.Initialized()) {
+      MODebug2->Message("moShaderManager::Init > Creating basic Render Shader...");
 
-       m_RenderShader.PrintVertShaderLog();
-       m_RenderShader.PrintFragShaderLog();
+      m_RenderShader.Init();
+      m_RenderShader.CreateShader(
+            moText(
+            ""
+            ""
+            "attribute vec4 position;"
+            "attribute vec3 color;"
+            "attribute vec2 t_coord;"
+            "uniform mat4 projmatrix;"
+            "varying vec3 colorVarying;"
+            "varying vec2 v_texcoord;"
+            ""
+            "void main() {"
+            "	colorVarying = color;"
+            "	v_texcoord = t_coord;"
+            "	gl_Position = projmatrix*position;"
+            "}"
+            ),
+            moText(
+            ""
+          #ifdef OPENGLESV2
+            "precision mediump float;"
+          #endif
+            "varying vec3 colorVarying;"
+            "uniform sampler2D t_image;"
+            "varying vec2 v_texcoord;"
+            ""
+            "void main() {"
+            "	vec4 texcolor = texture2D( t_image, v_texcoord );/*gl_FragCoord.st*/"
+            "	gl_FragColor = mix(vec4( v_texcoord.x, v_texcoord.y, 0.0, 1.0),texcolor,0.9);"
+                  "}"
+            )
+          );
 
-       m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
-       m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
-       m_RenderShaderTexCoordIndex = m_RenderShader.GetAttribID(moText("t_coord"));
-       m_RenderShaderTextureIndex = m_RenderShader.GetUniformID(moText("t_image"));
-       m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projmatrix");
+         m_RenderShader.PrintVertShaderLog();
+         m_RenderShader.PrintFragShaderLog();
+
+         m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
+         m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
+         m_RenderShaderTexCoordIndex = m_RenderShader.GetAttribID(moText("t_coord"));
+         m_RenderShaderTextureIndex = m_RenderShader.GetUniformID(moText("t_image"));
+         m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projmatrix");
 
 
-       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Attrib IDs,") +
-			+ moText(" position:")+IntToStr(m_RenderShaderPositionIndex)
-                         +moText(" color:")+IntToStr(m_RenderShaderColorIndex)
-			+moText(" t_coord:")+IntToStr(m_RenderShaderTexCoordIndex) );
-       MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs,")
-			+moText(" projmatrix:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
-			+moText(" t_image:")+IntToStr(m_RenderShaderTextureIndex)
- );
+         MODebug2->Message(moText( "moShaderManager::Init > m_RenderShader Attrib IDs,"
+                            " position:"+IntToStr(m_RenderShaderPositionIndex)+""
+                           " color:"+IntToStr(m_RenderShaderColorIndex)+""
+                          " t_coord:"+IntToStr(m_RenderShaderTexCoordIndex) ));
+         MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs,")
+        +moText(" projmatrix:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
+        +moText(" t_image:")+IntToStr(m_RenderShaderTextureIndex) );
     }
+#ifndef OPENGLESV2
+  }
+#endif
 
-    return (m_glmanager && m_fbmanager);
+  return (m_glmanager && m_fbmanager);
 }
 
 MOboolean moShaderManager::Finish()
