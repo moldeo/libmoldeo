@@ -638,6 +638,10 @@ template class LIBMOLDEO_API moMatrix2<MOdouble>;
 #endif
 typedef moMatrix2<MOdouble> moMatrix2d;
 
+moDeclareExportedDynamicArray( moMatrix2f, moMatrix2fArray );
+moDeclareExportedDynamicArray( moMatrix2d, moMatrix2dArray )
+
+
 // moMatrix3 class ------------------------------------------------------------
 
 
@@ -2873,6 +2877,9 @@ template class LIBMOLDEO_API moMatrix3<MOdouble>;
 #endif
 typedef moMatrix3<MOdouble> moMatrix3d;
 
+moDeclareExportedDynamicArray( moMatrix3f, moMatrix3fArray );
+moDeclareExportedDynamicArray( moMatrix3d, moMatrix3dArray );
+
 
 // moMatrix4 class ------------------------------------------------------------
 
@@ -3965,6 +3972,10 @@ template class LIBMOLDEO_API moMatrix4<MOdouble>;
 #endif
 #endif
 typedef moMatrix4<MOdouble> moMatrix4d;
+
+moDeclareExportedDynamicArray( moMatrix4f, moMatrix4fArray );
+moDeclareExportedDynamicArray( moMatrix4d, moMatrix4dArray );
+
 
 #endif
 

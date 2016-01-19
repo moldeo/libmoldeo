@@ -304,9 +304,9 @@ typedef moVector4<MOlong> moVector4i;
 typedef moVector4<MOfloat> moVector4f;
 typedef moVector4<MOdouble> moVector4d;
 
-moDeclareExportedDynamicArray( moVector4i*, moVector4iArray );
-moDeclareExportedDynamicArray( moVector4f*, moVector4fArray );
-moDeclareExportedDynamicArray( moVector4d*, moVector4dArray );
+moDeclareExportedDynamicArray( moVector4i, moVector4iArray );
+moDeclareExportedDynamicArray( moVector4f, moVector4fArray );
+moDeclareExportedDynamicArray( moVector4d, moVector4dArray );
 
 
 #endif

@@ -64,7 +64,7 @@ public:
 // This is our face structure.  This is is used for indexing into the vertex
 // and texture coordinate arrays.  From this information we know which vertices
 // from our vertex array go to which face, along with the correct texture coordinates.
-struct moFace
+struct mosFace
 {
     int vertIndex[3];           // indicies for the verts that make up this triangle
     int coordIndex[3];          // indicies for the tex coords to texture this face
@@ -125,7 +125,7 @@ struct mo3dObject
     CVector3  *pVerts;          // The object's vertices
     CVector3  *pNormals;        // The object's normals
     CVector2  *pTexVerts;       // The texture's UV coordinates
-    moFace *pFaces;              // The faces information of the object
+    mosFace *pFaces;              // The faces information of the object
 };
 
 // This holds our model information.  This should also turn into a robust class.

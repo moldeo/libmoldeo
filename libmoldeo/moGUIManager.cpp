@@ -33,12 +33,29 @@
 
 #include "moArray.h"
 moDefineDynamicArray(moGuiObjectArray)
+moDefineDynamicArray(moAttributeArray)
 
 moGeometry::moGeometry() {
-  m_Type = MO_GEOMETRY_UNDEFINED;
+  //m_Type = MO_GEOMETRY_UNDEFINED;
 }
 
 moGeometry::~moGeometry() {
+
+}
+
+const moGeometry&
+moGeometry::operator=(const moGeometry& p_src ) {
+
+    m_Vertices = p_src.m_Vertices;
+    m_VerticesUvs = p_src.m_VerticesUvs;
+    m_Colors = p_src.m_Colors;
+    m_ColorBuffer = p_src.m_ColorBuffer;
+    m_VerticesBuffer = p_src.m_VerticesBuffer;
+    m_VerticesUVBuffer = p_src.m_VerticesUVBuffer;
+    m_Faces = p_src.m_Faces;
+    m_FaceVertexUvs = p_src.m_FaceVertexUvs;
+    m_Name = p_src.m_Name;
+    m_Type = p_src.m_Type;
 
 }
 
@@ -60,6 +77,112 @@ moGeometry::applyMatrix( const moGLMatrixf &p_ModelMatrix ) {
 
 }
 
+moText
+moGeometry::TypeToStr( moGeometryType p_type ) {
+
+    moText result;
+
+    switch(p_type) {
+        MO_GEOMETRY_POINT:
+            result = moText("PointGeometry");
+        break;
+        MO_GEOMETRY_CIRCLE:
+            result = moText("CircleGeometry");
+        break;
+        MO_GEOMETRY_CYLINDER:
+            result = moText("CylinderGeometry");
+        break;
+        MO_GEOMETRY_DODECAHEDRON:
+            result = moText("DodecahedronGeometry");
+        break;
+        MO_GEOMETRY_EXTRUDE:
+            result = moText("ExtrudeGeometry");
+        break;
+        MO_GEOMETRY_ICOSAHEDRON:
+            result = moText("IcosahedronGeometry");
+        break;
+        MO_GEOMETRY_PLANE:
+            result = moText("PlaneGeometry");
+        break;
+        MO_GEOMETRY_POLYHEDRON:
+            result = moText("PolyhedronGeometry");
+        break;
+        MO_GEOMETRY_RING:
+            result = moText("RingGeometry");
+        break;
+        MO_GEOMETRY_SHAPE:
+            result = moText("ShapeGeometry");
+        break;
+        MO_GEOMETRY_SPHERE:
+            result = moText("SphereGeometry");
+        break;
+        MO_GEOMETRY_TETRAHEDRON:
+            result = moText("TetrahedronGeometry");
+        break;
+        MO_GEOMETRY_TEXT:
+            result = moText("TextGeometry");
+        break;
+        MO_GEOMETRY_TUBE:
+            result = moText("TubeGeometry");
+        break;
+        MObe_GEOMETRY_BOX:
+            result = moText("BoxGeometry");
+        break;
+
+        MO_GEOMETRY_UNDEFINED:
+            result = moText("undefined Geometry");
+            break;
+
+        default:
+            result = moText("unset");
+            break;
+    }
+    return result;
+}
+
+moText
+moGeometry::ToJSON() {
+    moText JSON;
+    moText comma("");
+    JSON = "{";
+    JSON+= "'name': "+m_Name;
+    JSON+= ",'type': "+TypeToStr(m_Type);
+
+    //concatenate all Vertices
+    JSON+= "',vertices': [";
+    for( int i=0; i<m_Vertices.Count(); i++) {
+
+        moVector3f pt = m_Vertices[i];
+
+        JSON+= comma;
+        JSON+= "    {";
+        JSON+= pt.X() + moText(",");
+        JSON+= pt.Y() + moText(",");
+        JSON+= pt.Z();
+        JSON+= "}";
+        comma = ",";
+    }
+    JSON+= "],";
+    JSON+= "'verticesBuffer': [";
+    comma = "";
+    if (m_VerticesBuffer)
+    for( int i=0; i<m_Vertices.Count(); i++) {
+
+        JSON+= comma;
+        JSON+= "    {";
+        JSON+= m_VerticesBuffer[i*3] + moText(",");
+        JSON+= m_VerticesBuffer[i*3+1] + moText(",");
+        JSON+= m_VerticesBuffer[i*3+2];
+        JSON+= "}";
+        comma = ",";
+    }
+    JSON+= "],";
+    //JSON+= "    { 0.0, 0.0, 0.0 }";
+    JSON+= "}";
+
+    return JSON;
+}
+
 
 
 moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegments, int hsegments, int dsegments ) {
@@ -71,6 +194,116 @@ moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegmen
 moBoxGeometry::~moBoxGeometry(  ) {
 
 }
+
+
+
+moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, int heightSegments ) {
+
+    m_VerticesBuffer = NULL;
+    m_VerticesUVBuffer = NULL;
+    m_ColorBuffer = NULL;
+
+    m_Name = "MyPlane";
+    m_Type = MO_GEOMETRY_PLANE;
+
+    m_Vertices.Init( 0, moVector3f( 0.0, 0.0, 0.0) );
+    m_Vertices.Empty();
+
+    m_VerticesUvs.Init( 0,  moTCoord( 0.0, 0.0 ) );
+    m_VerticesUvs.Empty();
+
+    m_Faces.Init( 0, moFace( 0, 0, 0 ) );
+    m_Faces.Empty();
+
+    m_FaceVertexUvs.Init( 0, moTCoord( 0.0, 0.0 ) );
+    m_FaceVertexUvs.Empty();
+
+    m_Colors.Init( 0, moColor( 0.0, 0.0, 0.0 ) );
+    m_Colors.Empty();
+
+
+    float dw = 0.5*width;
+    float dh = 0.5*height;
+
+    /**
+    VERTICES { -1,-1,0.0,  -1,1,0.0,  1,-1,0.0, 1,1,0.0 }
+
+    1---3    y|\
+    |\  |     |
+    | \ |     |
+    |  \|     |_____\
+    0---2    z       x
+
+    TCOORDS { 0.0,1.0,  0.0,0.0,  1.0,1.0, 1.0, 0.0 }
+
+    T1---T3    T1=A(0,0) ----> T3=B(1,0)
+     |\  |               |\ 1|
+     | \ |               | \ |
+     |  \|               |0 \|
+    T0---T2    T0=D(0,1) <---- T2=C(1,1)
+
+    */
+    m_Vertices.Add( moVector3f( -dw, -dh, 0.0) );
+    m_Vertices.Add( moVector3f( -dw,  dh, 0.0) );
+    m_Vertices.Add( moVector3f(  dw, -dh, 0.0) );
+    m_Vertices.Add( moVector3f(  dw,  dh, 0.0) );
+
+    m_VerticesUvs.Add( moVector2f( 0.0, 1.0) );
+    m_VerticesUvs.Add( moVector2f( 0.0, 0.0) );
+    m_VerticesUvs.Add( moVector2f( 1.0, 1.0) );
+    m_VerticesUvs.Add( moVector2f( 1.0, 0.0) );
+
+    m_Colors.Add( moColor( 1.0, 0.0, 0.0 ) );
+    m_Colors.Add( moColor( 0.0, 1.0, 0.0 ) );
+    m_Colors.Add( moColor( 0.0, 0.0, 1.0 ) );
+    m_Colors.Add( moColor( 1.0, 1.0, 1.0 ) );
+
+    /** FACES*/
+
+    m_Faces.Add( moFace( 0, 1, 2 ) );
+    m_Faces.Add( moFace( 2, 3, 1 ) );
+
+    m_FaceVertexUvs.Add( moVector2f( 0.0, 1.0) );
+    m_FaceVertexUvs.Add( moVector2f( 0.0, 0.0) );
+    m_FaceVertexUvs.Add( moVector2f( 1.0, 1.0) );
+
+    m_FaceVertexUvs.Add( moVector2f( 1.0, 1.0) );
+    m_FaceVertexUvs.Add( moVector2f( 1.0, 0.0) );
+    m_FaceVertexUvs.Add( moVector2f( 0.0, 0.0) );
+
+    //set buffers for shaders
+    m_VerticesBuffer = new float [ m_Vertices.Count()*3 ];
+    m_VerticesUVBuffer = new float [ m_VerticesUvs.Count()*2 ];
+    m_ColorBuffer = new float [ m_Vertices.Count()*3 ];
+
+    if (m_VerticesBuffer)
+    for(int i=0;i<m_Vertices.Count(); i++) {
+        m_VerticesBuffer[i*3] = m_Vertices[i].X();
+        m_VerticesBuffer[i*3+1] = m_Vertices[i].Y();
+        m_VerticesBuffer[i*3+2] = m_Vertices[i].Z();
+    }
+
+
+    if (m_VerticesUVBuffer)
+    for(int i=0;i<m_VerticesUvs.Count(); i++) {
+        m_VerticesUVBuffer[i*2] = m_VerticesUvs[i].X();
+        m_VerticesUVBuffer[i*2+1] = m_VerticesUvs[i].Y();
+    }
+
+    if (m_ColorBuffer)
+    for(int i=0;i<m_Colors.Count(); i++) {
+        m_ColorBuffer[i*2] = m_Colors[i].X();
+        m_ColorBuffer[i*2+1] = m_Colors[i].Y();
+    }
+
+}
+
+moPlaneGeometry::~moPlaneGeometry() {
+    if (m_VerticesBuffer) { delete[] m_VerticesBuffer; m_VerticesBuffer = NULL; }
+    if (m_VerticesUVBuffer) { delete[] m_VerticesUVBuffer; m_VerticesUVBuffer = NULL; }
+    if (m_ColorBuffer) { delete[] m_ColorBuffer; m_ColorBuffer = NULL; }
+}
+
 
 moPolyhedronGeometry::moPolyhedronGeometry() {
 

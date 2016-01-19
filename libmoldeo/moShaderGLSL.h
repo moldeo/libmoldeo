@@ -71,35 +71,35 @@ public:
      * Crea el shader de vértices a partir del código fuente en vert_source.
      * @param vert_source código fuente del shader de vértices.
      */
-    virtual void CreateVertShader(moText vert_source);
+    virtual void CreateVertShader(const moText& vert_source);
     /**
      * Crea el shader de fragmentos a partir del código fuente en frag_source.
      * @param frag_source código fuente del shader de vértices.
      */
-    virtual void CreateFragShader(moText frag_source);
+    virtual void CreateFragShader(const moText& frag_source);
     /**
      * Crea los shaders de vértices y fragmentos a partir del código fuente en vert_source y frag_source.
      * @param vert_source código fuente del shader de vértices.
      * @param frag_source código fuente del shader de vértices.
      */
-    virtual void CreateShader(moText vert_source, moText frag_source);
+    virtual void CreateShader( const moText& vert_source, const moText& frag_source);
     /**
      * Crea el shader de vértices a partir del código fuente en el archivo vert_filename.
      * @param vert_filename nombre del archivo con el código fuente del shader de vértices.
      */
-    virtual void LoadVertShader(moText vert_filename);
+    virtual void LoadVertShader( const moText& vert_filename);
     /**
      * Crea el shader de fragmentos a partir del código fuente en el archivo frag_filename.
      * @param frag_filename nombre del archivo con el código fuente del shader de fragmentos.
      */
-    virtual void LoadFragShader(moText frag_filename);
+    virtual void LoadFragShader(const moText& frag_filename);
     /**
      * Crea los shaders de vértices y fragmentos a partir del código fuente en los archivos vert_filename y
      * frag_filename.
      * @param vert_filename nombre del archivo con el código fuente del shader de vértices.
      * @param frag_filename nombre del archivo con el código fuente del shader de fragmentos.
      */
-    virtual void LoadShader(moText vert_filename, moText frag_filename);
+    virtual void LoadShader( const moText& vert_filename, const moText& frag_filename);
 
     /**
      * Activa el shader.
@@ -125,21 +125,21 @@ public:
      * @param pName nombre del parámetro uniforme.
      * @return identificador OpenGL del parámetro.
      */
-    GLint GetUniformID(moText uName);
+    GLint GetUniformID(const moText& uName);
     /**
      * Devuelve el identificador OpenGL del parámetro por atributo en el shader (puede ocurrir en el shader de
      * vértices o fragmentos
      * @param pName nombre del parámetro por atributo.
      * @return identificador OpenGL del parámetro.
      */
-    GLint GetAttribID(moText aName);
+    GLint GetAttribID(const moText& aName);
 protected:
     GLhandleARB m_ProgramObject;
     GLhandleARB m_FragmentShader;
     GLhandleARB m_VertexShader;
 
-    void compileVertShader(moText vert_source);
-    void compileFragShader(moText frag_source);
+    void compileVertShader(const moText& vert_source);
+    void compileFragShader(const moText& frag_source);
     void linkProgram();
 
     void printInfoLog(GLhandleARB obj);

@@ -37,6 +37,14 @@
 
 #include "moMathMatrix.h"
 
+#include <moArray.h>
+moDefineDynamicArray( moMatrix2fArray )
+moDefineDynamicArray( moMatrix2dArray )
+moDefineDynamicArray( moMatrix3fArray )
+moDefineDynamicArray( moMatrix3dArray )
+moDefineDynamicArray( moMatrix4fArray )
+moDefineDynamicArray( moMatrix4dArray )
+
 // momoMatrix2 class ------------------------------------------------------------
 /*
 template <class Real>

@@ -635,6 +635,9 @@ template class LIBMOLDEO_API moVector3<MOdouble>;
 typedef moVector3<MOlong> moVector3i;
 typedef moVector3<MOfloat> moVector3f;
 typedef moVector3<MOdouble> moVector3d;
+typedef moVector3i moVertex3i;
+typedef moVector3f moVertex3f;
+typedef moVector3d moVertex3d;
 
 moDeclareExportedDynamicArray( moVector3i, moVector3iArray );
 moDeclareExportedDynamicArray( moVector3f, moVector3fArray );

@@ -32,6 +32,7 @@
 #include <moRenderManager.h>
 #include <moEffect.h>
 
+
 #include "moArray.h"
 moDefineDynamicArray( moRenderClips )
 moDefineDynamicArray( moDisplays )
@@ -84,6 +85,7 @@ moRenderManager::moRenderManager() {
 	m_pFBManager = NULL;
 	m_pTextureManager = NULL;
 	m_pDecoderManager = NULL;
+	m_pSHManager = NULL;
 
 
 	m_render_tex_moid[0] = -1;
@@ -148,8 +150,9 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 		m_pGLManager = m_pResourceManager->GetGLMan();
 		m_pFBManager = m_pResourceManager->GetFBMan();
 		m_pTextureManager = m_pResourceManager->GetTextureMan();
+		m_pSHManager =  m_pResourceManager->GetShaderMan();
 	}
-	if (!(m_pGLManager && m_pFBManager && m_pTextureManager)) return false;
+	if (!(m_pGLManager && m_pFBManager && m_pTextureManager && m_pSHManager)) return false;
 
 	m_render_to_texture_mode = p_render_to_texture_mode;
 	m_render_width = p_render_width;
@@ -383,6 +386,90 @@ void moRenderManager::BeginDrawEffect()
 	if (m_pGLManager) m_pGLManager->SetPerspectiveView(m_render_width, m_render_height);
 	m_saved_screen = false;
 }
+
+int
+moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
+
+    if (!m_pTextureManager) return 0;
+    if (!m_pGLManager) return 0;
+    if (!m_pSHManager) return 0;
+    if ( !m_pSHManager->GetRenderShader().Initialized() ) return 0;
+
+    moGLManager* pGLMan = m_pGLManager;
+
+    const moGeometry& Geo( p_src.m_Geometry );
+    const moMaterial& Mat( p_src.m_Material );
+
+    MOuint color_index = m_pSHManager->GetRSHColorIndex();
+    MOuint position_index = m_pSHManager->GetRSHPositionIndex();
+    MOuint texcoord_index = m_pSHManager->GetRSHTexCoordIndex();
+    MOuint matrix_index = m_pSHManager->GetRSHProjectionMatrixIndex();
+    MOuint texture_index = m_pSHManager->GetRSHTextureIndex();
+
+    if ( m_pSHManager->GetRenderShader().Initialized() ) {
+        m_pSHManager->GetRenderShader().StartShader();
+    } else return 0;
+
+    m_pGLManager->SetDefaultPerspectiveView( ScreenWidth(), ScreenHeight() );
+
+    float* pverbuf = Geo.GetVerticesBuffer();
+    float* pveruvbuf = Geo.GetVerticesUVBuffer();
+    float* pcolorbuf = Geo.GetColorBuffer();
+
+
+    moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
+    moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
+    moGLMatrixf Result;
+    //PMatrix.MakeIdentity();
+    MMatrix.MakeIdentity();
+
+    //MMatrix.Scale( 0.5, 0.5, 0.5 );
+    //MMatrix.Rotate( ((float)steps/(float)stepi)*1.0*moMathf::DEG_TO_RAD, 1.0, 1.0, 1.0 );
+    //MMatrix.Translate( 0.5f, 0.5f, -steps/1000.0f-3.0f );
+    MMatrix.Translate( 0.0f, 0.0f, -4.0f );
+
+    //MODebug2->Message( "model:\n"+MMatrix.ToJSON() );
+    //MODebug2->Message( "projection\n"+PMatrix.ToJSON() );
+    Result = MMatrix*PMatrix;
+    const float *pfv = Result.GetPointer();
+    MODebug2->Message( "Result:\n"+Result.ToJSON() );
+
+    moTexture* pMap = Mat.m_Map;
+    if (pMap) {
+        int Tglid = pMap->GetGLId();
+        glEnable( GL_TEXTURE_2D );
+        glActiveTexture( GL_TEXTURE0 );
+        glBindTexture( GL_TEXTURE_2D, Tglid );
+        MODebug2->Message( "Tglid:\n"+IntToStr(Tglid) );
+    }
+    glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
+    glUniform1i( texture_index, 0 );
+
+
+    glEnableVertexAttribArray( position_index );
+    //glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, coords );  // Set data type and location.
+    glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, pverbuf );  // Set data type and location.
+
+    glEnableVertexAttribArray( color_index );
+    glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, pcolorbuf );
+
+    glEnableVertexAttribArray( texcoord_index );
+    glVertexAttribPointer( texcoord_index, 2, GL_FLOAT, false, 0, pveruvbuf );  // Set data type and location.
+
+    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ); // Use 3 vertices, starting with vertex 0.
+
+    glDisableVertexAttribArray( position_index );
+    glDisableVertexAttribArray( color_index );
+    glDisableVertexAttribArray( texcoord_index );
+
+    if (m_pSHManager->GetRenderShader().Initialized()) {
+        m_pSHManager->GetRenderShader().StopShader();
+    }
+
+
+    return 1;
+}
+
 
 void moRenderManager::EndDrawEffect()
 {

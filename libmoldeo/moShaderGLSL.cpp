@@ -75,41 +75,45 @@ MOboolean moShaderGLSL::Finish()
     return moShader::Finish();
 }
 
-void moShaderGLSL::CreateVertShader(moText vert_source)
+void moShaderGLSL::CreateVertShader(const moText& vert_source)
 {
     m_ProgramObject = glCreateProgramObjectARB();
     compileVertShader(vert_source);
     linkProgram();
 }
 
-void moShaderGLSL::CreateFragShader(moText frag_source)
+void moShaderGLSL::CreateFragShader(const moText& frag_source)
 {
     m_ProgramObject = glCreateProgramObjectARB();
     compileFragShader(frag_source);
     linkProgram();
 }
 
-void moShaderGLSL::CreateShader(moText vert_source, moText frag_source)
+void moShaderGLSL::CreateShader( const moText& vert_source, const moText& frag_source)
 {
-    m_ProgramObject = glCreateProgramObjectARB();
-    compileVertShader(vert_source);
-    compileFragShader(frag_source);
-    linkProgram();
+    try {
+        m_ProgramObject = glCreateProgramObjectARB();
+        compileVertShader(vert_source);
+        compileFragShader(frag_source);
+        linkProgram();
+    } catch(...) {
+        cout << "error shader" << endl;
+    }
 }
 
-void moShaderGLSL::LoadVertShader(moText vert_filename)
+void moShaderGLSL::LoadVertShader(const moText& vert_filename)
 {
     moText vert_source = LoadShaderSource(vert_filename);
     CreateVertShader(vert_source);
 }
 
-void moShaderGLSL::LoadFragShader(moText frag_filename)
+void moShaderGLSL::LoadFragShader(const moText& frag_filename)
 {
     moText frag_source = LoadShaderSource(frag_filename);
     CreateFragShader(frag_source);
 }
 
-void moShaderGLSL::LoadShader(moText vert_filename, moText frag_filename)
+void moShaderGLSL::LoadShader(const moText& vert_filename, const moText& frag_filename)
 {
     moText vert_source = LoadShaderSource(vert_filename);
     moText frag_source = LoadShaderSource(frag_filename);
@@ -138,17 +142,17 @@ void moShaderGLSL::PrintFragShaderLog()
     if (m_FragmentShader != 0) printInfoLog(m_FragmentShader);
 }
 
-GLint moShaderGLSL::GetUniformID(moText uName)
+GLint moShaderGLSL::GetUniformID(const moText& uName)
 {
     return glGetUniformLocationARB(m_ProgramObject, uName);
 }
 
-GLint moShaderGLSL::GetAttribID(moText aName)
+GLint moShaderGLSL::GetAttribID(const moText& aName)
 {
     return glGetAttribLocationARB(m_ProgramObject, aName);
 }
 
-void moShaderGLSL::compileVertShader(moText vert_source)
+void moShaderGLSL::compileVertShader(const moText& vert_source)
 {
     m_VertexShader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
 	const char *source = (const char *)vert_source;
@@ -161,12 +165,12 @@ void moShaderGLSL::compileVertShader(moText vert_source)
     char *vertexInfoLog;
 
     glGetShaderiv(m_VertexShader, GL_COMPILE_STATUS, &IsCompiled_FS);
-	
+
 	glGetShaderiv(m_VertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-	
+
 	/* The maxLength includes the NULL character */
 	vertexInfoLog = new char[maxLength];
-	
+
 	glGetShaderInfoLog(m_VertexShader, maxLength, &maxLength, vertexInfoLog);
 
 
@@ -179,7 +183,7 @@ void moShaderGLSL::compileVertShader(moText vert_source)
 
 		/* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
 		/* In this simple program, we'll just leave */
-		
+
 		//return;
 	} else {
 MODebug2->Message(moText("Vertex Shader compile log:")
@@ -191,7 +195,7 @@ delete [] vertexInfoLog;
     glAttachObjectARB(m_ProgramObject, m_VertexShader);
 }
 
-void moShaderGLSL::compileFragShader(moText frag_source)
+void moShaderGLSL::compileFragShader(const moText& frag_source)
 {
     m_FragmentShader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	const char *source = (const char *)frag_source;

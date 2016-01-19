@@ -33,7 +33,7 @@
 #define __MO_RENDERMANAGER_H__
 
 #include <moTextureManager.h>
-
+#include <moGUIManager.h>
 #include <moBuckets.h>
 
 class moEffect;
@@ -399,6 +399,8 @@ class LIBMOLDEO_API moRenderManager : public moResource
 
     int   CreateLayer( moEffect* p_scene_effect );
     void   RenderLayer( int layer_id );
+    int    Render( const moObject3D& p_src, const moCamera3D& m_camera );
+
 
 	protected:
 
@@ -409,8 +411,9 @@ class LIBMOLDEO_API moRenderManager : public moResource
 		MOboolean				m_saved_screen;
 
 		moTextureManager*       m_pTextureManager;
-    moGLManager*			m_pGLManager;
+        moGLManager*			m_pGLManager;
 		moFBManager*			m_pFBManager;
+		moShaderManager*			m_pSHManager;
 
 		moDecoderManager*   m_pDecoderManager;
 

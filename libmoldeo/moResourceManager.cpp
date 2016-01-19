@@ -454,6 +454,12 @@ moResourceManager::Init(
   }
 
 
+    /**
+    * Primero debe inicializarse el contexto OpenGL con glewInit:
+    *    el RenderManager usa a su vez al Shader Manager, aunque no lo necesita para la inicializacion, lo usará luego para otras funciones
+    *    especificas como Render( moObject3D....) que hace uso del moShaderManager::m_RenderBasic diseñado para dar soporte a OpenGL ES 2>
+    */
+    MOShaderMan = (moShaderManager*) GetResourceByType( MO_RESOURCETYPE_SHADER );
 	MORenderMan = (moRenderManager*) GetResourceByType( MO_RESOURCETYPE_RENDER );
 	if (MORenderMan)  {
         if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Render Man Resource."));
@@ -463,6 +469,14 @@ moResourceManager::Init(
 	    MODebug2->Error(moText("moResourceManager:: Render Man Creation Error."));
     }
 
+	if (MOShaderMan)  {
+        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Shader Man Resource."));
+	    if (!MOShaderMan->Init())
+            MODebug2->Error(moText("moResourceManager:: Shader Man Initialization Error."));
+	} else {
+	    MODebug2->Error(moText("moResourceManager:: Shader Man Creation Error."));
+    }
+
 	MOMathMan = (moMathManager*) GetResourceByType( MO_RESOURCETYPE_MATH );
 	if (MOMathMan)  {
         if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Math Man Resource."));
@@ -470,15 +484,6 @@ moResourceManager::Init(
             MODebug2->Error(moText("moResourceManager:: Math Man Initialization Error."));
 	} else {
 	    MODebug2->Error(moText("moResourceManager:: Math Man Creation Error."));
-    }
-
-	MOShaderMan = (moShaderManager*) GetResourceByType( MO_RESOURCETYPE_SHADER );
-	if (MOShaderMan)  {
-        if (MODebug2) MODebug2->Message(moText("moResourceManager::Init > Initializing Shader Man Resource."));
-	    if (!MOShaderMan->Init())
-            MODebug2->Error(moText("moResourceManager:: Shader Man Initialization Error."));
-	} else {
-	    MODebug2->Error(moText("moResourceManager:: Shader Man Creation Error."));
     }
 
 	MOFontMan = (moFontManager*) GetResourceByType( MO_RESOURCETYPE_FONT );

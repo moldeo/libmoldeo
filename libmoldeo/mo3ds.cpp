@@ -507,8 +507,8 @@ void CLoad3DS::ReadVertexIndices(mo3dObject *pObject, tChunk *pPreviousChunk)
     pPreviousChunk->bytesRead += fread(&pObject->numOfFaces, 1, 2, m_FilePointer);
 
     // Alloc enough memory for the faces and initialize the structure
-    pObject->pFaces = new moFace [pObject->numOfFaces];
-    memset(pObject->pFaces, 0, sizeof(moFace) * pObject->numOfFaces);
+    pObject->pFaces = new mosFace [pObject->numOfFaces];
+    memset(pObject->pFaces, 0, sizeof(mosFace) * pObject->numOfFaces);
 
     // Go through all of the faces in this object
     for(int i = 0; i < pObject->numOfFaces; i++)

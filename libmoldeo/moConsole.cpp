@@ -4640,6 +4640,14 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
     //m_pResourceManager->Init( "", "", m_Config, 0, 1280, 720);
   }
 
+    //int tick = moGetTicksAbsolute( true );
+    m_ConsoleState.step_interval = 40;
+    float stepi = m_ConsoleState.step_interval;
+    float steps = moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
+
+    glClearColor( 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
   if (m_pResourceManager) {
     pSMan = m_pResourceManager->GetShaderMan();
     if (!pSMan) return 0;
@@ -4652,52 +4660,38 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
 
     pTMan = m_pResourceManager->GetTextureMan();
     if (!pTMan) return 0;
-    int moid = pTMan->GetTextureMOId( "default", false );
-    moTexture* logoT = pTMan->GetTexture(moid);
-    if (logoT) logoglid = logoT->GetGLId();
-    //MODebug2->Message("logoglid"+IntToStr(logoglid));
 
   } else return 0;
 
+/*
   if ( pSMan->GetRenderShader().Initialized() ) {
      pSMan->GetRenderShader().StartShader();
   } else return 0;
+
+    int moid = pTMan->GetTextureMOId( "default", false );
+    moTexture* logoT = pTMan->GetTexture(moid);
+    if (logoT) logoglid = logoT->GetGLId();
+
 
   MOuint color_index = pSMan->GetRSHColorIndex();
   MOuint position_index = pSMan->GetRSHPositionIndex();
   MOuint texcoord_index = pSMan->GetRSHTexCoordIndex();
   MOuint matrix_index = pSMan->GetRSHProjectionMatrixIndex();
   MOuint texture_index = pSMan->GetRSHTextureIndex();
-  //int tick = moGetTicksAbsolute( true );
-  m_ConsoleState.step_interval = 40;
-  float stepi = m_ConsoleState.step_interval;
-  float steps = moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
-
-  glClearColor( 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0 );
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-  float coords[12] = { -1,-1,0.0,  -1,1,0.0,  1,-1,0.0, 1,1,0.0 }; // three coords per vertex.
-  float colors[12] = { 0,0,0,  1,0,0,  0,1,0, 0,0,1 };  // three RGB values per vertex.
-  float tcoords[8] = { 0.0,1.0,  0.0,0.0,  1.0,1.0, 1.0, 0.0 }; // two texture coords per vertex.
-  float PMI[16]  = { 1.1, 0.0, 0.0, 0.0,
-                              0.0, 1.1, 0.0, 0.0,
-                              0.0, 0.0, 1.1, 0.0,
-                              0.5, 0.1, 0.1, 1.0 };
 
   pGLMan->SetDefaultPerspectiveView( pRMan->ScreenWidth(), pRMan->ScreenHeight() );
-  //pGLMan->SetOrthographicView( pRMan->ScreenWidth(), pRMan->ScreenHeight(), -0.5, 0.5, p_display_info.HeightToProportion(-0.5), p_display_info.HeightToProportion(0.5) );
-  //pGLMan->SetDefaultOrthographicView( pRMan->ScreenWidth(), pRMan->ScreenHeight());
 
   moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
   moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
   moGLMatrixf Result;
   //PMatrix.MakeIdentity();
   MMatrix.MakeIdentity();
-  //MMatrix.Translate(0.5*cos( 0.03*steps/stepi ),0.5*sin( 0.03*steps/stepi ), 0.0f ).Rotate( 0.03*steps/stepi, 0.0, 0.0, 1.0);
-  //MMatrix.Rotate( 0.03*steps/stepi, 0.0, 0.0, 1.0);
-  MMatrix.Scale( 0.5, 0.5, 0.5 );
-  MMatrix.Rotate( ((float)steps/(float)stepi)*1.0*moMathf::DEG_TO_RAD, 1.0, 1.0, 1.0 );
-  MMatrix.Translate( 0.5f, 0.5f, -steps/1000.0f-3.0f );
+
+  //MMatrix.Scale( 0.5, 0.5, 0.5 );
+  //MMatrix.Rotate( ((float)steps/(float)stepi)*1.0*moMathf::DEG_TO_RAD, 1.0, 1.0, 1.0 );
+  //MMatrix.Translate( 0.5f, 0.5f, -steps/1000.0f-3.0f );
+  MMatrix.Translate( 0.0f, 0.0f, -5.0f );
+
   //MODebug2->Message( "model:\n"+MMatrix.ToJSON() );
   //MODebug2->Message( "projection\n"+PMatrix.ToJSON() );
   Result = MMatrix*PMatrix;
@@ -4716,7 +4710,7 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
 
   glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
   glUniform1i( texture_index, 0 );
-
+*/
 #ifndef OPENGLESV2
 /*
   glVertexPointer( 3, GL_FLOAT, 0, coords );  // Set data type and location.
@@ -4730,15 +4724,40 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
 #else
 
 #endif
+/*
+
+
+  moCamera3D Camera3D;
+  Camera3D.MakeIdentity();
+
+  moMaterial Material;
+  Material.m_Map = logoT;
+  Material.m_Color = moColor( 1.0, 1.0, 1.0 );
+
+  moPlaneGeometry Plane( 1.0, 1.0, 1, 1 );
+  moMesh Mesh( Plane, Material );
+
+  pRMan->Render( Mesh, Camera3D );
+*/
+/*
+  moPlaneGeometry Plane( 1.0, 1.0, 1, 1 );
+  float* pverbuf = Plane.GetVerticesBuffer();
+  float* pveruvbuf = Plane.GetVerticesUVBuffer();
+  float* pcolorbuf = Plane.GetColorBuffer();
+
+  moText PlaneGeo = Plane.ToJSON();
+  MODebug2->Message( "PlaneGeo:" );
+  MODebug2->Message( PlaneGeo );
 
   glEnableVertexAttribArray( position_index );
-  glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, coords );  // Set data type and location.
+  //glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, coords );  // Set data type and location.
+  glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, pverbuf );  // Set data type and location.
 
   glEnableVertexAttribArray( color_index );
-  glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, colors );
+  glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, pcolorbuf );
 
   glEnableVertexAttribArray( texcoord_index );
-  glVertexAttribPointer( texcoord_index, 2, GL_FLOAT, false, 0, tcoords );  // Set data type and location.
+  glVertexAttribPointer( texcoord_index, 2, GL_FLOAT, false, 0, pveruvbuf );  // Set data type and location.
 
   glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ); // Use 3 vertices, starting with vertex 0.
 
@@ -4751,7 +4770,28 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
     pSMan->GetRenderShader().PrintFragShaderLog();
     pSMan->GetRenderShader().StopShader();
   }
+*/
 
+    int moid = pTMan->GetTextureMOId( "default", false );
+    moTexture* logoT = pTMan->GetTexture(moid);
+    if (logoT) logoglid = logoT->GetGLId();
+
+
+  moCamera3D Camera3D;
+  Camera3D.MakeIdentity();
+
+  moMaterial Material;
+  Material.m_Map = logoT;
+  Material.m_Color = moColor( 1.0, 1.0, 1.0 );
+
+  moPlaneGeometry Plane2( 0.5, 0.5, 1, 1 );
+  moMesh Mesh( Plane2, Material );
+
+  moPlaneGeometry Plane3( 1.5, 0.25, 1, 1 );
+  moMesh Mesh2( Plane3, Material );
+
+  pRMan->Render( Mesh, Camera3D );
+  pRMan->Render( Mesh2, Camera3D );
 
 
   return 1;

@@ -77,34 +77,31 @@ MOboolean moShaderManager::Init()
       m_RenderShader.Init();
       m_RenderShader.CreateShader(
             moText(
-            ""
-            ""
-            "attribute vec4 position;"
-            "attribute vec3 color;"
-            "attribute vec2 t_coord;"
-            "uniform mat4 projmatrix;"
-            "varying vec3 colorVarying;"
-            "varying vec2 v_texcoord;"
-            ""
-            "void main() {"
-            "	colorVarying = color;"
-            "	v_texcoord = t_coord;"
-            "	gl_Position = projmatrix*position;"
-            "}"
+            "attribute vec4 position;\n"
+            "attribute vec3 color;\n"
+            "attribute vec2 t_coord;\n"
+            "uniform mat4 projmatrix;\n"
+            "varying vec3 colorVarying;\n"
+            "varying vec2 v_texcoord;\n"
+            "\n"
+            "void main() {\n"
+            "	colorVarying = color;\n"
+            "	v_texcoord = t_coord;\n"
+            "	gl_Position = projmatrix*position;\n"
+            "}\n"
             ),
             moText(
-            ""
           #ifdef OPENGLESV2
             "precision mediump float;"
           #endif
-            "varying vec3 colorVarying;"
-            "uniform sampler2D t_image;"
-            "varying vec2 v_texcoord;"
-            ""
-            "void main() {"
-            "	vec4 texcolor = texture2D( t_image, v_texcoord );/*gl_FragCoord.st*/"
-            "	gl_FragColor = mix(vec4( v_texcoord.x, v_texcoord.y, 0.0, 1.0),texcolor,0.9);"
-                  "}"
+            "varying vec3 colorVarying;\n"
+            "uniform sampler2D t_image;\n"
+            "varying vec2 v_texcoord;\n"
+            "\n"
+            "void main() {\n"
+            "	vec4 texcolor = texture2D( t_image, v_texcoord );\n"
+            "	gl_FragColor = mix(vec4( v_texcoord.x, v_texcoord.y, 0.0, 1.0),texcolor,0.9);\n"
+            "}\n"
             )
           );
 

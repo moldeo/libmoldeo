@@ -250,7 +250,7 @@ MOint moShader::FragErrorCode()
     return m_FragErrorCode;
 }
 
-moText moShader::LoadShaderSource(moText p_fn)
+moText moShader::LoadShaderSource(const moText& p_fn)
 {
 	FILE *src_file = fopen(p_fn, "rt");
 	moText src_text;

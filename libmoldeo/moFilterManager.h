@@ -387,7 +387,7 @@ class LIBMOLDEO_API moTrackerFeature { //de GpuKLT_Feature
 	float         t_x, t_y;                 //!< Torque in the actual frame.
 	bool				    valid;					 //!< True for a valid feature point.
 	int                     val;                     //!<Other states for valid feature point
-	moVector2fArray         track;					 //!< list of feature positions in the past frames. Forms the feature tracks in video.
+	moVector2fpArray         track;					 //!< list of feature positions in the past frames. Forms the feature tracks in video.
 
 	//! Constructor
 	moTrackerFeature();

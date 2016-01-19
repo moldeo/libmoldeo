@@ -40,6 +40,7 @@
 #include "moArray.h"
 moDefineDynamicArray(moVector2iArray)
 moDefineDynamicArray(moVector2fArray)
+moDefineDynamicArray(moVector2fpArray)
 moDefineDynamicArray(moVector2dArray)
 
 // moVector2 class ------------------------------------------------------------

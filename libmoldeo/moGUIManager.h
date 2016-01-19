@@ -39,9 +39,41 @@
 typedef moVector3f moPointf;
 typedef moVector3d moPointd;
 typedef moPointf moPoint;
+typedef moVertex3f moVertex;
+typedef moVertex3f moPosition;
+typedef moVector3i moFace;
+typedef moMatrix3f moFace3;
+typedef moVector2f moTCoord;
+typedef moVertex3f moColorRGB;
+typedef moVector4f moColorRGBA;
+typedef moColorRGB moColor;
+typedef moGLMatrixf moCameraMatrix;
+typedef moGLMatrixf moCamera3DBase;
+
+class LIBMOLDEO_API moCamera3D : public moCamera3DBase {
+    public:
+        moCamera3D() : moCamera3DBase() {
+            m_Position = moPosition( 0.0, 0.0, -10.0);
+            m_Center = moPosition( 0.0, 0.0, 0.0);
+        }
+        virtual ~moCamera3D() {
+
+        }
+
+        moPosition m_Position;
+        moPosition m_Center;
+
+};
 
 typedef moVector3fArray moPointArray;
-
+typedef moVector3fArray moColorArray;
+typedef moVector3fArray moColorRGBArray;
+typedef moVector4fArray moColor4fArray;
+typedef moVector4fArray moColorRGBAArray;
+typedef moVector2fArray moTCoordArray;
+typedef moVector3fArray moVertexArray;
+typedef moVector3iArray moFaceArray;
+typedef moMatrix3fArray moFace3Array;
 
 enum moGeometryType {
   MO_GEOMETRY_UNDEFINED=-1,
@@ -63,6 +95,24 @@ enum moGeometryType {
   MO_GEOMETRY_MAX=16
 };
 
+
+class LIBMOLDEO_API moAttribute : public moResourceElement {
+
+    public:
+
+        moAttribute( void* p_buffer=NULL, long p_itemsize=0, long p_length=0 ) { buffer=p_buffer; itemsize=p_itemsize; length=p_length; }
+        virtual ~moAttribute() {}
+
+    protected:
+
+        void* buffer;
+        long itemsize;
+        long length;
+
+};
+
+moDeclareExportedDynamicArray( moAttribute, moAttributeArray);
+
 /// Base abstracta de base para las geometrías.
 /**
 *	Todas las geometrías como Cubo, Esfera, Triangulo, .. derivan de esta clase
@@ -76,35 +126,73 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
 	public:
 		moGeometry();
 		virtual ~moGeometry();
+		moGeometry( const moGeometry& p_src ) {
+            (*this) = p_src;
+		}
+		const moGeometry& operator=(const moGeometry& p_src );
 		virtual MOboolean Init();
 		virtual MOboolean Init( moResourceManager* pResourceManager );
 		virtual MOboolean Finish();
-    virtual moVector3fArray& GetVertices() {
-      return m_Vertices;
-    }
-    virtual moVector3iArray& GetIndexes() {
-      return m_Indexes;
-    }
-    virtual moVector3iArray& GetFaces() {
-      return m_Faces;
-    }
 
-    moGeometryType GetType() {
-      return m_Type;
-    }
+        virtual moVector3fArray& GetVertices() {
+          return m_Vertices;
+        }
+        virtual float* GetVerticesBuffer() const {
+          return m_VerticesBuffer;
+        }
 
-    void applyMatrix( const moGLMatrixf &p_ModelMatrix );
+        virtual moVector2fArray& GetVerticesUV() {
+          return m_VerticesUvs;
+        }
 
+        virtual float* GetVerticesUVBuffer() const {
+          return m_VerticesUVBuffer;
+        }
+
+        virtual moTCoordArray& GetFacesUV() {
+          return m_FaceVertexUvs;
+        }
+
+        virtual moColorArray& GetColors() {
+            return m_Colors;
+        }
+
+        virtual float* GetColorBuffer() const {
+            return m_ColorBuffer;
+        }
+
+        virtual moFaceArray& GetFaces() {
+          return m_Faces;
+        }
+
+        moGeometryType GetType() {
+          return m_Type;
+        }
+
+        void applyMatrix( const moGLMatrixf &p_ModelMatrix );
+
+        int addAttribute( const moText& p_AttributeName, moAttribute* p_attribute );
+        int removeAttribute( const moText& p_AttributeName );
+        moAttribute* getAttribute( const moText& p_AttributeName );
+
+        static moText TypeToStr( moGeometryType p_type );
+        virtual moText ToJSON();
 
   protected:
 
-    moText        m_Name;
-    moGeometryType m_Type;
+        moText        m_Name;
+        moGeometryType m_Type;
 
-    moPointArray m_Vertices;
+        moPointArray m_Vertices;
+        MOfloat*       m_VerticesBuffer;
+        moTCoordArray m_VerticesUvs;
+        MOfloat*       m_VerticesUVBuffer;
+        moColorArray    m_Colors;
+        MOfloat*       m_ColorBuffer;
 
-    moVector3iArray m_Indexes;
-    moVector3iArray m_Faces;
+        moFaceArray m_Faces;//array of triangles, 3 points referencing each an index of m_Vertices.
+        moTCoordArray m_FaceVertexUvs;//array of texture coordinates for each vertex, corresponding to each face from m_Faces
+        moAttributeArray m_Attributes;/// MUST BE A MAP std::map<index,string>
 };
 
 
@@ -124,21 +212,22 @@ class LIBMOLDEO_API moPath : public  moResourceElement {
 };
 
 
-class LIBMOLDEO_API moMaterial : public moResourceElement {
+class LIBMOLDEO_API moMaterialBase : public moResourceElement {
 
   public:
 
-    moMaterial() {
+    moMaterialBase() {
     }
-    moMaterial(int p_Id, const moText& p_Name) {
+    moMaterialBase(int p_Id, const moText& p_Name) {
       m_Id = p_Id;
       m_Name = p_Name;
+      m_Type = "Material";
     }
-    moMaterial( const moMaterial& p_src ) {
+    moMaterialBase( const moMaterialBase& p_src ) {
       (*this) = p_src;
     }
 
-    const moMaterial& operator = ( const moMaterial& p_src ) {
+    const moMaterialBase& operator = ( const moMaterialBase& p_src ) {
       m_Id = p_src.m_Id;
       m_Name = p_src.m_Name;
       m_fOpacity = p_src.m_fOpacity;
@@ -156,9 +245,10 @@ class LIBMOLDEO_API moMaterial : public moResourceElement {
       m_fAlphaTest = p_src.m_fAlphaTest;
       m_fOverdraw = p_src.m_fOverdraw;
       m_iSides = p_src.m_iSides;
+      m_Type = p_src.m_Type;
       return (*this);
     }
-    virtual ~moMaterial() {}
+    virtual ~moMaterialBase() {}
 
 
     int m_Id;
@@ -178,25 +268,90 @@ class LIBMOLDEO_API moMaterial : public moResourceElement {
     float m_fAlphaTest;
     float m_fOverdraw;
     int m_iSides;
-
+    moText m_Type;
 
 };
+
+class LIBMOLDEO_API moMaterial : public moMaterialBase {
+    public:
+        moMaterial() : moMaterialBase() {
+            m_Map = NULL;
+            m_Type = "BasicMaterial";
+        }
+        moMaterial( const moMaterial& p_src ) {
+          (*this) = p_src;
+        }
+
+        const moMaterial& operator = ( const moMaterial& p_src ) {
+          m_Id = p_src.m_Id;
+          m_Name = p_src.m_Name;
+          m_fOpacity = p_src.m_fOpacity;
+          m_bTransparent = p_src.m_bTransparent;
+          m_iBlending = p_src.m_iBlending;
+          m_iBlendSrc = p_src.m_iBlendSrc;
+          m_iBlendDst = p_src.m_iBlendDst;
+          m_iBlendEquation = p_src.m_iBlendEquation;
+          m_bDepthTest = p_src.m_bDepthTest;
+          m_bDepthWrite = p_src.m_bDepthWrite;
+
+          m_iPolygonOffset = p_src.m_iPolygonOffset;
+          m_iPolygonOffsetFactor = p_src.m_iPolygonOffsetFactor;
+          m_iPolygonOffsetUnits = p_src.m_iPolygonOffsetUnits;
+          m_fAlphaTest = p_src.m_fAlphaTest;
+          m_fOverdraw = p_src.m_fOverdraw;
+          m_iSides = p_src.m_iSides;
+          m_Type = p_src.m_Type;
+
+          m_Map = p_src.m_Map;
+          m_Color = p_src.m_Color;
+          m_SpecularColor = p_src.m_SpecularColor;
+          m_AmbientColor = p_src.m_AmbientColor;
+          return (*this);
+        }
+        virtual ~moMaterial() {
+        }
+
+
+        moColor m_SpecularColor;
+        moColor m_AmbientColor;
+        moColor m_Color;
+        moTexture*   m_Map;
+};
+
 
 class LIBMOLDEO_API moObject3D : public moSceneNode {
   public:
-    moObject3D();
-    virtual ~moObject3D();
+    moObject3D(const moGeometry& p_geometry, const moMaterial& p_material ) {
+        m_Geometry = p_geometry;
+        m_Material = p_material;
+    }
+    virtual ~moObject3D() {
+
+    }
+
+    moObject3D( const moObject3D& p_src ) {
+        (*this) = p_src;
+    }
+
+    const moObject3D& operator=( const moObject3D& p_src ) {
+        m_Geometry = p_src.m_Geometry;
+        m_Material = p_src.m_Material;
+        return (*this);
+    }
+
+    moGeometry m_Geometry;
+    moMaterial m_Material;
 
 };
 
-class LIBMOLDEO_API moBone : public moSceneNode {
+class LIBMOLDEO_API moBone : public moObject3D {
   public:
     moBone();
     virtual ~moBone();
 
 };
 
-class LIBMOLDEO_API moSprite : public moSceneNode {
+class LIBMOLDEO_API moSprite : public moObject3D {
   public:
     moSprite();
     virtual ~moSprite();
@@ -246,15 +401,30 @@ class LIBMOLDEO_API moSkeleton : public moObject3D {
 };
 
 
-class LIBMOLDEO_API moMesh : public moResourceElement {
+class LIBMOLDEO_API moMesh : public moObject3D {
   public:
-    moMesh();
-    moMesh( const moGeometry& p_geometry, const moMaterial& p_material=moMaterial()  );
-    virtual ~moMesh();
+    moMesh( const moGeometry& p_geometry, const moMaterial& p_material ) :  moObject3D(p_geometry, p_material) {
+
+        m_Geometry = p_geometry;
+        m_Material = p_material;
+
+    }
+    moMesh( const moMesh& p_src ) : moObject3D( p_src ) {
+        (*this) = p_src;
+    }
+
+    const moMesh& operator=( const moMesh& p_src ) {
+        m_Geometry = p_src.m_Geometry;
+        m_Material = p_src.m_Material;
+        return (*this);
+    }
+
+    virtual ~moMesh() {
+    }
 
 };
 
-class LIBMOLDEO_API moShape : public moResourceElement {
+class LIBMOLDEO_API moShape : public moObject3D {
   public:
     moShape();
     virtual ~moShape();
@@ -526,6 +696,8 @@ class LIBMOLDEO_API moGUIManager : public moResource {
 		HWND GetOpWindowHandle() { return hOpWnd; }
 		HWND GetVisWindowHandle() { return hVisWnd; }
 		*/
+
+
 	private:
 	/*
 		HWND hOpWnd;

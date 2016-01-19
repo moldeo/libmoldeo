@@ -187,35 +187,35 @@ public:
      * Crea el shader de vértices a partir del código fuente en vert_source.
      * @param vert_source código fuente del shader de vértices.
      */
-    virtual void CreateVertShader(moText vert_source) = 0;
+    virtual void CreateVertShader(const moText& vert_source) = 0;
     /**
      * Crea el shader de fragmentos a partir del código fuente en frag_source.
      * @param frag_source código fuente del shader de vértices.
      */
-    virtual void CreateFragShader(moText frag_source) = 0;
+    virtual void CreateFragShader(const moText& frag_source) = 0;
     /**
      * Crea los shaders de vértices y fragmentos a partir del código fuente en vert_source y frag_source.
      * @param vert_source código fuente del shader de vértices.
      * @param frag_source código fuente del shader de vértices.
      */
-    virtual void CreateShader(moText vert_source, moText frag_source) = 0;
+    virtual void CreateShader(const moText& vert_source, const moText& frag_source) = 0;
     /**
      * Crea el shader de vértices a partir del código fuente en el archivo vert_filename.
      * @param vert_filename nombre del archivo con el código fuente del shader de vértices.
      */
-    virtual void LoadVertShader(moText vert_filename) = 0;
+    virtual void LoadVertShader(const moText& vert_filename) = 0;
     /**
      * Crea el shader de fragmentos a partir del código fuente en el archivo frag_filename.
      * @param frag_filename nombre del archivo con el código fuente del shader de fragmentos.
      */
-    virtual void LoadFragShader(moText frag_filename) = 0;
+    virtual void LoadFragShader(const moText& frag_filename) = 0;
     /**
      * Crea los shaders de vértices y fragmentos a partir del código fuente en los archivos vert_filename y
      * frag_filename.
      * @param vert_filename nombre del archivo con el código fuente del shader de vértices.
      * @param frag_filename nombre del archivo con el código fuente del shader de fragmentos.
      */
-    virtual void LoadShader(moText vert_filename, moText frag_filename) = 0;
+    virtual void LoadShader(const moText& vert_filename, const moText& frag_filename) = 0;
 
     /**
      * Activa el shader.
@@ -261,7 +261,7 @@ public:
      * Establece el nombre del shader.
      * @param p_name nuevo nombre del shader.
      */
-	void SetName(moText p_name) { m_name = p_name; }
+	void SetName(const moText& p_name) { m_name = p_name; }
 
     /**
      * Devuelve el objeto de grilla 2D utilizado por este shader.
@@ -291,10 +291,10 @@ protected:
     MOint m_VertErrorCode;
     MOint m_FragErrorCode;
 
-    virtual void compileVertShader(moText vert_source) = 0;
-    virtual void compileFragShader(moText frag_source) = 0;
+    virtual void compileVertShader(const moText& vert_source) = 0;
+    virtual void compileFragShader(const moText& frag_source) = 0;
 
-    virtual moText LoadShaderSource(moText p_fn);
+    virtual moText LoadShaderSource(const moText& p_fn);
 };
 
 moDeclareExportedDynamicArray( moShader*, moShaderArray);
