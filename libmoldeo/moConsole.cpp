@@ -4637,6 +4637,7 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   if (m_pResourceManager==NULL) {
     m_pResourceManager = new moResourceManager();
     m_pResourceManager->Init( "", "", m_Config, 0, p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
+    //m_pResourceManager->Init( "", "", m_Config, 0, 1280, 720);
   }
 
   if (m_pResourceManager) {
@@ -4690,22 +4691,23 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
   moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
   moGLMatrixf Result;
+  //PMatrix.MakeIdentity();
   MMatrix.MakeIdentity();
   //MMatrix.Translate(0.5*cos( 0.03*steps/stepi ),0.5*sin( 0.03*steps/stepi ), 0.0f ).Rotate( 0.03*steps/stepi, 0.0, 0.0, 1.0);
   //MMatrix.Rotate( 0.03*steps/stepi, 0.0, 0.0, 1.0);
   MMatrix.Scale( 0.5, 0.5, 0.5 );
   MMatrix.Rotate( ((float)steps/(float)stepi)*1.0*moMathf::DEG_TO_RAD, 1.0, 1.0, 1.0 );
   MMatrix.Translate( 0.5f, 0.5f, -steps/1000.0f-3.0f );
-  MODebug2->Message( "model:\n"+MMatrix.ToJSON() );
-  MODebug2->Message( "projection\n"+PMatrix.ToJSON() );
+  //MODebug2->Message( "model:\n"+MMatrix.ToJSON() );
+  //MODebug2->Message( "projection\n"+PMatrix.ToJSON() );
   Result = MMatrix*PMatrix;
-  //PM.MakeIdentity();
+  //PMatrix.MakeIdentity();
   //PM = PM.Scale( 0.5, 0.5, 0.0 ).Rotate( 3.14/4.0, 0.0, 0.0, 1.0 ).Translate( -0.5, -0.5, 0.0 );
-  MODebug2->Message( "results:\n"+Result.ToJSON() );
-  MODebug2->Message( "steps:"+FloatToStr(steps)+
-                    "stepi:"+FloatToStr(stepi) );
+  //MODebug2->Message( "results:\n"+Result.ToJSON() );
+  //MODebug2->Message( "steps:"+FloatToStr(steps)+"stepi:"+FloatToStr(stepi) );
 
   float* pfv = Result.GetPointer();
+  //float* pfv = &PMI[0];
 
   glEnable( GL_TEXTURE_2D );
   glActiveTexture( GL_TEXTURE0 );
