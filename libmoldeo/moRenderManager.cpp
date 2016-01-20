@@ -51,7 +51,8 @@ moDisplay::moDisplay( int w, int h) {
     m_DisplayResolution.aspect = (int)(h==0) - (int) (w==0);
   }
   if (h!=0 && w!=0) {
-    m_DisplayResolution.aspect = w / h;
+    m_DisplayResolution.aspect =(float)w;
+    m_DisplayResolution.aspect*= 1.0 / ((float)h);
   }
 }
 
@@ -62,7 +63,7 @@ moDisplay::moDisplay( const moDisplay& p_src ) {
 moDisplay::~moDisplay() {
 
 }
-const moDisplay&
+moDisplay&
 moDisplay::operator= ( const moDisplay& p_src ) {
 
   m_DisplayResolution = p_src.m_DisplayResolution;
@@ -395,10 +396,15 @@ moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
     if (!m_pSHManager) return 0;
     if ( !m_pSHManager->GetRenderShader().Initialized() ) return 0;
 
-    moGLManager* pGLMan = m_pGLManager;
+    //moGLManager* pGLMan = m_pGLManager;
 
     const moGeometry& Geo( p_src.m_Geometry );
     const moMaterial& Mat( p_src.m_Material );
+    //const moGLMatrixf& PMatrix( p_src.GetProjection() );
+    const moGLMatrixf& PMatrix( m_camera );
+    const moGLMatrixf& MMatrix( p_src.GetModel() );
+    moGLMatrixf Result;
+    Result = MMatrix*PMatrix;
 
     MOuint color_index = m_pSHManager->GetRSHColorIndex();
     MOuint position_index = m_pSHManager->GetRSHPositionIndex();
@@ -409,30 +415,24 @@ moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
     if ( m_pSHManager->GetRenderShader().Initialized() ) {
         m_pSHManager->GetRenderShader().StartShader();
     } else return 0;
-
-    m_pGLManager->SetDefaultPerspectiveView( ScreenWidth(), ScreenHeight() );
-
+    //m_pGLManager->SetDefaultPerspectiveView( ScreenWidth(), ScreenHeight() );
+    //moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
+    //moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
     float* pverbuf = Geo.GetVerticesBuffer();
     float* pveruvbuf = Geo.GetVerticesUVBuffer();
     float* pcolorbuf = Geo.GetColorBuffer();
-
-
-    moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
-    moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
-    moGLMatrixf Result;
     //PMatrix.MakeIdentity();
-    MMatrix.MakeIdentity();
-
+    //MMatrix.MakeIdentity();
     //MMatrix.Scale( 0.5, 0.5, 0.5 );
     //MMatrix.Rotate( ((float)steps/(float)stepi)*1.0*moMathf::DEG_TO_RAD, 1.0, 1.0, 1.0 );
     //MMatrix.Translate( 0.5f, 0.5f, -steps/1000.0f-3.0f );
-    MMatrix.Translate( 0.0f, 0.0f, -4.0f );
-
+    //MMatrix.Translate( 0.0f, 0.0f, -4.0f );
     //MODebug2->Message( "model:\n"+MMatrix.ToJSON() );
     //MODebug2->Message( "projection\n"+PMatrix.ToJSON() );
-    Result = MMatrix*PMatrix;
+    //Result = MMatrix*PMatrix;
+
     const float *pfv = Result.GetPointer();
-    MODebug2->Message( "Result:\n"+Result.ToJSON() );
+    //MODebug2->Message( "Result:\n"+Result.ToJSON() );
 
     moTexture* pMap = Mat.m_Map;
     if (pMap) {
@@ -440,7 +440,7 @@ moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
         glEnable( GL_TEXTURE_2D );
         glActiveTexture( GL_TEXTURE0 );
         glBindTexture( GL_TEXTURE_2D, Tglid );
-        MODebug2->Message( "Tglid:\n"+IntToStr(Tglid) );
+        //MODebug2->Message( "Tglid:\n"+IntToStr(Tglid) );
     }
     glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
     glUniform1i( texture_index, 0 );

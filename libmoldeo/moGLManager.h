@@ -74,7 +74,7 @@ class  LIBMOLDEO_API moGLMatrixf : public moMatrix4f {
     moGLMatrixf(bool bZero = true) : moMatrix4f(bZero) {}
     moGLMatrixf( const moMatrix4f& p_src ) : moMatrix4f( p_src ) {}
     moGLMatrixf( const moGLMatrixf& rkM );
-    const moGLMatrixf& operator= (const moGLMatrixf& rkM );
+    moGLMatrixf& operator= (const moGLMatrixf& rkM );
     virtual ~moGLMatrixf() {}
     //const moGLMatrixf& operator= (const moMatrix4f& p_src );
 
@@ -127,7 +127,7 @@ class  LIBMOLDEO_API moGLViewport : public moVector2f {
       (*this) = p_src;
     }
 
-    const moGLViewport& operator= ( const moGLViewport& p_src ) {
+    moGLViewport& operator= ( const moGLViewport& p_src ) {
       X() = p_src.X();
       Y() = p_src.Y();
       Proportion = p_src.Proportion;

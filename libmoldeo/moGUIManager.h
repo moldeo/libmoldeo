@@ -59,6 +59,9 @@ class LIBMOLDEO_API moCamera3D : public moCamera3DBase {
         virtual ~moCamera3D() {
 
         }
+        moCamera3D( const moCamera3D& p_src );
+        moCamera3D& operator=( const moCamera3D& p_src );
+        moCamera3D& operator=( const moCamera3DBase& p_src );
 
         moPosition m_Position;
         moPosition m_Center;
@@ -129,7 +132,7 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
 		moGeometry( const moGeometry& p_src ) : moResourceElement(MO_RESOURCETYPE_GUI) {
             (*this) = p_src;
 		}
-		const moGeometry& operator=(const moGeometry& p_src );
+		moGeometry& operator=(const moGeometry& p_src );
 		virtual MOboolean Init();
 		virtual MOboolean Init( moResourceManager* pResourceManager );
 		virtual MOboolean Finish();
@@ -321,7 +324,7 @@ class LIBMOLDEO_API moMaterial : public moMaterialBase {
 
 class LIBMOLDEO_API moObject3D : public moSceneNode {
   public:
-    moObject3D(const moGeometry& p_geometry, const moMaterial& p_material ) {
+    moObject3D(const moGeometry& p_geometry, const moMaterial& p_material ) : moSceneNode() {
         m_Geometry = p_geometry;
         m_Material = p_material;
     }
@@ -329,11 +332,11 @@ class LIBMOLDEO_API moObject3D : public moSceneNode {
 
     }
 
-    moObject3D( const moObject3D& p_src ) {
+    moObject3D( const moObject3D& p_src ) : moSceneNode() {
         (*this) = p_src;
     }
 
-    const moObject3D& operator=( const moObject3D& p_src ) {
+    moObject3D& operator=( const moObject3D& p_src ) {
         m_Geometry = p_src.m_Geometry;
         m_Material = p_src.m_Material;
         return (*this);
@@ -413,7 +416,7 @@ class LIBMOLDEO_API moMesh : public moObject3D {
         (*this) = p_src;
     }
 
-    const moMesh& operator=( const moMesh& p_src ) {
+    moMesh& operator=( const moMesh& p_src ) {
         m_Geometry = p_src.m_Geometry;
         m_Material = p_src.m_Material;
         return (*this);

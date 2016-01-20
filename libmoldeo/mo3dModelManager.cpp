@@ -40,8 +40,21 @@ moDefineDynamicArray( moCoords );
 
 
 moSceneNode::moSceneNode() {
-
+  m_Projection.MakeIdentity();
+  m_Model.MakeIdentity();
 }
+
+moSceneNode::moSceneNode( const moSceneNode& p_src ) {
+  (*this) = p_src;
+}
+
+moSceneNode&
+moSceneNode::operator=(const moSceneNode& p_src) {
+  m_Projection = p_src.m_Projection;
+  m_Model = p_src.m_Model;
+  return (*this);
+}
+
 
 moSceneNode*
 moSceneNode::GetParent() {
@@ -706,7 +719,7 @@ void mo3dModelManagerRef::Draw(int imodel, moEffectState *state, GLuint g_ViewMo
 			}
 
 		glEnd();								// End the drawing
-#endif	
+#endif
 	}
 
 

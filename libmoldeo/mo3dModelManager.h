@@ -152,6 +152,8 @@ class LIBMOLDEO_API moSceneNode : public moAbstract {
 
         moSceneNode();
         virtual ~moSceneNode();
+        moSceneNode( const moSceneNode& p_src );
+        moSceneNode& operator=(const moSceneNode& p_src);
 
         virtual MOboolean Init();
         virtual MOboolean Finish();
@@ -169,10 +171,10 @@ class LIBMOLDEO_API moSceneNode : public moAbstract {
         void SetModel( const moGLMatrixf& p_model_matrix ) {
           m_Model = p_model_matrix;
         }
-        moGLMatrixf& GetProjection() {
+        const moGLMatrixf& GetProjection() const {
           return m_Projection;
         }
-        moGLMatrixf& GetModel() {
+        const moGLMatrixf& GetModel() const {
           return m_Model;
         }
 

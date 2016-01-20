@@ -4632,7 +4632,6 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   moGLManager* pGLMan;
   moRenderManager* pRMan;
   moTextureManager* pTMan;
-  MOuint logoglid = 0;
 
   if (m_pResourceManager==NULL) {
     m_pResourceManager = new moResourceManager();
@@ -4663,135 +4662,43 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
 
   } else return 0;
 
-/*
-  if ( pSMan->GetRenderShader().Initialized() ) {
-     pSMan->GetRenderShader().StartShader();
-  } else return 0;
-
-    int moid = pTMan->GetTextureMOId( "default", false );
-    moTexture* logoT = pTMan->GetTexture(moid);
-    if (logoT) logoglid = logoT->GetGLId();
-
-
-  MOuint color_index = pSMan->GetRSHColorIndex();
-  MOuint position_index = pSMan->GetRSHPositionIndex();
-  MOuint texcoord_index = pSMan->GetRSHTexCoordIndex();
-  MOuint matrix_index = pSMan->GetRSHProjectionMatrixIndex();
-  MOuint texture_index = pSMan->GetRSHTextureIndex();
-
-  pGLMan->SetDefaultPerspectiveView( pRMan->ScreenWidth(), pRMan->ScreenHeight() );
-
-  moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
-  moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
-  moGLMatrixf Result;
-  //PMatrix.MakeIdentity();
-  MMatrix.MakeIdentity();
-
-  //MMatrix.Scale( 0.5, 0.5, 0.5 );
-  //MMatrix.Rotate( ((float)steps/(float)stepi)*1.0*moMathf::DEG_TO_RAD, 1.0, 1.0, 1.0 );
-  //MMatrix.Translate( 0.5f, 0.5f, -steps/1000.0f-3.0f );
-  MMatrix.Translate( 0.0f, 0.0f, -5.0f );
-
-  //MODebug2->Message( "model:\n"+MMatrix.ToJSON() );
-  //MODebug2->Message( "projection\n"+PMatrix.ToJSON() );
-  Result = MMatrix*PMatrix;
-  //PMatrix.MakeIdentity();
-  //PM = PM.Scale( 0.5, 0.5, 0.0 ).Rotate( 3.14/4.0, 0.0, 0.0, 1.0 ).Translate( -0.5, -0.5, 0.0 );
-  //MODebug2->Message( "results:\n"+Result.ToJSON() );
-  //MODebug2->Message( "steps:"+FloatToStr(steps)+"stepi:"+FloatToStr(stepi) );
-
-  float* pfv = Result.GetPointer();
-  //float* pfv = &PMI[0];
-
-  glEnable( GL_TEXTURE_2D );
-  glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, logoglid );
-  //glBindTexture( GL_TEXTURE_2D, 0 );
-
-  glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
-  glUniform1i( texture_index, 0 );
-*/
-#ifndef OPENGLESV2
-/*
-  glVertexPointer( 3, GL_FLOAT, 0, coords );  // Set data type and location.
-  glColorPointer( 3, GL_FLOAT, 0, colors );
-
-  glEnableClientState( GL_VERTEX_ARRAY );  // Enable use of arrays.
-  glEnableClientState( GL_COLOR_ARRAY );
-
-  glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ); // Use 3 vertices, starting with vertex 0.
-*/
-#else
-
-#endif
-/*
-
 
   moCamera3D Camera3D;
-  Camera3D.MakeIdentity();
-
   moMaterial Material;
-  Material.m_Map = logoT;
+  moGLMatrixf Model;
+
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  /*LOGO 3D ESQUINA (con perspectiva)*/
+  moPlaneGeometry Plane2( 1.0, 1.0, 1, 1 );
+  Material.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "default", false ));
   Material.m_Color = moColor( 1.0, 1.0, 1.0 );
-
-  moPlaneGeometry Plane( 1.0, 1.0, 1, 1 );
-  moMesh Mesh( Plane, Material );
-
-  pRMan->Render( Mesh, Camera3D );
-*/
-/*
-  moPlaneGeometry Plane( 1.0, 1.0, 1, 1 );
-  float* pverbuf = Plane.GetVerticesBuffer();
-  float* pveruvbuf = Plane.GetVerticesUVBuffer();
-  float* pcolorbuf = Plane.GetColorBuffer();
-
-  moText PlaneGeo = Plane.ToJSON();
-  MODebug2->Message( "PlaneGeo:" );
-  MODebug2->Message( PlaneGeo );
-
-  glEnableVertexAttribArray( position_index );
-  //glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, coords );  // Set data type and location.
-  glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, pverbuf );  // Set data type and location.
-
-  glEnableVertexAttribArray( color_index );
-  glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, pcolorbuf );
-
-  glEnableVertexAttribArray( texcoord_index );
-  glVertexAttribPointer( texcoord_index, 2, GL_FLOAT, false, 0, pveruvbuf );  // Set data type and location.
-
-  glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ); // Use 3 vertices, starting with vertex 0.
-
-  glDisableVertexAttribArray( position_index );
-  glDisableVertexAttribArray( color_index );
-  glDisableVertexAttribArray( texcoord_index );
-
-  if (pSMan->GetRenderShader().Initialized()) {
-    pSMan->GetRenderShader().PrintVertShaderLog();
-    pSMan->GetRenderShader().PrintFragShaderLog();
-    pSMan->GetRenderShader().StopShader();
-  }
-*/
-
-    int moid = pTMan->GetTextureMOId( "default", false );
-    moTexture* logoT = pTMan->GetTexture(moid);
-    if (logoT) logoglid = logoT->GetGLId();
-
-
-  moCamera3D Camera3D;
-  Camera3D.MakeIdentity();
-
-  moMaterial Material;
-  Material.m_Map = logoT;
-  Material.m_Color = moColor( 1.0, 1.0, 1.0 );
-
-  moPlaneGeometry Plane2( 0.5, 0.5, 1, 1 );
+  Model.MakeIdentity();
+  //Model.Rotate( 5*steps/stepi*moMathf::DEG_TO_RAD, 0.0, 1.0, 0.0 );
+  Model.Rotate( (360.0/120.0)*(steps/stepi)*moMathf::DEG_TO_RAD, 1.0, 0.0, 0.0 );
+  Model.Translate( 0.0, 0.0, -1.0 );
   moMesh Mesh( Plane2, Material );
-
-  moPlaneGeometry Plane3( 1.5, 0.25, 1, 1 );
-  moMesh Mesh2( Plane3, Material );
-
+  Mesh.SetModel(Model);
+  Camera3D.MakeIdentity();
+  Camera3D.MakePerspective(60.0f, p_display_info.Proportion(), 0.01f, 1000.0f );
   pRMan->Render( Mesh, Camera3D );
+
+  /*LOGO PLENO (sin perspectiva)*/
+  glClear( GL_DEPTH_BUFFER_BIT);
+  moPlaneGeometry Plane3( 1.0, 0.33, 1, 1 );
+  Material.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "moldeotrans", false ));
+  Material.m_Color = moColor( 1.0, 1.0, 1.0 );
+  Model.MakeIdentity();
+  Model.Scale( 1.0, 1.0, 1.0 );
+  Model.Translate( 0.0, 0.0, 0.0 );
+  pGLMan->SetDefaultOrthographicView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
+  Camera3D = pGLMan->GetProjectionMatrix();
+  moMesh Mesh2( Plane3, Material );
+  Mesh2.SetModel(Model);
   pRMan->Render( Mesh2, Camera3D );
+
 
 
   return 1;

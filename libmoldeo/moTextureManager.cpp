@@ -574,6 +574,16 @@ MOboolean moTextureManager::Init()
                     moText("moldeonegro.png");
 	MODebug2->Message(moText("moTextureManager::Init > loading logo file:")+logoFile);
 
+  m_id_default = AddTexture( "moldeotrans", 1800, 600);
+	DefaultTexture =  GetTexture(m_id_default);
+	logoFile = m_pResourceManager->GetDataMan()->GetAppDataPath() +
+                    moSlash +
+                    moText("icons") +
+                    moSlash +
+                    moText("moldeotrans.png");
+	MODebug2->Message(moText("moTextureManager::Init > loading logo file:")+logoFile);
+
+
   if (DefaultTexture) if (!DefaultTexture->BuildFromFile(logoFile)) {
     MODebug2->Error("moTextureManager::Init > error loading " + logoFile );
   }

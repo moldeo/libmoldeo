@@ -100,7 +100,9 @@ MOboolean moShaderManager::Init()
             "\n"
             "void main() {\n"
             "	vec4 texcolor = texture2D( t_image, v_texcoord );\n"
-            "	gl_FragColor = mix(vec4( v_texcoord.x, v_texcoord.y, 0.0, 1.0),texcolor,0.9);\n"
+            //"	vec4 mulcolor = vec4( colorVarying, 1.0 );\n"
+            "	vec4 mulcolor = vec4( 1.0, 1.0, 1.0, 1.0 );\n"
+            "	gl_FragColor = vec4( mulcolor.x*texcolor.x, mulcolor.y*texcolor.y, mulcolor.z*texcolor.z, mulcolor.w*texcolor.w );\n"
             "}\n"
             )
           );

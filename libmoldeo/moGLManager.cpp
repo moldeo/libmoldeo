@@ -64,7 +64,7 @@ moGLMatrixf::moGLMatrixf( const moGLMatrixf& rkM ) : moMatrix4f( rkM.GetPointer(
 
 
 
-const moGLMatrixf&
+moGLMatrixf&
 moGLMatrixf::operator= (const moGLMatrixf& rkM ) {
 
   SetRow( 0, rkM.GetRow(0));
@@ -422,7 +422,6 @@ void moGLManager::SetDefaultOrthographicView( MOint p_width, MOint p_height ) {
                         moDisplay( p_width, p_height ).HeightToProportion(-0.5),
                         moDisplay( p_width, p_height ).HeightToProportion(0.5)
                       );
-
 }
 
 void moGLManager::SetOrthographicView(MOint p_width, MOint p_height, float left, float right, float bottom, float top, float znear, float zfar)

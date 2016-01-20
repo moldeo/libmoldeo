@@ -35,6 +35,28 @@
 moDefineDynamicArray(moGuiObjectArray)
 moDefineDynamicArray(moAttributeArray)
 
+moCamera3D::moCamera3D( const moCamera3D& p_src ) : moCamera3DBase() {
+  (*this) = p_src;
+}
+
+moCamera3D&
+moCamera3D::operator=( const moCamera3D& p_src ) {
+  m_Position = p_src.m_Position;
+  m_Center = p_src.m_Center;
+  return (*this);
+}
+
+moCamera3D&
+moCamera3D::operator=( const moCamera3DBase& p_src ) {
+  moCamera3DBase& m( (*this) );
+  m = p_src;
+  return (*this);
+}
+
+
+
+
+
 moGeometry::moGeometry() {
   //m_Type = MO_GEOMETRY_UNDEFINED;
 }
@@ -43,7 +65,7 @@ moGeometry::~moGeometry() {
 
 }
 
-const moGeometry&
+moGeometry&
 moGeometry::operator=(const moGeometry& p_src ) {
 
     m_Vertices = p_src.m_Vertices;
