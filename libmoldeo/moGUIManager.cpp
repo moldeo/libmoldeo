@@ -56,11 +56,11 @@ moGeometry::operator=(const moGeometry& p_src ) {
     m_FaceVertexUvs = p_src.m_FaceVertexUvs;
     m_Name = p_src.m_Name;
     m_Type = p_src.m_Type;
-
+    return (*this);
 }
 
 MOboolean moGeometry::Init() {
-  return true;
+  return moAbstract::Init();
 }
 
 MOboolean moGeometry::Init( moResourceManager* pResourceManager ) {
@@ -74,7 +74,7 @@ MOboolean moGeometry::Finish() {
 
 void
 moGeometry::applyMatrix( const moGLMatrixf &p_ModelMatrix ) {
-
+  moGLMatrixf tf = p_ModelMatrix;
 }
 
 moText
@@ -83,53 +83,53 @@ moGeometry::TypeToStr( moGeometryType p_type ) {
     moText result;
 
     switch(p_type) {
-        MO_GEOMETRY_POINT:
+        case MO_GEOMETRY_POINT:
             result = moText("PointGeometry");
-        break;
-        MO_GEOMETRY_CIRCLE:
+            break;
+        case MO_GEOMETRY_CIRCLE:
             result = moText("CircleGeometry");
-        break;
-        MO_GEOMETRY_CYLINDER:
+            break;
+        case MO_GEOMETRY_CYLINDER:
             result = moText("CylinderGeometry");
-        break;
-        MO_GEOMETRY_DODECAHEDRON:
+            break;
+        case MO_GEOMETRY_DODECAHEDRON:
             result = moText("DodecahedronGeometry");
-        break;
-        MO_GEOMETRY_EXTRUDE:
+            break;
+        case MO_GEOMETRY_EXTRUDE:
             result = moText("ExtrudeGeometry");
-        break;
-        MO_GEOMETRY_ICOSAHEDRON:
+            break;
+        case MO_GEOMETRY_ICOSAHEDRON:
             result = moText("IcosahedronGeometry");
-        break;
-        MO_GEOMETRY_PLANE:
+            break;
+        case MO_GEOMETRY_PLANE:
             result = moText("PlaneGeometry");
-        break;
-        MO_GEOMETRY_POLYHEDRON:
+            break;
+        case MO_GEOMETRY_POLYHEDRON:
             result = moText("PolyhedronGeometry");
-        break;
-        MO_GEOMETRY_RING:
+            break;
+        case MO_GEOMETRY_RING:
             result = moText("RingGeometry");
-        break;
-        MO_GEOMETRY_SHAPE:
+            break;
+        case MO_GEOMETRY_SHAPE:
             result = moText("ShapeGeometry");
-        break;
-        MO_GEOMETRY_SPHERE:
+            break;
+        case MO_GEOMETRY_SPHERE:
             result = moText("SphereGeometry");
-        break;
-        MO_GEOMETRY_TETRAHEDRON:
+            break;
+        case MO_GEOMETRY_TETRAHEDRON:
             result = moText("TetrahedronGeometry");
-        break;
-        MO_GEOMETRY_TEXT:
+            break;
+        case MO_GEOMETRY_TEXT:
             result = moText("TextGeometry");
-        break;
-        MO_GEOMETRY_TUBE:
+            break;
+        case MO_GEOMETRY_TUBE:
             result = moText("TubeGeometry");
-        break;
-        MObe_GEOMETRY_BOX:
+            break;
+        case MO_GEOMETRY_BOX:
             result = moText("BoxGeometry");
-        break;
+            break;
 
-        MO_GEOMETRY_UNDEFINED:
+        case MO_GEOMETRY_UNDEFINED:
             result = moText("undefined Geometry");
             break;
 
@@ -150,7 +150,7 @@ moGeometry::ToJSON() {
 
     //concatenate all Vertices
     JSON+= "',vertices': [";
-    for( int i=0; i<m_Vertices.Count(); i++) {
+    for( MOuint i=0; i<m_Vertices.Count(); i++) {
 
         moVector3f pt = m_Vertices[i];
 
@@ -166,7 +166,7 @@ moGeometry::ToJSON() {
     JSON+= "'verticesBuffer': [";
     comma = "";
     if (m_VerticesBuffer)
-    for( int i=0; i<m_Vertices.Count(); i++) {
+    for( MOuint i=0; i<m_Vertices.Count(); i++) {
 
         JSON+= comma;
         JSON+= "    {";
@@ -277,7 +277,7 @@ moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, 
     m_ColorBuffer = new float [ m_Vertices.Count()*3 ];
 
     if (m_VerticesBuffer)
-    for(int i=0;i<m_Vertices.Count(); i++) {
+    for( MOuint i=0;i<m_Vertices.Count(); i++) {
         m_VerticesBuffer[i*3] = m_Vertices[i].X();
         m_VerticesBuffer[i*3+1] = m_Vertices[i].Y();
         m_VerticesBuffer[i*3+2] = m_Vertices[i].Z();
@@ -285,13 +285,13 @@ moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, 
 
 
     if (m_VerticesUVBuffer)
-    for(int i=0;i<m_VerticesUvs.Count(); i++) {
+    for( MOuint i=0;i<m_VerticesUvs.Count(); i++) {
         m_VerticesUVBuffer[i*2] = m_VerticesUvs[i].X();
         m_VerticesUVBuffer[i*2+1] = m_VerticesUvs[i].Y();
     }
 
     if (m_ColorBuffer)
-    for(int i=0;i<m_Colors.Count(); i++) {
+    for( MOuint i=0;i<m_Colors.Count(); i++) {
         m_ColorBuffer[i*2] = m_Colors[i].X();
         m_ColorBuffer[i*2+1] = m_Colors[i].Y();
     }

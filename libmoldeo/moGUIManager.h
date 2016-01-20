@@ -126,7 +126,7 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
 	public:
 		moGeometry();
 		virtual ~moGeometry();
-		moGeometry( const moGeometry& p_src ) {
+		moGeometry( const moGeometry& p_src ) : moResourceElement(MO_RESOURCETYPE_GUI) {
             (*this) = p_src;
 		}
 		const moGeometry& operator=(const moGeometry& p_src );
@@ -223,7 +223,7 @@ class LIBMOLDEO_API moMaterialBase : public moResourceElement {
       m_Name = p_Name;
       m_Type = "Material";
     }
-    moMaterialBase( const moMaterialBase& p_src ) {
+    moMaterialBase( const moMaterialBase& p_src ) : moResourceElement(MO_RESOURCETYPE_GUI) {
       (*this) = p_src;
     }
 
@@ -278,7 +278,7 @@ class LIBMOLDEO_API moMaterial : public moMaterialBase {
             m_Map = NULL;
             m_Type = "BasicMaterial";
         }
-        moMaterial( const moMaterial& p_src ) {
+        moMaterial( const moMaterial& p_src ) : moMaterialBase() {
           (*this) = p_src;
         }
 

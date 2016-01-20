@@ -771,7 +771,10 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
 	}
 
 	///TODO: load and evaluate each parameter of m_shader->config using also p_src_object as parameters!!!
-
+  if (p_src_object) {
+    //do something
+    p_src_object = NULL;
+  }
     if (p_params != NULL)
     {
         m_DefParams->CopyDefParamIDs(p_params);

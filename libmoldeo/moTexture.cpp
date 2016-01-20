@@ -258,7 +258,7 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 #ifndef OPENGLESV2
 				if ( red_mask == 0x0000FF || red_mask==0) p_format = GL_BGR;
 				else
-#endif 
+#endif
 				p_format = GL_RGB;
 #ifndef OPENGLESV2
         if (fif==FIF_JPEG) p_format = GL_BGR;
@@ -269,12 +269,12 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 #ifndef OPENGLESV2
 				if ( blue_mask == 0xFF0000 || blue_mask==0 ) p_format = GL_BGRA_EXT;
 				else
-#endif 
+#endif
 				p_format = GL_RGBA;
 #ifndef OPENGLESV2
         if (fif==FIF_PNG) p_format = GL_BGRA_EXT;
 #else
-	
+
 #endif
 				break;
 			default:
@@ -360,7 +360,7 @@ MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
       MODebug2->Error("moTexture::GetBuffer > p_buffer: " + IntToStr((int)p_buffer));
       return false;
 	}
-  if ( 
+  if (
 #ifndef OPENGLESV2
 p_format!=GL_BGR &&
 p_format!=GL_BGRA &&
@@ -512,9 +512,10 @@ MOuint moTexture::GetDataHeight() const
 	else return (MOuint)(m_max_coord_t * m_height);
 }
 
+///TODO: check this! obsolete?
 MOuint moTexture::GetGLId( moMoldeoObject* p_src_mob ) {
   if (p_src_mob==NULL) return GetGLId();
-
+  return 0;
 }
 
 void moTexture::FlipBufferVert(MOubyte *pBuffer, MOint p_depth)
@@ -1213,7 +1214,7 @@ MOboolean moTextureMemory::BuildFromMemory() {
                 m_param.internal_format = GL_RGBA;
 #ifndef OPENGLESV2
                 if (FreeImage_GetBlueMask(pImage) == 0x000000FF) _format = GL_BGRA_EXT;
-                else 
+                else
 #endif
 		_format = GL_RGBA;
                 break;
@@ -2081,6 +2082,7 @@ MOboolean moMovie::Reload( bool force_kill ) {
     //check m_pFilename and reload!!
 
   }
+  return true;
 }
 
 void moMovie::EnableVideo(int enable) {

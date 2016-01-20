@@ -103,11 +103,12 @@ enum moResourceType {
  class LIBMOLDEO_API moResourceElement : public moAbstract {
 
 	public:
-	  moResourceElement() { }
-	  moResourceElement( moResourceType p_type) { m_ResourceType = MO_RESOURCETYPE_UNDEFINED; }
+	  moResourceElement() { m_ResourceType = MO_RESOURCETYPE_UNDEFINED; }
+	  moResourceElement( moResourceType p_type) { m_ResourceType = p_type; }
 	  virtual ~moResourceElement() {}
     virtual MOboolean Init( moResourceManager* p_rm ) {
       SetResourceManager(p_rm);
+      return moAbstract::Init();
     }
     virtual void SetResourceManager( moResourceManager* p_rm ) {
       m_pResourceManager = p_rm;
