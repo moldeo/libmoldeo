@@ -39,6 +39,7 @@
 
 moLock BuildLock;
 
+#define MO_GSTREAMER
 #ifdef MO_GSTREAMER
 
     #ifdef MO_MACOSX
@@ -864,16 +865,21 @@ GList*
 + }
 +}
 */
+
+
 moCaptureDevices* moGsFramework::LoadCaptureDevices() {
 
         GstElement* device;
         GstPropertyProbe* probe;
         GValueArray* va;
+        GList *plist;
+        GParamSpec* pm;
+        GValue* vdefault;
         //GList* list=NULL;
         //guint i=0;
         gchar* device_name;
 
-        MODebug2->Log( "moGsFramework::LoadCaptureDevices running..." );
+        MODebug2->Message( "moGsFramework::LoadCaptureDevices running..." );
 
         m_CaptureDevices.Empty();
 
@@ -923,7 +929,7 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
             moCaptureDevice CaptDev = m_PreferredDevices[i];
             AddCaptureDevice( CaptDev );
 
-            MODebug2->Log( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
+            MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
         }        //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText(""), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("DV"), moText("DV IEEE 1394"), moText("-"), 0 ) );
@@ -933,14 +939,55 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
 
     device = gst_element_factory_make (device_name, "source");
     gst_element_get_state(device, NULL, NULL, 5 * GST_SECOND);
+     moText probepname = "device-name";
     if (!device || !GST_IS_PROPERTY_PROBE(device))
       goto finish;
     probe = GST_PROPERTY_PROBE (device);
-    va = gst_property_probe_get_values_name (probe, "device-name");
+    if (probe) {
+        plist = gst_property_probe_get_properties( probe );
+        if (plist) {
+           plist = g_list_first(plist);
+            do {
+                pm = plist->data;
+                if (pm) {
+                    if (pm->name) {
+                        probepname = moText((char*)pm->name);
+                        MODebug2->Message( "moGsFramework::LoadCaptureDevices > probe property:"+probepname);
+                        va = gst_property_probe_get_values(probe, pm);
+                        if (va) {
+                            MODebug2->Message( "moGsFramework::LoadCaptureDevices > probe property:"+probepname+" has values!");
+                        }
+                    }
+                }
+            } while( plist=g_list_next(plist) );
+        }
+    }
+    va = gst_property_probe_get_values_name (probe, (char*)probepname);
+    //va = gst_property_probe_get_values_name (probe, "device");
+
+    if (!va) {
+        vdefault = g_param_spec_get_default_value ( pm );
+        if (vdefault) {
+            moText defaultText(g_value_get_string( vdefault ));
+            MODebug2->Message("moGsFramework::LoadCaptureDevices > Default value for: \""+moText((char*)probepname)+"\" is "+defaultText);
+            //G_VALUE_TYPE_NAME(vdefault);
+            moText cap_dev_name = defaultText;
+            moCaptureDevice newdev;
+            newdev.Present(true);
+
+            newdev.SetName(cap_dev_name);
+            newdev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
+
+            m_CaptureDevices.Add( newdev );
+
+            MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added Default capture device: " + newdev.GetName() + " label:" + newdev.GetLabelName() );
+        }
+    }
     if (!va)
       goto finish;
     for(guint i=0; i < va->n_values; ++i) {
       GValue* v = g_value_array_get_nth(va, i);
+      //GArray* v = g_array_index(va, i);
       GString* stv = g_string_new( g_value_get_string(v) );
       if (stv) {
           moText cap_dev_name = moText((char*)stv->str);
@@ -952,7 +999,7 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
 
           m_CaptureDevices.Add( newdev );
 
-          MODebug2->Log( "moGsFramework::LoadCaptureDevices > Added capture device: " + newdev.GetName() + " label:" + newdev.GetLabelName() );
+          MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added capture device: " + newdev.GetName() + " label:" + newdev.GetLabelName() );
       }
       //list = g_list_append(list, );
     }

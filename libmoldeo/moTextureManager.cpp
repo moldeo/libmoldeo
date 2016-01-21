@@ -627,8 +627,8 @@ MOint moTextureManager::GetTextureMOId(moText p_name, MOboolean p_create_tex, bo
 	{
 		ptex = m_textures_array[i];
 		if ((ptex != NULL) && (!stricmp(ptex->GetName(), p_name))) {
-        if (p_refresh) ptex->Refresh();
-        return i;
+            if (p_refresh) ptex->Refresh();
+            return i;
 		}
 	}
 
