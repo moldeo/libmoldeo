@@ -90,13 +90,13 @@ moGLMatrixf::MakeLookAt( float eyeX,  float eyeY,  float eyeZ,  float centerX,  
   moVector3f center3D( centerX, centerY, centerZ );
   moVector3f eyePosition3D( eyeX, eyeY, eyeZ );
   moVector3f upVector3D( upX, upY, upZ );
-
+  moGLMatrixf& me(*this);
   moVector3f direction3D;
   moGLMatrixf matrix2, resultMatrix;
   //------------------
-  direction3D.X() = center3D[0] - eyePosition3D[0];
-  direction3D.Y()= center3D[1] - eyePosition3D[1];
-  direction3D.Z() = center3D[2] - eyePosition3D[2];
+  direction3D.X() = center3D.X() - eyePosition3D.X();
+  direction3D.Y()= center3D.Y() - eyePosition3D.Y();
+  direction3D.Z() = center3D.Z() - eyePosition3D.Z();
   direction3D.Normalize();
 
   /*
@@ -105,12 +105,18 @@ moGLMatrixf::MakeLookAt( float eyeX,  float eyeY,  float eyeZ,  float centerX,  
   ComputeNormalOfPlane(side, forward, upVector3D);
   NormalizeVector(side);
   */
-  moVector3f side3D(upVector3D), up;
-  side3D.UnitCross( direction3D );
+  moVector3f side3D, up;
+  side3D = direction3D.UnitCross( upVector3D );
+
+
 /*
   //------------------
   //Recompute up as: up = side x forward
   ComputeNormalOfPlane(up, side, forward);
+*/
+  up = side3D.Cross( direction3D );
+
+  /*
   //------------------
   matrix2[0] = side[0];
   matrix2[4] = side[1];
@@ -129,11 +135,35 @@ moGLMatrixf::MakeLookAt( float eyeX,  float eyeY,  float eyeZ,  float centerX,  
   //------------------
   matrix2[3] = matrix2[7] = matrix2[11] = 0.0;
   matrix2[15] = 1.0;
+  */
+
+  matrix2[0][0] = side3D.X();
+  matrix2[1][0] = side3D.Y();
+  matrix2[2][0] = side3D.Z();
+  matrix2[3][0] = 0.0;
+
+  matrix2[0][1] = up.X();
+  matrix2[1][1] = up.Y();
+  matrix2[2][1] = up.Z();
+  matrix2[3][1] = 0.0;
+
+  matrix2[0][2] = -direction3D.X();
+  matrix2[1][2] = -direction3D.Y();
+  matrix2[2][2] = -direction3D.Z();
+  matrix2[3][2] = 0.0;
+
+  matrix2[0][3] = matrix2[1][3] = matrix2[2][3] = 0.0f;
+  matrix2[3][3] = 1.0;
   //------------------
+/*
   MultiplyMatrices4by4OpenGL_FLOAT(resultMatrix, matrix, matrix2);
   glhTranslatef2(resultMatrix,
                 -eyePosition3D[0], -eyePosition3D[1], -eyePosition3D[2]);
 */
+
+  me = me * matrix2;
+  me.Translate( -eyePosition3D.X(), -eyePosition3D.Y(), -eyePosition3D.Z() );
+
 
   return (*this);
 }
@@ -400,13 +430,22 @@ void moGLManager::SetPerspectiveView( MOint p_width, MOint p_height, double fovy
 //  float* pfv = m_ProjectionMatrix[0];
 
 #ifndef OPENGLESV2
+
+/*
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
 	gluPerspective(60.0f, m_Viewport.GetProportion(), 0.01f, 1000.0f);
+*/
 
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+  glLoadMatrixf( m_ProjectionMatrix.GetPointer() );
+
+/*
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+*/
 #endif
 }
 
@@ -438,7 +477,9 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height, float left,
       m_Viewport = moGLViewport( p_width, p_height );
 
 #ifndef OPENGLESV2
-      gluOrtho2D(0.0, p_width, 0.0, p_height);
+      //gluOrtho2D(0.0, p_width, 0.0, p_height);
+      glMatrixMode(GL_PROJECTION);
+      glLoadMatrixf( m_ProjectionMatrix.GetPointer() );
 #endif
     } else {
       float prop;
@@ -453,9 +494,9 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height, float left,
       glViewport( 0, 0, p_width, p_height );
       m_Viewport = moGLViewport( p_width, p_height );
 #ifndef OPENGLESV2
-	glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
-#else
 	//glOrtho( -0.5, 0.5, -0.5*prop, 0.5*prop, -1, 1);
+      glMatrixMode(GL_PROJECTION);
+      glLoadMatrixf( m_ProjectionMatrix.GetPointer() );
 #endif
       // Set Up An Ortho Screen
     }
@@ -466,6 +507,30 @@ void moGLManager::SetOrthographicView(MOint p_width, MOint p_height, float left,
 
 }
 
+
+void moGLManager::LookAt( float eyeX,  float eyeY,  float eyeZ,  float centerX,  float centerY,  float centerZ,  float upX,  float upY,  float upZ ) {
+
+  moGLMatrixf Lat;
+  Lat.MakeIdentity();
+  Lat.MakeLookAt( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ );
+
+  //m_ModelMatrix.MakeIdentity();
+  //m_ModelMatrix.MakeLookAt( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ );
+  //m_ProjectionMatrix.MakeIdentity();
+  m_ProjectionMatrix = Lat*m_ProjectionMatrix;
+/*
+  MODebug2->Message("moGLManager::LookAt > LookAt Matrix:" );
+  MODebug2->Message( Lat.ToJSON() );
+*/
+#ifndef OPENGLESV2
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      glLoadMatrixf( m_ProjectionMatrix.GetPointer() );
+      //gluLookAt(		eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ);
+      /*glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();*/
+#endif
+}
 
 
 MOint moGLManager::GetRenderMode()

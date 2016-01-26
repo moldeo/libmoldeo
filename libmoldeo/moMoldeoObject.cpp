@@ -780,18 +780,9 @@ moMoldeoObject::ResolveValue( moParam& param, int value_index, bool p_refresh ) 
       case MO_PARAM_3DMODEL:
       case MO_PARAM_OBJECT:
           if (value.GetSubValueCount()>0) {
-              //PROBAR!!!!!
-              //PROBAR!!!!!
-              mo3dModel* pModel = m_pResourceManager->GetModelMan()->Get3dModel( valuebase0.Text() );
-              if (pModel) {
-                  mo3DModelSceneNode *newSceneNode;
-                  newSceneNode = new mo3DModelSceneNode();
-                  if (newSceneNode) {
-                      newSceneNode->Init(pModel);
-                  }
-                  valuebase0.SetModel( newSceneNode );
-                  return true;
-              }
+              ///TODO: PROBAR!!!!!
+              moSceneNode* pModel = m_pResourceManager->GetModelMan()->Get3dModel( valuebase0.Text(), true /*force load !!*/ );
+              valuebase0.SetModel( pModel );
               return false;
           }
           break;

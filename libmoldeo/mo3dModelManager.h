@@ -74,7 +74,7 @@ struct mosFace
 // Some of these are not used, but I left them because you will want to eventually
 // read in the UV tile ratio and the UV tile offset for some models.
 
-struct moTextureMapInfo
+struct mo3DSTextureMapInfo
 {
 	MOushort id;	// id for type identification( opacity map, specular map, ...)
 	char  strFile[255];         // The texture file name(If this is set it's a texture map)
@@ -86,7 +86,7 @@ struct moTextureMapInfo
 	float rotation;
 };
 
-struct moMaterialInfo
+struct mo3DSMaterialInfo
 {
 
 	char  strName[255];         // The material name
@@ -104,7 +104,7 @@ struct moMaterialInfo
 	bool twoSided;
 	bool wireFrame;
 
-	std::vector<moTextureMapInfo> texMaps;
+	std::vector<mo3DSTextureMapInfo> texMaps;
 } ;
 
 
@@ -114,7 +114,7 @@ struct moMaterialInfo
 // You should eventually turn into a robust class that
 // has loading/drawing/querying functions like:
 // LoadModel(...); DrawObject(...); DrawModel(...); DestroyModel(...);
-struct mo3dObject
+struct mo3DSObject
 {
     int  numOfVerts;            // The number of verts in the model
     int  numOfFaces;            // The number of faces in the model
@@ -130,28 +130,37 @@ struct mo3dObject
 
 // This holds our model information.  This should also turn into a robust class.
 // We use STL's(Standard Template Library) vector class to ease our link list burdens. :)
-struct mo3dModel
+struct mo3DSModel
 {
-	moText	name;
+    moText	name;
     int numOfObjects;                   // The number of objects in the model
     int numOfMaterials;                 // The number of materials for the model
-    vector<moMaterialInfo> pMaterials;   // The list of material information(Textures and colors)
-    vector<mo3dObject> pObject;          // The object list for our model
+    vector<mo3DSMaterialInfo> pMaterials;   // The list of material information(Textures and colors)
+    vector<mo3DSObject> pObject;          // The object list for our model
 };
 
 
-/// Clase para un nodo de una escena
+
+/// Clase Nodo de Escena
 /**
-* Una nodo de escena es el objeto principal que contiene una jerarquía de objetos 3d
-* este nodo puede contener tanto un
+* Un Nodo de Escena (Scene Node) es la unidad básica de un árbol de nodos. Cada Nodo está contenido en una jerarquía dinámica que
+* puede variar con SetParent
+* Los objetos 3d derivan de esta clase definiendo una geometría y un material ver moObject3D.
+* Cada hijo o padre es un puntero a otro objeto moSceneNode, lo cual permite crear instancias de escenas con los mismos
+* objetos precargados.
 *
 */
+class moSceneNode;
+typedef moSceneNode* moSceneNodePointer;
+moDeclareDynamicArray( moSceneNode*, moSceneNodePointerArray );
+
 class LIBMOLDEO_API moSceneNode : public moAbstract {
 
     public:
 
         moSceneNode();
         virtual ~moSceneNode();
+        moSceneNode( const moText& name );
         moSceneNode( const moSceneNode& p_src );
         moSceneNode& operator=(const moSceneNode& p_src);
 
@@ -162,44 +171,72 @@ class LIBMOLDEO_API moSceneNode : public moAbstract {
         virtual void Update();
         virtual void Interaction();
 
-        virtual moSceneNode*    GetParent();
-        virtual void            SetParent( moSceneNode* p_SceneNode );
+        virtual moSceneNode*    GetParent() {
+          return m_Parent;
+        }
+        virtual void            SetParent( moSceneNode* p_parent ) {
+          m_Parent = p_parent;
+        }
 
-        void SetProjection( const moGLMatrixf& p_projection_matrix ) {
-          m_Projection = p_projection_matrix;
+        void SetProjectionMatrix( const moGLMatrixf& p_projection_matrix ) {
+          m_ProjectionMatrix = p_projection_matrix;
         }
-        void SetModel( const moGLMatrixf& p_model_matrix ) {
-          m_Model = p_model_matrix;
+        void SetModelMatrix( const moGLMatrixf& p_model_matrix ) {
+          m_ModelMatrix = p_model_matrix;
         }
-        const moGLMatrixf& GetProjection() const {
-          return m_Projection;
+        const moGLMatrixf& GetProjectionMatrix() const {
+          return m_ProjectionMatrix;
         }
-        const moGLMatrixf& GetModel() const {
-          return m_Model;
+        const moGLMatrixf& GetModelMatrix() const {
+          return m_ModelMatrix;
         }
+
+        virtual int AddChild( moSceneNodePointer p_child_node );
+        virtual int RemoveChild( moSceneNodePointer p_child_node );
+        virtual int RemoveChild( int p_node_index );
+
+        virtual moSceneNode* GetChild( int p_index_child );
+        virtual moSceneNodePointerArray& GetChilds() {
+          return m_Childrens;
+        }
+        virtual moSceneNode* GetObjectByName( const moText& p_name );
+        virtual moSceneNode* GetObjectById( MOulong p_id );
+        MOulong GetId() { return m_Id; }
+        const moText& GetName() { return m_Name; }
+
+        static MOulong UID;
+        static MOulong CreateUID();
+
 
     protected:
 
         void*   SceneNodeImplementation;
-        moGLMatrixf  m_Projection;
-        moGLMatrixf  m_Model;
 
+        moGLMatrixf  m_ProjectionMatrix;
+        moGLMatrixf  m_ModelMatrix;
+
+        moSceneNodePointerArray m_Childrens;
+        moSceneNode* m_Parent;
+        MOulong     m_Id;
+        moText   m_Name;
 };
+
+moDeclareDynamicArray( moSceneNode, moSceneNodeArray );
 
 /// Clase base para los modelos tridimensionales
 /**
 * De esta clase deberían derivar los objetos tridimensionales importados por los recursos
 *
 */
-class LIBMOLDEO_API mo3DModelSceneNode : public moSceneNode {
+class LIBMOLDEO_API mo3DSModelSceneNode : public moSceneNode {
 
     public:
 
-        mo3DModelSceneNode();
-        virtual ~mo3DModelSceneNode();
+        mo3DSModelSceneNode();
+        virtual ~mo3DSModelSceneNode();
 
         virtual MOboolean Init();
-        virtual MOboolean Init( mo3dModel* p_pModel ) {
+        virtual MOboolean Init( mo3DSModel* p_pModel ) {
             m_pModel = p_pModel;
             return true;
         }
@@ -212,8 +249,7 @@ class LIBMOLDEO_API mo3DModelSceneNode : public moSceneNode {
     protected:
 
         /** 3ds model structure */
-        mo3dModel* m_pModel;
-
+        mo3DSModel* m_pModel;
 };
 
 
@@ -255,55 +291,55 @@ class LIBMOLDEO_API moScene : public moAbstract {
 class LIBMOLDEO_API mo3dModelManager :  public moResource {
 
 public:
-	moTextureManager	*Textures;
-
-	MOuint nModels;
-	MOuint nMaxModels;
-	mo3dModel **Models;
 
 	mo3dModelManager();
 	mo3dModelManager(int);
 	virtual ~mo3dModelManager();
 
-	MOboolean Init();
-	MOboolean Finish();
+	virtual MOboolean Init();
+	virtual MOboolean Finish();
 
-	mo3dModel* Get3dModel(moText namemodelo);
+	moSceneNode* Get3dModel( const moText& p_object_name, bool force_load=false );
 
 	void MoldeoLogo(long ticks=0);
 
 
-private:
+protected:
 
-    mo3DModelSceneNode*  m_pMoldeoLogo;
-
-	mo3dModel* Load3dModel( moText namemodelo, moText datapath = "");
-
-
+    moTextureManager* mTM;
+    moSceneNode* m_pMoldeoLogo;
+    moSceneNode m_MotherNode;
+    moSceneNode* Load3dModel( const moText& p_file_name );
+/*
+    MOuint nModels;
+    MOuint nMaxModels;
+    mo3DSModel **Models;
+    mo3DSModel* Load3DSModel( moText namemodelo, moText datapath = "");
+*/
 };
-
+/*
 class LIBMOLDEO_API mo3dModelManagerRef : public moAbstract{
 public:
 
 	MOuint nModels;
-	mo3dModel **Models;
+	mo3DSModel **Models;
 
-	mo3dModelManagerRef();
-	virtual ~mo3dModelManagerRef();
+	mo3DSModelManagerRef();
+	virtual ~mo3DSModelManagerRef();
 
 	MOboolean Init(moConfig*,MOuint,mo3dModelManager *);
 	void Draw(int imodel, moEffectState* state, GLuint g_ViewMode);
 	int Add(moText,mo3dModelManager*);
 	MOboolean Finish();
-	mo3dModel* Get(int i);
+	mo3DSModel* Get(int i);
 	//MOuint Get(int);//sin sincronizacion , como venga: si tiene frames por segundos...
 	//MOuint Get(int,int);//sin sincronizacion , un cuadro arbitrario
 	//MOuint Get(int,moTempo*);//con syncro
 	//MOuint GetType(int);//devuelve el type al que corresponde la imagen esa
 
 	private:
-	void LoadModels(moConfig*,MOuint,mo3dModelManager*);
+    void LoadModels(moConfig*,MOuint,mo3dModelManager*);
 };
-
+*/
 #endif /* __MO_MODELOS3D_H__ */
 

@@ -402,7 +402,7 @@ moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
     const moMaterial& Mat( p_src.m_Material );
     //const moGLMatrixf& PMatrix( p_src.GetProjection() );
     const moGLMatrixf& PMatrix( m_camera );
-    const moGLMatrixf& MMatrix( p_src.GetModel() );
+    const moGLMatrixf& MMatrix( p_src.GetModelMatrix() );
     moGLMatrixf Result;
     Result = MMatrix*PMatrix;
 

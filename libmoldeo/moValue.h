@@ -69,13 +69,16 @@ NOTES:
 #include "moMathVector.h"
 #include "moMathVector3.h"
 #include "moMathVector4.h"
-
+#include <iostream>
+#include <map>
+#include <string>
+using namespace std;
 
 #define moRound(x) ((x) < (LONG_MIN-0.5) || (x) > (LONG_MAX+0.5)) ?\
 0.0f : ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
 
 class moFont;
-class mo3DModelSceneNode;
+class moSceneNode;
 class moTexture;
 class moTextureFilter;
 class moTextureBuffer;
@@ -191,7 +194,7 @@ class LIBMOLDEO_API moData {
 		void        SetTextureFilterAlpha( moData* p_alpha );
 		void        SetTextureFilterParam( moTextFilterParam *p_filterparam );
 		void        SetFont( moFont*	p_Font );
-		void        SetModel( mo3DModelSceneNode*    p_Model );
+		void        SetModel( moSceneNode*    p_Model );
 		void        SetSound( moSound*	p_Sound );
 		void        SetVector( moVector2d *p_vector2d );
 		void        SetVector( moVector3d *p_vector3d );
@@ -225,7 +228,7 @@ class LIBMOLDEO_API moData {
 		moMathFunction*         Fun();
 		moFont*                 Font();
 		moTextureBuffer*        TextureBuffer();
-		mo3DModelSceneNode*     Model();
+		moSceneNode*            Model();
 		moVector2d*             Vector2d();
 		moVector2i*             Vector2i();
 		moVector3d*             Vector3d();
@@ -272,8 +275,8 @@ class LIBMOLDEO_API moData {
 
 
 moDeclareExportedDynamicArray( moData, moDatas );
-
 moDeclareExportedDynamicArray( moDataMessage, moDataMessages );
+typedef std::map< std::string, moData > moAttributes;
 
 
 /**

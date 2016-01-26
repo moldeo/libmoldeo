@@ -110,7 +110,7 @@ class LIBMOLDEO_API CLoad3DS
 	  CLoad3DS ();			 // This inits the data members
 
     // This is the function that you call to load the 3DS
-    bool Import3DS (mo3dModel * pModel, char *strFileName);
+    bool Import3DS (mo3DSModel * pModel, char *strFileName);
 
 	private:
 
@@ -135,33 +135,33 @@ class LIBMOLDEO_API CLoad3DS
 		void ReadChunk (tChunk *);
 
 		// This reads the next large chunk
-		void ProcessNextChunk (mo3dModel * pModel, tChunk *);
+		void ProcessNextChunk (mo3DSModel * pModel, tChunk *);
 
 		// This reads the object chunks
-		void ProcessNextObjectChunk (mo3dModel * pModel, mo3dObject * pObject,
+		void ProcessNextObjectChunk (mo3DSModel * pModel, mo3DSObject * pObject,
 			tChunk *);
 
 		// This reads the material chunks
-		void ProcessNextMaterialChunk (mo3dModel * pModel, tChunk *);
+		void ProcessNextMaterialChunk (mo3DSModel * pModel, tChunk *);
 
 		// This reads the RGB value for the object's color
-		void ReadColorChunk (moMaterialInfo * pMaterial, tChunk * pChunk, int color);
+		void ReadColorChunk (mo3DSMaterialInfo * pMaterial, tChunk * pChunk, int color);
 
 		// This reads the objects vertices
-		void ReadVertices (mo3dObject * pObject, tChunk *);
+		void ReadVertices (mo3DSObject * pObject, tChunk *);
 
 		// This reads the objects face information
-		void ReadVertexIndices (mo3dObject * pObject, tChunk *);
+		void ReadVertexIndices (mo3DSObject * pObject, tChunk *);
 
 		// This reads the texture coodinates of the object
-		void ReadUVCoordinates (mo3dObject * pObject, tChunk *);
+		void ReadUVCoordinates (mo3DSObject * pObject, tChunk *);
 
 		// This reads in the material name assigned to the object and sets the materialID
-		void ReadObjectMaterial (mo3dModel * pModel, mo3dObject * pObject,
+		void ReadObjectMaterial (mo3DSModel * pModel, mo3DSObject * pObject,
 			tChunk * pPreviousChunk);
 
 		// This computes the vertex normals for the object(used for lighting)
-		void ComputeNormals (mo3dModel * pModel);
+		void ComputeNormals (mo3DSModel * pModel);
 
 		// This frees memory and closes the file
 		void CleanUp ();

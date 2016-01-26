@@ -198,6 +198,7 @@ class LIBMOLDEO_API moGLManager : public moResource
          * @param p_height alto de la ventana.
          */
 		void SetPerspectiveView(MOint p_width, MOint p_height, double fovy=60.0,  double aspect=1.0,  double znear=0.1,  double zfar=4000.0 );
+    void LookAt( float eyeX=0.0,  float eyeY=0.0,  float eyeZ=-10.0,  float centerX=0.0,  float centerY=0.0,  float centerZ=0.0,  float upX=0.0,  float upY=0.0,  float upZ=1.0 );
 
 		/**
          * Configura la matriz de proyección y el viewport a fin de generar una visualización en perspectiva
@@ -238,6 +239,7 @@ class LIBMOLDEO_API moGLManager : public moResource
          * @param p_height alto de la ventana.
          */
     void SetDefaultOrthographicView( MOint p_width=0, MOint p_height=0 );
+
         /**
          * Devuelve el modo de render actual.
          *

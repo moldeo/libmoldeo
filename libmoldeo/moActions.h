@@ -753,7 +753,6 @@ class moReactionListener {
 
 moDeclareExportedDynamicArray( moReactionListener*, moReactionListeners );
 
-
 typedef std::map< std::string, moAction > TMapStrToAction;
 typedef std::map< std::string, int> TMapStrToActionType;
 

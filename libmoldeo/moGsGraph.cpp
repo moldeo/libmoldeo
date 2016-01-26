@@ -875,6 +875,7 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
         GList *plist;
         GParamSpec* pm;
         GValue* vdefault;
+        GValue valDef;
         //GList* list=NULL;
         //guint i=0;
         gchar* device_name;
@@ -944,11 +945,11 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
       goto finish;
     probe = GST_PROPERTY_PROBE (device);
     if (probe) {
-        plist = gst_property_probe_get_properties( probe );
+        plist = (GList *)gst_property_probe_get_properties( probe );
         if (plist) {
-           plist = g_list_first(plist);
+            plist = (GList *)g_list_first(plist);
             do {
-                pm = plist->data;
+                pm = (GParamSpec *)plist->data;
                 if (pm) {
                     if (pm->name) {
                         probepname = moText((char*)pm->name);
@@ -964,9 +965,12 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
     }
     va = gst_property_probe_get_values_name (probe, (char*)probepname);
     //va = gst_property_probe_get_values_name (probe, "device");
-
     if (!va) {
-        vdefault = g_param_spec_get_default_value ( pm );
+        //TRY TO SET DEFAULT VALUE FROM PARAM SPEC
+        g_value_init( &valDef, G_PARAM_SPEC_VALUE_TYPE(pm) );
+        //vdefault = g_param_spec_get_default_value ( pm );
+        g_param_value_set_default( pm, &valDef );
+        vdefault = &valDef;
         if (vdefault) {
             moText defaultText(g_value_get_string( vdefault ));
             MODebug2->Message("moGsFramework::LoadCaptureDevices > Default value for: \""+moText((char*)probepname)+"\" is "+defaultText);

@@ -36,12 +36,25 @@
 
 
 #include "moArray.h"
-moDefineDynamicArray( moCoords );
+moDefineDynamicArray( moCoords )
+moDefineDynamicArray( moSceneNodeArray )
+moDefineDynamicArray( moSceneNodePointerArray )
 
+MOulong moSceneNode::UID = 0;
+
+MOulong moSceneNode::CreateUID() {
+  moSceneNode::UID+= 1;
+  return moSceneNode::UID;
+}
 
 moSceneNode::moSceneNode() {
-  m_Projection.MakeIdentity();
-  m_Model.MakeIdentity();
+  m_ProjectionMatrix.MakeIdentity();
+  m_ModelMatrix.MakeIdentity();
+}
+
+moSceneNode::moSceneNode( const moText& name ) {
+  m_Id = moSceneNode::CreateUID();
+  m_Name = name;
 }
 
 moSceneNode::moSceneNode( const moSceneNode& p_src ) {
@@ -50,25 +63,13 @@ moSceneNode::moSceneNode( const moSceneNode& p_src ) {
 
 moSceneNode&
 moSceneNode::operator=(const moSceneNode& p_src) {
-  m_Projection = p_src.m_Projection;
-  m_Model = p_src.m_Model;
+  m_ProjectionMatrix = p_src.m_ProjectionMatrix;
+  m_ModelMatrix = p_src.m_ModelMatrix;
+  m_Parent = p_src.m_Parent;
+  m_ProjectionMatrix = p_src.m_ProjectionMatrix;
+  m_Childrens = p_src.m_Childrens;
   return (*this);
 }
-
-
-moSceneNode*
-moSceneNode::GetParent() {
-    return NULL;
-}
-
-
-void
-moSceneNode::SetParent( moSceneNode* p_SceneNode ) {
-  if (p_SceneNode) {
-    p_SceneNode = NULL;
-  }
-}
-
 
 moSceneNode::~moSceneNode() {
 
@@ -83,6 +84,67 @@ MOboolean moSceneNode::Init() {
 MOboolean moSceneNode::Finish() {
   return true;
 }
+
+moSceneNode*
+moSceneNode::GetObjectByName( const moText& p_name ) {
+  moSceneNode* nFind = NULL;
+  for( MOuint i=0; i<m_Childrens.Count(); i++ ) {
+      nFind = m_Childrens[i];
+
+      if (nFind && nFind->GetName()==p_name) {
+        return nFind;
+      }
+
+      if (nFind) nFind = nFind->GetObjectByName( p_name );
+      if (nFind) return nFind;
+  }
+  return nFind;
+}
+
+moSceneNode*
+moSceneNode::GetObjectById( MOulong p_id ) {
+  moSceneNode* nFind = NULL;
+  for( MOuint i=0; i<m_Childrens.Count(); i++ ) {
+      nFind = m_Childrens[i];
+
+      if (nFind && nFind->GetId()==p_id) {
+        return nFind;
+      }
+
+      if (nFind) nFind = nFind->GetObjectById( p_id );
+      if (nFind) return nFind;
+  }
+  return nFind;
+}
+
+moSceneNodePointer
+moSceneNode::GetChild( int p_index_child ) {
+  return m_Childrens.Get(p_index_child);
+}
+
+int moSceneNode::AddChild( moSceneNodePointer p_child_node ) {
+    m_Childrens.Add( p_child_node );
+    return 0;
+}
+
+int moSceneNode::RemoveChild( int p_node_index ) {
+  m_Childrens.Remove( p_node_index );
+  return 1;
+}
+
+int moSceneNode::RemoveChild( moSceneNodePointer p_child_node ) {
+
+    if (p_child_node==NULL) return -1;
+    //search for node
+    for( int i=0; i<(int)m_Childrens.Count(); i++ ) {
+      if (p_child_node==m_Childrens[i]) {
+        m_Childrens.Remove(i);
+        return 1;
+      }
+    }
+    return 0;
+}
+
 
 void moSceneNode::Draw( moEffectState *state, GLuint g_ViewMode ) {
 
@@ -105,32 +167,36 @@ void moSceneNode::Interaction() {
 }
 
 
-mo3DModelSceneNode::mo3DModelSceneNode() {
+
+
+
+
+mo3DSModelSceneNode::mo3DSModelSceneNode() {
     m_pModel = NULL;
 }
 
 
-mo3DModelSceneNode::~mo3DModelSceneNode() {
+mo3DSModelSceneNode::~mo3DSModelSceneNode() {
 
 }
 
 MOboolean
-mo3DModelSceneNode::Init() {
+mo3DSModelSceneNode::Init() {
     m_pModel = NULL;
     return true;
 }
 
-MOboolean mo3DModelSceneNode::Finish() {
+MOboolean mo3DSModelSceneNode::Finish() {
     return true;
 }
 
 
-void mo3DModelSceneNode::Draw(moEffectState *state, GLuint g_ViewMode) {
+void mo3DSModelSceneNode::Draw(moEffectState *state, GLuint g_ViewMode) {
 
 	int i;
 	float x,y;
 	int TID;
-	moMaterialInfo MAT;
+	mo3DSMaterialInfo MAT;
 
 
     if (m_pModel)
@@ -140,7 +206,7 @@ void mo3DModelSceneNode::Draw(moEffectState *state, GLuint g_ViewMode) {
 		if(m_pModel->pObject.size() <= 0) break;
 
 		// Get the current object that we are displaying
-		mo3dObject *pObject = &m_pModel->pObject[i];
+		mo3DSObject *pObject = &m_pModel->pObject[i];
 
 		// Check to see if this object has a texture map, if so bind the texture to it.
 		//if pObject->materialID
@@ -259,11 +325,11 @@ void mo3DModelSceneNode::Draw(moEffectState *state, GLuint g_ViewMode) {
 
 }
 
-void mo3DModelSceneNode::Update() {
+void mo3DSModelSceneNode::Update() {
 
 }
 
-void mo3DModelSceneNode::Interaction() {
+void mo3DSModelSceneNode::Interaction() {
 
 }
 
@@ -278,23 +344,17 @@ void mo3DModelSceneNode::Interaction() {
 mo3dModelManager::mo3dModelManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_MODEL );
-	SetName("3dModel Manager");
-	SetLabelName("3dModel Manager");
-
+	SetName("3dmodelmanager");
+	SetLabelName("3d Model Manager");
+	mTM = NULL;
+	m_pMoldeoLogo = NULL;
+/*
 	nMaxModels = MO_MAX_MODELOS;
 	Models = new mo3dModel* [nMaxModels];
 	for(MOuint i=0;i<nMaxModels;i++)  Models[i] = NULL;
 	nModels = 0;
 	Textures = NULL;
-}
-
-mo3dModelManager::mo3dModelManager(int nMaxMods) {
-	nMaxModels = nMaxMods;
-	Models = new mo3dModel* [nMaxModels];
-	for(MOuint i=0;i<nMaxModels;i++)  Models[i] = NULL;
-	nModels = 0;
-	Textures = NULL;
-	m_pMoldeoLogo = NULL;
+*/
 }
 
 mo3dModelManager::~mo3dModelManager() {
@@ -303,11 +363,16 @@ mo3dModelManager::~mo3dModelManager() {
 
 MOboolean
 mo3dModelManager::Init() {
-	nModels = 0;
-	m_pMoldeoLogo = NULL;
+  m_pMoldeoLogo = NULL;
 	if ( m_pResourceManager ) {
-		Textures = m_pResourceManager->GetTextureMan();
+		mTM = m_pResourceManager->GetTextureMan();
 	}
+
+	m_pMoldeoLogo = Load3dModel("moldeologo.3ds" );
+	if (m_pMoldeoLogo) {
+    MODebug2->Message("mo3dModelManager::Init > loaded Moldeo 3ds Model!!! ");
+	}
+	/*
 	if (!m_pMoldeoLogo) {
 		mo3dModel* pmodel = Load3dModel("moldeologo.3ds", m_pResourceManager->GetDataMan()->GetAppDataPath() );
 		if (pmodel) {
@@ -315,34 +380,40 @@ mo3dModelManager::Init() {
 			m_pMoldeoLogo->Init(pmodel);
 		}
 	}
+	*/
 	return true;
 }
 
 
 //Devuelve el puntero generado
 //en caso de no encontrar el archivo, devuelve MOTEXTURAS_ERROR
-mo3dModel*
-mo3dModelManager::Load3dModel( moText Tname, moText datapath ) {
 
-	MOint i,j;
-	CLoad3DS g_Load3ds; // Clase importacion de escenas 3DS.
-	moText strTexture;
-	moText file3ds;
-	MOuint texid=MO_UNDEFINED;
-    if (datapath==moText(""))
-        file3ds = m_pResourceManager->GetDataMan()->GetDataPath();
-    else
-        file3ds = datapath;
-	file3ds+= moSlash;
-	file3ds+= Tname;
+moSceneNode*
+mo3dModelManager::Load3dModel( const moText& p_file_name ) {
 
-	Models[nModels] = new(mo3dModel);
+//  MOint i,j;
+  CLoad3DS g_Load3ds; // Clase importacion de escenas 3DS.
 
+  moText strTexture;
+  moText filename;
+//  MOuint texid=MO_UNDEFINED;
+
+  moFile File3D = m_pResourceManager->GetDataMan()->GetDataFile( p_file_name );
+
+  if (!File3D.Exists()) {
+    /// check also in App Data Path!
+    File3D = m_pResourceManager->GetDataMan()->GetAppDataFile( p_file_name );
+    if (!File3D.Exists()) {
+      MODebug2->Error( "mo3dModelManager::Load3dModel > file not found! " + File3D.GetFullName() );
+    }
+  }
+
+/*
 	if(Models[nModels]!=NULL) {
 		Models[nModels]->numOfMaterials = 0;
 		Models[nModels]->numOfObjects = 0;
 
-		if(g_Load3ds.Import3DS( Models[nModels], file3ds) == true) {
+		if(g_Load3ds.Import3DS( Models[nModels], file3d) == true) {
 
 			for(i = 0; i < Models[nModels]->numOfMaterials; i++)
 			{
@@ -375,11 +446,14 @@ mo3dModelManager::Load3dModel( moText Tname, moText datapath ) {
 
 	nModels++;
 	return Models[nModels-1];
+	*/
+	return NULL;
 }
 
 
 MOboolean
 mo3dModelManager::Finish() {
+  /*
 	MOuint i;
 	if(nModels>0) {
 		for(i=0;i<nModels;i++) {
@@ -406,27 +480,29 @@ mo3dModelManager::Finish() {
         delete m_pMoldeoLogo;
         m_pMoldeoLogo = NULL;
 	}
-
+*/
 	return true;
 }
 
-mo3dModel* mo3dModelManager::Get3dModel(moText namemodelo) {
-	MOuint i;
+moSceneNode*
+mo3dModelManager::Get3dModel( const moText& p_object_name, bool force_load ) {
+
 	//buscamos a ver si no lo cargamos ya
-	for(i=0;i<nModels;i++) {
-		if(Models[i]!=NULL) {
-			if(!stricmp(Models[i]->name,namemodelo)) {
-				return(Models[i]);
-				break;
-			}
-		}
-	}
 	//si no se encontro el modelo se lo carga
-	return( Load3dModel(namemodelo) );
+  moSceneNode* pFind = m_MotherNode.GetObjectByName( p_object_name );
+  if (!pFind && force_load) {
+    pFind = Load3dModel( p_object_name );
+  }
+	return( pFind );
 }
 
 void mo3dModelManager::MoldeoLogo(long ticks) {
 
+    //animate
+
+    cout << "mo3dModelManager::MoldeoLogo > ticks: " << ticks << endl;
+
+/*
         moEffectState pstate;
         pstate.tintr = 1.0;
         pstate.tintg = 1.0;
@@ -457,6 +533,7 @@ void mo3dModelManager::MoldeoLogo(long ticks) {
         if (m_pMoldeoLogo)
             m_pMoldeoLogo->Draw( &pstate, GL_TRIANGLES);
 #endif
+*/
 }
 
 
@@ -467,7 +544,7 @@ void mo3dModelManager::MoldeoLogo(long ticks) {
 //========================================
 
 
-
+/*
 void
 mo3dModelManagerRef::LoadModels(moConfig *cfg,MOuint param,mo3dModelManager*M) {
 
@@ -724,3 +801,4 @@ void mo3dModelManagerRef::Draw(int imodel, moEffectState *state, GLuint g_ViewMo
 
 
 }
+*/

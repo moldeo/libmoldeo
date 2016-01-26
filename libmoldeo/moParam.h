@@ -410,6 +410,7 @@ class LIBMOLDEO_API moParam
 };
 
 moDeclareExportedDynamicArray( moParam, moParams);
+typedef std::map< std::string, moParam* > moParamsMap;
 
 
 #endif

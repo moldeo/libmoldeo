@@ -350,7 +350,7 @@ class LIBMOLDEO_API moConfig
         moMathFunction&               Fun(  moParamReference p_paramreference );
         const moFont&                 Font( moParamReference p_paramreference );
         const moTextureBuffer&        TextureBuffer(  moParamReference p_paramreference );
-        const mo3DModelSceneNode&     Model(  moParamReference p_paramreference );
+        const moSceneNode&            Model(  moParamReference p_paramreference );
         const moVector2d&             Vector2d( moParamReference p_paramreference );
         const moVector2i&             Vector2i( moParamReference p_paramreference );
         const moVector3d&             Vector3d( moParamReference p_paramreference );
@@ -556,13 +556,13 @@ class LIBMOLDEO_API moConfig
     static moFont*         m_pFont;
 		static moMathFunction* m_pFun;
 		static moTextureBuffer* m_pTextureBuffer;
-		static mo3DModelSceneNode*     m_pModel;
+		static moSceneNode*            m_pModel;
 		static moVector2d*             m_pVector2d;
 		static moVector2i*             m_pVector2i;
 		static moVector3d*             m_pVector3d;
-		static moVector3i*            m_pVector3i;
+		static moVector3i*             m_pVector3i;
 		static moVector4d*             m_pVector4d;
-		static moVector4i*            m_pVector4i;
+		static moVector4i*             m_pVector4i;
 		static moDataMessage*          m_pMessage;
 		static moDataMessages*         m_pMessages;
 		static moSound*                m_pSound;

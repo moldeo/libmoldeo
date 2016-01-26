@@ -999,6 +999,35 @@ moDataManager::GetDataPath() {
 	return moText("");
 }
 
+moFile
+moDataManager::GetDataFile( const moText& p_file_name ) {
+
+    moText full_path = m_pDataSessionConfig->GetDataPath() + moSlash + p_file_name;
+    return moFile( full_path );
+}
+
+moDirectory
+moDataManager::GetDataDir( const moText& p_dir_name ) {
+
+    moText full_path = m_pDataSessionConfig->GetDataPath() + moSlash + p_dir_name;
+    return moDirectory( full_path );
+}
+
+
+moFile
+moDataManager::GetAppDataFile( const moText& p_file_name ) {
+
+    moText full_path = m_pDataSessionConfig->GetAppDataPath() + moSlash + p_file_name;
+    return moFile( full_path );
+}
+
+moDirectory
+moDataManager::GetAppDataDir( const moText& p_dir_name ) {
+
+    moText full_path = m_pDataSessionConfig->GetAppDataPath() + moSlash + p_dir_name;
+    return moDirectory( full_path );
+}
+
 moText
 moDataManager::GetAppDataPath() {
 	//m_DataSessionIndex

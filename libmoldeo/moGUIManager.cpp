@@ -58,7 +58,11 @@ moCamera3D::operator=( const moCamera3DBase& p_src ) {
 
 
 moGeometry::moGeometry() {
-  //m_Type = MO_GEOMETRY_UNDEFINED;
+  m_Type = MO_GEOMETRY_UNDEFINED;
+}
+
+moGeometry::moGeometry( moGeometryType p_type ) {
+  m_Type = p_type;
 }
 
 moGeometry::~moGeometry() {
@@ -207,9 +211,7 @@ moGeometry::ToJSON() {
 
 
 
-moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegments, int hsegments, int dsegments ) {
-  m_Type = MO_GEOMETRY_BOX;
-
+moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegments, int hsegments, int dsegments ) : moGeometry( MO_GEOMETRY_BOX ) {
 
 }
 
@@ -219,7 +221,7 @@ moBoxGeometry::~moBoxGeometry(  ) {
 
 
 
-moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, int heightSegments ) {
+moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, int heightSegments ) : moGeometry(MO_GEOMETRY_PLANE) {
 
     m_VerticesBuffer = NULL;
     m_VerticesUVBuffer = NULL;
@@ -333,7 +335,7 @@ moPolyhedronGeometry::moPolyhedronGeometry() {
 moPolyhedronGeometry::moPolyhedronGeometry( const moVector3fArray& p_Vertices,
                                            const moVector3iArray& p_Faces,
                                            float radius,
-                                           float detail ) : moGeometry() {
+                                           float detail ) : moGeometry( MO_GEOMETRY_POLYHEDRON ) {
 
   //radius, detail
   m_Vertices = p_Vertices;
@@ -347,6 +349,155 @@ moPolyhedronGeometry::~moPolyhedronGeometry() {
 }
 
 
+
+moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightSegments, float phiStart, float phiLength, float thetaStart, float thetaLength )
+: moGeometry( MO_GEOMETRY_SPHERE ) {
+
+    m_VerticesBuffer = NULL;
+    m_VerticesUVBuffer = NULL;
+    m_ColorBuffer = NULL;
+
+    m_Name = "MySphere";
+    m_Type = MO_GEOMETRY_SPHERE;
+
+    m_Vertices.Init( 0, moVector3f( 0.0, 0.0, 0.0) );
+    m_Vertices.Empty();
+
+    m_VerticesUvs.Init( 0,  moTCoord( 0.0, 0.0 ) );
+    m_VerticesUvs.Empty();
+
+    m_Faces.Init( 0, moFace( 0, 0, 0 ) );
+    m_Faces.Empty();
+
+    m_FaceVertexUvs.Init( 0, moTCoord( 0.0, 0.0 ) );
+    m_FaceVertexUvs.Empty();
+
+    m_Colors.Init( 0, moColor( 0.0, 0.0, 0.0 ) );
+    m_Colors.Empty();
+
+
+    radius = radius || 50;
+
+    widthSegments = max( 3, widthSegments );
+    heightSegments = max( 2, heightSegments );
+
+    float thetaEnd = thetaStart + thetaLength;
+    int vertexCount = ( ( widthSegments + 1 ) * ( heightSegments + 1 ) );
+
+    for ( int y = 0; y <= heightSegments; y++ ) {
+
+      //verticesRow = [];
+
+      float v = ((float)y) / (float)heightSegments;
+
+      for ( int x = 0; x <= widthSegments; x++ ) {
+
+        float u = ((float)x) / ((float)widthSegments);
+
+        float px = - radius * moMathf::Cos( phiStart + u * phiLength ) * moMathf::Sin( thetaStart + v * thetaLength );
+        float py = radius * moMathf::Cos( thetaStart + v * thetaLength );
+        float pz = radius * moMathf::Sin( phiStart + u * phiLength ) * moMathf::Sin( thetaStart + v * thetaLength );
+
+        moVector3f normal( px, py, pz );
+        /*
+        positions.setXYZ( index, px, py, pz );
+        normals.setXYZ( index, normal.x, normal.y, normal.z );
+        uvs.setXY( index, u, 1 - v );
+
+        verticesRow.push( index );
+        index ++;
+        */
+      }
+      //vertices.push( verticesRow );
+    }
+/*
+	var indices = [];
+
+	for ( var y = 0; y < heightSegments; y ++ ) {
+
+		for ( var x = 0; x < widthSegments; x ++ ) {
+
+			var v1 = vertices[ y ][ x + 1 ];
+			var v2 = vertices[ y ][ x ];
+			var v3 = vertices[ y + 1 ][ x ];
+			var v4 = vertices[ y + 1 ][ x + 1 ];
+
+			if ( y !== 0 || thetaStart > 0 ) indices.push( v1, v2, v4 );
+			if ( y !== heightSegments - 1 || thetaEnd < Math.PI ) indices.push( v2, v3, v4 );
+
+		}
+
+	}
+
+	this.setIndex( new ( positions.count > 65535 ? THREE.Uint32Attribute : THREE.Uint16Attribute )( indices, 1 ) );
+	this.addAttribute( 'position', positions );
+	this.addAttribute( 'normal', normals );
+	this.addAttribute( 'uv', uvs );
+
+	this.boundingSphere = new THREE.Sphere( new THREE.Vector3(), radius );
+
+    */
+/*
+    m_Vertices.Add( moVector3f( -dw, -dh, 0.0) );
+    m_Vertices.Add( moVector3f( -dw,  dh, 0.0) );
+    m_Vertices.Add( moVector3f(  dw, -dh, 0.0) );
+    m_Vertices.Add( moVector3f(  dw,  dh, 0.0) );
+
+    m_VerticesUvs.Add( moVector2f( 0.0, 1.0) );
+    m_VerticesUvs.Add( moVector2f( 0.0, 0.0) );
+    m_VerticesUvs.Add( moVector2f( 1.0, 1.0) );
+    m_VerticesUvs.Add( moVector2f( 1.0, 0.0) );
+
+    m_Colors.Add( moColor( 1.0, 0.0, 0.0 ) );
+    m_Colors.Add( moColor( 0.0, 1.0, 0.0 ) );
+    m_Colors.Add( moColor( 0.0, 0.0, 1.0 ) );
+    m_Colors.Add( moColor( 1.0, 1.0, 1.0 ) );
+*/
+    /** FACES*/
+/*
+    m_Faces.Add( moFace( 0, 1, 2 ) );
+    m_Faces.Add( moFace( 2, 3, 1 ) );
+
+    m_FaceVertexUvs.Add( moVector2f( 0.0, 1.0) );
+    m_FaceVertexUvs.Add( moVector2f( 0.0, 0.0) );
+    m_FaceVertexUvs.Add( moVector2f( 1.0, 1.0) );
+
+    m_FaceVertexUvs.Add( moVector2f( 1.0, 1.0) );
+    m_FaceVertexUvs.Add( moVector2f( 1.0, 0.0) );
+    m_FaceVertexUvs.Add( moVector2f( 0.0, 0.0) );
+
+    //set buffers for shaders
+    m_VerticesBuffer = new float [ m_Vertices.Count()*3 ];
+    m_VerticesUVBuffer = new float [ m_VerticesUvs.Count()*2 ];
+    m_ColorBuffer = new float [ m_Vertices.Count()*3 ];
+
+    if (m_VerticesBuffer)
+    for( MOuint i=0;i<m_Vertices.Count(); i++) {
+        m_VerticesBuffer[i*3] = m_Vertices[i].X();
+        m_VerticesBuffer[i*3+1] = m_Vertices[i].Y();
+        m_VerticesBuffer[i*3+2] = m_Vertices[i].Z();
+    }
+
+
+    if (m_VerticesUVBuffer)
+    for( MOuint i=0;i<m_VerticesUvs.Count(); i++) {
+        m_VerticesUVBuffer[i*2] = m_VerticesUvs[i].X();
+        m_VerticesUVBuffer[i*2+1] = m_VerticesUvs[i].Y();
+    }
+
+    if (m_ColorBuffer)
+    for( MOuint i=0;i<m_Colors.Count(); i++) {
+        m_ColorBuffer[i*2] = m_Colors[i].X();
+        m_ColorBuffer[i*2+1] = m_Colors[i].Y();
+    }
+*/
+}
+
+moSphereGeometry::~moSphereGeometry() {
+    if (m_VerticesBuffer) { delete[] m_VerticesBuffer; m_VerticesBuffer = NULL; }
+    if (m_VerticesUVBuffer) { delete[] m_VerticesUVBuffer; m_VerticesUVBuffer = NULL; }
+    if (m_ColorBuffer) { delete[] m_ColorBuffer; m_ColorBuffer = NULL; }
+}
 
 
 //===========================================

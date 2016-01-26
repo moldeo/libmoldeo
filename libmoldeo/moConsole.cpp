@@ -1956,11 +1956,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
       int subvalue = -1;
       bool issubvalue = false;
-      if (arg1Text=="color:0") { arg1Text = "color"; subvalue=0;issubvalue=true; }
+      if (arg1Text=="color_0") { arg1Text = "color"; subvalue=0;issubvalue=true; }
       if (arg1Text=="color_1") { arg1Text = "color"; subvalue=1;issubvalue=true; }
       if (arg1Text=="color_2") { arg1Text = "color"; subvalue=2;issubvalue=true; }
       if (arg1Text=="color_3") { arg1Text = "color"; subvalue=3;issubvalue=true; }
-      if (arg1Text=="particlecolor:0") { arg1Text = "particlecolor"; subvalue=0;issubvalue=true; }
+      if (arg1Text=="particlecolor_0") { arg1Text = "particlecolor"; subvalue=0;issubvalue=true; }
       if (arg1Text=="particlecolor_1") { arg1Text = "particlecolor"; subvalue=1;issubvalue=true; }
       if (arg1Text=="particlecolor_2") { arg1Text = "particlecolor"; subvalue=2;issubvalue=true; }
       if (arg1Text=="particlecolor_3") { arg1Text = "particlecolor"; subvalue=3;issubvalue=true; }
@@ -2089,13 +2089,13 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       } else {
         arg3Text = VB.ToText();
       }
-/*
+
       MODebug2->Message("MO_ACTION_VALUE_SET settings: arg1Text (param):" + arg1Text
                         + " arg2Text (preconf): ["+arg2Text+"] arg2Int: "+ IntToStr(arg2Int)
                         + " arg3Text (val): " + arg3Text
-                        + " VB:" + VB.TypeToText()
+                        + " VB( subvalue: "+IntToStr(subvalue)+" ): " + VB.TypeToText() + ")"
                         );
-*/
+
       if (rParam.GetParamDefinition().GetType()==MO_PARAM_COLOR && issubvalue==false ) {
 
         argRed = arg3Text;
@@ -4680,7 +4680,7 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   Model.Rotate( (360.0/120.0)*(steps/stepi)*moMathf::DEG_TO_RAD, 1.0, 0.0, 0.0 );
   Model.Translate( 0.0, 0.0, -1.0 );
   moMesh Mesh( Plane2, Material );
-  Mesh.SetModel(Model);
+  Mesh.SetModelMatrix(Model);
   Camera3D.MakeIdentity();
   Camera3D.MakePerspective(60.0f, p_display_info.Proportion(), 0.01f, 1000.0f );
   pRMan->Render( Mesh, Camera3D );
@@ -4696,7 +4696,7 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   pGLMan->SetDefaultOrthographicView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
   Camera3D = pGLMan->GetProjectionMatrix();
   moMesh Mesh2( Plane3, Material );
-  Mesh2.SetModel(Model);
+  Mesh2.SetModelMatrix(Model);
   pRMan->Render( Mesh2, Camera3D );
 
 

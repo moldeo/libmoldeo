@@ -38,6 +38,7 @@
 #include <moValue.h>
 #include <moParam.h>
 #include <moEventList.h>
+#include <moFileManager.h>
 #include <moResourceManager.h>
 
 class moVideoGraph;
@@ -359,6 +360,34 @@ class LIBMOLDEO_API moDataManager : public moResource
 		moText GetAppPath();
 		moText GetAppDataPath();
 		moText GetPluginsPath();
+
+    /**
+    * Devuelve un moFile relativo a la carpeta del proyecto .mol cargado.
+    * @see GetDataPath
+    * @see GetDataDir para obtener una carpeta relativa al proyecto
+    */
+		moFile GetDataFile( const moText& p_file_name );
+
+    /**
+    * Devuelve un moFile relativo a la carpeta de la aplicacion
+    * @see GetAppDataPath
+    * @see GetAppDataDir para obtener una carpeta relativa a la aplicacion
+    */
+		moFile GetAppDataFile( const moText& p_file_name );
+
+    /**
+    * Devuelve un moDirectory relativo a la carpeta del proyecto .mol cargado.
+    * @see GetDataPath
+    * @see GetDataFile para obtener un archivo relativo al proyecto
+    */
+		moDirectory GetDataDir( const moText& p_dir_name );
+
+    /**
+    * Devuelve un moDirectory relativo a la carpeta de la aplicacion
+    * @see GetAppDataPath
+    * @see GetAppDataFile para obtener un archivo relativo a la aplicacion
+    */
+		moDirectory GetAppDataDir( const moText& p_dir_name );
 
 		const moPluginDefinitions& GetPluginDefinitions() {
       return m_PluginDefinitions;

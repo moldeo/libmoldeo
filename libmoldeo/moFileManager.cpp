@@ -692,6 +692,8 @@ moFile::SetCompletePath( moText p_completepath ) {
 	//check if http. ftp or other...set remote
 	m_CompletePath = p_completepath;
 
+	moText Left8 = m_CompletePath;
+	Left8.Left(8);
 	moText Left7 = m_CompletePath;
 	Left7.Left(7);
 	moText Left6 = m_CompletePath;
@@ -701,6 +703,12 @@ moFile::SetCompletePath( moText p_completepath ) {
 		Left7==moText("HTTP://")) {
 		m_Protocol = moText("http://");
 		m_FileType = MO_FILETYPE_HTTP;
+		m_bRemote = true;
+		m_bExists = false;
+  } else if (Left8==moText("https://") ||
+		Left8==moText("HTTPS://")) {
+		m_Protocol = moText("https://");
+		m_FileType = MO_FILETYPE_HTTPS;
 		m_bRemote = true;
 		m_bExists = false;
 	} else if (Left6==moText("ftp://") ||

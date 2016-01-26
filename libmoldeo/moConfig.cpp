@@ -43,7 +43,7 @@
 moFont*                 moConfig::m_pFont = new moFont();
 moMathFunction*         moConfig::m_pFun = new moParserFunction();
 moTextureBuffer*        moConfig::m_pTextureBuffer = new moTextureBuffer();
-mo3DModelSceneNode*     moConfig::m_pModel = new mo3DModelSceneNode();
+moSceneNode*            moConfig::m_pModel = new moSceneNode();
 moVector2d*             moConfig::m_pVector2d = new moVector2d();
 moVector2i*             moConfig::m_pVector2i = new moVector2i();
 moVector3d*             moConfig::m_pVector3d = new moVector3d();
@@ -1246,13 +1246,13 @@ moConfig::TextureBuffer(  moParamReference p_paramreference ) {
 
 }
 
-const mo3DModelSceneNode&
+const moSceneNode&
 moConfig::Model(  moParamReference p_paramreference ) {
 
   moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
   moData* pdata = param.GetData();
   if (pdata) {
-      mo3DModelSceneNode* pModel = pdata->Model();
+      moSceneNode* pModel = pdata->Model();
       if (pModel) {
         return *pModel;
       }

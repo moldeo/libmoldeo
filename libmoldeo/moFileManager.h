@@ -107,14 +107,14 @@ class LIBMOLDEO_API moFile : public moAbstract {
 		void SetType( moFileType p_filetype );
 		void	SetCompletePath( moText p_completepath );
 
-		moText	GetFileName();
-		moText  GetFullName();
-		moText	GetPath();
-    moText  GetFolderName();
-		moText	GetCompletePath();
-		moText	GetAbsolutePath();
-		moText	GetExtension();
-		moText	GetProtocol();
+		moText	GetFileName();/// Retreive full file name: return "myFileName" for  "myFileName.txt"
+		moText  GetFullName(); /// Retreive full file name: return "myFileName.txt", extension is included
+		moText	GetPath(); /// Get path of file: return "XX/YY/PP" for "XX/YY/PP/myFileName.txt"
+    moText  GetFolderName(); /// Get inmediate folder name: return "PP" for "PP/myFileName.txt"
+		moText	GetCompletePath(); /// Get relative path and filename "PP/myFileName.txt"
+		moText	GetAbsolutePath(); /// Get absolute path and filename "/D/PP/myFileName.txt"
+		moText	GetExtension(); /// Get extension ".txt"
+		moText	GetProtocol(); /// Return http:// | ftp:// | https:// | file:///
 
 		moFileDate	GetDate();
 		moFileSize	GetSize();

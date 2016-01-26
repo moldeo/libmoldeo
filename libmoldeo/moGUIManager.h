@@ -128,7 +128,9 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
 
 	public:
 		moGeometry();
+		moGeometry( moGeometryType p_type );
 		virtual ~moGeometry();
+
 		moGeometry( const moGeometry& p_src ) : moResourceElement(MO_RESOURCETYPE_GUI) {
             (*this) = p_src;
 		}
@@ -339,11 +341,27 @@ class LIBMOLDEO_API moObject3D : public moSceneNode {
     moObject3D& operator=( const moObject3D& p_src ) {
         m_Geometry = p_src.m_Geometry;
         m_Material = p_src.m_Material;
+        m_Position = p_src.m_Position;
+        m_Scale = p_src.m_Scale;
+        m_Rotation = p_src.m_Rotation;
         return (*this);
     }
 
-    moGeometry m_Geometry;
-    moMaterial m_Material;
+    void SetPosition( const moPosition& p_position ) {
+      m_Position = p_position;
+    }
+    void SetRotation( const moPosition& p_rotation ) {
+      m_Rotation = p_rotation;
+    }
+    void SetScale( const moPosition& p_scale ) {
+      m_Scale = p_scale;
+    }
+
+    moGeometry  m_Geometry;
+    moMaterial  m_Material;
+    moPosition  m_Position;
+    moVector3f  m_Scale;
+    moVector3f  m_Rotation;
 
 };
 
@@ -508,7 +526,7 @@ class LIBMOLDEO_API moRingGeometry : public moGeometry {
 
 class LIBMOLDEO_API moSphereGeometry : public moGeometry {
   public:
-    moSphereGeometry( float radius=1.0, int widthSegments=8, int heightSegments=8, float phiStart=0.0, float phiLength=moMathf::TWO_PI, float thetaStart=0.0, float thetaLength=moMathf::TWO_PI);
+    moSphereGeometry( float radius=1.0, int widthSegments=8, int heightSegments=8, float phiStart=0.0, float phiLength=moMathf::TWO_PI, float thetaStart=0.0, float thetaLength=moMathf::PI);
     virtual ~moSphereGeometry ();
 };
 
