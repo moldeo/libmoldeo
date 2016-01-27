@@ -327,7 +327,8 @@ moGLManager::moGLManager()
 	m_DisplayWindow = NULL;
 
 	m_gpu_vendor_code = 0;
-	m_gpu_ventor_string = moText("");
+	m_gpu_vendor_string = "undefined";
+	m_gpu_renderer_string = "undefined";
 
 	m_current_fbo = m_previous_fbo = 0;
 
@@ -407,13 +408,22 @@ void moGLManager::QueryGPUVendorString()
     glvendor = (char*)glGetString(GL_VENDOR);
     if (glvendor!=NULL) {
         strcpy(vendor, glvendor);
-        m_gpu_ventor_string = vendor;
+        m_gpu_vendor_string = vendor;
 
         if (strstr(vendor, "NVIDIA") != NULL) m_gpu_vendor_code = MO_GPU_NV;
         else if (strstr(vendor, "ATI") != NULL) m_gpu_vendor_code = MO_GPU_ATI;
         else if (strstr(vendor, "INTEL") != NULL) m_gpu_vendor_code = MO_GPU_INTEL;
         else m_gpu_vendor_code = MO_GPU_OTHER;
     } else m_gpu_vendor_code = MO_GPU_OTHER;
+
+    glvendor = (char*)glGetString(GL_RENDERER);
+    if (glvendor!=NULL) {
+        strcpy(vendor, glvendor);
+        m_gpu_renderer_string = vendor;
+    }
+
+    MODebug2->Message("moGLManager::Init > GPU VENDOR STRING is "+m_gpu_vendor_string );
+    MODebug2->Message("moGLManager::Init > GPU RENDERER STRING is "+m_gpu_renderer_string );
 }
 
 void moGLManager::SetPerspectiveView( MOint p_width, MOint p_height, double fovy,  double aspect,  double znear,  double zfar )

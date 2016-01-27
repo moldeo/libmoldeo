@@ -188,7 +188,12 @@ class LIBMOLDEO_API moGLManager : public moResource
          * Devuelve la cadena de texto completa que identifica al fabricante del GPU.
          * @return texto identificando el fabricante del GPU.
          */
-		moText GetGPUVendorString() { return m_gpu_ventor_string; }
+		const moText& GetGPUVendorString() { return m_gpu_vendor_string; }
+        /**
+         * Devuelve la cadena de texto completa que identifica al renderizador del GPU.
+         * @return texto identificando al renderizador del GPU.
+         */
+		const moText& GetGPURendererString() { return m_gpu_renderer_string; }
 
         /**
          * Configura la matriz de proyección y el viewport a fin de generar una visualización en perspectiva
@@ -399,7 +404,8 @@ class LIBMOLDEO_API moGLManager : public moResource
     moDisplayWindow  m_DisplayWindow;
 
 		MOuint m_gpu_vendor_code;
-		moText m_gpu_ventor_string;
+		moText m_gpu_vendor_string;
+		moText m_gpu_renderer_string;
 
 		MOint m_major_version;
 		MOint m_minor_version;

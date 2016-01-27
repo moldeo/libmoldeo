@@ -384,15 +384,15 @@ moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightS
     float thetaEnd = thetaStart + thetaLength;
     int vertexCount = ( ( widthSegments + 1 ) * ( heightSegments + 1 ) );
 
-    for ( int y = 0; y <= heightSegments; y++ ) {
+    for ( int j = 0; j <= heightSegments; j++ ) {
 
       //verticesRow = [];
 
-      float v = ((float)y) / (float)heightSegments;
+      float v = ((float)j) / (float)heightSegments;
 
-      for ( int x = 0; x <= widthSegments; x++ ) {
+      for ( int i = 0; i <= widthSegments; i++ ) {
 
-        float u = ((float)x) / ((float)widthSegments);
+        float u = ((float)i) / ((float)widthSegments);
 
         float px = - radius * moMathf::Cos( phiStart + u * phiLength ) * moMathf::Sin( thetaStart + v * thetaLength );
         float py = radius * moMathf::Cos( thetaStart + v * thetaLength );
