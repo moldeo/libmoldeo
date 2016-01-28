@@ -224,12 +224,19 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 
         MOuint bpp = FreeImage_GetBPP(m_pImage);
         FREE_IMAGE_COLOR_TYPE colortype = FreeImage_GetColorType(m_pImage);
+        FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(m_pImage);
 		MOuint p_format;
 		MOuint red_mask = FreeImage_GetRedMask(m_pImage);
 		MOuint blue_mask = FreeImage_GetBlueMask(m_pImage);
 		MOuint green_mask = FreeImage_GetGreenMask(m_pImage);
-
-    MODebug2->Message( GetName()+ " bpp: "+IntToStr(bpp)+" colortype:"+IntToStr(colortype) +" > red_mask: " +IntToStr(blue_mask)+" green_mask:"+IntToStr(green_mask)+ IntToStr(red_mask)+" blue_mask:" );
+        MOuint pitch = FreeImage_GetPitch(m_pImage);
+        MODebug2->Message( GetName()+ " bpp: "+IntToStr(bpp)
+                            +" colortype:"+IntToStr(colortype)
+                            +" image_type:"+IntToStr(image_type)
+                            +" pitch:"+IntToStr(pitch)
+                            +" > blue_mask: " +IntToStr(blue_mask)
+                            +" green_mask:"+IntToStr(green_mask)
+                            +" red_mask:"+ IntToStr(red_mask) );
 
 		m_param.target = GL_TEXTURE_2D;
 		switch (bpp)
@@ -255,6 +262,7 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 				break;
 			case 24: // 24 bits
 				m_param.internal_format = GL_RGB;
+/*
 #ifndef OPENGLESV2
 				if ( red_mask == 0x0000FF || red_mask==0) p_format = GL_BGR;
 				else
@@ -263,19 +271,54 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 #ifndef OPENGLESV2
         if (fif==FIF_JPEG) p_format = GL_BGR;
 #endif
-				break;
+*/
+                if ( image_type==FIT_BITMAP && (fif==FIF_JPEG || fif==FIF_PNG) ) {
+                    //BYTE* pbits = (BYTE*)FreeImage_GetBits(m_pImage);
+                    for( int j = 0; j < p_height; j++) {
+                        //BYTE *pixel = (BYTE*)pbits;
+                        BYTE *pixel = (BYTE *) FreeImage_GetScanLine( m_pImage, j );
+                        for(int i = 0; i < p_width; i++) {
+                            BYTE tmp = pixel[FI_RGBA_RED];
+                            pixel[FI_RGBA_RED]   = pixel[FI_RGBA_BLUE];
+                            //pixel[FI_RGBA_GREEN] = 128;
+                            pixel[FI_RGBA_BLUE]  = tmp;
+                            pixel += 3;
+                        }
+                        // next line
+                        //pbits += pitch;
+                    }
+                }
+                break;
 			case 32: // 32 bits
+                {
 				m_param.internal_format = GL_RGBA;
 #ifndef OPENGLESV2
-				if ( blue_mask == 0xFF0000 || blue_mask==0 ) p_format = GL_BGRA_EXT;
-				else
+				//if ( blue_mask == 0xFF0000 || blue_mask==0 ) p_format = GL_BGRA_EXT;
+				//else
 #endif
+                if ( image_type==FIT_BITMAP && fif==FIF_PNG ) {
+                    //BYTE* pbits = (BYTE*)FreeImage_GetBits(m_pImage);
+                    for( int j = 0; j < p_height; j++) {
+                        //BYTE *pixel = (BYTE*)pbits;
+                        BYTE *pixel = (BYTE *) FreeImage_GetScanLine( m_pImage, j );
+                        for(int i = 0; i < p_width; i++) {
+                            BYTE tmp = pixel[FI_RGBA_RED];
+                            pixel[FI_RGBA_RED]   = pixel[FI_RGBA_BLUE];
+                            //pixel[FI_RGBA_GREEN] = 128;
+                            pixel[FI_RGBA_BLUE]  = tmp;
+                            pixel += 4;
+                        }
+                        // next line
+                        //pbits += pitch;
+                    }
+                }
 				p_format = GL_RGBA;
 #ifndef OPENGLESV2
-        if (fif==FIF_PNG) p_format = GL_BGRA_EXT;
+        //if (fif==FIF_PNG) p_format = GL_BGRA_EXT;
 #else
 
 #endif
+                }
 				break;
 			default:
 				break;
