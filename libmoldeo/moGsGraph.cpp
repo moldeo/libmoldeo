@@ -875,7 +875,7 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
         GList *plist;
         GParamSpec* pm;
         GValue* vdefault;
-        GValue valDef;
+        GValue valDef = { 0, };
         //GList* list=NULL;
         //guint i=0;
         gchar* device_name;
