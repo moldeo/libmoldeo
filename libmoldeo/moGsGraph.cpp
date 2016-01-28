@@ -1514,9 +1514,9 @@ moGsGraph::BuildRecordGraph( moText filename, moBucketsPool *pBucketsPool ) {
            "framerate", GST_TYPE_FRACTION, 10, 1,
            "bpp", G_TYPE_INT, 24,
            "depth", G_TYPE_INT, 24,
-           "red_mask",G_TYPE_INT, 255,
-           "green_mask",G_TYPE_INT, 65280,
-           "blue_mask",G_TYPE_INT, 16711680,
+           "red_mask",G_TYPE_INT, 255,/** 0x000000FF */
+           "green_mask",G_TYPE_INT, 65280,/** 0x0000FF00 */
+           "blue_mask",G_TYPE_INT, 16711680,/** 0x00FF0000 */
            "endianness", G_TYPE_INT, 4321,
            NULL), NULL);
            //depth=(int)24, red_mask=(int)16711680, green_mask=(int)65280, blue_mask=(int)255, endianness=(int)4321
@@ -1853,6 +1853,10 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                    g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
                    "width", G_TYPE_INT, p_sourcewidth,
                    "height", G_TYPE_INT, p_sourceheight,
+                    "depth", G_TYPE_INT, 24,
+                   "red_mask",G_TYPE_INT, 16711680,
+                   "green_mask",G_TYPE_INT, 65280,
+                   "blue_mask",G_TYPE_INT, 255,
                    NULL), NULL);
                    //depth=(int)24, red_mask=(int)16711680, green_mask=(int)65280, blue_mask=(int)255, endianness=(int)4321
                    /*
@@ -2672,10 +2676,12 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
         gst_structure_get_int( str, "red_mask", &m_VideoFormat.m_RedMask );
         gst_structure_get_int( str, "green_mask", &m_VideoFormat.m_GreenMask );
         gst_structure_get_int( str, "blue_mask", &m_VideoFormat.m_BlueMask );
+        gst_structure_get_int( str, "bpp", &m_VideoFormat.m_BitCount );
 
         m_VideoFormat.m_Width = (MOuint)width;
         m_VideoFormat.m_Height = (MOuint)height;
         m_VideoFormat.m_FrameRate = (value_numerator * 100) / value_denominator;
+
         //cout << "Width:" << m_VideoFormat.m_Width << endl;
         //cout << "Height:" << m_VideoFormat.m_Height << endl;
         //cout << "Framerate:" << m_VideoFormat.m_FrameRate << endl;
@@ -2696,6 +2702,10 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
                       + IntToStr(m_VideoFormat.m_Width)
                       + " X "
                       + IntToStr(m_VideoFormat.m_Height)
+                      + " m_BitCount: "
+                      + IntToStr(m_VideoFormat.m_BitCount)
+                      + " m_BufferSize: "
+                      + IntToStr(m_VideoFormat.m_BufferSize)
                       + " buffer duration: "
                       + IntToStr(m_VideoFormat.m_TimePerFrame)
                       + " m_FrameRate: "
