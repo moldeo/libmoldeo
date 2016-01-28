@@ -2669,6 +2669,9 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
         gst_structure_get_int( str, "width", &width);
         gst_structure_get_int( str, "height", &height);
         gst_structure_get_fraction( str, "framerate", &value_numerator, &value_denominator );
+        gst_structure_get_int( str, "red_mask", &m_VideoFormat.m_RedMask );
+        gst_structure_get_int( str, "green_mask", &m_VideoFormat.m_GreenMask );
+        gst_structure_get_int( str, "blue_mask", &m_VideoFormat.m_BlueMask );
 
         m_VideoFormat.m_Width = (MOuint)width;
         m_VideoFormat.m_Height = (MOuint)height;
@@ -2697,6 +2700,12 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
                       + IntToStr(m_VideoFormat.m_TimePerFrame)
                       + " m_FrameRate: "
                       + IntToStr(m_VideoFormat.m_FrameRate)
+                      + " m_RedMask: "
+                      + IntToStr(m_VideoFormat.m_RedMask)
+                      + " m_GreenMask: "
+                      + IntToStr(m_VideoFormat.m_GreenMask)
+                      + " m_BlueMask: "
+                      + IntToStr(m_VideoFormat.m_BlueMask)
 
                       );
 

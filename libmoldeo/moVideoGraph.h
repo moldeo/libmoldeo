@@ -162,6 +162,9 @@ class LIBMOLDEO_API moVideoFormat {
 			m_BufferSize = 0;
 			m_FrameRate = 0;
 			m_WaitForFormat = true;
+			m_RedMask = 0;
+			m_GreenMask = 0;
+			m_BlueMask = 0;
 		}
 
 		void SetVideoMode() {
@@ -202,6 +205,10 @@ class LIBMOLDEO_API moVideoFormat {
 		MOuint m_BufferSize;/** tamaño en bytes del buffer de imagen*/
         MOuint m_FrameRate;/** cantidad de frames por cada 100 segundos, PAL: 2500 NTSC: 2997*/
         MOboolean m_WaitForFormat;/** bandera que marca la indefinición del formato, default: true*/
+        MOuint m_RedMask;
+        MOuint m_GreenMask;
+        MOuint m_BlueMask;
+        MOuint m_AlphaMask;
 
 };
 
