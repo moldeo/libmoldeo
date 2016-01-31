@@ -389,28 +389,59 @@ void moRenderManager::BeginDrawEffect()
 }
 
 int
-moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
+moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
 
+    if (p_pObj==NULL || p_pCamera==NULL) return 0;
     if (!m_pTextureManager) return 0;
     if (!m_pGLManager) return 0;
     if (!m_pSHManager) return 0;
     if ( !m_pSHManager->GetRenderShader().Initialized() ) return 0;
 
+    const float vx[] = {
+        -0.5f, -0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f,
+         0.5f, 0.5f, 0.0f,
+
+         0.5f, 0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         -0.5f, -0.5f, 0.0f
+    };
+    const float cx[] = {
+        1.0f, 0.5f, 0.5f,
+        0.5f, 1.0f, 0.5f,
+        0.5f, 0.5f, 1.0f,
+
+        0.5f, 0.5f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f
+    };
+    const float tx[] = {
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0f
+    };
+
     //moGLManager* pGLMan = m_pGLManager;
 
-    const moGeometry& Geo( p_src.m_Geometry );
-    const moMaterial& Mat( p_src.m_Material );
+    moGeometry& Geo( p_pObj->m_Geometry );
+    moMaterial& Mat( p_pObj->m_Material );
     //const moGLMatrixf& PMatrix( p_src.GetProjection() );
-    const moGLMatrixf& PMatrix( m_camera );
-    const moGLMatrixf& MMatrix( p_src.GetModelMatrix() );
+    moGLMatrixf& PMatrix( *p_pCamera );
+    const moGLMatrixf& MMatrix( p_pObj->GetModelMatrix() );
     moGLMatrixf Result;
     Result = MMatrix*PMatrix;
 
     MOuint color_index = m_pSHManager->GetRSHColorIndex();
     MOuint position_index = m_pSHManager->GetRSHPositionIndex();
     MOuint texcoord_index = m_pSHManager->GetRSHTexCoordIndex();
+    MOuint texcoordedge_index = m_pSHManager->GetRSHTexCoordEdgeIndex();
     MOuint matrix_index = m_pSHManager->GetRSHProjectionMatrixIndex();
     MOuint texture_index = m_pSHManager->GetRSHTextureIndex();
+    MOuint wireframe_index = m_pSHManager->GetRSHWireframeWidthIndex();
 
     if ( m_pSHManager->GetRenderShader().Initialized() ) {
         m_pSHManager->GetRenderShader().StartShader();
@@ -418,9 +449,15 @@ moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
     //m_pGLManager->SetDefaultPerspectiveView( ScreenWidth(), ScreenHeight() );
     //moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
     //moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
-    float* pverbuf = Geo.GetVerticesBuffer();
-    float* pveruvbuf = Geo.GetVerticesUVBuffer();
-    float* pcolorbuf = Geo.GetColorBuffer();
+    const moFaceArray& Faces(Geo.GetFaces());
+    const moVertexArray& Vertices(Geo.GetVertices());
+    const float* Gpx = Geo.GetVerticesBuffer();
+    const float* Gcx = Geo.GetColorBuffer();
+    const float* Gtx = Geo.GetVerticesUVBuffer();
+
+    int facesCount = Faces.Count();
+
+
     //PMatrix.MakeIdentity();
     //MMatrix.MakeIdentity();
     //MMatrix.Scale( 0.5, 0.5, 0.5 );
@@ -438,25 +475,45 @@ moRenderManager::Render( const moObject3D& p_src, const moCamera3D& m_camera ) {
     if (pMap) {
         int Tglid = pMap->GetGLId();
         glEnable( GL_TEXTURE_2D );
-        glActiveTexture( GL_TEXTURE0 );
+        glActiveTexture( GL_TEXTURE0 );///ACTIVATE TEXTURE UNIT 0
         glBindTexture( GL_TEXTURE_2D, Tglid );
         //MODebug2->Message( "Tglid:\n"+IntToStr(Tglid) );
     }
     glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
-    glUniform1i( texture_index, 0 );
-
+    glUniform1i( texture_index, 0 );///Pass TEXTURE UNIT 0 (use glActiveTexture and glBindTexture )
+    glUniform1f( wireframe_index, Mat.m_fWireframeWidth );
 
     glEnableVertexAttribArray( position_index );
-    //glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, coords );  // Set data type and location.
-    glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, pverbuf );  // Set data type and location.
+    glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, &Gpx[0] );  // Set data type and location.
 
     glEnableVertexAttribArray( color_index );
-    glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, pcolorbuf );
+    glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, &Gcx[0] );
 
     glEnableVertexAttribArray( texcoord_index );
-    glVertexAttribPointer( texcoord_index, 2, GL_FLOAT, false, 0, pveruvbuf );  // Set data type and location.
+    glVertexAttribPointer( texcoord_index, 2, GL_FLOAT, false, 0, &Gtx[0] );  // Set data type and location.
 
-    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ); // Use 3 vertices, starting with vertex 0.
+    glEnableVertexAttribArray( texcoordedge_index );
+    glVertexAttribPointer( texcoordedge_index, 2, GL_FLOAT, false, 0, &Gtx[0] );  // Set data type and location.
+    //int vertexCount = p_src.m_Geometry.GetVertices().Count();
+    //int facesCount = p_src.m_Geometry.GetFaces().Count();
+
+    switch(Mat.m_PolygonMode) {
+
+        case MO_POLYGONMODE_LINE:
+            for(int i = 0; i < facesCount*3; i += 3)
+                glDrawArrays(GL_LINE_LOOP, i, 3);
+            break;
+
+        case MO_POLYGONMODE_POINT:
+                glDrawArrays(GL_POINT, 0, facesCount*3 );
+            break;
+
+        case MO_POLYGONMODE_FILL:
+        default:
+            glDrawArrays( GL_TRIANGLES, 0, facesCount*3 ); //
+            break;
+
+    }
 
     glDisableVertexAttribArray( position_index );
     glDisableVertexAttribArray( color_index );

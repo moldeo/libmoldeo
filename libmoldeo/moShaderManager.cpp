@@ -79,14 +79,17 @@ MOboolean moShaderManager::Init()
             moText(
             "attribute vec4 position;\n"
             "attribute vec3 color;\n"
+            "attribute vec2 t_coordedge;\n"
             "attribute vec2 t_coord;\n"
             "uniform mat4 projmatrix;\n"
             "varying vec3 colorVarying;\n"
             "varying vec2 v_texcoord;\n"
+            "varying vec2 v_texcoordedge;\n"
             "\n"
             "void main() {\n"
             "	colorVarying = color;\n"
             "	v_texcoord = t_coord;\n"
+            "	v_texcoordedge = t_coordedge;\n"
             "	gl_Position = projmatrix*position;\n"
             "}\n"
             ),
@@ -97,9 +100,41 @@ MOboolean moShaderManager::Init()
             "varying vec3 colorVarying;\n"
             "uniform sampler2D t_image;\n"
             "varying vec2 v_texcoord;\n"
+            "varying vec2 v_texcoordedge;\n"
+            "float radius = 0.01;\n"
+            "float wseg = 20.0;\n"
+            "float hseg = 20.0;\n"
+            "uniform float wireframe_width;"
             "\n"
             "void main() {\n"
             "	vec4 texcolor = texture2D( t_image, v_texcoord );\n"
+            "   vec2 vector_to_borderC = vec2( 1.0, 1.0 ) - v_texcoord;\n"
+            "   vec2 vector_to_borderB = vec2( 1.0, 0.0 ) - v_texcoord;\n"
+            "   vec2 vector_to_borderA = vec2( 0.0, 0.0 ) - v_texcoord;\n"
+            "   vec2 vector_to_borderD = vec2( 0.0, 1.0 ) - v_texcoord;\n"
+            "   float distance_to_borderX = v_texcoord.x;\n"
+            "   float dX = floor( v_texcoord.x * wseg );\n"
+            "   float dY = floor( v_texcoord.y * hseg );\n"
+            "   float distance_to_borderXd = abs( v_texcoord.x - dX / wseg );\n"
+            "   float distance_to_borderY = v_texcoord.y;\n"
+            "   float distance_to_borderYd = abs( v_texcoord.y - dY / hseg );\n"
+            "   float distance_to_borderA = length(vector_to_borderA);\n"
+            "   float distance_to_borderB = length(vector_to_borderB);\n"
+            "   float distance_to_borderC = length(vector_to_borderC);\n"
+            "   float distance_to_borderD = length(vector_to_borderD);\n"
+            "	vec4 wirecolor = vec4( 0.0, 1.0, 0.0, 1.0);\n"
+            "	vec4 wirecolorA = vec4( 1.0, 0.0, 0.0, 1.0);\n"
+            "	vec4 wirecolorB = vec4( 0.0, 1.0, 0.0, 1.0);\n"
+            "	vec4 wirecolorC = vec4( 0.0, 0.0, 1.0, 1.0);\n"
+            "	vec4 wirecolorD = vec4( 1.0, 1.0, 1.0, 1.0);\n"
+            "   if (distance_to_borderA<radius) texcolor = wirecolorA;\n"
+            "   if (distance_to_borderB<radius) texcolor = wirecolorB;\n"
+            "   if (distance_to_borderC<radius) texcolor = wirecolorC;\n"
+            "   if (distance_to_borderD<radius) texcolor = wirecolorD;\n"
+            "   if (distance_to_borderXd<wireframe_width) texcolor = wirecolor;\n"
+            "   if (distance_to_borderYd<wireframe_width) texcolor = wirecolor;\n"
+            "   if (distance_to_borderXd>(-wireframe_width+1.0/wseg)) texcolor = wirecolor;\n"
+            "   if (distance_to_borderYd>(-wireframe_width+1.0/hseg)) texcolor = wirecolor;\n"
             //"	vec4 mulcolor = vec4( colorVarying, 1.0 );\n"
             "	vec4 mulcolor = vec4( 1.0, 1.0, 1.0, 1.0 );\n"
             "	gl_FragColor = vec4( mulcolor.x*texcolor.x, mulcolor.y*texcolor.y, mulcolor.z*texcolor.z, mulcolor.w*texcolor.w );\n"
@@ -113,18 +148,25 @@ MOboolean moShaderManager::Init()
          m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
          m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
          m_RenderShaderTexCoordIndex = m_RenderShader.GetAttribID(moText("t_coord"));
+         m_RenderShaderTexCoordEdgeIndex = m_RenderShader.GetAttribID(moText("t_coordedge"));
          m_RenderShaderTextureIndex = m_RenderShader.GetUniformID(moText("t_image"));
          m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projmatrix");
+         m_RenderShaderWireframeWidthIndex = m_RenderShader.GetUniformID(moText("wireframe_width"));
 
+         MODebug2->Message(moText(
 
-         MODebug2->Message(moText( "moShaderManager::Init > m_RenderShader Attrib IDs,"
+                            "moShaderManager::Init > m_RenderShader Attrib IDs,"
                             " position:"+IntToStr(m_RenderShaderPositionIndex)+""
-                           " color:"+IntToStr(m_RenderShaderColorIndex)+""
-                          " t_coord:"+IntToStr(m_RenderShaderTexCoordIndex) ));
+                            " color:"+IntToStr(m_RenderShaderColorIndex)+""
+                            " t_coord:"+IntToStr(m_RenderShaderTexCoordIndex)+""
+                            " t_coordedge:"+IntToStr(m_RenderShaderTexCoordEdgeIndex)
+
+                            ));
+
          MODebug2->Message( moText("moShaderManager::Init > m_RenderShader Uniform IDs,")
-        +moText(" projmatrix:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
-        +moText(" t_image:")+IntToStr(m_RenderShaderTextureIndex) );
-    }
+                            +moText(" projmatrix:")+IntToStr(m_RenderShaderProjectionMatrixIndex)
+                            +moText(" t_image:")+IntToStr(m_RenderShaderTextureIndex) );
+                        }
 #ifndef OPENGLESV2
   }
 #endif

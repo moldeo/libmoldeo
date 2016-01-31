@@ -4664,40 +4664,59 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
 
 
   moCamera3D Camera3D;
-  moMaterial Material;
   moGLMatrixf Model;
+
+  /**CORE PLANET*/
+
+  glEnable(GL_DEPTH_TEST);
+  glDisable(GL_BLEND);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //moPlaneGeometry Plane2( 1.0, 1.0, 1, 1 );
+  moSphereGeometry Sphere( 0.5, 20, 20 );
+
+  moMaterial Mat;
+  Mat.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "default", false ));
+  Mat.m_Color = moColor( 1.0, 1.0, 1.0 );
+  //Mat.m_PolygonMode = MO_POLYGONMODE_LINE;
+  Mat.m_fWireframeWidth = 0.001f;
+
+  Model.MakeIdentity();
+  //Model.Rotate( 0.8*steps/stepi*moMathf::DEG_TO_RAD, 0.0, 1.0, 0.0 );
+  Model.Rotate( (360.0/120.0)*(steps/stepi)*moMathf::DEG_TO_RAD, 0.0, 1.0, 0.0 );
+  //Model.Rotate( (360.0/120.0)*(steps/stepi)*moMathf::DEG_TO_RAD, 1.0, 0.0, 0.0 );
+  Model.Translate( 0.0, 0.0, -2.0 );
+
+  //moMesh Mesh( Plane2, Material );
+  moMesh Mesh( Sphere, Mat );
+  Mesh.SetModelMatrix(Model);
+
+//  Camera3D.MakeIdentity();
+//  Camera3D.MakePerspective(60.0f, p_display_info.Proportion(), 0.01f, 1000.0f );
+  pGLMan->SetDefaultPerspectiveView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
+  Camera3D = pGLMan->GetProjectionMatrix();
+
+  pRMan->Render( &Mesh, &Camera3D );
+
+  /** LOGO PLENO (sin perspectiva) */
+  glClear( GL_DEPTH_BUFFER_BIT);
 
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  /*LOGO 3D ESQUINA (con perspectiva)*/
-  moPlaneGeometry Plane2( 1.0, 1.0, 1, 1 );
-  Material.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "default", false ));
-  Material.m_Color = moColor( 1.0, 1.0, 1.0 );
-  Model.MakeIdentity();
-  //Model.Rotate( 5*steps/stepi*moMathf::DEG_TO_RAD, 0.0, 1.0, 0.0 );
-  Model.Rotate( (360.0/120.0)*(steps/stepi)*moMathf::DEG_TO_RAD, 1.0, 0.0, 0.0 );
-  Model.Translate( 0.0, 0.0, -1.0 );
-  moMesh Mesh( Plane2, Material );
-  Mesh.SetModelMatrix(Model);
-  Camera3D.MakeIdentity();
-  Camera3D.MakePerspective(60.0f, p_display_info.Proportion(), 0.01f, 1000.0f );
-  pRMan->Render( Mesh, Camera3D );
-
-  /*LOGO PLENO (sin perspectiva)*/
-  glClear( GL_DEPTH_BUFFER_BIT);
   moPlaneGeometry Plane3( 1.0, 0.33, 1, 1 );
-  Material.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "moldeotrans", false ));
-  Material.m_Color = moColor( 1.0, 1.0, 1.0 );
+  moMaterial Mat2;
+  Mat2.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "moldeotrans", false ));
+  Mat2.m_Color = moColor( 1.0, 1.0, 1.0 );
+
   Model.MakeIdentity();
   Model.Scale( 1.0, 1.0, 1.0 );
   Model.Translate( 0.0, 0.0, 0.0 );
   pGLMan->SetDefaultOrthographicView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
   Camera3D = pGLMan->GetProjectionMatrix();
-  moMesh Mesh2( Plane3, Material );
+  moMesh Mesh2( Plane3, Mat2 );
   Mesh2.SetModelMatrix(Model);
-  pRMan->Render( Mesh2, Camera3D );
+  pRMan->Render( &Mesh2, &Camera3D );
 
 
 

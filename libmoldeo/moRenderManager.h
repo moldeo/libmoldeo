@@ -399,7 +399,7 @@ class LIBMOLDEO_API moRenderManager : public moResource
 
     int   CreateLayer( moEffect* p_scene_effect );
     void   RenderLayer( int layer_id );
-    int    Render( const moObject3D& p_src, const moCamera3D& m_camera );
+    int    Render( moObject3D* p_pObj, moCamera3D* p_pCamera );
 
 
 	protected:

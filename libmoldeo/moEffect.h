@@ -144,10 +144,10 @@ public:
 
     //virtual void SetNombreConfig(moText texto);
 
-    static void SetColor( moValue& color, moValue& alpha, moEffectState& pstate  );
-    static void SetColor( moParam& color, moParam& alpha, moEffectState& pstate );
-    static void SetBlending( moBlendingModes blending );
-    static void SetPolygonMode( moPolygonModes polygonmode );
+    void SetColor( moValue& color, moValue& alpha, moEffectState& pstate  );
+    void SetColor( moParam& color, moParam& alpha, moEffectState& pstate );
+    void SetBlending( moBlendingModes blending );
+    void SetPolygonMode( moPolygonModes polygonmode );
 
 	virtual void TurnOn();
     virtual void TurnOff();
@@ -203,6 +203,7 @@ public:
   protected:
 
         moEffectState		m_EffectState;
+        moObject3D          m_Effect3D;
 
         virtual int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
         void RegisterFunctions();
@@ -232,8 +233,8 @@ public:
         moInlet*        InletT;
         moInlet*        InletTempo;
 
-    virtual void ScriptExeDraw();
-    virtual void ScriptExeInteraction();
+        virtual void ScriptExeDraw();
+        virtual void ScriptExeInteraction();
 
 };
 

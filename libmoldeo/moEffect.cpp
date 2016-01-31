@@ -409,29 +409,31 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
 }
 
 void moEffect::SetColor( moValue& color, moValue& alpha, moEffectState& pstate ) {
-	glColor4f(  color[MO_RED].Eval() * pstate.tintr,
-                color[MO_GREEN].Eval() * pstate.tintg,
-                color[MO_BLUE].Eval() * pstate.tintb,
-				color[MO_ALPHA].Eval() *
-				alpha[0].Eval() * pstate.alpha);
 
+    m_Effect3D.m_Material.m_Color = moColor(
+            color[MO_RED].Eval() * pstate.tintr,
+            color[MO_GREEN].Eval() * pstate.tintg,
+            color[MO_BLUE].Eval() * pstate.tintb
+            );
+    m_Effect3D.m_Material.m_fOpacity = color[MO_ALPHA].Eval() * alpha[0].Eval() * pstate.alpha;
+#ifndef OPENGLESV2
+ 	glColor4f(  m_Effect3D.m_Material.m_Color.X(),
+                m_Effect3D.m_Material.m_Color.Y(),
+                m_Effect3D.m_Material.m_Color.Z(),
+                m_Effect3D.m_Material.m_fOpacity );
+#endif
 }
 
 void moEffect::SetColor( moParam& color, moParam& alpha, moEffectState& pstate ) {
-      moVector4d vRGBA( color[MO_SELECTED][MO_RED].Eval(),
-                        color[MO_SELECTED][MO_GREEN].Eval(),
-                       color[MO_SELECTED][MO_BLUE].Eval(),
-                       color[MO_SELECTED][MO_ALPHA].Eval() );
 
-      MOfloat alphav = alpha.GetData()->Eval();
-
-      glColor4f(  vRGBA.X()*pstate.tintr,
-                  vRGBA.Y()*pstate.tintg,
-                  vRGBA.Z()*pstate.tintb,
-                  vRGBA.W()*pstate.alpha*alphav );
+    moValue& Color( color[MO_SELECTED] );
+    SetColor( Color, alpha[MO_SELECTED], pstate );
 }
 
 void moEffect::SetPolygonMode( moPolygonModes polygonmode ) {
+
+
+    m_Effect3D.m_Material.m_PolygonMode = polygonmode;
 #ifndef OPENGLESV2
     switch( polygonmode ) {
 
@@ -450,11 +452,14 @@ void moEffect::SetPolygonMode( moPolygonModes polygonmode ) {
         default:
             break;
     }
-#endif
+#endif // OPENGLESV2
 }
 
 
 void moEffect::SetBlending( moBlendingModes blending ) {
+
+  m_Effect3D.m_Material.m_Blending = blending;
+
   glEnable (GL_BLEND);
 	switch(blending) {
 		//ALPHA DEPENDENT
@@ -747,7 +752,7 @@ moEffect::GetDefinition( moConfigDefinition *p_configdefinition ) {
 	p_configdefinition->Add( moText("color"), MO_PARAM_COLOR, -1, moValue("1.0","FUNCTION","1.0","FUNCTION","1.0","FUNCTION","1.0","FUNCTION").Ref() );
 	p_configdefinition->Add( moText("syncro"), MO_PARAM_SYNC, -1, moValue("1.0","FUNCTION").Ref() );
 	p_configdefinition->Add( moText("phase"), MO_PARAM_PHASE, -1, moValue("0.0","FUNCTION").Ref() );
-	//p_configdefinition->Add( moText("showguides"), MO_PARAM_SHOWGUIDES, -1,  );
+	p_configdefinition->Add( moText("guides"), MO_PARAM_NUMERIC, -1,  moValue("0","NUM").Ref(), moText("No,Yes,Full") );
 	//p_configdefinition->Add( moText("blending"), MO_PARAM_, -1,  );
 	//p_configdefinition->Add( moText("polygonmode"), MO_PARAM_, -1,  );
 	//p_configdefinition->Add( moText("depthtest"), MO_PARAM_, -1,  );

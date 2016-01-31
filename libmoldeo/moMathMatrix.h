@@ -2987,7 +2987,7 @@ class LIBMOLDEO_API moMatrix4 : public moAbstract
         }
     }
 
-    void MakeZero ()
+    moMatrix4<Real>& MakeZero ()
     {
         m_afEntry[ 0] = (Real)0.0;
         m_afEntry[ 1] = (Real)0.0;
@@ -3006,9 +3006,10 @@ class LIBMOLDEO_API moMatrix4 : public moAbstract
         m_afEntry[14] = (Real)0.0;
         m_afEntry[15] = (Real)0.0;
         (*this) = moMatrix4::ZERO;
+        return (*this);
     }
 
-    void MakeIdentity ()
+    moMatrix4<Real>& MakeIdentity ()
     {
         m_afEntry[ 0] = (Real)1.0;
         m_afEntry[ 1] = (Real)0.0;
@@ -3027,6 +3028,7 @@ class LIBMOLDEO_API moMatrix4 : public moAbstract
         m_afEntry[14] = (Real)0.0;
         m_afEntry[15] = (Real)1.0;
         (*this) = moMatrix4::IDENTITY;
+        return (*this);
     }
 
     void SetRow (int iRow, const moVector4<Real>& rkV)

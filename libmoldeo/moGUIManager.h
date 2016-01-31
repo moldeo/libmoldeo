@@ -139,38 +139,32 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
 		virtual MOboolean Init( moResourceManager* pResourceManager );
 		virtual MOboolean Finish();
 
-        virtual moVector3fArray& GetVertices() {
+        virtual float* GetVerticesBuffer();
+        virtual float* GetColorBuffer();
+        virtual float* GetVerticesUVBuffer();
+
+        virtual const moPointArray& GetVertices() const {
           return m_Vertices;
         }
-        virtual float* GetVerticesBuffer() const {
-          return m_VerticesBuffer;
-        }
 
-        virtual moVector2fArray& GetVerticesUV() {
+        virtual const moTCoordArray& GetVerticesUV() const {
           return m_VerticesUvs;
         }
 
-        virtual float* GetVerticesUVBuffer() const {
-          return m_VerticesUVBuffer;
-        }
-
-        virtual moTCoordArray& GetFacesUV() {
+        virtual const moTCoordArray& GetFacesUV() const {
           return m_FaceVertexUvs;
         }
 
-        virtual moColorArray& GetColors() {
+        virtual const moColorArray& GetColors() const {
             return m_Colors;
         }
 
-        virtual float* GetColorBuffer() const {
-            return m_ColorBuffer;
-        }
 
-        virtual moFaceArray& GetFaces() {
+        virtual const moFaceArray& GetFaces() const {
           return m_Faces;
         }
 
-        moGeometryType GetType() {
+        moGeometryType GetType() const {
           return m_Type;
         }
 
@@ -221,43 +215,19 @@ class LIBMOLDEO_API moMaterialBase : public moResourceElement {
 
   public:
 
-    moMaterialBase() {
-    }
-    moMaterialBase(int p_Id, const moText& p_Name) {
-      m_Id = p_Id;
-      m_Name = p_Name;
-      m_Type = "Material";
-    }
+    moMaterialBase();
+    moMaterialBase(int p_Id, const moText& p_Name);
     moMaterialBase( const moMaterialBase& p_src ) : moResourceElement(MO_RESOURCETYPE_GUI) {
       (*this) = p_src;
     }
-
-    const moMaterialBase& operator = ( const moMaterialBase& p_src ) {
-      m_Id = p_src.m_Id;
-      m_Name = p_src.m_Name;
-      m_fOpacity = p_src.m_fOpacity;
-      m_bTransparent = p_src.m_bTransparent;
-      m_iBlending = p_src.m_iBlending;
-      m_iBlendSrc = p_src.m_iBlendSrc;
-      m_iBlendDst = p_src.m_iBlendDst;
-      m_iBlendEquation = p_src.m_iBlendEquation;
-      m_bDepthTest = p_src.m_bDepthTest;
-      m_bDepthWrite = p_src.m_bDepthWrite;
-
-      m_iPolygonOffset = p_src.m_iPolygonOffset;
-      m_iPolygonOffsetFactor = p_src.m_iPolygonOffsetFactor;
-      m_iPolygonOffsetUnits = p_src.m_iPolygonOffsetUnits;
-      m_fAlphaTest = p_src.m_fAlphaTest;
-      m_fOverdraw = p_src.m_fOverdraw;
-      m_iSides = p_src.m_iSides;
-      m_Type = p_src.m_Type;
-      return (*this);
-    }
+    const moMaterialBase& operator = ( const moMaterialBase& p_src );
     virtual ~moMaterialBase() {}
 
 
     int m_Id;
     moText m_Name;
+    moText m_Type;
+
     float m_fOpacity;
     bool m_bTransparent;
     int m_iBlending;
@@ -266,6 +236,7 @@ class LIBMOLDEO_API moMaterialBase : public moResourceElement {
     int m_iBlendEquation;
     bool m_bDepthTest;
     bool m_bDepthWrite;
+    float m_fWireframeWidth;
 
     int m_iPolygonOffset;
     int m_iPolygonOffsetFactor;
@@ -273,59 +244,31 @@ class LIBMOLDEO_API moMaterialBase : public moResourceElement {
     float m_fAlphaTest;
     float m_fOverdraw;
     int m_iSides;
-    moText m_Type;
 
 };
 
 class LIBMOLDEO_API moMaterial : public moMaterialBase {
     public:
-        moMaterial() : moMaterialBase() {
-            m_Map = NULL;
-            m_Type = "BasicMaterial";
-        }
+        moMaterial();
         moMaterial( const moMaterial& p_src ) : moMaterialBase() {
           (*this) = p_src;
         }
-
-        const moMaterial& operator = ( const moMaterial& p_src ) {
-          m_Id = p_src.m_Id;
-          m_Name = p_src.m_Name;
-          m_fOpacity = p_src.m_fOpacity;
-          m_bTransparent = p_src.m_bTransparent;
-          m_iBlending = p_src.m_iBlending;
-          m_iBlendSrc = p_src.m_iBlendSrc;
-          m_iBlendDst = p_src.m_iBlendDst;
-          m_iBlendEquation = p_src.m_iBlendEquation;
-          m_bDepthTest = p_src.m_bDepthTest;
-          m_bDepthWrite = p_src.m_bDepthWrite;
-
-          m_iPolygonOffset = p_src.m_iPolygonOffset;
-          m_iPolygonOffsetFactor = p_src.m_iPolygonOffsetFactor;
-          m_iPolygonOffsetUnits = p_src.m_iPolygonOffsetUnits;
-          m_fAlphaTest = p_src.m_fAlphaTest;
-          m_fOverdraw = p_src.m_fOverdraw;
-          m_iSides = p_src.m_iSides;
-          m_Type = p_src.m_Type;
-
-          m_Map = p_src.m_Map;
-          m_Color = p_src.m_Color;
-          m_SpecularColor = p_src.m_SpecularColor;
-          m_AmbientColor = p_src.m_AmbientColor;
-          return (*this);
-        }
-        virtual ~moMaterial() {
-        }
+        const moMaterial& operator= ( const moMaterial& p_src );
+        virtual ~moMaterial() {}
 
 
         moColor m_SpecularColor;
         moColor m_AmbientColor;
         moColor m_Color;
         moTexture*   m_Map;
+        moPolygonModes m_PolygonMode;
+        moBlendingModes m_Blending;
 };
 
 
 class LIBMOLDEO_API moObject3D : public moSceneNode {
   public:
+    moObject3D();
     moObject3D(const moGeometry& p_geometry, const moMaterial& p_material ) : moSceneNode() {
         m_Geometry = p_geometry;
         m_Material = p_material;

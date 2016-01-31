@@ -170,17 +170,29 @@ public:
     return m_RenderShaderTexCoordIndex;
   }
 
+  MOuint GetRSHTexCoordEdgeIndex() {
+    return m_RenderShaderTexCoordEdgeIndex;
+  }
+
+  MOuint GetRSHWireframeWidthIndex() {
+    return m_RenderShaderWireframeWidthIndex;
+  }
+
+
 private:
 	moGLManager* m_glmanager;
 	moFBManager* m_fbmanager;
 
 	moShaderGLSL m_RenderShader;
+
 	MOuint m_RenderShaderColorIndex;
 	MOuint m_RenderShaderPositionIndex;
 	MOuint m_RenderShaderTextureIndex;
 	MOuint m_RenderShaderNormalIndex;
 	MOuint m_RenderShaderProjectionMatrixIndex;
 	MOuint m_RenderShaderTexCoordIndex;
+	MOuint m_RenderShaderTexCoordEdgeIndex;
+	MOuint m_RenderShaderWireframeWidthIndex;
 
     /**
     *  Objeto que referencia cada sombreador aplicadp

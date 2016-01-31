@@ -58,11 +58,18 @@ moCamera3D::operator=( const moCamera3DBase& p_src ) {
 
 
 moGeometry::moGeometry() {
-  m_Type = MO_GEOMETRY_UNDEFINED;
+    m_Type = MO_GEOMETRY_UNDEFINED;
+
+    m_VerticesBuffer = NULL;
+    m_VerticesUVBuffer = NULL;
+    m_ColorBuffer = NULL;
 }
 
 moGeometry::moGeometry( moGeometryType p_type ) {
-  m_Type = p_type;
+    m_Type = p_type;
+    m_VerticesBuffer = NULL;
+    m_VerticesUVBuffer = NULL;
+    m_ColorBuffer = NULL;
 }
 
 moGeometry::~moGeometry() {
@@ -75,9 +82,11 @@ moGeometry::operator=(const moGeometry& p_src ) {
     m_Vertices = p_src.m_Vertices;
     m_VerticesUvs = p_src.m_VerticesUvs;
     m_Colors = p_src.m_Colors;
+/*
     m_ColorBuffer = p_src.m_ColorBuffer;
     m_VerticesBuffer = p_src.m_VerticesBuffer;
     m_VerticesUVBuffer = p_src.m_VerticesUVBuffer;
+*/
     m_Faces = p_src.m_Faces;
     m_FaceVertexUvs = p_src.m_FaceVertexUvs;
     m_Name = p_src.m_Name;
@@ -210,6 +219,57 @@ moGeometry::ToJSON() {
 }
 
 
+float*
+moGeometry::GetVerticesBuffer() {
+
+    if (m_Faces.Count()==0) return NULL;
+
+    m_VerticesBuffer = new float [ m_Faces.Count()*3*3 ];
+    m_VerticesUVBuffer = new float [ m_Faces.Count()*3*2 ];
+    m_ColorBuffer = new float [ m_Faces.Count()*3*3 ];
+
+    if (m_VerticesBuffer && m_VerticesUVBuffer && m_ColorBuffer ) {
+
+        for( MOuint fi=0;fi<m_Faces.Count(); fi++) {
+
+            moFace& Face( m_Faces[fi] );
+
+            for( int pi=0; pi<3; pi++ ) {
+
+                int vpos = Face[pi];
+                int indexv3 = fi*9+pi*3;///i*9 = each face is a triangle, 3 components * 3 vertices
+                int indexv2 = fi*6+pi*2;
+                ///position
+                m_VerticesBuffer[ indexv3 ] = m_Vertices[ vpos ].X();
+                m_VerticesBuffer[ indexv3 + 1 ] = m_Vertices[ vpos ].Y();
+                m_VerticesBuffer[ indexv3 + 2 ] = m_Vertices[ vpos ].Z();
+                ///texture uv
+                m_VerticesUVBuffer[ indexv2 ] = m_VerticesUvs[vpos].X();
+                m_VerticesUVBuffer[ indexv2 + 1 ] = m_VerticesUvs[vpos].Y();
+                ///color r,g,b
+                m_ColorBuffer[ indexv3 ] = m_Colors[vpos].X();
+                m_ColorBuffer[ indexv3 + 1 ] = m_Colors[vpos].Y();
+                m_ColorBuffer[ indexv3 + 2 ] = m_Colors[vpos].Z();
+
+            }
+        }
+    } else return NULL;
+
+    return &m_VerticesBuffer[0];
+}
+
+float*
+moGeometry::GetColorBuffer() {
+    return m_ColorBuffer;
+}
+
+float*
+moGeometry::GetVerticesUVBuffer() {
+    return m_VerticesUVBuffer;
+}
+
+
+
 
 moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegments, int hsegments, int dsegments ) : moGeometry( MO_GEOMETRY_BOX ) {
 
@@ -221,7 +281,8 @@ moBoxGeometry::~moBoxGeometry(  ) {
 
 
 
-moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, int heightSegments ) : moGeometry(MO_GEOMETRY_PLANE) {
+moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, int heightSegments )
+: moGeometry(MO_GEOMETRY_PLANE) {
 
     m_VerticesBuffer = NULL;
     m_VerticesUVBuffer = NULL;
@@ -294,12 +355,9 @@ moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, 
     m_FaceVertexUvs.Add( moVector2f( 1.0, 1.0) );
     m_FaceVertexUvs.Add( moVector2f( 1.0, 0.0) );
     m_FaceVertexUvs.Add( moVector2f( 0.0, 0.0) );
-
+/*
     //set buffers for shaders
     m_VerticesBuffer = new float [ m_Vertices.Count()*3 ];
-    m_VerticesUVBuffer = new float [ m_VerticesUvs.Count()*2 ];
-    m_ColorBuffer = new float [ m_Vertices.Count()*3 ];
-
     if (m_VerticesBuffer)
     for( MOuint i=0;i<m_Vertices.Count(); i++) {
         m_VerticesBuffer[i*3] = m_Vertices[i].X();
@@ -308,24 +366,28 @@ moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, 
     }
 
 
+    m_VerticesUVBuffer = new float [ m_VerticesUvs.Count()*2 ];
     if (m_VerticesUVBuffer)
     for( MOuint i=0;i<m_VerticesUvs.Count(); i++) {
         m_VerticesUVBuffer[i*2] = m_VerticesUvs[i].X();
         m_VerticesUVBuffer[i*2+1] = m_VerticesUvs[i].Y();
     }
 
+    m_ColorBuffer = new float [ m_Vertices.Count()*3 ];
     if (m_ColorBuffer)
     for( MOuint i=0;i<m_Colors.Count(); i++) {
         m_ColorBuffer[i*2] = m_Colors[i].X();
         m_ColorBuffer[i*2+1] = m_Colors[i].Y();
     }
-
+*/
 }
 
 moPlaneGeometry::~moPlaneGeometry() {
+/*
     if (m_VerticesBuffer) { delete[] m_VerticesBuffer; m_VerticesBuffer = NULL; }
     if (m_VerticesUVBuffer) { delete[] m_VerticesUVBuffer; m_VerticesUVBuffer = NULL; }
     if (m_ColorBuffer) { delete[] m_ColorBuffer; m_ColorBuffer = NULL; }
+    */
 }
 
 
@@ -348,45 +410,60 @@ moPolyhedronGeometry::~moPolyhedronGeometry() {
 
 }
 
-
+#include "moDebugManager.h"
 
 moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightSegments, float phiStart, float phiLength, float thetaStart, float thetaLength )
 : moGeometry( MO_GEOMETRY_SPHERE ) {
 
-    m_VerticesBuffer = NULL;
-    m_VerticesUVBuffer = NULL;
-    m_ColorBuffer = NULL;
 
     m_Name = "MySphere";
     m_Type = MO_GEOMETRY_SPHERE;
 
-    m_Vertices.Init( 0, moVector3f( 0.0, 0.0, 0.0) );
-    m_Vertices.Empty();
-
-    m_VerticesUvs.Init( 0,  moTCoord( 0.0, 0.0 ) );
-    m_VerticesUvs.Empty();
-
+    //m_Vertices.Init( 0, moVector3f( 0.0, 0.0, 0.0) );
+    //m_VerticesUvs.Init( 0,  moTCoord( 0.0, 0.0 ) );
     m_Faces.Init( 0, moFace( 0, 0, 0 ) );
-    m_Faces.Empty();
-
     m_FaceVertexUvs.Init( 0, moTCoord( 0.0, 0.0 ) );
-    m_FaceVertexUvs.Empty();
-
-    m_Colors.Init( 0, moColor( 0.0, 0.0, 0.0 ) );
-    m_Colors.Empty();
+    //m_Colors.Init( 0, moColor( 0.0, 0.0, 0.0 ) );
 
 
-    radius = radius || 50;
 
+    ///INITIALIZATION AND save attributes
+    //radius = ;
     widthSegments = max( 3, widthSegments );
     heightSegments = max( 2, heightSegments );
-
-    float thetaEnd = thetaStart + thetaLength;
     int vertexCount = ( ( widthSegments + 1 ) * ( heightSegments + 1 ) );
+    m_Vertices.Init( vertexCount, moVector3f( 0.0, 0.0, 0.0) );
+    m_VerticesUvs.Init( vertexCount, moTCoord( 0.0, 0.0) );
+    m_Colors.Init( vertexCount, moColor( 1.0, 1.0, 1.0 ) );
 
+
+/*
+    int vertexCount = 4;
+
+    m_Vertices.Set( 0, moVector3f( -1.0*radius, -1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 0, moTCoord( 0.0, 1.0 ) );
+    m_Colors.Set(  0, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Vertices.Set( 1, moVector3f( -1.0*radius, 1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 1, moTCoord( 0.0, 0.0 ) );
+    m_Colors.Set(  1, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Vertices.Set( 2, moVector3f( 1.0*radius, 1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 2, moTCoord( 1.0, 0.0 ) );
+    m_Colors.Set(  2, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Vertices.Set( 3, moVector3f( 1.0*radius, -1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 3, moTCoord( 1.0, 1.0 ) );
+    m_Colors.Set(  3, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Faces.Add( moFace( 0, 1, 2 ) );
+    m_Faces.Add( moFace( 2, 3, 0 ) );
+*/
+
+    ///GENERATE GEOMETRY VERTEX,TEXTUREMAPPING AND COLORS
+    int index = 0;
+    float thetaEnd = thetaStart + thetaLength;
     for ( int j = 0; j <= heightSegments; j++ ) {
-
-      //verticesRow = [];
 
       float v = ((float)j) / (float)heightSegments;
 
@@ -399,36 +476,35 @@ moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightS
         float pz = radius * moMathf::Sin( phiStart + u * phiLength ) * moMathf::Sin( thetaStart + v * thetaLength );
 
         moVector3f normal( px, py, pz );
-        /*
-        positions.setXYZ( index, px, py, pz );
-        normals.setXYZ( index, normal.x, normal.y, normal.z );
-        uvs.setXY( index, u, 1 - v );
+        moVector3f position( px, py, pz );
+        moTCoord tcoord( u, 1-v );
+        m_Vertices.Set( index, position );
+        m_VerticesUvs.Set( index, tcoord );
 
-        verticesRow.push( index );
         index ++;
-        */
       }
-      //vertices.push( verticesRow );
     }
-/*
-	var indices = [];
 
-	for ( var y = 0; y < heightSegments; y ++ ) {
+	for ( int j = 0; j < heightSegments; j ++ ) {
 
-		for ( var x = 0; x < widthSegments; x ++ ) {
+		for ( int i = 0; i < widthSegments; i ++ ) {
 
-			var v1 = vertices[ y ][ x + 1 ];
-			var v2 = vertices[ y ][ x ];
-			var v3 = vertices[ y + 1 ][ x ];
-			var v4 = vertices[ y + 1 ][ x + 1 ];
+			int i1 = j*(widthSegments+1) + i + 1;
+			int i2 = j*(widthSegments+1) + i;
+			int i3 = (j + 1)*(widthSegments+1) + i;
+			int i4 = (j + 1)*(widthSegments+1) + i + 1;
 
-			if ( y !== 0 || thetaStart > 0 ) indices.push( v1, v2, v4 );
-			if ( y !== heightSegments - 1 || thetaEnd < Math.PI ) indices.push( v2, v3, v4 );
+			if ( j != 0 || thetaStart > 0 ) {
+                m_Faces.Add( moFace( i1, i2, i4 ) );
+            }
+			if ( j != heightSegments - 1 || thetaEnd < moMathf::PI ) {
+                m_Faces.Add( moFace( i2, i3, i4 ) );
+            }
 
 		}
 
 	}
-
+/*
 	this.setIndex( new ( positions.count > 65535 ? THREE.Uint32Attribute : THREE.Uint16Attribute )( indices, 1 ) );
 	this.addAttribute( 'position', positions );
 	this.addAttribute( 'normal', normals );
@@ -437,66 +513,218 @@ moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightS
 	this.boundingSphere = new THREE.Sphere( new THREE.Vector3(), radius );
 
     */
+
+    /**
+    set buffers for shaders (GL_TRIANGLES mode, 3 triangle vertices (v1,v2,v3) x 3 components(x,y,z) = 9 values for each Face
+
+     A----C
+      | /
+      |/
+     B
+
+     A = (x,y,z)
+     B = (x,y,z)
+     C = (x,y,z)
+
+    */
+    /*
+    m_VerticesBuffer = new float [ m_Faces.Count()*3*3 ];
+    m_VerticesUVBuffer = new float [ m_Faces.Count()*3*2 ];
+    m_ColorBuffer = new float [ m_Faces.Count()*3*3 ];
+
+    if (m_VerticesBuffer && m_VerticesUVBuffer && m_ColorBuffer ) {
+        for( MOuint i=0;i<m_Faces.Count(); i++) {
+            moFace& Face( m_Faces[i] );
+            for( int pi=0; pi<3; pi++ ) {
+                int vpos = Face[pi];
+                int indexv3 = i*9+pi;///i*9 = each face is a triangle, 3 components * 3 vertices
+                int indexv2 = i*6+pi;
+                ///position
+                m_VerticesBuffer[ indexv3 ] = m_Vertices[ vpos ].X();
+                m_VerticesBuffer[ indexv3 + 1 ] = m_Vertices[ vpos ].Y();
+                m_VerticesBuffer[ indexv3 + 2 ] = m_Vertices[ vpos ].Z();
+                ///texture uv
+                m_VerticesUVBuffer[ indexv2 ] = m_VerticesUvs[vpos].X();
+                m_VerticesUVBuffer[ indexv2 + 1 ] = m_VerticesUvs[vpos].Y();
+                ///color r,g,b
+                m_ColorBuffer[ indexv3 ] = m_Colors[vpos].X();
+                m_ColorBuffer[ indexv3 + 1 ] = m_Colors[vpos].Y();
+                m_ColorBuffer[ indexv3 + 2 ] = m_Colors[vpos].Z();
+
+            }
+        }
+    }
+    */
+
 /*
-    m_Vertices.Add( moVector3f( -dw, -dh, 0.0) );
-    m_Vertices.Add( moVector3f( -dw,  dh, 0.0) );
-    m_Vertices.Add( moVector3f(  dw, -dh, 0.0) );
-    m_Vertices.Add( moVector3f(  dw,  dh, 0.0) );
+    moDebugManager::Message( " SphereGeometry :" + IntToStr(vertexCount));
+    for( int i=0; i<vertexCount; i++ ) {
 
-    m_VerticesUvs.Add( moVector2f( 0.0, 1.0) );
-    m_VerticesUvs.Add( moVector2f( 0.0, 0.0) );
-    m_VerticesUvs.Add( moVector2f( 1.0, 1.0) );
-    m_VerticesUvs.Add( moVector2f( 1.0, 0.0) );
+        moVertex& vv( m_Vertices[i] );
+        moColor& cc( m_Colors[i] );
+        moTCoord& tc( m_VerticesUvs[i] );
 
-    m_Colors.Add( moColor( 1.0, 0.0, 0.0 ) );
-    m_Colors.Add( moColor( 0.0, 1.0, 0.0 ) );
-    m_Colors.Add( moColor( 0.0, 0.0, 1.0 ) );
-    m_Colors.Add( moColor( 1.0, 1.0, 1.0 ) );
-*/
-    /** FACES*/
-/*
-    m_Faces.Add( moFace( 0, 1, 2 ) );
-    m_Faces.Add( moFace( 2, 3, 1 ) );
+        moDebugManager::Message( " i:" + IntToStr(i)
+        + " px: " + FloatToStr(vv.X(),2,2)
+        + " py: " + FloatToStr(vv.Y(),2,2)
+        + " pz: " + FloatToStr(vv.Z(),2,2)
+        + " cr: " + FloatToStr( cc.X(),2,2)
+        + " cg: " + FloatToStr( cc.Y(),2,2)
+        + " cb: " + FloatToStr( cc.Z(),2,2)
+        + " tu: " + FloatToStr( tc.X(),2,2)
+        + " tv: " + FloatToStr( tc.Y(),2,2)
 
-    m_FaceVertexUvs.Add( moVector2f( 0.0, 1.0) );
-    m_FaceVertexUvs.Add( moVector2f( 0.0, 0.0) );
-    m_FaceVertexUvs.Add( moVector2f( 1.0, 1.0) );
-
-    m_FaceVertexUvs.Add( moVector2f( 1.0, 1.0) );
-    m_FaceVertexUvs.Add( moVector2f( 1.0, 0.0) );
-    m_FaceVertexUvs.Add( moVector2f( 0.0, 0.0) );
-
-    //set buffers for shaders
-    m_VerticesBuffer = new float [ m_Vertices.Count()*3 ];
-    m_VerticesUVBuffer = new float [ m_VerticesUvs.Count()*2 ];
-    m_ColorBuffer = new float [ m_Vertices.Count()*3 ];
-
-    if (m_VerticesBuffer)
-    for( MOuint i=0;i<m_Vertices.Count(); i++) {
-        m_VerticesBuffer[i*3] = m_Vertices[i].X();
-        m_VerticesBuffer[i*3+1] = m_Vertices[i].Y();
-        m_VerticesBuffer[i*3+2] = m_Vertices[i].Z();
+         );
     }
 
+    for( int i=0; i<m_Faces.Count(); i++ ) {
+        for( int pi=0; pi<3; pi++ ) {
+            int indexv3 = i*9+pi;///i*9 = each face is a triangle, 3 components * 3 vertices
+            int indexv2 = i*6+pi;
+            moVertex vv(    m_VerticesBuffer[indexv3],
+                            m_VerticesBuffer[indexv3+1],
+                            m_VerticesBuffer[indexv3+2]
+                            );
+            moColor cc( m_ColorBuffer[indexv3],
+                        m_ColorBuffer[indexv3+1],
+                        m_ColorBuffer[indexv3+2] );
+            moTCoord tc(  m_VerticesUVBuffer[indexv2],
+                          m_VerticesUVBuffer[indexv2+1] );
 
-    if (m_VerticesUVBuffer)
-    for( MOuint i=0;i<m_VerticesUvs.Count(); i++) {
-        m_VerticesUVBuffer[i*2] = m_VerticesUvs[i].X();
-        m_VerticesUVBuffer[i*2+1] = m_VerticesUvs[i].Y();
-    }
+            moDebugManager::Message( " Face i:" + IntToStr(i)
+            + " px: " + FloatToStr(vv.X(),2,2)
+            + " py: " + FloatToStr(vv.Y(),2,2)
+            + " pz: " + FloatToStr(vv.Z(),2,2)
+            + " cr: " + FloatToStr( cc.X(),2,2)
+            + " cg: " + FloatToStr( cc.Y(),2,2)
+            + " cb: " + FloatToStr( cc.Z(),2,2)
+            + " tu: " + FloatToStr( tc.X(),2,2)
+            + " tv: " + FloatToStr( tc.Y(),2,2)
 
-    if (m_ColorBuffer)
-    for( MOuint i=0;i<m_Colors.Count(); i++) {
-        m_ColorBuffer[i*2] = m_Colors[i].X();
-        m_ColorBuffer[i*2+1] = m_Colors[i].Y();
+             );
+         }
     }
 */
 }
 
 moSphereGeometry::~moSphereGeometry() {
+/*
     if (m_VerticesBuffer) { delete[] m_VerticesBuffer; m_VerticesBuffer = NULL; }
     if (m_VerticesUVBuffer) { delete[] m_VerticesUVBuffer; m_VerticesUVBuffer = NULL; }
     if (m_ColorBuffer) { delete[] m_ColorBuffer; m_ColorBuffer = NULL; }
+    */
+}
+
+
+
+
+
+moObject3D::moObject3D() {
+
+    ///TODO: make some 3d initialization here! complete!
+
+    m_Position = moPosition( 0.0, 0.0, 0.0 );
+    m_Rotation = moVector3f( 0.0, 0.0, 0.0 );
+    m_Scale = moVector3f( 1.0, 1.0, 1.0 );
+    m_ModelMatrix.MakeIdentity();
+    m_Parent = NULL;
+    m_Id = 0;
+
+}
+
+
+/**
+*    moMaterialBase (Color/Opacity/Blending/Depth Material)
+*/
+
+moMaterialBase::moMaterialBase() {
+    m_Id = -1;
+    m_Name = "";
+    m_Type = "MaterialBase";
+    m_fOpacity = 1.0;
+    m_bDepthTest = true;
+    m_bDepthWrite = true;
+    m_bInitialized = true;
+    m_iBlending = MO_BLENDING_TRANSPARENCY;
+    m_bTransparent = true;
+    m_iBlendEquation = 0;
+    m_fAlphaTest = true;
+    m_iBlendDst = 0;
+    m_iBlendSrc = 0;
+    m_fWireframeWidth = 0.0;
+}
+moMaterialBase::moMaterialBase(int p_Id, const moText& p_Name) {
+  (*this) = moMaterialBase();
+  m_Id = p_Id;
+  m_Name = p_Name;
+}
+
+const moMaterialBase&
+moMaterialBase::operator= ( const moMaterialBase& p_src ) {
+    m_Id = p_src.m_Id;
+    m_Name = p_src.m_Name;
+    m_fOpacity = p_src.m_fOpacity;
+    m_bTransparent = p_src.m_bTransparent;
+    m_iBlending = p_src.m_iBlending;
+    m_iBlendSrc = p_src.m_iBlendSrc;
+    m_iBlendDst = p_src.m_iBlendDst;
+    m_iBlendEquation = p_src.m_iBlendEquation;
+    m_bDepthTest = p_src.m_bDepthTest;
+    m_bDepthWrite = p_src.m_bDepthWrite;
+    m_fWireframeWidth = p_src.m_fWireframeWidth;
+
+    m_iPolygonOffset = p_src.m_iPolygonOffset;
+    m_iPolygonOffsetFactor = p_src.m_iPolygonOffsetFactor;
+    m_iPolygonOffsetUnits = p_src.m_iPolygonOffsetUnits;
+    m_fAlphaTest = p_src.m_fAlphaTest;
+    m_fOverdraw = p_src.m_fOverdraw;
+    m_iSides = p_src.m_iSides;
+    m_Type = p_src.m_Type;
+    return (*this);
+}
+
+
+/**
+*    moMaterial (Map Material)
+*/
+
+
+moMaterial::moMaterial() : moMaterialBase() {
+    m_Map = NULL;
+    m_Type = "Material";
+    m_Color = moColor( 1.0, 1.0, 1.0 );
+}
+
+const moMaterial&
+moMaterial::operator= ( const moMaterial& p_src ) {
+  m_Id = p_src.m_Id;
+  m_Name = p_src.m_Name;
+  m_fOpacity = p_src.m_fOpacity;
+  m_bTransparent = p_src.m_bTransparent;
+  m_iBlending = p_src.m_iBlending;
+  m_iBlendSrc = p_src.m_iBlendSrc;
+  m_iBlendDst = p_src.m_iBlendDst;
+  m_iBlendEquation = p_src.m_iBlendEquation;
+  m_bDepthTest = p_src.m_bDepthTest;
+  m_bDepthWrite = p_src.m_bDepthWrite;
+  m_fWireframeWidth = p_src.m_fWireframeWidth;
+
+  m_iPolygonOffset = p_src.m_iPolygonOffset;
+  m_iPolygonOffsetFactor = p_src.m_iPolygonOffsetFactor;
+  m_iPolygonOffsetUnits = p_src.m_iPolygonOffsetUnits;
+  m_fAlphaTest = p_src.m_fAlphaTest;
+  m_fOverdraw = p_src.m_fOverdraw;
+  m_iSides = p_src.m_iSides;
+  m_Type = p_src.m_Type;
+
+  m_Map = p_src.m_Map;
+  m_Color = p_src.m_Color;
+  m_SpecularColor = p_src.m_SpecularColor;
+  m_AmbientColor = p_src.m_AmbientColor;
+
+  m_PolygonMode = p_src.m_PolygonMode;
+  m_Blending = p_src.m_Blending;
+  return (*this);
 }
 
 
@@ -518,8 +746,8 @@ moGUIManager::moGUIManager() {
 	hOpWnd = NULL;
 	hVisWnd = NULL;
 	*/
-	m_OpHandle = NULL;
-	m_VisHandle = NULL;
+	m_OpHandle = (MO_HANDLE) NULL;
+	m_VisHandle = (MO_HANDLE) NULL;
 }
 
 
