@@ -4672,11 +4672,15 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   glDisable(GL_BLEND);
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   //moPlaneGeometry Plane2( 1.0, 1.0, 1, 1 );
-  moSphereGeometry Sphere( 0.5, 20, 20 );
+  moSphereGeometry Sphere( 0.5, 13, 13 );
 
   moMaterial Mat;
   Mat.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "default", false ));
   Mat.m_Color = moColor( 1.0, 1.0, 1.0 );
+  Mat.m_fTextWSegments = 13.0f;
+  Mat.m_fTextHSegments = 13.0f;
+  Mat.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
+  Mat.m_vLight.Normalize();
   //Mat.m_PolygonMode = MO_POLYGONMODE_LINE;
   Mat.m_fWireframeWidth = 0.001f;
 
@@ -4708,6 +4712,8 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
   moMaterial Mat2;
   Mat2.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "moldeotrans", false ));
   Mat2.m_Color = moColor( 1.0, 1.0, 1.0 );
+  Mat2.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
+  Mat2.m_vLight.Normalize();
 
   Model.MakeIdentity();
   Model.Scale( 1.0, 1.0, 1.0 );

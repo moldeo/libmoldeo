@@ -140,11 +140,16 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
 		virtual MOboolean Finish();
 
         virtual float* GetVerticesBuffer();
+        virtual float* GetNormalsBuffer();
         virtual float* GetColorBuffer();
         virtual float* GetVerticesUVBuffer();
 
         virtual const moPointArray& GetVertices() const {
           return m_Vertices;
+        }
+
+        virtual const moPointArray& GetNormals() const {
+          return m_Normals;
         }
 
         virtual const moTCoordArray& GetVerticesUV() const {
@@ -183,10 +188,13 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
         moGeometryType m_Type;
 
         moPointArray m_Vertices;
-        MOfloat*       m_VerticesBuffer;
         moTCoordArray m_VerticesUvs;
-        MOfloat*       m_VerticesUVBuffer;
+        moVertexArray m_Normals;
         moColorArray    m_Colors;
+
+        MOfloat*       m_VerticesBuffer;
+        MOfloat*       m_NormalsBuffer;
+        MOfloat*       m_VerticesUVBuffer;
         MOfloat*       m_ColorBuffer;
 
         moFaceArray m_Faces;//array of triangles, 3 points referencing each an index of m_Vertices.
@@ -237,6 +245,9 @@ class LIBMOLDEO_API moMaterialBase : public moResourceElement {
     bool m_bDepthTest;
     bool m_bDepthWrite;
     float m_fWireframeWidth;
+    float m_fTextWSegments;
+    float m_fTextHSegments;
+    moVector3f m_vLight;
 
     int m_iPolygonOffset;
     int m_iPolygonOffsetFactor;
@@ -263,6 +274,7 @@ class LIBMOLDEO_API moMaterial : public moMaterialBase {
         moTexture*   m_Map;
         moPolygonModes m_PolygonMode;
         moBlendingModes m_Blending;
+
 };
 
 

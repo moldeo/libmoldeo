@@ -63,6 +63,7 @@ moGeometry::moGeometry() {
     m_VerticesBuffer = NULL;
     m_VerticesUVBuffer = NULL;
     m_ColorBuffer = NULL;
+    m_NormalsBuffer = NULL;
 }
 
 moGeometry::moGeometry( moGeometryType p_type ) {
@@ -70,6 +71,7 @@ moGeometry::moGeometry( moGeometryType p_type ) {
     m_VerticesBuffer = NULL;
     m_VerticesUVBuffer = NULL;
     m_ColorBuffer = NULL;
+    m_NormalsBuffer = NULL;
 }
 
 moGeometry::~moGeometry() {
@@ -82,6 +84,7 @@ moGeometry::operator=(const moGeometry& p_src ) {
     m_Vertices = p_src.m_Vertices;
     m_VerticesUvs = p_src.m_VerticesUvs;
     m_Colors = p_src.m_Colors;
+    m_Normals = p_src.m_Normals;
 /*
     m_ColorBuffer = p_src.m_ColorBuffer;
     m_VerticesBuffer = p_src.m_VerticesBuffer;
@@ -227,6 +230,7 @@ moGeometry::GetVerticesBuffer() {
     m_VerticesBuffer = new float [ m_Faces.Count()*3*3 ];
     m_VerticesUVBuffer = new float [ m_Faces.Count()*3*2 ];
     m_ColorBuffer = new float [ m_Faces.Count()*3*3 ];
+    m_NormalsBuffer = new float [ m_Faces.Count()*3*3 ];
 
     if (m_VerticesBuffer && m_VerticesUVBuffer && m_ColorBuffer ) {
 
@@ -251,6 +255,10 @@ moGeometry::GetVerticesBuffer() {
                 m_ColorBuffer[ indexv3 + 1 ] = m_Colors[vpos].Y();
                 m_ColorBuffer[ indexv3 + 2 ] = m_Colors[vpos].Z();
 
+                m_NormalsBuffer[ indexv3 ] = m_Normals[vpos].X();
+                m_NormalsBuffer[ indexv3 + 1 ] = m_Normals[vpos].Y();
+                m_NormalsBuffer[ indexv3 + 2 ] = m_Normals[vpos].Z();
+
             }
         }
     } else return NULL;
@@ -268,7 +276,10 @@ moGeometry::GetVerticesUVBuffer() {
     return m_VerticesUVBuffer;
 }
 
-
+float*
+moGeometry::GetNormalsBuffer() {
+    return m_NormalsBuffer;
+}
 
 
 moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegments, int hsegments, int dsegments ) : moGeometry( MO_GEOMETRY_BOX ) {
@@ -292,19 +303,12 @@ moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, 
     m_Type = MO_GEOMETRY_PLANE;
 
     m_Vertices.Init( 0, moVector3f( 0.0, 0.0, 0.0) );
-    m_Vertices.Empty();
-
     m_VerticesUvs.Init( 0,  moTCoord( 0.0, 0.0 ) );
-    m_VerticesUvs.Empty();
+    m_Normals.Init( 0, moVector3f( 0.0, 0.0, 0.0) );
 
     m_Faces.Init( 0, moFace( 0, 0, 0 ) );
-    m_Faces.Empty();
-
     m_FaceVertexUvs.Init( 0, moTCoord( 0.0, 0.0 ) );
-    m_FaceVertexUvs.Empty();
-
     m_Colors.Init( 0, moColor( 0.0, 0.0, 0.0 ) );
-    m_Colors.Empty();
 
 
     float dw = 0.5*width;
@@ -337,6 +341,11 @@ moPlaneGeometry::moPlaneGeometry( float width, float height, int widthSegments, 
     m_VerticesUvs.Add( moVector2f( 0.0, 0.0) );
     m_VerticesUvs.Add( moVector2f( 1.0, 1.0) );
     m_VerticesUvs.Add( moVector2f( 1.0, 0.0) );
+
+    m_Normals.Add( moVector3f( 0.0, 0.0, 1.0) );
+    m_Normals.Add( moVector3f( 0.0, 0.0, 1.0) );
+    m_Normals.Add( moVector3f( 0.0, 0.0, 1.0) );
+    m_Normals.Add( moVector3f( 0.0, 0.0, 1.0) );
 
     m_Colors.Add( moColor( 1.0, 0.0, 0.0 ) );
     m_Colors.Add( moColor( 0.0, 1.0, 0.0 ) );
@@ -435,7 +444,7 @@ moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightS
     m_Vertices.Init( vertexCount, moVector3f( 0.0, 0.0, 0.0) );
     m_VerticesUvs.Init( vertexCount, moTCoord( 0.0, 0.0) );
     m_Colors.Init( vertexCount, moColor( 1.0, 1.0, 1.0 ) );
-
+    m_Normals.Init( vertexCount, moColor( 0.0, 0.0, 1.0 ) );
 
 /*
     int vertexCount = 4;
@@ -476,11 +485,12 @@ moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightS
         float pz = radius * moMathf::Sin( phiStart + u * phiLength ) * moMathf::Sin( thetaStart + v * thetaLength );
 
         moVector3f normal( px, py, pz );
+        normal.Normalize();
         moVector3f position( px, py, pz );
         moTCoord tcoord( u, 1-v );
         m_Vertices.Set( index, position );
         m_VerticesUvs.Set( index, tcoord );
-
+        m_Normals.Set( index, normal );
         index ++;
       }
     }
@@ -652,6 +662,9 @@ moMaterialBase::moMaterialBase() {
     m_iBlendDst = 0;
     m_iBlendSrc = 0;
     m_fWireframeWidth = 0.0;
+    m_fTextWSegments = 1.0;
+    m_fTextHSegments = 1.0;
+    m_vLight = moVector3f( -1, -1, -1 );
 }
 moMaterialBase::moMaterialBase(int p_Id, const moText& p_Name) {
   (*this) = moMaterialBase();
@@ -672,6 +685,9 @@ moMaterialBase::operator= ( const moMaterialBase& p_src ) {
     m_bDepthTest = p_src.m_bDepthTest;
     m_bDepthWrite = p_src.m_bDepthWrite;
     m_fWireframeWidth = p_src.m_fWireframeWidth;
+    m_fTextWSegments = p_src.m_fTextWSegments;
+    m_fTextHSegments = p_src.m_fTextHSegments;
+    m_vLight = p_src.m_vLight;
 
     m_iPolygonOffset = p_src.m_iPolygonOffset;
     m_iPolygonOffsetFactor = p_src.m_iPolygonOffsetFactor;
@@ -708,6 +724,9 @@ moMaterial::operator= ( const moMaterial& p_src ) {
   m_bDepthTest = p_src.m_bDepthTest;
   m_bDepthWrite = p_src.m_bDepthWrite;
   m_fWireframeWidth = p_src.m_fWireframeWidth;
+  m_fTextWSegments = p_src.m_fTextWSegments;
+  m_fTextHSegments = p_src.m_fTextHSegments;
+  m_vLight = p_src.m_vLight;
 
   m_iPolygonOffset = p_src.m_iPolygonOffset;
   m_iPolygonOffsetFactor = p_src.m_iPolygonOffsetFactor;

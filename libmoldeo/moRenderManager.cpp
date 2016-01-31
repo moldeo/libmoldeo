@@ -437,11 +437,15 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
 
     MOuint color_index = m_pSHManager->GetRSHColorIndex();
     MOuint position_index = m_pSHManager->GetRSHPositionIndex();
+    MOuint normal_index = m_pSHManager->GetRSHNormalIndex();
     MOuint texcoord_index = m_pSHManager->GetRSHTexCoordIndex();
     MOuint texcoordedge_index = m_pSHManager->GetRSHTexCoordEdgeIndex();
     MOuint matrix_index = m_pSHManager->GetRSHProjectionMatrixIndex();
     MOuint texture_index = m_pSHManager->GetRSHTextureIndex();
     MOuint wireframe_index = m_pSHManager->GetRSHWireframeWidthIndex();
+    MOuint tex_wsegments_index = m_pSHManager->GetRSHTexWSegmentsIndex();
+    MOuint tex_hsegments_index = m_pSHManager->GetRSHTexHSegmentsIndex();
+    MOuint light_index = m_pSHManager->GetRSHLightIndex();
 
     if ( m_pSHManager->GetRenderShader().Initialized() ) {
         m_pSHManager->GetRenderShader().StartShader();
@@ -454,6 +458,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     const float* Gpx = Geo.GetVerticesBuffer();
     const float* Gcx = Geo.GetColorBuffer();
     const float* Gtx = Geo.GetVerticesUVBuffer();
+    const float* Gnx = Geo.GetNormalsBuffer();
 
     int facesCount = Faces.Count();
 
@@ -482,6 +487,9 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
     glUniform1i( texture_index, 0 );///Pass TEXTURE UNIT 0 (use glActiveTexture and glBindTexture )
     glUniform1f( wireframe_index, Mat.m_fWireframeWidth );
+    glUniform1f( tex_wsegments_index, Mat.m_fTextWSegments );
+    glUniform1f( tex_hsegments_index, Mat.m_fTextHSegments );
+    glUniform3fv( light_index, 1, &Mat.m_vLight[0] );
 
     glEnableVertexAttribArray( position_index );
     glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, &Gpx[0] );  // Set data type and location.
@@ -496,6 +504,8 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     glVertexAttribPointer( texcoordedge_index, 2, GL_FLOAT, false, 0, &Gtx[0] );  // Set data type and location.
     //int vertexCount = p_src.m_Geometry.GetVertices().Count();
     //int facesCount = p_src.m_Geometry.GetFaces().Count();
+    glEnableVertexAttribArray( normal_index );
+    glVertexAttribPointer( normal_index, 3, GL_FLOAT, false, 0, &Gnx[0] );
 
     switch(Mat.m_PolygonMode) {
 
@@ -518,6 +528,8 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     glDisableVertexAttribArray( position_index );
     glDisableVertexAttribArray( color_index );
     glDisableVertexAttribArray( texcoord_index );
+    glDisableVertexAttribArray( texcoordedge_index );
+    glDisableVertexAttribArray( normal_index );
 
     if (m_pSHManager->GetRenderShader().Initialized()) {
         m_pSHManager->GetRenderShader().StopShader();

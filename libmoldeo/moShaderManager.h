@@ -178,6 +178,15 @@ public:
     return m_RenderShaderWireframeWidthIndex;
   }
 
+  MOuint GetRSHTexWSegmentsIndex() {
+    return m_RenderShaderTexWSegmentsIndex;
+  }
+  MOuint GetRSHTexHSegmentsIndex() {
+    return m_RenderShaderTexHSegmentsIndex;
+  }
+  MOuint GetRSHLightIndex() {
+    return m_RenderShaderLightIndex;
+  }
 
 private:
 	moGLManager* m_glmanager;
@@ -193,6 +202,9 @@ private:
 	MOuint m_RenderShaderTexCoordIndex;
 	MOuint m_RenderShaderTexCoordEdgeIndex;
 	MOuint m_RenderShaderWireframeWidthIndex;
+	MOuint m_RenderShaderTexWSegmentsIndex;
+	MOuint m_RenderShaderTexHSegmentsIndex;
+	MOuint m_RenderShaderLightIndex;
 
     /**
     *  Objeto que referencia cada sombreador aplicadp
