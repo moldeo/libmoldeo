@@ -505,7 +505,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
             break;
 
         case MO_POLYGONMODE_POINT:
-                glDrawArrays(GL_POINT, 0, facesCount*3 );
+                glDrawArrays(GL_POINTS, 0, facesCount*3 );
             break;
 
         case MO_POLYGONMODE_FILL:
