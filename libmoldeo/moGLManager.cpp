@@ -74,6 +74,20 @@ moGLMatrixf::operator= (const moGLMatrixf& rkM ) {
 	return *this;
 }
 
+
+moGLMatrixf&
+moGLMatrixf::MakeIdentity() {
+    (*this) = moMatrix4f::IDENTITY;
+    return (*this);
+}
+
+moGLMatrixf&
+moGLMatrixf::MakeZero() {
+    (*this) = moMatrix4f::ZERO;
+    return (*this);
+}
+
+
 moGLMatrixf&
 moGLMatrixf::MakePerspective( float fovy,  float aspect,  float znear,  float zfar ) {
 

@@ -86,6 +86,8 @@ class  LIBMOLDEO_API moGLMatrixf : public moMatrix4f {
    // inline float operator() (int iRow, int iCol) const { return moMatrix4f::Get( iRow, iCol); }
    // inline float& operator() (int iRow, int iCol) { return m_afEntry[iCol+4*iRow]; }
 
+    moGLMatrixf& MakeIdentity();
+    moGLMatrixf& MakeZero();
     moGLMatrixf& MakePerspective( float fovy,  float aspect,  float zNear,  float zFar );
     moGLMatrixf& MakeLookAt( float eyeX=0.0,  float eyeY=0.0,  float eyeZ=-10.0,  float centerX=0.0,  float centerY=0.0,  float centerZ=0.0,  float upX=0.0,  float upY=0.0,  float upZ=1.0 );
     moGLMatrixf& MakeFrustrum( float left=-1.0, float right=1.0, float bottom=-1.0, float top=1.0, float near=0.0001, float far=1000.0f  );

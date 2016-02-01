@@ -4628,26 +4628,27 @@ int
 moConsole::TestScreen( const moDisplay& p_display_info ) {
 
 
-  moShaderManager* pSMan;
-  moGLManager* pGLMan;
-  moRenderManager* pRMan;
-  moTextureManager* pTMan;
+    moShaderManager* pSMan;
+    moGLManager* pGLMan;
+    moRenderManager* pRMan;
+    moTextureManager* pTMan;
 
-  if (m_pResourceManager==NULL) {
+    if (m_pResourceManager==NULL) {
     m_pResourceManager = new moResourceManager();
     m_pResourceManager->Init( "", "", m_Config, 0, p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
     //m_pResourceManager->Init( "", "", m_Config, 0, 1280, 720);
-  }
+    }
 
     //int tick = moGetTicksAbsolute( true );
     m_ConsoleState.step_interval = 40;
     float stepi = m_ConsoleState.step_interval;
     float steps = moGetTicksAbsoluteStep( m_ConsoleState.step_interval );
+    float progress = (steps/stepi)/120.0;
 
-    glClearColor( 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0*(0.01*steps/stepi), 1.0 );
+    glClearColor( 1.0f - progress, 1.0f - progress, 1.0f - progress, 1.0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  if (m_pResourceManager) {
+    if (m_pResourceManager) {
     pSMan = m_pResourceManager->GetShaderMan();
     if (!pSMan) return 0;
 
@@ -4660,71 +4661,91 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
     pTMan = m_pResourceManager->GetTextureMan();
     if (!pTMan) return 0;
 
-  } else return 0;
+    } else return 0;
 
 
-  moCamera3D Camera3D;
-  moGLMatrixf Model;
-
-  /**CORE PLANET*/
-
-  glEnable(GL_DEPTH_TEST);
-  glDisable(GL_BLEND);
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  //moPlaneGeometry Plane2( 1.0, 1.0, 1, 1 );
-  moSphereGeometry Sphere( 0.5, 13, 13 );
-
-  moMaterial Mat;
-  Mat.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "default", false ));
-  Mat.m_Color = moColor( 1.0, 1.0, 1.0 );
-  Mat.m_fTextWSegments = 13.0f;
-  Mat.m_fTextHSegments = 13.0f;
-  Mat.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
-  Mat.m_vLight.Normalize();
-  //Mat.m_PolygonMode = MO_POLYGONMODE_LINE;
-  Mat.m_fWireframeWidth = 0.001f;
-
-  Model.MakeIdentity();
-  //Model.Rotate( 0.8*steps/stepi*moMathf::DEG_TO_RAD, 0.0, 1.0, 0.0 );
-  Model.Rotate( (360.0/120.0)*(steps/stepi)*moMathf::DEG_TO_RAD, 0.0, 1.0, 0.0 );
-  //Model.Rotate( (360.0/120.0)*(steps/stepi)*moMathf::DEG_TO_RAD, 1.0, 0.0, 0.0 );
-  Model.Translate( 0.0, 0.0, -2.0 );
-
-  //moMesh Mesh( Plane2, Material );
-  moMesh Mesh( Sphere, Mat );
-  Mesh.SetModelMatrix(Model);
-
-//  Camera3D.MakeIdentity();
-//  Camera3D.MakePerspective(60.0f, p_display_info.Proportion(), 0.01f, 1000.0f );
-  pGLMan->SetDefaultPerspectiveView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
-  Camera3D = pGLMan->GetProjectionMatrix();
-
-  pRMan->Render( &Mesh, &Camera3D );
-
-  /** LOGO PLENO (sin perspectiva) */
-  glClear( GL_DEPTH_BUFFER_BIT);
-
-  glDisable(GL_DEPTH_TEST);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  moPlaneGeometry Plane3( 1.0, 0.33, 1, 1 );
-  moMaterial Mat2;
-  Mat2.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "moldeotrans", false ));
-  Mat2.m_Color = moColor( 1.0, 1.0, 1.0 );
-  Mat2.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
-  Mat2.m_vLight.Normalize();
-
-  Model.MakeIdentity();
-  Model.Scale( 1.0, 1.0, 1.0 );
-  Model.Translate( 0.0, 0.0, 0.0 );
-  pGLMan->SetDefaultOrthographicView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
-  Camera3D = pGLMan->GetProjectionMatrix();
-  moMesh Mesh2( Plane3, Mat2 );
-  Mesh2.SetModelMatrix(Model);
-  pRMan->Render( &Mesh2, &Camera3D );
+    moCamera3D Camera3D;
 
 
+/**
 
-  return 1;
+CORE PLANET
+
+
+*/
+
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //moPlaneGeometry Plane2( 1.0, 1.0, 1, 1 );
+
+    ///MATERIAL
+    moMaterial Mat;
+      Mat.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "default", false ));
+      Mat.m_Color = moColor( 1.0, 1.0, 1.0 );
+      Mat.m_fTextWSegments = 13.0f;
+      Mat.m_fTextHSegments = 13.0f;
+      Mat.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
+      Mat.m_vLight.Normalize();
+      //Mat.m_PolygonMode = MO_POLYGONMODE_LINE;
+      Mat.m_fWireframeWidth = 0.0005f;
+
+    ///GEOMETRY
+    moSphereGeometry Sphere( 0.5, 13, 13 );
+
+    ///MESH MODEL (aka SCENE NODE)
+    moGLMatrixf Model;
+    Model.MakeIdentity()
+         .Rotate(   360.0*progress*moMathf::DEG_TO_RAD, 0.0, 1.0, 0.0 )
+         .Translate(    0.0, 0.0, -2.618 + 0.618*progress );
+    moMesh Mesh( Sphere, Mat );
+    Mesh.SetModelMatrix(Model);
+
+    ///CAMERA PERSPECTIVE
+    pGLMan->SetDefaultPerspectiveView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
+    //  Camera3D.MakePerspective(60.0f, p_display_info.Proportion(), 0.01f, 1000.0f );
+    Camera3D = pGLMan->GetProjectionMatrix();
+
+    ///RENDERING
+    pRMan->Render( &Mesh, &Camera3D );
+
+/**
+
+LOGO PLENO (sin perspectiva)
+
+
+*/
+    glClear( GL_DEPTH_BUFFER_BIT);
+
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    ///MESH MATERIAL
+    moMaterial Mat2;
+    Mat2.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "moldeotrans", false ));
+    Mat2.m_Color = moColor( 1.0, 1.0, 1.0 );
+    Mat2.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
+    Mat2.m_vLight.Normalize();
+
+    ///MESH GEOMETRY
+    moPlaneGeometry Plane3( 1.0, 0.33, 1, 1 );
+
+    ///MESH MODEL
+    Model.MakeIdentity();
+    Model.Scale( 1.0, 1.0, 1.0 );
+    Model.Translate( 0.0, 0.0, 0.0 );
+    moMesh Mesh2( Plane3, Mat2 );
+    Mesh2.SetModelMatrix(Model);
+
+    ///CAMERA PERSPECTIVE
+    pGLMan->SetDefaultOrthographicView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
+    Camera3D = pGLMan->GetProjectionMatrix();
+
+    ///RENDERING
+    pRMan->Render( &Mesh2, &Camera3D );
+
+
+
+    return 1;
 }
