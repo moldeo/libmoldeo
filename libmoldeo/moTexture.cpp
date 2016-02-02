@@ -272,12 +272,13 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
         if (fif==FIF_JPEG) p_format = GL_BGR;
 #endif
 */
+        p_format = GL_RGB;
                 if ( image_type==FIT_BITMAP && (fif==FIF_JPEG || fif==FIF_PNG) ) {
                     //BYTE* pbits = (BYTE*)FreeImage_GetBits(m_pImage);
-                    for( int j = 0; j < p_height; j++) {
+                    for( int j = 0; j < (int)p_height; j++) {
                         //BYTE *pixel = (BYTE*)pbits;
                         BYTE *pixel = (BYTE *) FreeImage_GetScanLine( m_pImage, j );
-                        for(int i = 0; i < p_width; i++) {
+                        for(int i = 0; i < (int)p_width; i++) {
                             BYTE tmp = pixel[FI_RGBA_RED];
                             pixel[FI_RGBA_RED]   = pixel[FI_RGBA_BLUE];
                             //pixel[FI_RGBA_GREEN] = 128;
@@ -298,10 +299,10 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 #endif
                 if ( image_type==FIT_BITMAP && fif==FIF_PNG ) {
                     //BYTE* pbits = (BYTE*)FreeImage_GetBits(m_pImage);
-                    for( int j = 0; j < p_height; j++) {
+                    for( int j = 0; j < (int)p_height; j++) {
                         //BYTE *pixel = (BYTE*)pbits;
                         BYTE *pixel = (BYTE *) FreeImage_GetScanLine( m_pImage, j );
-                        for(int i = 0; i < p_width; i++) {
+                        for(int i = 0; i < (int)p_width; i++) {
                             BYTE tmp = pixel[FI_RGBA_RED];
                             pixel[FI_RGBA_RED]   = pixel[FI_RGBA_BLUE];
                             //pixel[FI_RGBA_GREEN] = 128;

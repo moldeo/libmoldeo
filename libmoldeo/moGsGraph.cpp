@@ -2668,19 +2668,23 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
     if (g_strrstr( sstr, "width" )) {
 
         //to calculate framerate
-        gint width, height, value_numerator, value_denominator;
+        gint width, height, value_numerator, value_denominator, redmask, greenmask, bluemask, bitcount;
 
         gst_structure_get_int( str, "width", &width);
         gst_structure_get_int( str, "height", &height);
         gst_structure_get_fraction( str, "framerate", &value_numerator, &value_denominator );
-        gst_structure_get_int( str, "red_mask", &m_VideoFormat.m_RedMask );
-        gst_structure_get_int( str, "green_mask", &m_VideoFormat.m_GreenMask );
-        gst_structure_get_int( str, "blue_mask", &m_VideoFormat.m_BlueMask );
-        gst_structure_get_int( str, "bpp", &m_VideoFormat.m_BitCount );
+        gst_structure_get_int( str, "red_mask", &redmask );
+        gst_structure_get_int( str, "green_mask", &greenmask );
+        gst_structure_get_int( str, "blue_mask", &bluemask );
+        gst_structure_get_int( str, "bpp", &bitcount );
 
         m_VideoFormat.m_Width = (MOuint)width;
         m_VideoFormat.m_Height = (MOuint)height;
         m_VideoFormat.m_FrameRate = (value_numerator * 100) / value_denominator;
+        m_VideoFormat.m_RedMask = (MOuint) redmask;
+        m_VideoFormat.m_GreenMask = (MOuint) greenmask;
+        m_VideoFormat.m_BlueMask = (MOuint) bluemask;
+        m_VideoFormat.m_BitCount = (MOuint) bitcount;
 
         //cout << "Width:" << m_VideoFormat.m_Width << endl;
         //cout << "Height:" << m_VideoFormat.m_Height << endl;

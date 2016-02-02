@@ -1529,7 +1529,7 @@ void moVideoManager::Update(moEventList * p_EventList)
                     if (vf.m_RedMask==255 && vf.m_BufferSize>0) {
                         ///INVERT RED AND BLUE
                         int bypp = (vf.m_BitCount>>3);
-                        for( int a=0; a<vf.m_BufferSize; a+=bypp ) {
+                        for( int a=0; a<(int)vf.m_BufferSize; a+=bypp ) {
                             BYTE* pix = &pbuffer[a];
                             BYTE u = pix[0];
                             pix[0] = pix[2];

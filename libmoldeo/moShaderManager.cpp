@@ -125,7 +125,6 @@ MOboolean moShaderManager::Init()
 #endif
     if (!m_RenderShader.Initialized()) {
       MODebug2->Message("moShaderManager::Init > Creating basic Render Shader...");
-
       m_RenderShader.Init();
       m_RenderShader.CreateShader(
             moText(

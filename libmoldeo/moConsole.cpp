@@ -1970,13 +1970,14 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
       arg2Int = atoi( arg2Text );
 
-
+      ///Add Values!
       if ( MappedType==MO_ACTION_VALUE_ADD && (int)rParam.GetValuesCount()<=arg2Int && pConfig ) {
 
         MODebug2->Message("moConsole::ProcessMoldeoAPIMessage Adding > value for "+MObject->GetLabelName()+" preconfig: "+arg2Text);
         moText pName = rParam.GetParamDefinition().GetName();
         moParamDefinition pParamDef = pConfig->GetConfigDefinition()->GetParamDefinition( pName );
-        moValue newValue = pParamDef.GetDefaultValue();
+        //moValue newValue = pParamDef.GetDefaultValue();
+        moValue newValue = rParam.GetValue( rParam.GetValuesCount()-1 );
 
         /// crea valores hasta completar el indice (arg2Int) (luego esperamos se rellenen
         /// con valores reales definidos por el usuario.
@@ -4664,7 +4665,7 @@ moConsole::TestScreen( const moDisplay& p_display_info ) {
     } else return 0;
 
 
-    moCamera3D Camera3D;
+
 
 
 /**
@@ -4702,6 +4703,7 @@ CORE PLANET
     Mesh.SetModelMatrix(Model);
 
     ///CAMERA PERSPECTIVE
+    moCamera3D Camera3D;
     pGLMan->SetDefaultPerspectiveView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
     //  Camera3D.MakePerspective(60.0f, p_display_info.Proportion(), 0.01f, 1000.0f );
     Camera3D = pGLMan->GetProjectionMatrix();
@@ -4732,18 +4734,20 @@ LOGO PLENO (sin perspectiva)
     moPlaneGeometry Plane3( 1.0, 0.33, 1, 1 );
 
     ///MESH MODEL
-    Model.MakeIdentity();
-    Model.Scale( 1.0, 1.0, 1.0 );
-    Model.Translate( 0.0, 0.0, 0.0 );
+    moGLMatrixf Model2;
+    Model2.MakeIdentity();
+    Model2.Scale( 1.0, 1.0, 1.0 );
+    Model2.Translate( 0.0, 0.0, 0.0 );
     moMesh Mesh2( Plane3, Mat2 );
-    Mesh2.SetModelMatrix(Model);
+    Mesh2.SetModelMatrix(Model2);
 
     ///CAMERA PERSPECTIVE
+    moCamera3D Camera3D2;
     pGLMan->SetDefaultOrthographicView( p_display_info.Resolution().Width(), p_display_info.Resolution().Height() );
-    Camera3D = pGLMan->GetProjectionMatrix();
+    Camera3D2 = pGLMan->GetProjectionMatrix();
 
     ///RENDERING
-    pRMan->Render( &Mesh2, &Camera3D );
+    pRMan->Render( &Mesh2, &Camera3D2 );
 
 
 
