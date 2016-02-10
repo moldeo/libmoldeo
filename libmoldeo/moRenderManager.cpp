@@ -214,14 +214,14 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       OpenGL Minor Version: ") + IntToStr( gl_minor_version ) );
   MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + IntToStr( (long)glActiveTextureARB) );
   MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + IntToStr( (long)glMultiTexCoord2fARB ) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + IntToStr(GLEW_ARB_texture_non_power_of_two) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_color_buffer_float: ") + IntToStr(GLEW_ARB_color_buffer_float) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_multitexture: ") + IntToStr(GLEW_ARB_multitexture) );
+  //MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + IntToStr(GLEW_ARB_texture_non_power_of_two) );
+  //MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_color_buffer_float: ") + IntToStr(GLEW_ARB_color_buffer_float) );
+  //MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_multitexture: ") + IntToStr(GLEW_ARB_multitexture) );
   MODebug2->Message( moText("moRenderManager::Init >       GL_EXT_gpu_shader4: ") + IntToStr(GL_EXT_gpu_shader4) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_geometry_shader4: ") + IntToStr(GLEW_EXT_geometry_shader4) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + IntToStr(GLEW_ARB_imaging) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + IntToStr(GLEW_ARB_shading_language_100) );
-  MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
+  //MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_geometry_shader4: ") + IntToStr(GLEW_EXT_geometry_shader4) );
+  //MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + IntToStr(GLEW_ARB_imaging) );
+  //MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + IntToStr(GLEW_ARB_shading_language_100) );
+  //MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Size: ") + IntToStr(max_tex_size) );
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Rectangle Size: ") + IntToStr(max_tex_rect_size) );
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size: ") + IntToStr(max_tex_buf_size) );
@@ -287,8 +287,8 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 /// && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU)
 
-	if (GLEW_EXT_framebuffer_object
-     /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
+	if (/*GLEW_EXT_framebuffer_object*/
+        IsRenderToFBOEnabled()     /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
 	{
 	    m_pGLManager->SetFrameBufferObjectActive();
         MODebug2->Message( moText("moRenderManager::Init > Using framebuffer_object: creating one fbo per predefined textures (4). ") );
@@ -316,7 +316,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 MOboolean moRenderManager::Finish()
 {
-	if (GLEW_EXT_framebuffer_object) m_pFBManager->DeleteFBO(m_fbo_idx);
+	if (IsRenderToFBOEnabled()) m_pFBManager->DeleteFBO(m_fbo_idx);
 
 	m_pGLManager = NULL;
 	m_pFBManager = NULL;
@@ -327,7 +327,8 @@ MOboolean moRenderManager::Finish()
 
 MOboolean moRenderManager::IsRenderToFBOEnabled()
 {
-    return (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER) && GLEW_EXT_framebuffer_object;
+    return (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER);
+    //&& GLEW_EXT_framebuffer_object;
 }
 
 MOboolean moRenderManager::RenderResEqualScreenRes()
@@ -799,21 +800,25 @@ MOint moRenderManager::RenderTexGLId(MOint p_tex_num)
 
 MOboolean moRenderManager::MultiTextureSupported() const
 {
-	return GLEW_ARB_multitexture;
+	//return GLEW_ARB_multitexture;
+    return true;
 }
 
 MOboolean moRenderManager::FramebufferObjectSupported() const
 {
-	return GLEW_EXT_framebuffer_object;
+	//return GLEW_EXT_framebuffer_object;
+    return true;
 }
 
 MOboolean moRenderManager::ShadersSupported() const
 {
-	return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
+	/*return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
+     */
 }
 
 MOboolean moRenderManager::IsTextureNonPowerOf2Disabled() const {
-  return !(GLEW_ARB_texture_non_power_of_two);
+  //return !(GLEW_ARB_texture_non_power_of_two);
+    return true;
 }
 
 MOint moRenderManager::ScreenWidth()  const {

@@ -401,7 +401,7 @@ MOboolean moTexture::GetBuffer(GLvoid* p_buffer, GLenum p_format, GLenum p_type)
 	glBindTexture(m_param.target, this->m_glid);
 	/**  Copiamos los bytes de la textura al buffer*/
 	if ( p_buffer == NULL ) {
-      MODebug2->Error("moTexture::GetBuffer > p_buffer: " + IntToStr((int)p_buffer));
+      MODebug2->Error("moTexture::GetBuffer > p_buffer: " + IntToStr((MOlong)p_buffer));
       return false;
 	}
   if (
@@ -422,7 +422,7 @@ p_format!=GL_RGB && p_format!=GL_RGBA ) {
     glGetTexImage( m_param.target, 0, p_format, p_type, p_buffer);
 #endif
 	} catch(...) {
-    MODebug2->Error("moTexture::GetBuffer > exception getting texture buffer. p_buffer: " + IntToStr((int)p_buffer));
+    MODebug2->Error("moTexture::GetBuffer > exception getting texture buffer. p_buffer: " + IntToStr((MOlong)p_buffer));
 	}
 	glBindTexture( m_param.target, 0);
 
@@ -1017,8 +1017,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
     */
 
     FIBITMAP* fbitmap2 = NULL;
-
-    if (!GLEW_ARB_texture_non_power_of_two) {
+    if (m_pResourceManager->GetRenderMan()->IsTextureNonPowerOf2Disabled()) {
         //crop image...to  match resolution
         if (    m_pResourceManager->GetRenderMan()->ScreenWidth() == w && w <= (int)GetWidth()
                 && m_pResourceManager->GetRenderMan()->ScreenHeight() == h && h <= (int)GetHeight()  ) {

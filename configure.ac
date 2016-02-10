@@ -19,9 +19,6 @@ AC_PROG_CXX_C_O
 dnl check for muParser
 PKG_CHECK_MODULES([MUPARSER], [muparser] ,has_muparser=yes)
 
-dnl check for lua51
-PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
-
 dnl check tinyxml
 PKG_CHECK_MODULES([TINYXML], [tinyxml] ,has_tinyxml=yes)
 
@@ -37,23 +34,26 @@ AS_HELP_STRING([--with-gles],
 [use open gl es 2, default: no]),
 [with_gles=yes])
 
-AS_IF([test "x$with_gles" = "xyes"],
-[PKG_CHECK_MODULES([GL], [glesv2, egl] ,has_glesv2=yes)],
-[PKG_CHECK_MODULES([GL], [gl, glew] ,has_gl=yes)])
+host_name="default"
 
 AC_ARG_ENABLE(host,
 [--enable-host[=host name] Specify the host os name:
 			64: 64 bit linux os [default]
 			86: 32 bits linux os
-                        raspbian: RASPBIAN/debian 8 32 bits],
+            raspbian: RASPBIAN/debian 8 32 bits
+            xosx: Mac OSX with mac ports],
 [ if test "x$enableval" = "x86" ; then
-	host_name=86
+	host_name="86"
   elif test "x$enableval" = "x64" ; then
-	host_name=64
+	host_name="64"
   elif test "x$enableval" = "xraspbian" ; then
 	host_name="raspbian"
 	host_cflags="-I/opt/vc/include -DOPENGLESV2"
 	host_ldflags="-L/opt/vc/lib"
+  elif test "x$enableval" = "xosx" ; then
+    host_name="osx"
+	host_cflags="-I/opt/local/include "
+	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa"
   else
 	echo 
 	echo "Error!"
@@ -64,34 +64,50 @@ AC_ARG_ENABLE(host,
 AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
 
-#dnl check for openal
-#PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
+if test "x$host_name" = "xosx" ; then
+    PKG_CHECK_MODULES([LUA51], [lua-5.1] ,has_lua51=yes)
+    AC_SUBST([GLUT_LIBS], [])
+    AC_SUBST([GL_LIBS], [])
+    AC_SUBST([GLE_LIBS], [])
+    
+    dnl check for glew
+    AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
+    AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GL_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]) )
+else
+    PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
+    AS_IF([test "x$with_gles" = "xyes"],
+        [PKG_CHECK_MODULES([GL], [glesv2, egl] ,has_glesv2=yes)],
+        [PKG_CHECK_MODULES([GL], [gl, glew] ,has_gl=yes)])
+    
+    dnl check for glut
+    AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
+    AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([glut not found.]), )
 
-dnl check for glu
-PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
+fi
 
-dnl check for glew
-#AS_IF([test "x$with_gles" != xno],
-#AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
-#AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GLEW_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]), )
-
-dnl check for glut
-AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
-AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([glut not found.]), )
-
-dnl check for gle
-AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
-AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
-
-dnl check for ftgl
-PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
 
 dnl check for freeimage
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
 AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfreeimage]), AC_MSG_ERROR([FreeImage not found.]), )
 
+
+#dnl check for openal
+#PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
+
+dnl check for glu
+#PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
+
+
+dnl check for gle
+#AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
+#AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
+
+dnl check for ftgl
+PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
+
+
 dnl check for alut
-PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
+#PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
 dnl check for gstreamer
 GST_VERSION_MAJOR=0
@@ -181,10 +197,12 @@ AC_ARG_WITH(pkgconfigdir,
 
 AC_SUBST([pkgconfigdir])
 
+
 echo "GLES: $with_gles"
+echo "HOST: $host_name"
 echo "HOSTCFLAGS: $host_cflags"
 echo "HOSTLDFLAGS: $host_ldflags"
-
+echo "DEBUG: $debug"
 
 dnl Makefile outputs
 AC_OUTPUT([

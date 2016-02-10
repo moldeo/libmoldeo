@@ -194,9 +194,9 @@ moGeometry::ToJSON() {
 
         JSON+= comma;
         JSON+= "    {";
-        JSON+= pt.X() + moText(",");
-        JSON+= pt.Y() + moText(",");
-        JSON+= pt.Z();
+        JSON+= FloatToStr(pt.X(),2,2) + moText(",");
+        JSON+= FloatToStr(pt.Y(),2,2) + moText(",");
+        JSON+= FloatToStr(pt.Z(),2,2);
         JSON+= "}";
         comma = ",";
     }
@@ -208,9 +208,9 @@ moGeometry::ToJSON() {
 
         JSON+= comma;
         JSON+= "    {";
-        JSON+= m_VerticesBuffer[i*3] + moText(",");
-        JSON+= m_VerticesBuffer[i*3+1] + moText(",");
-        JSON+= m_VerticesBuffer[i*3+2];
+        JSON+= FloatToStr(m_VerticesBuffer[i*3],2,2) + moText(",");
+        JSON+= FloatToStr(m_VerticesBuffer[i*3+1],2,2) + moText(",");
+        JSON+= FloatToStr(m_VerticesBuffer[i*3+2],2,2);
         JSON+= "}";
         comma = ",";
     }

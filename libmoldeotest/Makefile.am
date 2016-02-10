@@ -37,7 +37,7 @@ libmoldeotest_la_LIBADD = -ldl\
 	${FTGL_LIBS} \
 	${GLUT_LIBS} \
 	${GLU_LIBS} \
-	${FREEALUT_LIBS} \
+	#${FREEALUT_LIBS} \
 	${FREEIMAGE_LIBS} \
 	${MUPARSER_LIBS} \
 	${BOOST_ASIO_LIB} \
