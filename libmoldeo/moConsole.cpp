@@ -4683,12 +4683,14 @@ CORE PLANET
     ///MATERIAL
     moMaterial Mat;
       Mat.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "default", false ));
+      Mat.m_MapGLId = Mat.m_Map->GetGLId();
       Mat.m_Color = moColor( 1.0, 1.0, 1.0 );
       Mat.m_fTextWSegments = 13.0f;
       Mat.m_fTextHSegments = 13.0f;
       Mat.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
       Mat.m_vLight.Normalize();
       //Mat.m_PolygonMode = MO_POLYGONMODE_LINE;
+      Mat.m_PolygonMode = MO_POLYGONMODE_FILL;
       Mat.m_fWireframeWidth = 0.0005f;
 
     ///GEOMETRY
@@ -4726,6 +4728,7 @@ LOGO PLENO (sin perspectiva)
     ///MESH MATERIAL
     moMaterial Mat2;
     Mat2.m_Map = pTMan->GetTexture(pTMan->GetTextureMOId( "moldeotrans", false ));
+    Mat2.m_MapGLId = Mat2.m_Map->GetGLId();
     Mat2.m_Color = moColor( 1.0, 1.0, 1.0 );
     Mat2.m_vLight = moVector3f( -1.0, -1.0, -1.0 );
     Mat2.m_vLight.Normalize();

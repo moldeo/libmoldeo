@@ -182,7 +182,7 @@ class LIBMOLDEO_API moGeometry : public moResourceElement {
         static moText TypeToStr( moGeometryType p_type );
         virtual moText ToJSON();
 
-  protected:
+  public:
 
         moText        m_Name;
         moGeometryType m_Type;
@@ -272,6 +272,7 @@ class LIBMOLDEO_API moMaterial : public moMaterialBase {
         moColor m_AmbientColor;
         moColor m_Color;
         moTexture*   m_Map;
+        MOint      m_MapGLId;
         moPolygonModes m_PolygonMode;
         moBlendingModes m_Blending;
 

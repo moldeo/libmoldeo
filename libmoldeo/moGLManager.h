@@ -231,7 +231,7 @@ class LIBMOLDEO_API moGLManager : public moResource
          * @param p_width ancho de la ventana.
          * @param p_height alto de la ventana.
          */
-		void SetOrthographicView(MOint p_width=0, MOint p_height=0, float left=-1.0, float right=1.0, float bottom=-1.0, float top=1.0, float znear=-1.0, float zfar=1.0);
+		void SetOrthographicView(MOint p_width=0, MOint p_height=0, float left=0.0, float right=1.0, float bottom=0.0, float top=1.0, float znear=-1.0, float zfar=1.0);
 
         /**
          * Configura la matriz de proyección y el viewport a fin de generar una visualización ortográfica (2D)
@@ -376,11 +376,15 @@ class LIBMOLDEO_API moGLManager : public moResource
          */
 		void RestoreFBOState();
 
+    const moText& GetGLVersion() {
+      return m_gl_version;
+    }
+
     int GetGLMajorVersion() {
-      return m_major_version;
+      return m_gl_major_version;
     }
     int GetGLMinorVersion() {
-     return m_minor_version;
+     return m_gl_minor_version;
     }
 
 		int CreateContext( int p_width, int p_height );
@@ -409,8 +413,9 @@ class LIBMOLDEO_API moGLManager : public moResource
 		moText m_gpu_vendor_string;
 		moText m_gpu_renderer_string;
 
-		MOint m_major_version;
-		MOint m_minor_version;
+    moText m_gl_version;
+		MOint m_gl_major_version;
+		MOint m_gl_minor_version;
 
 		MOuint m_current_fbo;
 		MOint m_current_read_buffer;

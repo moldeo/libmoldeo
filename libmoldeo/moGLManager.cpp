@@ -366,15 +366,36 @@ MOboolean moGLManager::Init()
 	m_DisplayServer = NULL;
 	m_DisplayScreen = NULL;
 	m_DisplayWindow = NULL;
-	m_major_version = 0;
-	m_minor_version = 0;
+	m_gl_version = "none";
+	m_gl_major_version = 0;
+	m_gl_minor_version = 0;
 
 #ifndef OPENGLESV2
 	glGetIntegerv(GL_DRAW_BUFFER, &m_current_draw_buffer);
 	glGetIntegerv(GL_READ_BUFFER, &m_current_read_buffer);
 
-	glGetIntegerv(GL_MAJOR_VERSION, &m_major_version);
-	glGetIntegerv(GL_MINOR_VERSION, &m_minor_version);
+
+  m_gl_version = (char*) glGetString(GL_VERSION);
+	glGetIntegerv(GL_MAJOR_VERSION, &m_gl_major_version);
+	glGetIntegerv(GL_MINOR_VERSION, &m_gl_minor_version);
+
+  if (m_gl_major_version==0) {
+    std::string major = (char*)m_gl_version;
+    major.substr( 0, major.find(".") );
+    m_gl_major_version = (int) atoi(major.c_str() );
+  }
+
+  if (m_gl_minor_version==0) {
+    std::string minor = (char*)m_gl_version;
+    minor.substr( minor.find(".")+1, 1  );
+    m_gl_minor_version = (int) atoi(minor.c_str() );
+  }
+
+  MODebug2->Message("moGLManager::Init > GL VERSION: "+m_gl_version );
+  MODebug2->Message("moGLManager::Init > GL_MAJOR_VERSION: "+IntToStr(m_gl_major_version) );
+  MODebug2->Message("moGLManager::Init > GL_MINOR_VERSION: "+IntToStr(m_gl_minor_version) );
+  MODebug2->Message("moGLManager::Init > GPU VENDOR STRING is "+m_gpu_vendor_string );
+  MODebug2->Message("moGLManager::Init > GPU RENDERER STRING is "+m_gpu_renderer_string );
 
 #endif
 	return true;
@@ -436,8 +457,6 @@ void moGLManager::QueryGPUVendorString()
         m_gpu_renderer_string = vendor;
     }
 
-    MODebug2->Message("moGLManager::Init > GPU VENDOR STRING is "+m_gpu_vendor_string );
-    MODebug2->Message("moGLManager::Init > GPU RENDERER STRING is "+m_gpu_renderer_string );
 }
 
 void moGLManager::SetPerspectiveView( MOint p_width, MOint p_height, double fovy,  double aspect,  double znear,  double zfar )

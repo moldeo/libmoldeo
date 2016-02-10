@@ -129,7 +129,7 @@ MOboolean moShaderManager::Init()
       m_RenderShader.CreateShader(
             moText(
             "attribute vec4 position;\n"
-            "attribute vec3 color;\n"
+            "attribute vec3 colors;\n"
             "attribute vec2 t_coordedge;\n"
             "attribute vec2 t_coord;\n"
             "attribute vec3 normal;\n"
@@ -140,7 +140,7 @@ MOboolean moShaderManager::Init()
             "varying vec2 v_texcoordedge;\n"
             "\n"
             "void main() {\n"
-            "	colorVarying = color;\n"
+            "	colorVarying = colors;\n"
             "   v_normal = normal;\n"
             "	v_texcoord = t_coord;\n"
             "	v_texcoordedge = t_coordedge;\n"
@@ -160,6 +160,7 @@ MOboolean moShaderManager::Init()
             "uniform float hseg;\n"
             "uniform float wireframe_width;"
             "uniform vec3 a_light;\n"
+            "uniform vec3 color;\n"
             "\n"
             "void main() {\n"
             "	vec4 texcolor = texture2D( t_image, v_texcoord );\n"
@@ -195,7 +196,7 @@ MOboolean moShaderManager::Init()
             "   if (distance_to_borderXd>(-wireframe_width+1.0/wseg)) texcolor = wirecolor;\n"
             "   if (distance_to_borderYd>(-wireframe_width+1.0/hseg)) texcolor = wirecolor;\n"
             //"	vec4 mulcolor = vec4( colorVarying, 1.0 );\n"
-            "	vec4 mulcolor = intensity*vec4( 1.0, 1.0, 1.0, 1.0 );\n"
+            "	vec4 mulcolor = intensity*vec4( 1.0*color.r, 1.0*color.g, 1.0*color.b, 1.0 );\n"
             "	gl_FragColor = vec4( mulcolor.x*texcolor.x, mulcolor.y*texcolor.y, mulcolor.z*texcolor.z, mulcolor.w*texcolor.w );\n"
             "}\n"
             )
@@ -205,11 +206,12 @@ MOboolean moShaderManager::Init()
          m_RenderShader.PrintFragShaderLog();
 
          m_RenderShaderPositionIndex = m_RenderShader.GetAttribID(moText("position"));
-         m_RenderShaderColorIndex = m_RenderShader.GetAttribID(moText("color"));
+         m_RenderShaderColorsIndex = m_RenderShader.GetAttribID(moText("colors"));
          m_RenderShaderTexCoordIndex = m_RenderShader.GetAttribID(moText("t_coord"));
          m_RenderShaderTexCoordEdgeIndex = m_RenderShader.GetAttribID(moText("t_coordedge"));
          m_RenderShaderNormalIndex = m_RenderShader.GetAttribID(moText("normal"));
 
+         m_RenderShaderColorIndex = m_RenderShader.GetUniformID(moText("color"));
          m_RenderShaderTextureIndex = m_RenderShader.GetUniformID(moText("t_image"));
          m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projmatrix");
          m_RenderShaderWireframeWidthIndex = m_RenderShader.GetUniformID(moText("wireframe_width"));

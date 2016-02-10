@@ -30,6 +30,7 @@
 *******************************************************************************/
 
 #include <moTexture.h>
+#include <moTextureFilterIndex.h>
 #include <FreeImage.h>
 #include <moFileManager.h>
 #include <moDataManager.h>
@@ -66,14 +67,14 @@ moTexture::moTexture()
 	m_fbo = NULL;
 	m_fbo_attach_point = MO_UNDEFINED;
 
-	m_param = MODefTex2DParams;
+  m_param = MODefTex2DParams;
 
-    Luminance = -1;
-    Contrast = -1;
-    m_pBufferData = NULL;
-    m_buffer_width = 0;
-    m_buffer_height = 0;
-    m_buffer_bytespp = 0;
+  Luminance = -1;
+  Contrast = -1;
+  m_pBufferData = NULL;
+  m_buffer_width = 0;
+  m_buffer_height = 0;
+  m_buffer_bytespp = 0;
 }
 
 moTexture::~moTexture()
@@ -1371,8 +1372,13 @@ moTextureAnimated::moTextureAnimated() : moTexture()
 	m_nFrames = 0;
 	m_InterpolationTime = 0;
 	m_bInterpolation = false;
+	m_bInterpolating = false;
 	m_pShaderCopy = NULL;
 	m_pShaderInterpolate = NULL;
+	m_pCopyStart = NULL;
+	m_pCopyEnd = NULL;
+	m_pInterpolator = NULL;
+	m_PlayMode = MO_PLAYMODE_FRAMEBASE;
 }
 
 moTextureAnimated::~moTextureAnimated()
@@ -1403,6 +1409,7 @@ MOboolean moTextureAnimated::Init(moText p_name, MOuint p_moid, moResourceManage
 
 MOboolean moTextureAnimated::Finish()
 {
+  /**
     if (m_pInterpolator) {
         delete m_pInterpolator;
         m_pInterpolator = NULL;
@@ -1415,6 +1422,7 @@ MOboolean moTextureAnimated::Finish()
         delete m_pCopyEnd;
         m_pCopyEnd = NULL;
     }
+    */
 	return moTexture::Finish();
 }
 
@@ -1439,24 +1447,56 @@ moTextureAnimated::SetInterpolation( MOuint p_FrameJump, MOuint p_InterpolationT
 
 	m_FrameJump = p_FrameJump;
 	m_InterpolationTime = p_InterpolationTime;
-
+/**
 	int m_idx;
-    moFBO* m_pFBO;
+  moFBO* m_pFBO;
 	moTexture* m_pTex;
-
+*/
 	moShaderManager* SM = m_pResourceManager->GetShaderMan();
+	/**
 	moTextureManager* TM = m_pResourceManager->GetTextureMan();
 	moFBManager* FM = m_pResourceManager->GetFBMan();
-
+	*/
+/**
 	m_idx = FM->CreateFBO();
 	m_pFBO = FM->GetFBO(m_idx);
 
 	m_pShaderCopy = SM->GetShader(SM->GetShaderIndex(moText("shaders/Copy.cfg"),true) );
 	m_pShaderInterpolate = SM->GetShader(SM->GetShaderIndex(moText("shaders/TexInterpolator.cfg"),true) );
+*/
+	///MOint idxstart = TM->AddTexture( moText(this->m_name)+moText("copyStart"), m_width, m_height);
+	///MOint idxend = TM->AddTexture(moText(this->m_name)+moText("copyEnd"), m_width, m_height);
 
-	MOint idxstart = TM->AddTexture( moText(this->m_name)+moText("copyStart"), m_width, m_height);
-	MOint idxend = TM->AddTexture(moText(this->m_name)+moText("copyEnd"), m_width, m_height);
+	if (!m_pCopyStart && this->GetWidth()>0 ) {
+      moTextArray copy_filter_0;
+      copy_filter_0.Add( moText( this->m_name+" shaders/Copy.cfg "+this->m_name+"copyStart") );
+      int idx = SM->GetTextureFilterIndex()->LoadFilters( &copy_filter_0 );
+      if (idx>-1) {
+          m_pCopyStart = SM->GetTextureFilterIndex()->Get(idx-1);
+          MODebug2->Message( moText("filter loaded m_pCopyStart") );
+      }
+  }
 
+	if (!m_pCopyEnd && this->GetWidth()>0 ) {
+      moTextArray copy_filter_0;
+      copy_filter_0.Add( moText( this->m_name+" shaders/Copy.cfg "+this->m_name+"copyEnd") );
+      int idx = SM->GetTextureFilterIndex()->LoadFilters( &copy_filter_0 );
+      if (idx>-1) {
+          m_pCopyEnd = SM->GetTextureFilterIndex()->Get(idx-1);
+          MODebug2->Message( moText("filter loaded m_pCopyEnd") );
+      }
+  }
+
+	if (!m_pInterpolator && this->GetWidth()>0 ) {
+      moTextArray copy_filter_0;
+      copy_filter_0.Add( moText( this->m_name+"copyStart "+this->m_name+"copyEnd shaders/TexInterpolator.cfg "+this->m_name+"") );
+      int idx = SM->GetTextureFilterIndex()->LoadFilters( &copy_filter_0 );
+      if (idx>-1) {
+          m_pInterpolator = SM->GetTextureFilterIndex()->Get(idx-1);
+          MODebug2->Message( moText("filter loaded m_pInterpolator") );
+      }
+  }
+/**
 	//copia del frame A
 	m_srcstart.Empty();
 	m_srcstart.Add((moTexture*)this);
@@ -1486,14 +1526,15 @@ moTextureAnimated::SetInterpolation( MOuint p_FrameJump, MOuint p_InterpolationT
 	m_pTex->SetFBOandAttachPoint(m_pFBO);
     if (!(m_pCopyStart && m_pCopyEnd && m_pInterpolator)) {
         if (!m_pInterpolator) m_pInterpolator = new moTextureFilter();
-        if (m_pCopyStart) m_pCopyStart = new moTextureFilter();
-        if (m_pCopyEnd) m_pCopyEnd = new moTextureFilter();
+        if (!m_pCopyStart) m_pCopyStart = new moTextureFilter();
+        if (!m_pCopyEnd) m_pCopyEnd = new moTextureFilter();
     }
     if (m_pCopyStart && m_pCopyEnd && m_pInterpolator) {
         m_pCopyStart->Init( m_pResourceManager->GetGLMan(), m_pResourceManager->GetRenderMan(), m_srcstart, m_dststart, m_pShaderCopy );
         m_pCopyEnd->Init( m_pResourceManager->GetGLMan(), m_pResourceManager->GetRenderMan(), m_srcend, m_dstend, m_pShaderCopy );
         m_pInterpolator->Init(  m_pResourceManager->GetGLMan(), m_pResourceManager->GetRenderMan(), m_srcinterpol, m_dstinterpol, m_pShaderInterpolate  );
     }
+    */
 }
 
 MOboolean
@@ -1508,7 +1549,7 @@ moTextureAnimated::IsInterpolationActive() {
 
 MOboolean
 moTextureAnimated::ActivateInterpolation( MOboolean activate ) {
-	if (m_pShaderCopy && m_pShaderInterpolate && activate) {
+	if (m_pCopyStart && m_pCopyEnd && m_pInterpolator && activate) {
 		m_bInterpolation = true;
 	} else {
 		m_bInterpolation = false;
@@ -1535,6 +1576,7 @@ moTextureAnimated::NeedsInterpolation() {
 
 	if (!m_bInterpolation)
 		return false;
+
 	if (!m_bInterpolating) {
 		if ( fabs( (double)((double)m_FrameNext - (double)m_FramePrevious) ) > (double)m_FrameJump ) {
 			m_FrameStart = m_FramePrevious;
@@ -1542,8 +1584,9 @@ moTextureAnimated::NeedsInterpolation() {
 			//desactivamos la interpolacion para poder acceder a los cuadros correspondientes libremente
 			m_bInterpolating = false;
 			ActivateInterpolation(false);
-			m_pCopyStart->Apply( m_FrameStart );
-			m_pCopyEnd->Apply( m_FrameEnd );
+			//TODO: fix this
+			if (m_pCopyStart) m_pCopyStart->Apply( m_FrameStart );
+			if (m_pCopyEnd) m_pCopyEnd->Apply( m_FrameEnd );
 			//activamos nuevamente la interpolacion una vez copiados los cuadros
 			ActivateInterpolation(true);
 			m_bInterpolating = true;
@@ -1566,14 +1609,17 @@ moTextureAnimated::NeedsInterpolation() {
 MOint
 moTextureAnimated::Interpolate() {
 	moTextFilterParam filterparam;
-	if ( m_pShaderCopy && m_pShaderInterpolate && m_bInterpolation) {
+
+	if ( m_pInterpolator && m_bInterpolation) {
 		if (m_bInterpolating) {
 			MOuint m_ActualTime = moGetTicks();
 			m_InterpolationPosition = (float)( m_ActualTime - m_StartTime ) / (m_InterpolationTime);
 			if ( m_InterpolationPosition >= 1.0) m_InterpolationPosition = 1.0;
 			if ( m_InterpolationPosition <= 0.0) m_InterpolationPosition = 0.0;
 			filterparam.par_flt1 = m_InterpolationPosition;
+      //TODO: fix this
 			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, &filterparam );
+
 			//MODebug2->Push( moText("IP:")+FloatToStr(m_InterpolationPosition) );
 			return 1;
 		}
@@ -1631,6 +1677,14 @@ moTextureAnimated::GetGLId( MOuint p_i ) {
 	m_FrameNext = p_i;
 
 	if (NeedsInterpolation()) {
+    /**
+    MODebug2->Message( moText("moTextureAnimated::GetGLId( MOuint p_i ) > Interpolating image! ")+
+                      "From m_FramePrevious: " + IntToStr( m_FramePrevious )+
+                      " To m_FrameNext: " + IntToStr( m_FrameNext )+
+                      " At m_InterpolationPosition: " + FloatToStr( m_InterpolationPosition, 2, 2 )+
+                      "From m_FrameStart: " + IntToStr( m_FrameStart )+
+                      " To m_FrameEnd: " + IntToStr( m_FrameEnd )
+                        );*/
 		Interpolate();
 	} else {
 		if(m_FramePrevious!=p_i) this->GetFrame(p_i);

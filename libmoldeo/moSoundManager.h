@@ -41,7 +41,7 @@
 
 #define NUMBUFFERS              (4)
 #define	SERVICE_UPDATE_PERIOD	(20)
-#define MO_SOUNDERROR 65535
+#define MO_SOUNDERROR -1
 
 /// Tipo de sonido
 /**
@@ -186,6 +186,9 @@ class LIBMOLDEO_API moSound : public  moAbstract {
 		virtual float GetEchoFeedback();
 
 		moAudioFormat&   GetAudioFormat() { return m_AudioFormat; }
+    MOint	GetBufferSize() { return m_BufferSize; }
+    virtual void PlaySample( MOint sampleid );
+    MOint	GetActualSample() { return m_ActualSample; }
 
     protected:
 
@@ -208,9 +211,9 @@ class LIBMOLDEO_API moSound : public  moAbstract {
       float           m_EchoFeedback;
 
       bool            m_bIsPlaying;
-
-
-    private:
+      MOint	          m_BufferSize;
+      MOint			m_ActualSample;
+      MOint			m_OldSample;
 
 
 };
@@ -233,77 +236,47 @@ class LIBMOLDEO_API moSound3D : public  moSound {
     OVERRIDE moSound functions
     OpenAL es diferente a GStreamer
   */
-      virtual void Play();
-      virtual void Stop();
-      virtual void Pause();
-      virtual void Rewind();
-      virtual moStreamState State();
-      virtual void Update();
-      virtual void SetVolume( float gain );
-      virtual float GetVolume();
-      virtual void SetPitch( float pitch );
-      virtual float GetPitch();
+      virtual void Play() = 0;
+      virtual void Stop() = 0;
+      virtual void Pause() = 0;
+      virtual void Rewind() = 0;
+      virtual moStreamState State() = 0;
+      virtual void Update() = 0;
+      virtual void SetVolume( float gain ) = 0;
+      virtual float GetVolume() = 0;
+      virtual void SetPitch( float pitch ) = 0;
+      virtual float GetPitch() = 0;
 
   /**
     OpenAL Specific
   */
 
-      MOboolean BuildEmpty( MOuint p_size );
-      MOboolean BuildFromBuffer( MOuint p_size, GLvoid* p_buffer );
-      MOboolean BuildFromFile( moText p_filename );
+      virtual MOboolean BuildEmpty( MOuint p_size ) = 0;
+      virtual MOboolean BuildFromBuffer( MOuint p_size, GLvoid* p_buffer ) = 0;
+      virtual MOboolean BuildFromFile( const moText& p_filename ) = 0;
 
       MOint GetSourceId() { return m_SourceId; }
       MOuint GetBufferId() { return m_BufferId; }
-      virtual void Final();
-      virtual void Frame(int frame);
-      virtual void Repeat(int repeat);
-      MOint	GetBufferSize() { return m_BufferSize; }
-      MOint	GetActualSample() { return m_ActualSample; }
+      virtual void Final() = 0;
+      virtual void Frame(int frame) = 0;
+      virtual void Repeat(int repeat) = 0;
 
-      /// OPENAL specific
-      void PlaySample( MOint sampleid );
       void SetPosition( float x, float y, float z );
       void SetVelocity( float x, float y, float z );
       void SetDirection( float x, float y, float z );
 
-	protected:
 
-      int m_iAlState;
 
-      MOint			m_ActualSample;
-      MOint			m_OldSample;
+	public:
 
       moFile*			m_pFile;
       moDataManager*	m_pDataMan;
       moFileManager*	m_pFileMan;
 
-      MOuint		    m_Buffers[NUMBUFFERS];
       MOuint		    m_SourceId;
       MOuint			  m_BufferId;
 
-      #ifdef MO_WIN32
-      /*
-      CWaves *		pWaveLoader;
-      WAVEID			WaveID;
-      ALint			iLoop;
-      ALint			iBuffersProcessed, iTotalBuffersProcessed, iQueuedBuffers;
-      WAVEFORMATEX	wfex;
-      */
-      #endif
 
-      MOint			eBufferFormat;
-
-
-      unsigned long	ulDataSize;
-      unsigned long	ulFrequency;
-      unsigned long	ulFormat;
-      unsigned long	ulBufferSize;
-      unsigned long	ulBytesWritten;
-      void *			pData;
-
-
-
-      MOint			m_BufferSize;
       /*AL_GAIN
       AL_MIN_GAIN
       AL_MAX_GAIN
@@ -333,11 +306,12 @@ class LIBMOLDEO_API moSoundManager : public moResource {
 		MOboolean Init();
 		MOboolean Finish();
 
-		moSound* GetSound( moText p_name );
-		MOuint GetSoundId( moText p_name );
+		moSound* GetSound( moText p_name, bool create=true );
+		int GetSoundId( moText p_name, bool create=true );
+		int AddSound( moSound* p_Sound );
 
 		int GetSoundCount();
-		moSound* GetSound( MOuint id);
+		moSound* GetSound( int id);
 
 		moSoundType GetTypeForFile( moText p_name );
 		moSoundEffectArray* GetEffects();

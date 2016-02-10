@@ -183,6 +183,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 */
     /*** GLEW INIT */
 #ifndef OPENGLESV2
+  MODebug2->Message("moRenderManager::Init > Initializing glew.");
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
@@ -192,26 +193,16 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 		return false;
 
 	}
+  MODebug2->Message("moRenderManager::Init > glew initialized succesfully!");
 
   GLint max_tex_size = 0.0f;
   GLint max_tex_rect_size = 0.0f;
   GLint max_tex_buf_size = 0.0f;
-  GLint64 max_tex_buf_size64 = 0.0f;
-  GLint max_tex_buf_size_arb = 0.0f;
-  GLint gl_major_version = 0.0f;
-  GLint gl_minor_version = 0.0f;
+//  GLint64 max_tex_buf_size64 = 0.0f;
+//  GLint max_tex_buf_size_arb = 0.0f;
 
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex_size);
-  glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &max_tex_rect_size);
-  glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &max_tex_buf_size);
-  glGetInteger64v(GL_MAX_TEXTURE_BUFFER_SIZE, &max_tex_buf_size64);
-  glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE_ARB, &max_tex_buf_size_arb);
-  glGetIntegerv(GL_MAJOR_VERSION, &gl_major_version );
-  glGetIntegerv(GL_MINOR_VERSION, &gl_minor_version );
 
   MODebug2->Message( moText("moRenderManager::Init > Using GLEW ") + moText((char*)glewGetString(GLEW_VERSION)) );
-  MODebug2->Message( moText("moRenderManager::Init >       OpenGL Major Version: ") + IntToStr( gl_major_version ) );
-  MODebug2->Message( moText("moRenderManager::Init >       OpenGL Minor Version: ") + IntToStr( gl_minor_version ) );
   MODebug2->Message( moText("moRenderManager::Init >       glActiveTextureARB: ") + IntToStr( (long)glActiveTextureARB) );
   MODebug2->Message( moText("moRenderManager::Init >       glMultiTexCoord2fARB: ") + IntToStr( (long)glMultiTexCoord2fARB ) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_texture_non_power_of_two: ") + IntToStr(GLEW_ARB_texture_non_power_of_two) );
@@ -222,11 +213,16 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + IntToStr(GLEW_ARB_imaging) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + IntToStr(GLEW_ARB_shading_language_100) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex_size);
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Size: ") + IntToStr(max_tex_size) );
+  glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &max_tex_rect_size);
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Rectangle Size: ") + IntToStr(max_tex_rect_size) );
+  glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &max_tex_buf_size);
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size: ") + IntToStr(max_tex_buf_size) );
-  MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size (64): ") + IntToStr(max_tex_buf_size64) );
-  MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size Arb: ") + IntToStr(max_tex_buf_size_arb) );
+  //glGetInteger64v(GL_MAX_TEXTURE_BUFFER_SIZE, &max_tex_buf_size64);
+  //MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size (64): ") + IntToStr(max_tex_buf_size64) );
+  //glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE_ARB, &max_tex_buf_size_arb);
+  //MODebug2->Message( moText("moRenderManager::Init >       Max Texture Buffer Size Arb: ") + IntToStr(max_tex_buf_size_arb) );
 
 #endif
 	if (m_render_tex_moid[0]==-1) {
@@ -435,7 +431,9 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     moGLMatrixf Result;
     Result = MMatrix*PMatrix;
 
+
     MOuint color_index = m_pSHManager->GetRSHColorIndex();
+    MOuint colors_index = m_pSHManager->GetRSHColorsIndex();
     MOuint position_index = m_pSHManager->GetRSHPositionIndex();
     MOuint normal_index = m_pSHManager->GetRSHNormalIndex();
     MOuint texcoord_index = m_pSHManager->GetRSHTexCoordIndex();
@@ -454,7 +452,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     //moGLMatrixf& PMatrix( pGLMan->GetProjectionMatrix() );
     //moGLMatrixf& MMatrix( pGLMan->GetModelMatrix() );
     const moFaceArray& Faces(Geo.GetFaces());
-    const moVertexArray& Vertices(Geo.GetVertices());
+    //const moVertexArray& Vertices(Geo.GetVertices());
     const float* Gpx = Geo.GetVerticesBuffer();
     const float* Gcx = Geo.GetColorBuffer();
     const float* Gtx = Geo.GetVerticesUVBuffer();
@@ -478,10 +476,10 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
 
     moTexture* pMap = Mat.m_Map;
     if (pMap) {
-        int Tglid = pMap->GetGLId();
+        //int Tglid = pMap->GetGLId();
         glEnable( GL_TEXTURE_2D );
         glActiveTexture( GL_TEXTURE0 );///ACTIVATE TEXTURE UNIT 0
-        glBindTexture( GL_TEXTURE_2D, Tglid );
+        glBindTexture( GL_TEXTURE_2D, Mat.m_MapGLId );
         //MODebug2->Message( "Tglid:\n"+IntToStr(Tglid) );
     }
     glUniformMatrix4fv( matrix_index, 1, GL_FALSE, pfv );
@@ -490,12 +488,13 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     glUniform1f( tex_wsegments_index, Mat.m_fTextWSegments );
     glUniform1f( tex_hsegments_index, Mat.m_fTextHSegments );
     glUniform3fv( light_index, 1, &Mat.m_vLight[0] );
+    glUniform3fv( color_index, 1, &Mat.m_Color[0] );
 
     glEnableVertexAttribArray( position_index );
     glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, &Gpx[0] );  // Set data type and location.
 
-    glEnableVertexAttribArray( color_index );
-    glVertexAttribPointer( color_index, 3, GL_FLOAT, false, 0, &Gcx[0] );
+    glEnableVertexAttribArray( colors_index );
+    glVertexAttribPointer( colors_index, 3, GL_FLOAT, false, 0, &Gcx[0] );
 
     glEnableVertexAttribArray( texcoord_index );
     glVertexAttribPointer( texcoord_index, 2, GL_FLOAT, false, 0, &Gtx[0] );  // Set data type and location.
@@ -526,7 +525,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     }
 
     glDisableVertexAttribArray( position_index );
-    glDisableVertexAttribArray( color_index );
+    glDisableVertexAttribArray( colors_index );
     glDisableVertexAttribArray( texcoord_index );
     glDisableVertexAttribArray( texcoordedge_index );
     glDisableVertexAttribArray( normal_index );
@@ -598,7 +597,7 @@ void moRenderManager::DrawTexture( MOint p_width, MOint p_height, MOint p_tex_nu
 
 	    m_pGLManager->SaveGLState();
 
-        m_pGLManager->SetOrthographicView(p_width, p_height);
+        m_pGLManager->SetOrthographicView(p_width, p_height, 0.0, p_width, 0.0, p_height );
 
 		moTexture* ptex = m_pTextureManager->GetTexture( m_render_tex_moid[p_tex_num] );
 

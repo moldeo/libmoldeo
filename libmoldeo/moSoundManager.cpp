@@ -31,9 +31,9 @@
 #include "moSoundManager.h"
 
 #include "moArray.h"
-moDefineDynamicArray(moSoundArray)
-moDefineDynamicArray(moSoundEffectArray)
-moDefineDynamicArray(moSoundBufferArray)
+moDefineDynamicArray( moSoundArray )
+moDefineDynamicArray( moSoundEffectArray )
+moDefineDynamicArray( moSoundBufferArray )
 
 #ifdef MO_WIN32
 /*
@@ -61,6 +61,9 @@ moSound::moSound() {
 	m_pAudioGraph = NULL;
 	m_bIsPlaying = false;
 	m_pAudioGraph = new moGsGraph();
+	m_BufferSize = 0;
+	m_ActualSample = 0;
+	m_OldSample = 0;
 }
 
 moSound::~moSound() {
@@ -299,7 +302,10 @@ float moSound::GetEchoFeedback()  {
  return m_EchoFeedback;
 }
 
-
+void
+moSound::PlaySample( MOint sampleid ) {
+  MODebug2->Error("Not implemented in moSound, must use an effect as Sound3D to get a full moSound3D interface.");
+}
 
 
 
@@ -310,7 +316,6 @@ float moSound::GetEchoFeedback()  {
 -------------------------------------------------*/
 
 moSound3D::moSound3D() {
-	pData = NULL;
 }
 
 moSound3D::~moSound3D() {
@@ -319,12 +324,6 @@ moSound3D::~moSound3D() {
 
 MOboolean moSound3D::Finish() {
 	// Clean up by deleting Source(s) and Buffer(s)
-	/*
-	alSourceStop(m_SourceId);
-	alSourcei(m_SourceId, AL_BUFFER, 0);
-    alDeleteSources(1, &m_SourceId);
-	alDeleteBuffers(1, &m_BufferId);
-	*/
 	return true;
 }
 
@@ -337,159 +336,6 @@ MOboolean moSound3D::Init() {
 }
 
 
-MOboolean
-moSound3D::BuildEmpty( MOuint p_size ) {
-
-	// Generate an AL Buffer
-	/*
-	alGenBuffers( 1, &m_BufferId );
-
-	// Generate a Source to playback the Buffer
-	alGenSources( 1, &m_SourceId );
-*/
-  p_size = 0;
-	return true;
-}
-
-MOboolean
-moSound3D::BuildFromBuffer( MOuint p_size, GLvoid* p_buffer ) {
-	BuildEmpty(p_size);
-	p_buffer = NULL;
-	return true;
-}
-
-MOboolean
-moSound3D::BuildFromFile( moText p_filename ) {
-
-	BuildEmpty(0);
-
-	switch(m_SoundType) {
-		case MO_SOUNDTYPE_WAV:
-			// Load Wave file into OpenAL Buffer
-			#ifdef MO_WIN32
-      #ifdef MO_USING_ALFW
-			if (!ALFWLoadWaveToBuffer((char*)ALFWaddMediaPath(p_filename), m_BufferId))
-			{
-				ALFWprintf("Failed to load %s\n", ALFWaddMediaPath(p_filename));
-			} else {
-				alGetBufferi( m_BufferId, AL_SIZE, &m_BufferSize );
-			}
-      #endif
-			#endif
-			break;
-		case MO_SOUNDTYPE_MP3:
-			break;
-		case MO_SOUNDTYPE_M4A:
-			break;
-        case MO_SOUNDTYPE_OGG:
-			break;
-		case MO_SOUNDTYPE_UNDEFINED:
-			break;
-	}
-
-	// Attach Source to Buffer
-	/*
-	alSourcei( m_SourceId, AL_BUFFER, m_BufferId );
-	*/
-  p_filename = "";
-	return true;
-
-}
-
-void moSound3D::Play() {
-	// Start playing source
-	/*
-	alSourcePlay(m_SourceId);
-	*/
-}
-
-
-void moSound3D::PlaySample( MOint sampleid ) {
-
-	m_OldSample = m_ActualSample;
-
-/*	alGetSourcei( m_SourceId , AL_BUFFER , &m_ActualSample);
-
-	alSourceStop(m_SourceId);
-
-	if (m_ActualSample!=sampleid) {
-		alSourcei( m_SourceId, AL_BUFFER , sampleid );
-		m_ActualSample = sampleid;
-	}
-
-	alGetError();
-	alSourcePlay(m_SourceId);
-*/
-  sampleid = 0;
-}
-
-void moSound3D::Pause() {
-    /*
-	alSourcePause(m_SourceId);
-	*/
-}
-
-void moSound3D::Stop() {
-	// Stop the Source and clear the Queue
-	/*
-	alSourceStop(m_SourceId);
-	*/
-
-}
-
-void moSound3D::Rewind() {
-    /*
-	alSourceRewind(m_SourceId);
-	*/
-}
-
-
-void moSound3D::Final() {
-
-	Update();
-}
-
-void moSound3D::Frame(int frame) {
-	Update();
-	frame = 0;
-}
-
-void moSound3D::Repeat(int repeat) {
-  repeat = 0;
-}
-
-moStreamState moSound3D::State() {
-	// Get Source State
-	//int m_iAlState;
-	/*
-	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_iAlState);
-	switch(m_iAlState) {
-      case AL_INITIAL:
-        return MO_STREAMSTATE_READY;
-        break;
-
-      case AL_PLAYING:
-        return MO_STREAMSTATE_PLAYING;
-        break;
-
-      case AL_PAUSED:
-        return MO_STREAMSTATE_PAUSED;
-        break;
-
-      case AL_STOPPED:
-        return MO_STREAMSTATE_STOPPED;
-        break;
-	}
-	*/
-  return MO_STREAMSTATE_UNKNOWN;
-}
-
-void moSound3D::Update() {
-    /*
-	alGetSourcei( m_SourceId, AL_SOURCE_STATE, &m_iAlState );
-	alGetSourcei( m_SourceId, AL_BUFFER , &m_ActualSample );
-	*/
-}
 
 void moSound3D::SetPosition( float x, float y, float z ) {
 /*
@@ -518,36 +364,6 @@ void moSound3D::SetDirection( float x, float y, float z ) {
   z = 0;
 }
 
-void moSound3D::SetVolume( float volume ) {
-    /*
-	alSourcef( m_SourceId, AL_GAIN, volume );
-	*/
-  volume = 0;
-}
-
-float moSound3D::GetVolume() {
-/*
-	alGetSourcef( m_SourceId, AL_GAIN, &m_Volume );
-	*/
-	return m_Volume;
-
-}
-
-void moSound3D::SetPitch( float pitch )  {
-    m_Pitch = pitch;
-    /*
-    alSourcef(m_SourceId, AL_PITCH, pitch);
-    */
-    pitch = 0;
-}
-
-
-float moSound3D::GetPitch()  {
-/*
-  alGetSourcef( m_SourceId, AL_PITCH, &m_Pitch );
-  */
-  return m_Pitch;
-}
 
 
 /*======================*/
@@ -645,6 +461,8 @@ MOboolean moSoundManager::Init() {
 
 	#endif
 
+	m_sounds_array.Init( 0, NULL );
+
 	m_bInitialized = true;
 
 	return m_bInitialized;
@@ -662,33 +480,28 @@ int moSoundManager::GetSoundCount() {
 }
 
 
-moSound* moSoundManager::GetSound( MOuint id) {
+moSound* moSoundManager::GetSound( int id) {
 
-	if (id>0 && id<m_sounds_array.Count()) {
+	if (id>=0 && id<(int)m_sounds_array.Count()) {
 		return m_sounds_array[id];
 	}
 	return NULL;
 
 }
 
-moSound* moSoundManager::GetSound( moText p_name) {
+moSound* moSoundManager::GetSound( moText p_name, bool create) {
 
 	int id;
 
-  moText text;
+  if (p_name=="") {
+      return NULL;
+  }
 
-    if (p_name=="") {
-        return NULL;
-    }
+	id = GetSoundId( p_name, create);
 
-
-	id = GetSoundId( p_name);
-
-	if(id == MO_SOUNDERROR) {
-                text = moText("\nERROR DE SONIDO, no se encontro un id para ");
-                text += p_name;
-                text +=  moText("\n");
-		MODebug2->Error(text);
+	if(id == MO_SOUNDERROR ) {
+    if (create)
+      MODebug2->Error("ERROR DE SONIDO, no se pudo cargar: " + p_name );
 		return(NULL);
 	}  //error
 	else {
@@ -696,17 +509,19 @@ moSound* moSoundManager::GetSound( moText p_name) {
 	}
 }
 
-MOuint
-moSoundManager::GetSoundId( moText p_name ) {
+MOint
+moSoundManager::GetSoundId( moText p_name, bool create ) {
 
-	MOuint i,idnuevo;
+	MOint i,idnuevo;
 
-	for( i=0; i<m_sounds_array.Count(); i++ ) {
+	for( i=0; i<(int)m_sounds_array.Count(); i++ ) {
 		if(!stricmp( m_sounds_array[i]->GetName(), p_name )) {
 			return(i);
 			break;
 		}
 	}
+
+  if (!create) return -1;
 
 	moSoundType stype = GetTypeForFile(p_name);
 	if (!m_pResourceManager) return MO_SOUNDERROR;
@@ -715,7 +530,7 @@ moSoundManager::GetSoundId( moText p_name ) {
 	namefull +=  moSlash + (const moText)p_name;
 
 	moFile fileSound(namefull);
-    namefull = fileSound.GetCompletePath();
+	namefull = fileSound.GetCompletePath();
 
 	moSoundParam sparam = MODefSoundParams ;
 	moSound* pSound = CreateSound( p_name );
@@ -724,15 +539,26 @@ moSoundManager::GetSoundId( moText p_name ) {
 
 		pSound->LoadFromFile( namefull );
 
-		m_sounds_array.Add(pSound);
+		m_sounds_array.Add( pSound );
 
 		idnuevo = m_sounds_array.Count() - 1;
 	} else {
-	  idnuevo = 65535;
+	  idnuevo = -1;
 	}
 	//si es superior a 65535 es un error
 	stype = MO_SOUNDTYPE_UNDEFINED;
 	return(idnuevo);
+}
+
+int
+moSoundManager::AddSound( moSound* p_Sound ) {
+
+  if (p_Sound) {
+    m_sounds_array.Add( p_Sound );
+    return m_sounds_array.Count()-1;
+  }
+  return -1;
+
 }
 
 moSoundType
@@ -771,16 +597,16 @@ moSound* moSoundManager::CreateSound( moText p_name ) {
 
 MOboolean moSoundManager::Finish() {
 	for(MOuint i=0; i<m_sounds_array.Count(); i++) {
-		moSound* psound = m_sounds_array[i];
-		if (psound) delete psound;
-		psound = NULL;
+		//moSound* psound = m_sounds_array[i];
+		//if (psound) delete psound;
+		//psound = NULL;
 	}
 	m_sounds_array.Empty();
 
 	for(MOuint i=0; i<m_effects_array.Count(); i++) {
-		moSoundEffect* psoundeffect = m_effects_array[i];
-		if (psoundeffect) delete psoundeffect;
-		psoundeffect = NULL;
+		//moSoundEffect* psoundeffect = m_effects_array[i];
+		//if (psoundeffect) delete psoundeffect;
+		//psoundeffect = NULL;
 	}
 	m_effects_array.Empty();
 

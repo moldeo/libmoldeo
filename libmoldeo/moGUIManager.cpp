@@ -709,6 +709,7 @@ moMaterial::moMaterial() : moMaterialBase() {
     m_Map = NULL;
     m_Type = "Material";
     m_Color = moColor( 1.0, 1.0, 1.0 );
+    m_MapGLId = -1;
 }
 
 const moMaterial&
@@ -737,6 +738,7 @@ moMaterial::operator= ( const moMaterial& p_src ) {
   m_Type = p_src.m_Type;
 
   m_Map = p_src.m_Map;
+  m_MapGLId = p_src.m_MapGLId;
   m_Color = p_src.m_Color;
   m_SpecularColor = p_src.m_SpecularColor;
   m_AmbientColor = p_src.m_AmbientColor;

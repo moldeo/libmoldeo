@@ -489,6 +489,16 @@ void moBrightContMatrix::ContrastMatrix()
 //
 //===========================================
 
+
+moTextureFilter::moTextureFilter()	{
+		m_glman = NULL;
+		m_renderman = NULL;
+		m_shader = NULL;
+		m_DefParams = NULL;
+    m_TextureFilterLabelName = "";
+}
+
+
 MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderman, moTextureArray &p_src_tex, moTextureArray &p_dest_tex, moShader *p_shader, moTextFilterParam *p_params)
 {
 	MOuint i;
@@ -536,7 +546,7 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
 	// Gettting uniform parameters.
 	for (i = 0; i < m_src_tex.Count(); i++)
 	{
-		uname = moText("src_tex_unit") + (moText)IntToStr(i);
+		uname = moText("src_tex_unit") + IntToStr(i);
 
 		if (pglsl) m_src_tex_unit[i] = pglsl->GetUniformID(uname);
 #ifdef SHADER_CG
@@ -794,7 +804,7 @@ void moTextureFilter::SetGLConf(MOint w, MOint h)
     glPolygonMode(GL_FRONT, GL_FILL);
 #endif
 	m_glman->SaveView();
-	m_glman->SetOrthographicView(w, h);
+	m_glman->SetOrthographicView(w, h, 0.0, w, 0.0, h);
 }
 
 void moTextureFilter::RestoreGLConf()

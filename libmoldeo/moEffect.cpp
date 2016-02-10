@@ -172,8 +172,8 @@ moEffect::PreInit() {
 	if(iphase==MO_PARAM_NOT_FOUND) MODebug2->Error(moText("phase parameter missing."));
 
 
-	if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Initializing m_EffectState"));//debug
-	if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Setting preconfigs..."));//debug
+	//if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Initializing m_EffectState"));//debug
+	//if(m_EffectState.fulldebug==MO_ACTIVATED) MODebug2->Push(moText("Setting preconfigs..."));//debug
 
 	//devicecode es llenado por la moConsole(por defecto)
 	//si en el nombrefecto.cfg encontramos el parametro ":acciones" entonces tomamos las acciones

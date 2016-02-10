@@ -721,7 +721,7 @@ MOboolean moVideoBufferPath::UpdateImages( MOint maxfiles ) {
 					FreeImage_Unload(pImage);
 					pImage = NULL;
 					m_ImagesProcessed++;
-					MODebug2->Message( "image processed: "+pFile->GetCompletePath());
+					//MODebug2->Message( "image processed: "+pFile->GetCompletePath());
 				}
 			}
 		}
@@ -1585,8 +1585,15 @@ void moVideoManager::Update(moEventList * p_EventList)
 
 		if (pVideoBufferPath && !pVideoBufferPath->LoadCompleted()) {
 			pVideoBufferPath->UpdateImages( 1 );
-			MODebug2->Push( pVideoBufferPath->GetPath() + moText(":") + IntToStr(pVideoBufferPath->GetImagesProcessed()));
+			if ( (pVideoBufferPath->GetImagesProcessed() % 100) == 0) {
+        MODebug2->Message( pVideoBufferPath->GetPath() + moText(":") + IntToStr(pVideoBufferPath->GetImagesProcessed()));
+			}
+			if (pVideoBufferPath->LoadCompleted()) {
+        MODebug2->Message( "LoadCompleted:" + pVideoBufferPath->GetPath() + moText(":") + IntToStr(pVideoBufferPath->GetImagesProcessed()));
+      }
 		}
+
+
 
 	}
 }

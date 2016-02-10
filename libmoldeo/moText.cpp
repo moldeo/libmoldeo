@@ -36,7 +36,7 @@
 
 moDefineDynamicArray( moTextArray )
 
-
+#define USE_MOTEXT0 1
 #ifdef USE_MOTEXT0
 
 //===========================================
@@ -531,7 +531,7 @@ moText0 moText0::Scan( char* cjto)
     MOuint pos2 = txtfind( cjto, MO_TXT_BELONG, pos1);
     if(pos1 == MO_TXT_NOT_FOUND)  pos1 = 0;
     if(pos2 == MO_TXT_NOT_FOUND)  pos2 = length;
-    if ( (pos1+1) < pos2 ) newtxt.txtcopy( text, 0, pos1, pos2-1);
+    if ( pos1 < pos2 ) newtxt.txtcopy( text, 0, pos1, pos2-1);
     else newtxt = "";
     txtcopy( text, 0, pos2);
     return newtxt;

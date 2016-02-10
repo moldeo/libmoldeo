@@ -157,14 +157,7 @@ public:
     /**
      * El constructor por defecto de la clase.
      */
-	moTextureFilter()
-	{
-		m_glman = NULL;
-		m_renderman = NULL;
-		m_shader = NULL;
-		m_DefParams = NULL;
-        m_TextureFilterLabelName = moText("");
-	}
+	moTextureFilter();
     /**
      * El destructor por defecto de la clase.
      */

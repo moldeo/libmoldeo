@@ -150,6 +150,10 @@ public:
     return m_RenderShaderPositionIndex;
   }
 
+  MOuint GetRSHColorsIndex() {
+    return m_RenderShaderColorsIndex;
+  }
+
   MOuint GetRSHColorIndex() {
     return m_RenderShaderColorIndex;
   }
@@ -195,6 +199,7 @@ private:
 	moShaderGLSL m_RenderShader;
 
 	MOuint m_RenderShaderColorIndex;
+	MOuint m_RenderShaderColorsIndex;
 	MOuint m_RenderShaderPositionIndex;
 	MOuint m_RenderShaderTextureIndex;
 	MOuint m_RenderShaderNormalIndex;
