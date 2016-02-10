@@ -42,12 +42,12 @@ extern "C"
 #endif
 
 
-template<> const moGLMatrixf moGLMatrixf::ZERO( moMatrix4f(
+const moGLMatrixf moGLMatrixf::ZERO( moMatrix4f(
     0.0f,0.0f,0.0f,0.0f,
     0.0f,0.0f,0.0f,0.0f,
     0.0f,0.0f,0.0f,0.0f,
     0.0f,0.0f,0.0f,0.0f) );
-template<> const moGLMatrixf moGLMatrixf::IDENTITY( moMatrix4f(
+const moGLMatrixf moGLMatrixf::IDENTITY( moMatrix4f(
     1.0f,0.0f,0.0f,0.0f,
     0.0f,1.0f,0.0f,0.0f,
     0.0f,0.0f,1.0f,0.0f,

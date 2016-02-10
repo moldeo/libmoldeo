@@ -313,8 +313,9 @@ moTextureBuffer::LoadImage( moText p_ImageName, moBitmap* pImage, int indeximage
 	}
 
 
-
-    if (!GLEW_ARB_texture_non_power_of_two) {
+    //if (!GLEW_ARB_texture_non_power_of_two) {
+    if (RenderMan()->IsTextureNonPowerOf2Disabled()) {
+        
         w = FreeImage_GetWidth(pImageResult);
         h = FreeImage_GetHeight(pImageResult);
 

@@ -283,8 +283,8 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 /// && (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER || m_render_to_texture_mode==RENDERMANAGER_MODE_VDPAU)
 
-	if (GLEW_EXT_framebuffer_object
-     /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
+	if (/*GLEW_EXT_framebuffer_object*/
+        IsRenderToFBOEnabled()     /*&& (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER)*/ )
 	{
 	    m_pGLManager->SetFrameBufferObjectActive();
         MODebug2->Message( moText("moRenderManager::Init > Using framebuffer_object: creating one fbo per predefined textures (4). ") );
@@ -312,7 +312,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
 
 MOboolean moRenderManager::Finish()
 {
-	if (GLEW_EXT_framebuffer_object) m_pFBManager->DeleteFBO(m_fbo_idx);
+	if (IsRenderToFBOEnabled()) m_pFBManager->DeleteFBO(m_fbo_idx);
 
 	m_pGLManager = NULL;
 	m_pFBManager = NULL;
@@ -323,7 +323,8 @@ MOboolean moRenderManager::Finish()
 
 MOboolean moRenderManager::IsRenderToFBOEnabled()
 {
-    return (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER) && GLEW_EXT_framebuffer_object;
+    return (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER);
+    //&& GLEW_EXT_framebuffer_object;
 }
 
 MOboolean moRenderManager::RenderResEqualScreenRes()
@@ -798,21 +799,25 @@ MOint moRenderManager::RenderTexGLId(MOint p_tex_num)
 
 MOboolean moRenderManager::MultiTextureSupported() const
 {
-	return GLEW_ARB_multitexture;
+	//return GLEW_ARB_multitexture;
+    return true;
 }
 
 MOboolean moRenderManager::FramebufferObjectSupported() const
 {
-	return GLEW_EXT_framebuffer_object;
+	//return GLEW_EXT_framebuffer_object;
+    return true;
 }
 
 MOboolean moRenderManager::ShadersSupported() const
 {
-	return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
+	/*return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
+     */
 }
 
 MOboolean moRenderManager::IsTextureNonPowerOf2Disabled() const {
-  return !(GLEW_ARB_texture_non_power_of_two);
+  //return !(GLEW_ARB_texture_non_power_of_two);
+    return true;
 }
 
 MOint moRenderManager::ScreenWidth()  const {

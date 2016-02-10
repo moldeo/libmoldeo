@@ -29,7 +29,7 @@ check_libmoldeo_LDADD       = ${HOSTLDFLAGS} \
 	@GL_LIBS@ \
 	@GLE_LIBS@ \
 	@FREEIMAGE_LIBS@ \
-	@FREEALUT_LIBS@ \
+	#@FREEALUT_LIBS@ \
 	@LUA51_LIBS@ \
 	@GST_LIBS@ \
 	@TINYXML_LIBS@ \
