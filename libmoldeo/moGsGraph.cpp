@@ -33,7 +33,10 @@
 #include "moGsGraph.h"
 
 #include <gst/gst.h>
+
+#ifndef GSTVERSION
 #include <gst/interfaces/propertyprobe.h>
+#endif // GSTVERSION
 
 #include "moFileManager.h"
 
@@ -47,6 +50,14 @@ moLock BuildLock;
     #else
         #define DECODEBIN "decodebin2"
     #endif
+
+#ifdef GSTVERSION
+  #define DECODEBIN "decodebin"
+  #define gst_element_get_pad gst_element_get_request_pad
+  #define VIDEOCONVERT "videoconvert"
+#else
+  #define VIDEOCONVERT "ffmpegcolorspace"
+#endif
 
 static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
 {
@@ -161,16 +172,29 @@ moGsGraph::cb_buffer_disconnected (
 	return false;
 }
 
-
+#ifndef GSTVERSION
 moGBoolean
 moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_data)
+#else
+moGstCallbackReturn
+moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer   u_data)
+#endif
 {
     moGsGraph* pGsGraph;
     pad = NULL;
     GstStructure* str;
-    GstBuffer* Gbuffer = (GstBuffer*)buffer;
+    GstBuffer* Gbuffer;
+    GstCaps* caps;
+    GstPadProbeInfo* Ginfo = (GstPadProbeInfo*) info;
+    GstPad* Gpad = (GstPad*)pad;
+#ifndef GSTVERSION
+    Gbuffer = (GstBuffer*)buffer;
     str = gst_caps_get_structure ( Gbuffer->caps, 0);
-
+#else
+    Gbuffer = GST_PAD_PROBE_INFO_BUFFER ( Ginfo );
+    caps = gst_pad_get_current_caps( Gpad );
+    str = gst_caps_get_structure ( (caps), 0);
+#endif
     const gchar *sstr;
     const gchar *strname;
 
@@ -191,12 +215,12 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 
       if (isvideo) {
         if (pGsGraph->m_VideoFormat.m_WaitForFormat)
-          pGsGraph->SetVideoFormat( Gbuffer->caps, buffer );
+          pGsGraph->SetVideoFormat( caps, Gbuffer );
       }
 
       if (isaudio) {
         if (pGsGraph->m_AudioFormat.m_WaitForFormat)
-          pGsGraph->SetAudioFormat( Gbuffer->caps, buffer );
+          pGsGraph->SetAudioFormat( caps, Gbuffer );
       }
     } else {
       //moAbstract::MODebug2->Error( moText(" moGsGraph:: cb_have_data error: no user data!!") );
@@ -214,8 +238,10 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 
   if (Gbuffer ) {
 
+    int bsize = gst_buffer_get_size( Gbuffer );
+
     if (isvideo) {
-      if ( Gbuffer->size>0 && (int)Gbuffer->size<=(h*w*4) ) {
+    if ( bsize>0 && (int)bsize<=(h*w*4) ) {
         //g_passing buffer to bucketpool
         moBucket *pbucket=NULL;
 
@@ -235,8 +261,11 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 
                 //MOuint frate = (value_numerator * 100) / value_denominator;
                 //MODebug2->Push( " frate: "+ IntToStr(frate) + " timeperframe: " + IntToStr(Gbuffer->duration));
-
-                pbucket->SetBuffer( Gbuffer->size,(MOubyte*)Gbuffer->data );
+#ifndef GSTVERSION
+                pbucket->SetBuffer( bsize,(MOubyte*)Gbuffer->data );
+#else
+                pbucket->SetBuffer( bsize,(MOubyte*)GST_PAD_PROBE_INFO_DATA(Ginfo) );
+#endif
                 //pbucket->BuildBucket( w*h*4, 100 );
                 //MODebug2->Push("bucket created.");
                 //gst_buffer_extract( Gbuffer, 0, pbucket->GetBuffer(), Gbuffer->size );
@@ -252,7 +281,7 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 
       } else {
         pGsGraph->MODebug2->Error( moText(" moGsGraph:: cb_have_data error: wrong buffer size:")
-                + IntToStr(Gbuffer->size));
+                + IntToStr(bsize));
 
       }
     }
@@ -264,6 +293,7 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 }
 
 
+#ifndef GSTVERSION
 void
 moGsGraph::on_rtsppadd_added( moGstElement *rtspsrc, moGstPad *pad, moGPointer u_data ) {
 
@@ -320,13 +350,23 @@ moGsGraph::on_rtsppadd_added( moGstElement *rtspsrc, moGstPad *pad, moGPointer u
 
 }
 
+#else
 
+#endif
+
+
+#ifndef GSTVERSION
 void
 moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, moGPointer u_data)
+#else
+void
+moGsGraph::cb_pad_added_new ( moGstElement *decodebin, moGstPad *pad, moGPointer u_data)
+#endif
 {
   decodebin = NULL; ///unused
+#ifndef GSTVERSION
   last = false; ///unused
-
+#endif
   GstCaps *caps = NULL;
   GstPad  *videopad = NULL;
 //  GstPad  *audiopad = NULL;
@@ -348,7 +388,11 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
   if (u_data!=0) {
       pGsGraph = (moGsGraph*)u_data;
       /* check media type */
+#ifndef GSTVERSION
       caps = gst_pad_get_caps (Gpad);
+#else
+      caps = gst_pad_get_allowed_caps(Gpad);
+#endif
       padname = gst_pad_get_name(Gpad);
       if (padname) {
         str = gst_caps_get_structure (caps, 0);
@@ -372,7 +416,15 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
                 GstPad* srcAudio = gst_element_get_pad ( (GstElement*)pGsGraph->m_pAudioConverter, "src");
 
                 if (padlink==GST_PAD_LINK_OK) {
+#ifndef GSTVERSION
                     pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
+#else
+                    pGsGraph->cb_have_data_handler_id = gst_pad_add_probe ( srcAudio,
+                                                                            GST_PAD_PROBE_TYPE_BUFFER,
+                                                                            (GstPadProbeCallback) cb_have_data,
+                                                                            pGsGraph,
+                                                                           (GDestroyNotify) (cb_buffer_disconnected) );
+#endif
                 }
 
             } else if (pGsGraph->m_pAudioSink) {
@@ -400,9 +452,17 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
                 padlink = gst_pad_link( Gpad, videopad );
 
                 if (padlink==GST_PAD_LINK_OK) {
-                    caps = gst_pad_get_caps( Gpad );
+//                    caps = gst_pad_get_caps( Gpad );
                     //pGsGraph->SetVideoFormat(caps);
+#ifndef GSTVERSION
                     pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcRGB, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
+#else
+                    pGsGraph->cb_have_data_handler_id = gst_pad_add_probe ( srcRGB,
+                                                                             GST_PAD_PROBE_TYPE_BUFFER,
+                                                                            (GstPadProbeCallback) cb_have_data,
+                                                                             pGsGraph,
+                                                                             (GDestroyNotify) (cb_buffer_disconnected) );
+#endif
                     //cout << "cb_newpad: linked pads..." << endl;
                 }
             } else {
@@ -419,9 +479,17 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
                 padlink = gst_pad_link( Gpad, videopad );
 
                 if (padlink==GST_PAD_LINK_OK) {
-                    caps = gst_pad_get_caps( Gpad );
+                    //caps = gst_pad_get_caps( Gpad );
                     //pGsGraph->SetVideoFormat(caps);
+#ifndef GSTVERSION
                     pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcRGB, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
+#else
+                    pGsGraph->cb_have_data_handler_id = gst_pad_add_probe ( srcRGB,
+                                                                           GST_PAD_PROBE_TYPE_BUFFER,
+                                                                          (GstPadProbeCallback) cb_have_data,
+                                                                           pGsGraph,
+                                                                           (GDestroyNotify) (cb_buffer_disconnected) );
+#endif
                     //cout << "cb_newpad: linked pads..." << endl;
                 }
             }
@@ -432,6 +500,8 @@ moGsGraph::cb_newpad ( moGstElement *decodebin, moGstPad *pad, moGBoolean last, 
 
 }
 
+
+//#ifndef GSTVERSION
 void
 moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_data)
 {
@@ -457,7 +527,11 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
   if (u_data!=0) {
       pGsGraph = (moGsGraph*)u_data;
       /* check media type */
+#ifndef GSTVERSION
       caps = gst_pad_get_caps (Gpad);
+#else
+      caps = gst_pad_get_allowed_caps(Gpad);
+#endif
       padname = gst_pad_get_name(Gpad);
       if (padname) {
         str = gst_caps_get_structure (caps, 0);
@@ -483,17 +557,37 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
                                       (GstElement*)pGsGraph->m_pAudioPanorama,
                                       (GstElement*)pGsGraph->m_pAudioSink, NULL );
                 if (link_audioresult) {
+#ifndef GSTVERSION
                     audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
+#else
+                    audiopadinconverter = gst_element_get_request_pad( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
+#endif
                     padlink = gst_pad_link (Gpad, audiopadinconverter);
 
+#ifndef GSTVERSION
                     GstPad* srcAudio = gst_element_get_pad ( (GstElement*)pGsGraph->m_pAudioConverter, "src");
-
+#else
+                    GstPad* srcAudio = gst_element_get_request_pad( (GstElement*)pGsGraph->m_pAudioConverter, "src");
+#endif
                     if (padlink==GST_PAD_LINK_OK) {
+#ifndef GSTVERSION
                         pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
+#else
+                        pGsGraph->cb_have_data_handler_id = gst_pad_add_probe( srcAudio,
+                                                                              GST_PAD_PROBE_TYPE_BUFFER,
+                                                                              (GstPadProbeCallback) cb_have_data,
+                                                                              pGsGraph,
+                                                                              (GDestroyNotify) (cb_buffer_disconnected) );
+#endif
+
                     }
                 }
             } else if (pGsGraph->m_pAudioSink && 1==1) {
+#ifndef GSTVERSION
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioSink, "sink");
+#else
+                audiopadinconverter = gst_element_get_request_pad ( (GstElement*) pGsGraph->m_pAudioSink, "sink");
+#endif
                 padlink = gst_pad_link (Gpad, audiopadinconverter);
             }
 
@@ -517,10 +611,17 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
                 padlink = gst_pad_link( Gpad, videopad );
 
                 if (padlink==GST_PAD_LINK_OK) {
-                    caps = gst_pad_get_caps( Gpad );
+#ifndef GSTVERSION
                     //pGsGraph->SetVideoFormat(caps);
                     pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcRGB, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
                     //cout << "cb_newpad: linked pads..." << endl;
+#else
+                    pGsGraph->cb_have_data_handler_id = gst_pad_add_probe ( srcRGB,
+                                                                           GST_PAD_PROBE_TYPE_BUFFER,
+                                                                           (GstPadProbeCallback) cb_have_data,
+                                                                           pGsGraph,
+                                                                           (GDestroyNotify) (cb_buffer_disconnected) );
+#endif
                 }
             } else {
                 //version 2 con videoscale
@@ -536,9 +637,17 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
                 padlink = gst_pad_link( Gpad, videopad );
 
                 if (padlink==GST_PAD_LINK_OK) {
-                    caps = gst_pad_get_caps( Gpad );
+                    //caps = gst_pad_get_caps( Gpad );
                     //pGsGraph->SetVideoFormat(caps);
+#ifndef GSTVERSION
                     pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcRGB, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
+#else
+                    pGsGraph->cb_have_data_handler_id = gst_pad_add_probe ( srcRGB,
+                                                                           GST_PAD_PROBE_TYPE_BUFFER,
+                                                                           (GstPadProbeCallback) cb_have_data,
+                                                                           pGsGraph,
+                                                                           (GDestroyNotify) (cb_buffer_disconnected) );
+#endif
                     //cout << "cb_newpad: linked pads..." << endl;
                 }
             }
@@ -548,7 +657,10 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
   }
 
 }
+//#else
+//#endif
 
+#ifndef GSTVERSION
 void
 moGsGraph::cb_handoff (moGstElement *fakesrc,
 	    moGstBuffer  *buffer,
@@ -595,7 +707,8 @@ moGsGraph::cb_handoff (moGstElement *fakesrc,
     white = !white;
 
 }
-
+#else
+#endif
 
 /* returns TRUE if there was an error or we caught a keyboard interrupt. */
 static gboolean
@@ -870,7 +983,9 @@ GList*
 moCaptureDevices* moGsFramework::LoadCaptureDevices() {
 
         GstElement* device;
+        #ifndef GSTVERSION
         GstPropertyProbe* probe;
+        #endif
         GValueArray* va;
         GList *plist;
         GParamSpec* pm;
@@ -936,6 +1051,8 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
         //m_CaptureDevices.Add( moCaptureDevice( moText("DV"), moText("DV IEEE 1394"), moText("-"), 0 ) );
     #endif
 
+
+#ifndef GSTVERSION
   try {
 
     device = gst_element_factory_make (device_name, "source");
@@ -1018,7 +1135,7 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
   catch(...) {
     MODebug2->Error("moGsFramework::LoadCaptureDevices > exception error.");
   }
-
+#endif
   ///iterate thru list and populate m_CaptureDevices (best as we can)
 
 
@@ -1252,14 +1369,18 @@ moGsGraph::FinishGraph() {
     }
 
     if (m_pColorSpace) {
+#ifndef GSTVERSION
         GstPad* srcRGB = gst_element_get_pad ( (GstElement*)m_pColorSpace, "src");
         if (srcRGB && cb_have_data_handler_id) gst_pad_remove_buffer_probe ( srcRGB, cb_have_data_handler_id );
+#endif
         cb_have_data_handler_id = 0;
     }
 
     if (m_pColorSpaceInterlace) {
+#ifndef GSTVERSION
         GstPad* srcRGB = gst_element_get_pad ( (GstElement*)m_pColorSpaceInterlace, "src");
         if (srcRGB && cb_have_data_handler_id) gst_pad_remove_buffer_probe ( srcRGB, cb_have_data_handler_id );
+#endif
         cb_have_data_handler_id = 0;
     }
 
@@ -1500,7 +1621,9 @@ moGsGraph::BuildRecordGraph( moText filename, moBucketsPool *pBucketsPool ) {
                 "sync", TRUE,
                 "num-buffers", 30*200,
                 "sizetype", 2, NULL);
+            #ifndef GSTVERSION
             signal_handoff_id = g_signal_connect (m_pFakeSource, "handoff", G_CALLBACK (cb_handoff), this);
+            #endif
 
             res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pFakeSource );
         }
@@ -1524,7 +1647,7 @@ moGsGraph::BuildRecordGraph( moText filename, moBucketsPool *pBucketsPool ) {
         }
 
 
-       m_pColorSpace = gst_element_factory_make ("ffmpegcolorspace", "color");
+       m_pColorSpace = gst_element_factory_make (VIDEOCONVERT, "color");
        if (m_pColorSpace) {
             res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pColorSpace );
        }
@@ -1669,7 +1792,9 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
             if (m_pRTSPDepay) {
                 m_pRTSPDepaySink = gst_element_get_static_pad ( (GstElement*)m_pRTSPDepay, "sink"  );
-                signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBACK (on_rtsppadd_added), (gpointer)this);
+#ifndef GSTVERSION
+signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBACK (on_rtsppadd_added), (gpointer)this);
+#endif
             }
         } else if (labelname==moText("HTTP") || dname.find("http")==0 ) {
             m_pHTTPSource = gst_element_factory_make ("souphttpsrc", "source");
@@ -1681,12 +1806,22 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
         } else {
 
             #ifdef MO_WIN32
-            m_pFileSource = gst_element_factory_make ("dshowvideosrc", "source");
+              #ifdef GSTVERSION
+                m_pFileSource = gst_element_factory_make ("ksvideosrc", "source");
+              #else
+                m_pFileSource = gst_element_factory_make ("dshowvideosrc", "source");
+              #endif
+            #else
+            #ifdef GSTVERSION
+              #ifdef MO_MACOSX
+                m_pFileSource = gst_element_factory_make ("wrappercamerabinsrc", "source");
+              #endif
             #else
             if (devicename==moText("DV"))
-                m_pFileSource = gst_element_factory_make ("dv1394src", "source");
+              m_pFileSource = gst_element_factory_make ("dv1394src", "source");
             else
-                m_pFileSource = gst_element_factory_make ("v4l2src", "source");
+              m_pFileSource = gst_element_factory_make ("v4l2src", "source");
+            #endif
             #endif
 
             m_pFinalSource = m_pFileSource;
@@ -1793,10 +1928,15 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
            GstIterator* iterator = NULL;
            iterator = gst_element_iterate_src_pads( (GstElement*) m_pFinalSource );
 
+#ifndef GSTVERSION
            gpointer item;
+#else
+           GValue item = G_VALUE_INIT;
+#endif
+           GstPad* srcpad = NULL;
            GstCaps* itemcaps = NULL;
 
-           GstPad* srcpad = NULL;
+
            //GstPad* sinkpad = NULL;
 
            moText padname;
@@ -1804,23 +1944,37 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
            bool done = FALSE;
            while (!done) {
-             switch (gst_iterator_next (iterator, &item)) {
+#ifndef GSTVERSION
+            switch (gst_iterator_next (iterator, &item)) {
+#else
+            switch (gst_iterator_next (iterator, &item)) {
+#endif
                case GST_ITERATOR_OK:
                  //... use/change item here...
-
+#ifndef GSTVERSION
                  srcpad = (GstPad*)item;
+#else
+                srcpad = (GstPad*)g_value_dup_object (&item);
+#endif
                  padname = gst_object_get_name((GstObject*) srcpad );
 
                  MODebug2->Message( moText("filesrc src pad: checking caps: ") + (moText)padname );
 
+#ifndef GSTVERSION
                  itemcaps = gst_pad_get_caps( srcpad );
+#else
+                 itemcaps = gst_pad_get_allowed_caps( srcpad );
+#endif
+
                  if (itemcaps) {
 
                      icapsstr = moText( gst_caps_to_string(itemcaps) );
                      MODebug2->Message(icapsstr);
                  }
                  //gst_object_unref (item);
-
+#ifdef GSTVERSION
+                g_value_reset (&item);
+#endif
                  break;
                case GST_ITERATOR_RESYNC:
                  //...rollback changes to items...
@@ -1845,7 +1999,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
                if (m_pCapsFilterSource) {
 
-									  m_pColorSpaceSource = gst_element_factory_make ("ffmpegcolorspace", "colorsource");
+									  m_pColorSpaceSource = gst_element_factory_make ( VIDEOCONVERT, "colorsource");
 									  if (m_pCapsFilterSource) {
 									  	res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pColorSpaceSource );
 									  }
@@ -1904,7 +2058,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
             b_forcevideointerlace = false;
            if (b_forcevideointerlace) {
-               m_pColorSpaceInterlace = gst_element_factory_make ("ffmpegcolorspace", "colordeinterlace");
+               m_pColorSpaceInterlace = gst_element_factory_make (VIDEOCONVERT, "colordeinterlace");
                if (m_pColorSpaceInterlace) {
                     res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pColorSpaceInterlace );
                }
@@ -1918,7 +2072,7 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
                }
            }
 
-           m_pColorSpace = gst_element_factory_make ("ffmpegcolorspace", "color");
+           m_pColorSpace = gst_element_factory_make (VIDEOCONVERT, "color");
            if (m_pColorSpace) {
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pColorSpace );
            }
@@ -1949,7 +2103,11 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
 
             if (m_pDecoderBin==NULL) m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
             if (m_pDecoderBin) {
+#ifndef GSTVERSION
                 signal_newpad_id = g_signal_connect (m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
+#else
+                signal_newpad_id = g_signal_connect (m_pDecoderBin, "pad-added", G_CALLBACK (cb_pad_added_new), (gpointer)this);
+#endif
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pDecoderBin );
 
                 m_pFakeSink = gst_element_factory_make ("fakesink", "destout");
@@ -2037,7 +2195,11 @@ moGsGraph::RetreivePads( moGstElement* FilterElement) {
     GstIterator* piter;
     GstPad*        ppad;
     gchar* nname;
+#ifndef GSTVERSION
     gpointer ppointer;
+#else
+    GValue gvalue = G_VALUE_INIT;
+#endif
     bool done;
     bool res = false;
 
@@ -2045,15 +2207,27 @@ moGsGraph::RetreivePads( moGstElement* FilterElement) {
 
     done = FALSE;
     while (!done) {
+#ifndef GSTVERSION
         switch (gst_iterator_next (piter, &ppointer)) {
+#else
+        switch (gst_iterator_next (piter, &gvalue)) {
+#endif
             case GST_ITERATOR_OK:
             //... use/change item here...
+#ifndef GSTVERSION
                 ppad = (GstPad*) ppointer;
+#else
+                ppad = (GstPad*) g_value_dup_object( &gvalue );
+#endif
                 nname = gst_pad_get_name(ppad);
                 res = gst_pad_is_active(ppad);
                 res = gst_pad_is_linked(ppad);
                 res = gst_pad_is_blocking(ppad);
+#ifndef GSTVERSION
                 gst_object_unref (ppointer);
+#else
+                g_value_reset( &gvalue );
+#endif
             break;
 
             case GST_ITERATOR_RESYNC:
@@ -2223,7 +2397,11 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
 
            m_pDecoderBin = gst_element_factory_make ( DECODEBIN, "decoder");
             if (m_pDecoderBin) {
+#ifndef GSTVERSION
                 signal_newpad_id = g_signal_connect ((GstElement*)m_pDecoderBin, "new-decoded-pad", G_CALLBACK (cb_newpad), (gpointer)this);
+#else
+                signal_newpad_id = g_signal_connect ((GstElement*)m_pDecoderBin, "pad-added", G_CALLBACK (cb_pad_added_new), (gpointer)this);
+#endif
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pDecoderBin );
             }
 
@@ -2338,7 +2516,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pFileSource );
 
 
-           m_pColorSpaceInterlace = gst_element_factory_make ("ffmpegcolorspace", "color0");
+           m_pColorSpaceInterlace = gst_element_factory_make (VIDEOCONVERT, "color0");
            if (m_pColorSpaceInterlace) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pColorSpaceInterlace );
            }
@@ -2348,7 +2526,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pVideoBalance );
            }
 
-           m_pColorSpace = gst_element_factory_make ("ffmpegcolorspace", "color");
+           m_pColorSpace = gst_element_factory_make (VIDEOCONVERT, "color");
            if (m_pColorSpace) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pColorSpace );
            }
@@ -2617,7 +2795,11 @@ moGsGraph::SetAudioFormat( moGstCaps* caps, moGstBuffer* buffer ) {
         */
         if (Gbuffer!=NULL) {
             m_AudioFormat.m_TimePerSample = Gbuffer->duration;
+#ifndef GSTVERSION
             m_AudioFormat.m_BufferSize = Gbuffer->size;
+#else
+            m_AudioFormat.m_BufferSize = gst_buffer_get_size( Gbuffer );
+#endif
         }
         //m_AudioFormat.SetVideoMode();
         m_AudioFormat.m_WaitForFormat = false;
@@ -2694,7 +2876,11 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
         //m_VideoFormat.m_BitRate = pVih->dwBitRate;
         if (buffer!=NULL) {
             m_VideoFormat.m_TimePerFrame = Gbuffer->duration;
+#ifndef GSTVERSION
             m_VideoFormat.m_BufferSize = Gbuffer->size;
+#else
+            m_VideoFormat.m_BufferSize = gst_buffer_get_size( Gbuffer );
+#endif
         }
         m_VideoFormat.SetVideoMode();
         m_VideoFormat.m_WaitForFormat = false;
@@ -2845,8 +3031,12 @@ moStreamState moGsGraph::GetState() {
 
 
     if (m_pColorSpace) {
-
+#ifndef GSTVERSION
       srcRGB = gst_element_get_pad ( (GstElement*)m_pColorSpace, "src");
+#else
+      srcRGB = gst_element_get_request_pad ( (GstElement*)m_pColorSpace, "src" );
+#endif
+
       padactive = gst_pad_is_active( srcRGB );
       padlinked =  gst_pad_is_linked( srcRGB );
       padblocked =  gst_pad_is_blocked( srcRGB );
@@ -3001,8 +3191,11 @@ moGsGraph::GetFramesLength() {
 	GstFormat fmt = GST_FORMAT_TIME;
 
     gint64 len,lenF;
-
+#ifndef GSTVERSION
     if (gst_element_query_duration ((GstElement*)m_pGstPipeline, &fmt, &len)) {
+#else
+    if (gst_element_query_duration ((GstElement*)m_pGstPipeline, fmt, &len)) {
+#endif
     /*g_print ("Time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT "\r",
          GST_TIME_ARGS (pos), GST_TIME_ARGS (len));*/
          if (m_VideoFormat.m_TimePerFrame)
@@ -3021,8 +3214,11 @@ moGsGraph::GetSamplesLength() {
 	GstFormat fmt = GST_FORMAT_TIME;
 
     gint64 len,lenF;
-
+#ifndef GSTVERSION
     if (gst_element_query_duration ((GstElement*)m_pGstPipeline, &fmt, &len)) {
+#else
+    if (gst_element_query_duration ((GstElement*)m_pGstPipeline, fmt, &len)) {
+#endif
     /*g_print ("Time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT "\r",
          GST_TIME_ARGS (pos), GST_TIME_ARGS (len));*/
          if (m_AudioFormat.m_TimePerSample)
@@ -3043,8 +3239,12 @@ moGsGraph::GetDuration() {
 
     gint64 dur;
 
+#ifndef GSTVERSION
     if (gst_element_query_duration ((GstElement*)m_pGstPipeline, &fmt, &dur)) {
-         m_Duration = GST_TIME_AS_MSECONDS(dur); //in milliseconds  1ms = 1 million ns
+#else
+    if (gst_element_query_duration ((GstElement*)m_pGstPipeline, fmt, &dur)) {
+#endif
+          m_Duration = GST_TIME_AS_MSECONDS(dur); //in milliseconds  1ms = 1 million ns
          //cout << "gsgraph: dur: ns: " <<  dur  << endl;
          return m_Duration;
     }
@@ -3061,7 +3261,11 @@ moGsGraph::GetPosition() {
     GstFormat fmt = GST_FORMAT_TIME;
     gint64 pos,frame;
 
+#ifndef GSTVERSION
     if (gst_element_query_position ((GstElement*)m_pGstPipeline, &fmt, &pos)) {
+#else
+    if (gst_element_query_position ((GstElement*)m_pGstPipeline, fmt, &pos)) {
+#endif
         if (m_VideoFormat.m_TimePerFrame==0) {
             return (pos / 1000000);
         }
@@ -3077,7 +3281,11 @@ moGsGraph::GetPositionMS() {
     GstFormat fmt = GST_FORMAT_TIME;
     gint64 pos;
 
+#ifndef GSTVERSION
     if (gst_element_query_position ((GstElement*)m_pGstPipeline, &fmt, &pos)) {
+#else
+    if (gst_element_query_position ((GstElement*)m_pGstPipeline, fmt, &pos)) {
+#endif
         return (MOulong)GST_TIME_AS_MSECONDS(pos);
     }
     return 0;

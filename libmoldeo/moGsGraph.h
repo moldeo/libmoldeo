@@ -53,6 +53,9 @@ Example:
 #ifndef __MO_GSGRAPH_H
 #define __MO_GSGRAPH_H
 
+#ifndef MO_GSTREAMER
+#define MO_GSTREAMER
+#endif
 #ifdef MO_GSTREAMER
 
 
@@ -67,6 +70,8 @@ typedef bool moGBoolean;
 typedef int moGstStateChangeReturn;
 typedef void moGMainLoop;
 typedef void moGMainContext;
+typedef int moGstCallbackReturn;
+typedef void moGstPadProbeInfo;
 
 
 typedef enum {
@@ -225,10 +230,15 @@ public:
                                 moGstMessage *msg,
                                 moGPointer user_data);
                                 */
-
+#ifndef GSTVERSION
     static moGBoolean cb_have_data (moGstPad    *pad,
                                     moGstBuffer *buffer,
                                     moGPointer   u_data);
+#else
+    static moGstCallbackReturn cb_have_data (moGstPad    *pad,
+                                    moGstPadProbeInfo *info,
+                                    moGPointer   u_data);
+#endif
 
     static moGBoolean cb_buffer_disconnected (
                                     moGPointer   u_data
@@ -241,10 +251,16 @@ public:
                                     moGPointer u_data );
     long signal_rtsppad_added_id;
 
+#ifndef GSTVERSION
     static void cb_newpad ( moGstElement *decodebin,
                             moGstPad     *pad,
                             moGBoolean    last,
                             moGPointer    u_data);
+#else
+    static void cb_pad_added_new ( moGstElement *decodebin,
+                            moGstPad     *pad,
+                            moGPointer    u_data);
+#endif
 
     static void cb_pad_added ( moGstElement *decodebin2,
                             moGstPad     *pad,
@@ -252,11 +268,12 @@ public:
 
     long signal_newpad_id;
     long m_BusWatchId;
-
+#ifndef GSTVERSION
     static void cb_handoff ( moGstElement *fakesrc,
 	    moGstBuffer  *buffer,
 	    moGstPad     *pad,
 	    moGPointer    user_data);
+#endif
     long signal_handoff_id;
 
     bool CheckState( moGstStateChangeReturn state_change_result, bool waitforsync = false);
