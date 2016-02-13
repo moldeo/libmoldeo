@@ -323,8 +323,7 @@ MOboolean moRenderManager::Finish()
 
 MOboolean moRenderManager::IsRenderToFBOEnabled()
 {
-    return (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER);
-    //&& GLEW_EXT_framebuffer_object;
+    return (m_render_to_texture_mode == RENDERMANAGER_MODE_FRAMEBUFFER) && GLEW_EXT_framebuffer_object;
 }
 
 MOboolean moRenderManager::RenderResEqualScreenRes()
@@ -799,25 +798,24 @@ MOint moRenderManager::RenderTexGLId(MOint p_tex_num)
 
 MOboolean moRenderManager::MultiTextureSupported() const
 {
-	//return GLEW_ARB_multitexture;
-    return true;
+	return GLEW_ARB_multitexture;
+    //return true;
 }
 
 MOboolean moRenderManager::FramebufferObjectSupported() const
 {
-	//return GLEW_EXT_framebuffer_object;
-    return true;
+	return GLEW_EXT_framebuffer_object;
+    //return true;
 }
 
 MOboolean moRenderManager::ShadersSupported() const
 {
-	/*return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
-     */
+	return GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader && GLEW_ARB_shading_language_100;
 }
 
 MOboolean moRenderManager::IsTextureNonPowerOf2Disabled() const {
-  //return !(GLEW_ARB_texture_non_power_of_two);
-    return true;
+  return !(GLEW_ARB_texture_non_power_of_two);
+  //return true;
 }
 
 MOint moRenderManager::ScreenWidth()  const {
