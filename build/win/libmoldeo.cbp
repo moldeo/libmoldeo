@@ -178,7 +178,7 @@
 			<Add library="boost_system-mt" />
 			<Add library="boost_filesystem-mt" />
 			<Add library="glu32" />
-			<Add directory="$(gstreamersdkdir)/lib" />
+			<Add directory="$(gstreamer1sdkdir)/lib" />
 			<Add directory="$(externlibs)/boost/lib/1_48_0" />
 			<Add directory="$(externlibs)/lua/lib" />
 			<Add directory="$(externlibs)/muparser/lib" />

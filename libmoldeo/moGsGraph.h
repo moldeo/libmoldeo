@@ -66,12 +66,15 @@ typedef void moGstBuffer;
 typedef void moGstCaps;
 typedef void moGstMessage;
 typedef void* moGPointer;
+typedef void* moGUserData;
 typedef bool moGBoolean;
 typedef int moGstStateChangeReturn;
 typedef void moGMainLoop;
 typedef void moGMainContext;
 typedef int moGstCallbackReturn;
 typedef void moGstPadProbeInfo;
+typedef void moGstAppSink;
+typedef int moGstFlowReturn;
 
 
 typedef enum {
@@ -260,6 +263,11 @@ public:
     static void cb_pad_added_new ( moGstElement *decodebin,
                             moGstPad     *pad,
                             moGPointer    u_data);
+
+    static moGstFlowReturn appsink_new_sample( moGstAppSink* appsink, moGPointer user_data );
+    static moGstFlowReturn  appsink_new_preroll( moGstAppSink* appsink, moGPointer user_data );
+    static void appsink_eos( moGstAppSink* appsink, moGPointer user_data );
+
 #endif
 
     static void cb_pad_added ( moGstElement *decodebin2,
