@@ -127,7 +127,7 @@ moTexture* moTextureIndex::GetTexture(MOuint p_idx)
 
 MOboolean moTextureIndex::ValidIndex(MOuint p_idx)
 {
-	if (p_idx < m_textures_array.Count()) return true;
+	if (0<=p_idx && p_idx < m_textures_array.Count()) return true;
 	else
 	{
 	    #ifdef _DEBUG
