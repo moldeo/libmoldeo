@@ -78,14 +78,24 @@ moDebug::SetStdout( const moText& filename ) {
 void
 moDebug::Error( moText p_text ) {
   Lock();
-  moText prefx_error = moText("MOL ERROR ===>>> ");
-  cout << prefx_error << p_text << endl;
-  moErr << prefx_error << p_text << endl;
-  moLog << prefx_error << p_text << endl;
-  m_Debug.Push( moText("MOL ERROR ===>>> ") + (moText)p_text );
+  moText prefx_error = moText("Error! ");
+  cout << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+  moErr << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+  moLog << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+  m_Debug.Push( prefx_error + p_text );
   Unlock();
 }
 
+void
+moDebug::Warning( moText p_text ) {
+    Lock();
+    moText prefx_error = moText("Warning! ");
+    cout << "\x1b[33;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+    moErr << "\x1b[33;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+    moLog << "\x1b[33;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+    m_Debug.Push( prefx_error + p_text );
+    Unlock();
+}
 
 void
 moDebug::Message( moText p_text ) {
