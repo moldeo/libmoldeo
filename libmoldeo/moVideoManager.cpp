@@ -876,7 +876,7 @@ MOboolean moVideoManager::Init()
         moCaptureDevice CapDev = m_CaptureDevices.Get(c);
         if (CapDev.IsPreferred()) {
           moCamera* Cam = CreateCamera( CapDev );
-          if (Cam==NULL) MODebug2->Error("moVideoManager::Init > could create Camera: " + CapDev.GetName()+ " Label: " + CapDev.GetLabelName() );
+          if (Cam==NULL) MODebug2->Error("moVideoManager::Init > could not create Camera: " + CapDev.GetName()+ " Label: " + CapDev.GetLabelName() );
         }
 
       }

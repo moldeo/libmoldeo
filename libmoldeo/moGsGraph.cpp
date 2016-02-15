@@ -1149,7 +1149,7 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
             moCaptureDevice CaptDev = m_PreferredDevices[i];
             CaptDev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
             AddCaptureDevice( CaptDev );
-            MODebug2->Log( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
+            MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
         }
         //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("-") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("Microsoft DV Camera and VCR"), moText("DV IEEE 1394"), moText("-"), 0 ) );
@@ -1177,15 +1177,22 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
         }
         */
     #else
+        #ifdef MO_MACOSX
+        device_name = "wrappercamerabinsrc";
+        #else
         device_name = "v4l2src";
+        #endif
         // in linux: for v4l2src   device could be  /dev/video0   -   /dev/video1   etc...
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("-"), moText("-") ) );
         for(int i=0; i<m_PreferredDevices.Count();i++) {
             moCaptureDevice CaptDev = m_PreferredDevices[i];
+            CaptDev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
             AddCaptureDevice( CaptDev );
-
             MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
-        }        //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("/dev/video0") ) );
+        }
+    
+    
+    //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText(""), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("DV"), moText("DV IEEE 1394"), moText("-"), 0 ) );
     #endif
