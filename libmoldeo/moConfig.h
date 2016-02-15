@@ -177,9 +177,9 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
                                     int pidx = (MOint)m_Config.GetParamIndex(Y);\
                                     if (pidx>-1) {\
                                       if (!m_Config.GetConfigDefinition()->SetParamIndex( (int)X, moParamIndex(pidx))) {\
-                                        MODebug2->Error( "<"+m_Config.GetObjectClass()+">["+m_Config.GetObjectName()+"]::Init()_moDefineParamIndex > Config parameter \"" + moText(Y) + moText("\"  warning. Bad indexation could cause errors."));\
+                                        MODebug2->Warning( "<"+m_Config.GetObjectClass()+">["+m_Config.GetObjectName()+"]::Init()_moDefineParamIndex > Config parameter \"" + moText(Y) + moText("\"  warning. Bad indexation could cause errors."));\
                                       }\
-                                    } else MODebug2->Error(  "<"+m_Config.GetObjectClass()+">["+m_Config.GetObjectName()+"]::Init()_moDefineParamIndex > Config parameter: "+ " \"" + moText(Y) + moText("\" not found."));\
+                                    } else MODebug2->Error( m_Config.GetObjectClass()+": "+m_Config.GetObjectName()+ " parameter \"" + moText(Y) + moText("\" not found."));\
                                 }
 /// almacena la configuración de los parámetros de un objeto en un archivo XML
 /**
