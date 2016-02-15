@@ -1364,7 +1364,7 @@ moTextureAnimated::moTextureAnimated() : moTexture()
 {
 	m_FrameJump = 0;
 	m_FrameNext = 0;
-	m_FramePrevious = -1;
+	m_FramePrevious = 0;
 	m_FrameStart = 0;
 	m_FrameEnd = 0;
 	m_ActualFrame = 0;
@@ -1389,7 +1389,7 @@ MOboolean moTextureAnimated::Init(moText p_name, MOuint p_moid, moResourceManage
 {
 	m_FrameJump = 0;
 	m_FrameNext = 0;
-	m_FramePrevious = -1;
+	m_FramePrevious = 0;
 	m_FrameStart = 0;
 	m_FrameEnd = 0;
 	m_nFrames = 0;
@@ -1572,7 +1572,7 @@ moTextureAnimated::NeedsInterpolation() {
 	// pasamos la barrera del m_FrameJump
 	// !!!chequear que el next y el previous esten correctamente fijados
 	//MODebug2->Push( moText("Pr:")+IntToStr(m_FramePrevious)+moText("Nxt:")+IntToStr(m_FrameNext) );
-
+    //return false;
 	if (!m_bInterpolation)
 		return false;
 
@@ -1673,6 +1673,11 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 MOint
 moTextureAnimated::GetGLId( MOuint p_i ) {
 
+    if (p_i>2000 || p_i>m_nFrames) {
+        //WTF
+        p_i = 0;
+    }
+    
 	m_FrameNext = p_i;
 
 	if (NeedsInterpolation()) {
