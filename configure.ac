@@ -23,7 +23,7 @@ dnl check tinyxml
 PKG_CHECK_MODULES([TINYXML], [tinyxml] ,has_tinyxml=yes)
 
 dnl check for gtk+-2.0
-PKG_CHECK_MODULES([GTK2], [gtk+-2.0], has_gtk2=yes )
+#PKG_CHECK_MODULES([GTK2], [gtk+-2.0], has_gtk2=yes )
 
 dnl check for sdl
 PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
@@ -35,6 +35,7 @@ AS_HELP_STRING([--with-gles],
 [with_gles=yes])
 
 host_name="default"
+librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, gl, glew, freetype2, check'
 
 AC_ARG_ENABLE(host,
 [--enable-host[=host name] Specify the host os name:
@@ -50,10 +51,12 @@ AC_ARG_ENABLE(host,
 	host_name="raspbian"
 	host_cflags="-I/opt/vc/include -DOPENGLESV2"
 	host_ldflags="-L/opt/vc/lib"
+    librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, egl, glesv2, freetype2, check'
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
 	host_cflags="-I/opt/local/include "
 	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa"
+    librequires='lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, gl, glew, freetype2, check'
   else
 	echo
 	echo "Error!"
@@ -73,6 +76,7 @@ if test "x$host_name" = "xosx" ; then
     dnl check for glew
     AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
     AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GL_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]) )
+
 else
     PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
     AS_IF([test "x$with_gles" = "xyes"],
@@ -82,7 +86,6 @@ else
     dnl check for glut
     AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
     AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([glut not found.]), )
-
 fi
 
 
@@ -90,24 +93,8 @@ dnl check for freeimage
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
 AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfreeimage]), AC_MSG_ERROR([FreeImage not found.]), )
 
-
-#dnl check for openal
-#PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
-
-dnl check for glu
-#PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
-
-
-dnl check for gle
-#AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
-#AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
-
 dnl check for ftgl
 PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
-
-
-dnl check for alut
-#PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
 dnl check for gstreamer
 GST_VERSION_MAJOR=1
@@ -123,7 +110,6 @@ PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
 AC_SUBST(GST_CFLAGS)
 AC_SUBST(GST_LIBS)
 
-#PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-interfaces-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
 PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-app-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
 AC_SUBST(GST_INTERFACES_CFLAGS)
 AC_SUBST(GST_INTERFACES_LIBS)
@@ -186,6 +172,7 @@ esac],
 
 AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
 
+AC_SUBST([librequires])
 
 dnl Additional arguments (and substitutions)
 dnl Allow the pkg-config directory to be set

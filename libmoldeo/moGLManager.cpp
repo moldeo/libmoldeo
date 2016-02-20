@@ -32,7 +32,7 @@
 #include "moGLManager.h"
 #include "moRenderManager.h"
 
-#ifdef MO_LINUX
+#ifdef MO_LINUXX
 extern "C"
 {
   #include "gtk/gtk.h"
