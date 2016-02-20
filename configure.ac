@@ -55,7 +55,7 @@ AC_ARG_ENABLE(host,
 	host_cflags="-I/opt/local/include "
 	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa"
   else
-	echo 
+	echo
 	echo "Error!"
 	echo "Unknown host name"
 	exit -1
@@ -69,7 +69,7 @@ if test "x$host_name" = "xosx" ; then
     AC_SUBST([GLUT_LIBS], [])
     AC_SUBST([GL_LIBS], [])
     AC_SUBST([GLE_LIBS], [])
-    
+
     dnl check for glew
     AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
     AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GL_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]) )
@@ -78,7 +78,7 @@ else
     AS_IF([test "x$with_gles" = "xyes"],
         [PKG_CHECK_MODULES([GL], [glesv2, egl] ,has_glesv2=yes)],
         [PKG_CHECK_MODULES([GL], [gl, glew] ,has_gl=yes)])
-    
+
     dnl check for glut
     AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
     AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([glut not found.]), )
@@ -124,8 +124,9 @@ AC_SUBST(GST_CFLAGS)
 AC_SUBST(GST_LIBS)
 
 #PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-interfaces-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
-AC_SUBST([GST_INTERFACES_CFLAGS],[])
-AC_SUBST([GST_INTERFACES_LIBS],[])
+PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-app-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
+AC_SUBST(GST_INTERFACES_CFLAGS)
+AC_SUBST(GST_INTERFACES_LIBS)
 
 dnl check for truetype
 AC_CHECK_FT2
