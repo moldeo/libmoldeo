@@ -87,7 +87,7 @@
 
 
 using namespace std;
-#define OPENGLESV2 1
+//#define OPENGLESV2 1
 
 /*MOLDEO SETUP DEFINITIONS*/
 #ifndef OPENGLESV2
@@ -252,7 +252,7 @@ typedef unsigned int GLhandleARB;
 #endif
 	#endif
 
-	
+
 
 	#define MO_GSTREAMER 1
 
