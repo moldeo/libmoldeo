@@ -36,7 +36,7 @@ AS_HELP_STRING([--with-gles],
 
 host_name="default"
 librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, gl, glew, freetype2, check'
-
+OPENGLESV2=''
 AC_ARG_ENABLE(host,
 [--enable-host[=host name] Specify the host os name:
 			64: 64 bit linux os [default]
@@ -49,9 +49,10 @@ AC_ARG_ENABLE(host,
 	host_name="64"
   elif test "x$enableval" = "xraspbian" ; then
 	host_name="raspbian"
-	host_cflags="-I/opt/vc/include -DOPENGLESV2"
+	host_cflags="-I/opt/vc/include"
 	host_ldflags="-L/opt/vc/lib"
-    librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, egl, glesv2, freetype2, check'
+    	librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, egl, glesv2, freetype2, check'
+	OPENGLESV2='#define OPENGLESV2 1'
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
 	host_cflags="-I/opt/local/include "
@@ -64,8 +65,10 @@ AC_ARG_ENABLE(host,
 	exit -1
   fi
 ])
+host_cflags="$host_cflags -DGSTVERSION"
 AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
+AC_SUBST([OPENGLESV2],$OPENGLESV2)
 
 if test "x$host_name" = "xosx" ; then
     PKG_CHECK_MODULES([LUA51], [lua-5.1] ,has_lua51=yes)
@@ -186,6 +189,7 @@ AC_SUBST([pkgconfigdir])
 
 
 echo "GLES: $with_gles"
+echo "OPENGLESV2: $OPENGLESV2"
 echo "HOST: $host_name"
 echo "HOSTCFLAGS: $host_cflags"
 echo "HOSTLDFLAGS: $host_ldflags"
@@ -195,6 +199,7 @@ dnl Makefile outputs
 AC_OUTPUT([
 Makefile
 data/Makefile
+libmoldeo/moTypes.h
 libmoldeo/Makefile
 libmoldeotest/Makefile
 libmoldeo.pc
