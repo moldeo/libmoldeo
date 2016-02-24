@@ -262,9 +262,8 @@ LIBMOLDEO_API bool moDeleteResource(moResource *Resource, moResourcePluginsArray
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
-    complete_name += moText(".so");
+    complete_name += moPluginExtension;
     #endif
-		printf("completename:%s\n",(char*)complete_name);
 
     // Indice del plugin que se utilizara para crear a este efecto.
     int plg_index = -1;

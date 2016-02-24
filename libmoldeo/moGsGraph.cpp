@@ -1532,32 +1532,32 @@ moGsGraph::FinishGraph() {
 
 
     if (m_pFileSource) {
-        gst_object_unref( (GstElement*) m_pFileSource);
+        //gst_object_unref( (GstElement*) m_pFileSource);
         m_pFileSource = NULL;
     }
 
     if (m_pJpegDecode) {
-        gst_object_unref( (GstElement*) m_pJpegDecode);
+        //gst_object_unref( (GstElement*) m_pJpegDecode);
         m_pJpegDecode = NULL;
     }
 
     if (m_pMultipartDemux) {
-        gst_object_unref( (GstElement*) m_pMultipartDemux);
+        //gst_object_unref( (GstElement*) m_pMultipartDemux);
         m_pMultipartDemux = NULL;
     }
 
     if (m_pHTTPSource) {
-        gst_object_unref( (GstElement*) m_pHTTPSource);
+        //gst_object_unref( (GstElement*) m_pHTTPSource);
         m_pHTTPSource = NULL;
     }
 
     if (m_pRTSPDepay) {
-        gst_object_unref( (GstElement*) m_pRTSPDepay);
+        //gst_object_unref( (GstElement*) m_pRTSPDepay);
         m_pRTSPDepay = NULL;
     }
 
     if (m_pRTSPSource) {
-        gst_object_unref( (GstElement*) m_pRTSPSource);
+        //gst_object_unref( (GstElement*) m_pRTSPSource);
         m_pRTSPSource = NULL;
     }
 
@@ -1567,17 +1567,17 @@ moGsGraph::FinishGraph() {
     }
 
     if (m_pColorSpace) {
-        gst_object_unref( (GstElement*) m_pColorSpace);
+        //gst_object_unref( (GstElement*) m_pColorSpace);
         m_pColorSpace = NULL;
     }
 
     if (m_pColorSpaceInterlace) {
-        gst_object_unref( (GstElement*) m_pColorSpaceInterlace);
+        //gst_object_unref( (GstElement*) m_pColorSpaceInterlace);
         m_pColorSpaceInterlace = NULL;
     }
 
     if (m_pCapsFilter) {
-        gst_object_unref( (GstElement*) m_pCapsFilter);
+        //gst_object_unref( (GstElement*) m_pCapsFilter);
         m_pCapsFilter = NULL;
     }
 
@@ -1585,32 +1585,32 @@ moGsGraph::FinishGraph() {
         if (g_signal_handler_is_connected((GstElement*)m_pDecoderBin, signal_newpad_id))
             g_signal_handler_disconnect ( (GstElement*)m_pDecoderBin, signal_newpad_id );
         signal_newpad_id = 0;
-        gst_object_unref( (GstElement*) m_pDecoderBin);
+        //gst_object_unref( (GstElement*) m_pDecoderBin);
         m_pDecoderBin = NULL;
     }
 
     if (m_pFakeSink) {
-        gst_object_unref( (GstElement*) m_pFakeSink);
+        //gst_object_unref( (GstElement*) m_pFakeSink);
         m_pFakeSink = NULL;
     }
 
     if (m_pAudioConverter) {
-        gst_object_unref( (GstElement*) m_pAudioConverter);
+        //gst_object_unref( (GstElement*) m_pAudioConverter);
         m_pAudioConverter = NULL;
     }
 
     if (m_pAudioSink) {
-        gst_object_unref( (GstElement*) m_pAudioSink);
+        //gst_object_unref( (GstElement*) m_pAudioSink);
         m_pAudioSink = NULL;
     }
 
     if (m_pAudioPad) {
-        gst_object_unref( (GstPad*) m_pAudioPad);
+        //gst_object_unref( (GstPad*) m_pAudioPad);
         m_pAudioPad = NULL;
     }
 
     if (m_pVideoPad) {
-        gst_object_unref( (GstPad*) m_pVideoPad);
+        //gst_object_unref( (GstPad*) m_pVideoPad);
         m_pVideoPad = NULL;
     }
 
@@ -1618,17 +1618,17 @@ moGsGraph::FinishGraph() {
         if (g_signal_handler_is_connected((GstElement*)m_pFakeSource, signal_handoff_id))
             g_signal_handler_disconnect ( (GstElement*)m_pFakeSource, signal_handoff_id );
         signal_handoff_id = 0;
-        gst_object_unref( (GstElement*) m_pFakeSource);
+        //gst_object_unref( (GstElement*) m_pFakeSource);
         m_pFakeSource = NULL;
     }
 
     if (m_pFileSink) {
-        gst_object_unref( (GstElement*) m_pFileSink);
+        //gst_object_unref( (GstElement*) m_pFileSink);
         m_pFileSink = NULL;
     }
 
     if (m_pGstBus) {
-        gst_object_unref( (GstElement*) m_pGstBus);
+        //gst_object_unref( (GstElement*) m_pGstBus);
         m_pGstBus = NULL;
     }
 
@@ -1638,7 +1638,7 @@ moGsGraph::FinishGraph() {
     }
 
     if (m_pVideoScale) {
-        gst_object_unref( (GstElement*) m_pVideoScale);
+        //gst_object_unref( (GstElement*) m_pVideoScale);
         m_pVideoScale = NULL;
     }
 
@@ -3516,6 +3516,7 @@ moGsGraph::GetPositionMS() {
 
 bool
 moGsGraph::IsRunning() {
+    if (!m_pGstPipeline) return false;
     if (gst_element_get_state ((GstElement*)m_pGstPipeline, NULL, NULL, -1) == GST_STATE_CHANGE_FAILURE ) return false;
     return true;
 }

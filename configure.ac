@@ -57,7 +57,7 @@ AC_ARG_ENABLE(host,
     host_name="osx"
 	host_cflags="-I/opt/local/include "
 	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa"
-    librequires='lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, gl, glew, freetype2, check'
+    librequires='glew, lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, freetype2, check'
   else
 	echo
 	echo "Error!"
