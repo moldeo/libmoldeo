@@ -275,7 +275,7 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer  
 {
     moGsGraph* pGsGraph;
     pad = NULL;
-    GstStructure* str;
+    GstStructure* str = NULL;
     GstBuffer* Gbuffer;
     GstCaps* caps = NULL;
     GstPadProbeInfo* Ginfo = (GstPadProbeInfo*) info;
@@ -283,15 +283,23 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer  
 
 #ifndef GSTVERSION
     Gbuffer = (GstBuffer*)buffer;
-    str = gst_caps_get_structure ( Gbuffer->caps, 0);
+    caps = Gbuffer->caps;
 #else
     Gbuffer = GST_PAD_PROBE_INFO_BUFFER ( Ginfo );
-    caps = gst_pad_get_current_caps(  (GstPad*)pad );
     Gpad = (GstPad*)pad;
-    caps = gst_pad_get_current_caps(  Gpad );
-    str = gst_caps_get_structure ( (caps), 0);
-    if (str==NULL) return FALSE;
+    if (Gpad)
+      caps = gst_pad_get_current_caps(  Gpad );
 #endif
+
+    if (caps)
+      str = gst_caps_get_structure ( (caps), 0);
+    else
+      return false;
+
+    if (str==NULL)
+     return FALSE;
+
+
     const gchar *sstr;
     const gchar *strname;
 
@@ -525,11 +533,11 @@ audiopadinconverter = gst_element_get_static_pad ( (GstElement*) pGsGraph->m_pAu
 #ifndef GSTVERSION
                     pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
 #else
-                    pGsGraph->cb_have_data_handler_id = gst_pad_add_probe ( srcAudio,
+                    /*pGsGraph->cb_have_data_handler_id = gst_pad_add_probe ( srcAudio,
                                                                             GST_PAD_PROBE_TYPE_BUFFER,
                                                                             (GstPadProbeCallback) cb_have_data,
                                                                             pGsGraph,
-                                                                           (GDestroyNotify) (cb_buffer_disconnected) );
+                                                                           (GDestroyNotify) (cb_buffer_disconnected) );*/
 #endif
                 }
 
@@ -1190,8 +1198,8 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
             AddCaptureDevice( CaptDev );
             MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added preferred device: " + CaptDev.GetLabelName() );
         }
-    
-    
+
+
     //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText(""), moText("webcam"), moText("/dev/video0") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("DV"), moText("DV IEEE 1394"), moText("-"), 0 ) );
@@ -2597,7 +2605,9 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioConverter3 );
            }
 
+/*
           m_pAudioEcho = gst_element_factory_make ("audioecho", "audioecho");
+
 
            if (m_pAudioEcho) {
             res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioEcho );
@@ -2610,6 +2620,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
             g_object_set ( (GstElement*)m_pAudioEcho, "delay", delay, NULL);
             g_object_set ( (GstElement*)m_pAudioEcho, "intensity", intensity, NULL);
            }
+*/
 
            m_pAudioConverter4 = gst_element_factory_make ("audioconvert", "audioconvert4");
 
@@ -2632,6 +2643,7 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
             link_result = gst_element_link_many( (GstElement*)m_pFileSource, (GstElement*)m_pDecoderBin, NULL );
 
             if (link_result) {
+                /*
                 if (m_pAudioConverter) link_result = gst_element_link_many(
                                                                            (GstElement*)m_pAudioConverter,
                                                                            (GstElement*)m_pAudioSpeed,
@@ -2644,13 +2656,25 @@ bool moGsGraph::BuildLiveSound( moText filename  ) {
                                                                            (GstElement*)m_pAudioSink,
                                                                            NULL
                                                                            );
+                */
+                if (m_pAudioConverter) link_result = gst_element_link_many(
+                                                                           (GstElement*)m_pAudioConverter,
+                                                                           (GstElement*)m_pAudioSpeed,
+                                                                           (GstElement*)m_pAudioConverter2,
+                                                                           (GstElement*)m_pAudioPanorama,
+                                                                           (GstElement*)m_pAudioConverter3,
+                                                                           (GstElement*)m_pAudioVolume,
+                                                                           (GstElement*)m_pAudioConverter4,
+                                                                           (GstElement*)m_pAudioSink,
+                                                                           NULL
+                                                                           );
                 //else link_result = gst_element_link_many( (GstElement*)m_pAudioSink, NULL );
 
                 if (link_result) {
 
                     CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PAUSED), true /*SYNCRUNASLI*/ );
 
-                    //WaitForFormatDefinition( 600 );
+                    //WaitForFormatDefinition( 1600 );
 
                     cout << "state gstreamer finish" << endl;
 

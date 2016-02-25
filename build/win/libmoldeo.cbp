@@ -160,6 +160,8 @@
 			<Add library="ftgl" />
 			<Add library="FreeImage" />
 			<Add library="gstreamer-1.0" />
+			<Add library="gstbase-1.0" />
+			<Add library="gstapp-1.0" />
 			<Add library="glib-2.0" />
 			<Add library="gobject-2.0" />
 			<Add library="wsock32" />
