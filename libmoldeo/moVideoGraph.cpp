@@ -36,6 +36,46 @@
 moDefineDynamicArray(moCaptureDevices)
 
 
+moCaptureDevice::moCaptureDevice() {
+    m_Name = moText("");
+    m_Description = moText("");
+    m_Path  = moText("");
+    m_LabelName = moText("");
+    m_DevicePort = 0;
+    m_bPresent = false;
+    m_bPreferred = false;
+    m_SourceWidth = m_SourceHeight = m_SourceBpp = m_SourceFlipH = m_SourceFlipV = 0;
+    m_VideoFormat.m_Width = 0;
+    m_VideoFormat.m_Height = 0;
+}
+
+moCaptureDevice::moCaptureDevice( const moText &p_name,
+                                 const moText &p_description,
+                                 const moText &p_path,
+                                 MOint p_deviceport,
+                                 MOint p_sourcewidth,
+                                 MOint p_sourceheight,
+                                 MOint p_bpp,
+                                 MOint p_fliph,
+                                 MOint p_flipv ) {
+  m_Name = p_name;
+  m_LabelName = p_name;
+  m_Description = p_description;
+  m_Path  = p_path;
+  m_DevicePort = p_deviceport;
+  m_bPresent = true;
+  m_bPreferred = false;
+  m_SourceWidth = p_sourcewidth;
+  m_SourceHeight = p_sourceheight;
+  m_SourceBpp = p_bpp;
+  m_SourceFlipH = p_fliph;
+  m_SourceFlipV = p_flipv;
+  m_VideoFormat.m_Width = 0;
+  m_VideoFormat.m_Height = 0;
+}
+
+
+
 moVideoGraph::moVideoGraph() {
 
 }

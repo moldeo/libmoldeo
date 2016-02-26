@@ -84,6 +84,13 @@ public:
     *   al archivo de mensajes de errores y al de mensajes registrados...
     */
     void Error( moText p_text );
+    
+    /// Anuncia y registra un llamado de atencion
+    /**
+     *   Anuncia un llamado de atencion apilandolo en la lista de mensajes y escribiendolo
+     *   al archivo de mensajes de errores y al de mensajes registrados...
+     */
+    void Warning( moText p_text );
 
     /// Anuncia un mensaje al usuario además de guardarlo en el log de texto
     /**

@@ -1740,42 +1740,42 @@ moValue::AddSubValue( const moText &strvalue, const moText &type ) {
 
 	} else if ( (moText)type== moText("NUM")) {
 
-		MOint tmp2;
+		MOint tmp2 = 0;
 		sscanf( moText(strvalue), "%i", &tmp2);
 		valuebase.SetInt( tmp2 );
 		valuebase.SetType( MO_VALUE_NUM );
 
 	} else if ( (moText)type== moText("INT")) {
 
-		MOint tmp2;
+		MOint tmp2 = 0;
 		sscanf( moText(strvalue), "%i", &tmp2);
 		valuebase.SetInt( tmp2 );
 		valuebase.SetType( MO_VALUE_NUM_INT );
 
 	} else if ( (moText)type== moText("CHAR")) {
 
-		MOchar tmp2;
+		MOchar tmp2 = 0;
 		sscanf( moText(strvalue), "%c", &tmp2);
 		valuebase.SetChar( tmp2 );
 		valuebase.SetType( MO_VALUE_NUM_CHAR );
 
 	} else if ( (moText)type== moText("LONG")) {
 
-		MOlong tmp2;
+		MOlong tmp2 = 0;
 		sscanf( moText(strvalue), "%li", &tmp2);
 		valuebase.SetLong( tmp2 );
 		valuebase.SetType( MO_VALUE_NUM_LONG );
 
 	} else if ( (moText)type== moText("FLOAT")) {
 
-		MOfloat tmp2;
+		MOfloat tmp2 = 0.0f;
 		sscanf( moText(strvalue), "%f", &tmp2);
 		valuebase.SetFloat( tmp2 );
 		valuebase.SetType( MO_VALUE_NUM_FLOAT );
 
 	} else if ( (moText)type== moText("DOUBLE")) {
 
-		MOdouble tmp2;
+		MOdouble tmp2 = 0.0;
 		sscanf( moText(strvalue), "%lf", &tmp2);
 		valuebase.SetDouble( tmp2 );
 		valuebase.SetType( MO_VALUE_NUM_DOUBLE );

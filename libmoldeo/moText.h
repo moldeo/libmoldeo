@@ -67,7 +67,9 @@ class moTextArray;
 /**
  * Operaciones y funciones para la manipulación de cadenas de caracteres.
  */
+#ifndef USE_MOTEXT0
 #define USE_MOTEXT0 1
+#endif
 #ifdef USE_MOTEXT0
 
 class LIBMOLDEO_API moText0
