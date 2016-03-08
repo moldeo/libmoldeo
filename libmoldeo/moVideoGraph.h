@@ -121,8 +121,11 @@ enum moAudioMode {
 *   enumeración de formatos de color
 */
 enum moColorMode {
-    YUV = 0,
-    RGB = 1
+    DEFAULT = 0,
+    YUV = 1,
+    RGB = 2,
+    I420 = 3,
+    YUY2 = 4
 };
 
 /**

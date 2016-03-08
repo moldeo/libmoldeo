@@ -1911,7 +1911,17 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
     labelname = p_capdev.GetLabelName();
 
     devicename = p_capdev.GetName();
-    ( p_capdev.GetVideoFormat().m_ColorMode==YUV ) ? colormode = moText("video/x-raw-yuv") : colormode = moText("video/x-raw-rgb");
+    switch( p_capdev.GetVideoFormat().m_ColorMode) {
+      case YUV:
+        colormode = moText("video/x-raw-yuv");
+        break;
+      case RGB:
+        colormode = moText("video/x-raw-rgb");
+        break;
+      default:
+        colormode = "";
+        break;
+    };
     p_sourcewidth = p_capdev.GetSourceWidth();
     p_sourceheight = p_capdev.GetSourceHeight();
     p_sourcebpp = p_capdev.GetSourceBpp();
@@ -2181,12 +2191,20 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                    "blue_mask",G_TYPE_INT, 255,
                    NULL), NULL);
 #else
-                  colormode = "video/x-raw";
-                  g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
-                   "format", G_TYPE_STRING, "I420",
-                   "width", G_TYPE_INT, p_sourcewidth,
-                   "height", G_TYPE_INT, p_sourceheight,
-                   NULL), NULL);
+//                  colormode = "video/x-raw";
+                  if (colormode=="") {
+                    g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
+                     "width", G_TYPE_INT, p_sourcewidth,
+                     "height", G_TYPE_INT, p_sourceheight,
+                     NULL), NULL);
+                  } else {
+                    g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
+                     //"format", G_TYPE_STRING, "I420",
+                     "format", G_TYPE_STRING, colormode,
+                     "width", G_TYPE_INT, p_sourcewidth,
+                     "height", G_TYPE_INT, p_sourceheight,
+                     NULL), NULL);
+                  }
 
 
 #endif
