@@ -337,32 +337,10 @@ class LIBMOLDEO_API moCaptureDevice {
 	public:
 
 		/// contructor
-		moCaptureDevice() {
-			m_Name = moText("");
-			m_Description = moText("");
-			m_Path  = moText("");
-			m_LabelName = moText("");
-			m_DevicePort = 0;
-			m_bPresent = false;
-			m_bPreferred = false;
-      m_SourceWidth = m_SourceHeight = m_SourceBpp = m_SourceFlipH = m_SourceFlipV = 0;
-		}
+		moCaptureDevice();
 
-        /// contructor
-		moCaptureDevice( const moText &p_name, const moText &p_description, const moText &p_path, MOint p_deviceport = 0, MOint p_sourcewidth = 0, MOint p_sourceheight = 0, MOint p_bpp = 0, MOint p_fliph=0, MOint p_flipv=0 ) {
-			m_Name = p_name;
-			m_LabelName = p_name;
-			m_Description = p_description;
-			m_Path  = p_path;
-			m_DevicePort = p_deviceport;
-			m_bPresent = true;
-			m_bPreferred = false;
-			m_SourceWidth = p_sourcewidth;
-			m_SourceHeight = p_sourceheight;
-			m_SourceBpp = p_bpp;
-      m_SourceFlipH = p_fliph;
-      m_SourceFlipV = p_flipv;
-		}
+    /// contructor
+		moCaptureDevice( const moText &p_name, const moText &p_description, const moText &p_path, MOint p_deviceport = 0, MOint p_sourcewidth = 0, MOint p_sourceheight = 0, MOint p_bpp = 0, MOint p_fliph=0, MOint p_flipv=0 );
 
 		///Copy constructor
 		moCaptureDevice( const moCaptureDevice &src ) {

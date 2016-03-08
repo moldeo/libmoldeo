@@ -79,9 +79,13 @@ void
 moDebug::Error( moText p_text ) {
   Lock();
   moText prefx_error = moText("Error! ");
-  cout << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
-  moErr << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
-  moLog << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+  //system("Color 04");
+  cout << prefx_error << p_text << endl;
+//cout << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+//moErr << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+  moErr << prefx_error << p_text << endl;
+  moLog << prefx_error << p_text << endl;
+  //system("Color 02");
   m_Debug.Push( prefx_error + p_text );
   Unlock();
 }
