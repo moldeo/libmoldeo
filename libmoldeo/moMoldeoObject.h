@@ -699,10 +699,12 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
     int __iscript;
 
-    private:
+    protected:
 
 
-        /** \defgroup luascript Funciones accesibles por scripting de LUA */
+        /** \defgroup luascript Funciones accesibles por scripting de LUA
+        \ingroup luascript
+        */
         /** @{ */
 
         /// Función de impresión de cadena de carácteres cómoda para la depuración
