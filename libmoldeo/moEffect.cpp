@@ -784,7 +784,7 @@ void moEffect::RegisterFunctions()
 
 int moEffect::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
 {
-    m_iMethodBase = 36;
+    m_iMethodBase = 37;
     switch ( iFunctionNumber - m_iMethodBase )
     {
         case 0:

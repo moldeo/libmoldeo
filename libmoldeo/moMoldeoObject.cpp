@@ -1249,42 +1249,43 @@ void moMoldeoObject::RegisterFunctions()
 	RegisterFunction("GetParamIndex");//4
 	RegisterFunction("GetCurrentValue");//5
 	RegisterFunction("SetCurrentValue");//6
+	RegisterFunction("GetValuesCount");//7
 
-	RegisterFunction("GetInletIndex");//7
-	RegisterFunction("GetInletData");//8
-	RegisterFunction("SetInletData");//9
+	RegisterFunction("GetInletIndex");//8
+	RegisterFunction("GetInletData");//9
+	RegisterFunction("SetInletData");//10
 
     ///for TUIO tracking
-    RegisterFunction("GetTuioSystem");//10
-    RegisterFunction("GetTuioCursorCount");//11
-    RegisterFunction("GetTuioCursor");//12
-    RegisterFunction("GetTuioObjectCount");//13
-    RegisterFunction("GetTuioObject");//14
+    RegisterFunction("GetTuioSystem");//11
+    RegisterFunction("GetTuioCursorCount");//12
+    RegisterFunction("GetTuioCursor");//13
+    RegisterFunction("GetTuioObjectCount");//14
+    RegisterFunction("GetTuioObject");//15
 
     ///for features tracking
 
     ///all values nvalids, nfeatures, barycenter, acceleration, velocity
-	RegisterFunction("GetTrackerSystemData"); //15
-	RegisterFunction("GetTrackerFeaturesCount"); //16
-	RegisterFunction("GetTrackerValidFeatures"); //17
-	RegisterFunction("GetTrackerFeature"); //18
-	RegisterFunction("GetTrackerVariance"); //19
-	RegisterFunction("GetTrackerBarycenter"); //20
-	RegisterFunction("GetTrackerAcceleration"); //21
-	RegisterFunction("GetTrackerVelocity"); //22
-	RegisterFunction("GetTrackerZone"); //23
+	RegisterFunction("GetTrackerSystemData"); //16
+	RegisterFunction("GetTrackerFeaturesCount"); //17
+	RegisterFunction("GetTrackerValidFeatures"); //18
+	RegisterFunction("GetTrackerFeature"); //19
+	RegisterFunction("GetTrackerVariance"); //20
+	RegisterFunction("GetTrackerBarycenter"); //21
+	RegisterFunction("GetTrackerAcceleration"); //22
+	RegisterFunction("GetTrackerVelocity"); //23
+	RegisterFunction("GetTrackerZone"); //24
 
-	RegisterFunction("GetTrackerHistory"); //24
-	RegisterFunction("StartTrackerHistory"); //25
-	RegisterFunction("PauseTrackerHistory"); //26
-	RegisterFunction("ContinueTrackerHistory"); //27
-	RegisterFunction("StopTrackerHistory"); //28
-	RegisterFunction("GetHistoryRecord"); //29
-	RegisterFunction("GetHistoryBarycenter"); //30
-	RegisterFunction("GetHistoryVariance"); //31
-	RegisterFunction("GetHistoryBounding"); //32
-	RegisterFunction("GetHistoryAverage"); //33
-	RegisterFunction("GetHistoryMinMax"); //34
+	RegisterFunction("GetTrackerHistory"); //25
+	RegisterFunction("StartTrackerHistory"); //26
+	RegisterFunction("PauseTrackerHistory"); //27
+	RegisterFunction("ContinueTrackerHistory"); //28
+	RegisterFunction("StopTrackerHistory"); //29
+	RegisterFunction("GetHistoryRecord"); //30
+	RegisterFunction("GetHistoryBarycenter"); //31
+	RegisterFunction("GetHistoryVariance"); //32
+	RegisterFunction("GetHistoryBounding"); //33
+	RegisterFunction("GetHistoryAverage"); //34
+	RegisterFunction("GetHistoryMinMax"); //35
 
 }
 
@@ -1332,108 +1333,111 @@ int moMoldeoObject::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber) 
         case 6:
             ResetScriptCalling();
             return luaSetCurrentValue(vm);//6
-
-
-
         case 7:
             ResetScriptCalling();
-            return luaGetInletIndex(vm);//7
+            return luaGetValuesCount(vm);//7
+
+
+
         case 8:
             ResetScriptCalling();
-            return luaGetInletData(vm);//8
+            return luaGetInletIndex(vm);//8
         case 9:
             ResetScriptCalling();
-            return luaSetInletData(vm);//9
+            return luaGetInletData(vm);//9
+        case 10:
+            ResetScriptCalling();
+            return luaSetInletData(vm);//10
 
 #ifdef USE_TUIO
         ///functions to access Inlets Data
         ///TUIO
         ///Tracker, etc...
-        case 10:
-            ResetScriptCalling();
-            return luaGetTuioSystem(vm);//10
         case 11:
             ResetScriptCalling();
-            return  luaGetTuioCursorCount(vm);//11
+            return luaGetTuioSystem(vm);//10
         case 12:
             ResetScriptCalling();
-            return  luaGetTuioCursor(vm);//12
+            return  luaGetTuioCursorCount(vm);//11
         case 13:
             ResetScriptCalling();
-            return  luaGetTuioObjectCount(vm);//13
+            return  luaGetTuioCursor(vm);//12
         case 14:
+            ResetScriptCalling();
+            return  luaGetTuioObjectCount(vm);//13
+        case 15:
             ResetScriptCalling();
             return  luaGetTuioObject(vm);//14
 #else
-        case 10:
         case 11:
         case 12:
         case 13:
         case 14:
+        case 15:
             ResetScriptCalling();
             return  0;
 #endif
 
-        case 15:
-            ResetScriptCalling();
-            return luaGetTrackerSystemData(vm);//15
         case 16:
             ResetScriptCalling();
-            return luaGetTrackerFeaturesCount(vm);//16
+            return luaGetTrackerSystemData(vm);//15
         case 17:
             ResetScriptCalling();
-            return luaGetTrackerValidFeatures(vm);//17
+            return luaGetTrackerFeaturesCount(vm);//16
         case 18:
             ResetScriptCalling();
-            return luaGetTrackerFeature(vm);//18
+            return luaGetTrackerValidFeatures(vm);//17
         case 19:
             ResetScriptCalling();
-            return luaGetTrackerVariance(vm);//19
+            return luaGetTrackerFeature(vm);//18
         case 20:
             ResetScriptCalling();
-            return luaGetTrackerBarycenter(vm);//20
+            return luaGetTrackerVariance(vm);//19
         case 21:
             ResetScriptCalling();
-            return luaGetTrackerAcceleration(vm);//21
+            return luaGetTrackerBarycenter(vm);//20
         case 22:
             ResetScriptCalling();
-            return luaGetTrackerVelocity(vm);//22
+            return luaGetTrackerAcceleration(vm);//21
         case 23:
+            ResetScriptCalling();
+            return luaGetTrackerVelocity(vm);//22
+        case 24:
             ResetScriptCalling();
             return luaGetTrackerZone(vm);//23
 
-        case 24:
-            ResetScriptCalling();
-            return luaGetTrackerHistory(vm);//24
         case 25:
             ResetScriptCalling();
-            return luaStartTrackerHistory(vm);//25
+            return luaGetTrackerHistory(vm);//24
         case 26:
             ResetScriptCalling();
-            return luaPauseTrackerHistory(vm);//26
+            return luaStartTrackerHistory(vm);//25
         case 27:
             ResetScriptCalling();
-            return luaContinueTrackerHistory(vm);//27
+            return luaPauseTrackerHistory(vm);//26
         case 28:
+            ResetScriptCalling();
+            return luaContinueTrackerHistory(vm);//27
+        case 29:
             ResetScriptCalling();
             return luaStopTrackerHistory(vm);//28
 
-        case 29:
-            ResetScriptCalling();
-            return luaGetHistoryRecord(vm);//29
         case 30:
             ResetScriptCalling();
-            return luaGetHistoryBarycenter(vm);//30
+            return luaGetHistoryRecord(vm);//29
         case 31:
             ResetScriptCalling();
-            return luaGetHistoryVariance(vm);//31
+            return luaGetHistoryBarycenter(vm);//30
         case 32:
             ResetScriptCalling();
-            return luaGetHistoryBounding(vm);//32
+            return luaGetHistoryVariance(vm);//31
         case 33:
             ResetScriptCalling();
-            return luaGetHistoryAverage(vm);//33
+            return luaGetHistoryBounding(vm);//32
         case 34:
+            ResetScriptCalling();
+            return luaGetHistoryAverage(vm);//33
+        case 35:
             ResetScriptCalling();
             return luaGetHistoryMinMax(vm);//34
         default:
@@ -1575,7 +1579,22 @@ int moMoldeoObject::luaGetCurrentValue(moLuaVirtualMachine& vm) {
 }
 
 
+int moMoldeoObject::luaGetValuesCount(moLuaVirtualMachine& vm) {
 
+    lua_State *state = (lua_State *) vm;
+
+    MOint paramid = (MOint) lua_tonumber (state, 1);
+
+    if (GetConfig()) {
+        int valuecount = GetConfig()->GetParam( paramid ).GetValuesCount();
+        lua_pushnumber(state, (lua_Number) valuecount );
+        return 1;
+    } else {
+        MODebug2->Error( moText(" in MoldeoObject script: GetValuesCount : config not founded : id:")+(moText)GetLabelName() );
+    }
+
+    return 0;
+}
 
 
 
