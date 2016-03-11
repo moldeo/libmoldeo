@@ -57,7 +57,7 @@ AC_ARG_ENABLE(host,
     host_name="osx"
 	host_cflags="-I/opt/local/include "
 	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa"
-    librequires='glew, lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, freetype2, check'
+    librequires='glew, lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, freetype2, check'
   else
 	echo
 	echo "Error!"
@@ -108,14 +108,14 @@ GSTREAMER_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GST_VERSION_RELEASE
 GSTPLUGINS_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GSTPLUG_VERSION_RELEASE
 GST_MAJORMINOR=$GST_VERSION_MAJOR.$GST_VERSION_MINOR
 
-PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
-  HAVE_GSTREAMER=yes)
-AC_SUBST(GST_CFLAGS)
-AC_SUBST(GST_LIBS)
+#PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
+#  HAVE_GSTREAMER=yes)
+AC_SUBST(GST_CFLAGS,"-I/Library/Frameworks/GStreamer.framework/Versions/1.0/Headers")
+AC_SUBST(GST_LIBS,"-framework GStreamer")
 
-PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-app-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
-AC_SUBST(GST_INTERFACES_CFLAGS)
-AC_SUBST(GST_INTERFACES_LIBS)
+#PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-app-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
+#AC_SUBST(GST_INTERFACES_CFLAGS)
+#AC_SUBST(GST_INTERFACES_LIBS)
 
 dnl check for truetype
 AC_CHECK_FT2
