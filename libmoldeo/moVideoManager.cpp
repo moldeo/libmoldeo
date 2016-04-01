@@ -1133,10 +1133,15 @@ moCamera* moVideoManager::GetCamera( int cam_idx ) {
 moCamera*
 moVideoManager::CreateCamera( const moCaptureDevice& p_CapDev ) {
 
-  MODebug2->Message("moVideoManager::CreateCamera > " + p_CapDev.GetLabelName()+" for device:"+p_CapDev.GetName() );
+  MODebug2->Message("moVideoManager::CreateCamera > " + p_CapDev.GetLabelName()+" for device:"+p_CapDev.GetName()+
+			" (Width)x(Height):" + IntToStr(p_CapDev.GetSourceWidth())+"x" + IntToStr(p_CapDev.GetSourceHeight()) );
+
+ moCaptureDevice cap=p_CapDev;
+ //cap.m_SourceWidth = 640;
+ //cap.m_SourceHeight = 480;
 
 /// create
-  moLiveSystem* pLS = new moLiveSystem(p_CapDev);
+  moLiveSystem* pLS = new moLiveSystem(cap);
   moTextureManager* TMan = m_pResourceManager->GetTextureMan();
 
   if (!pLS) return NULL;
@@ -1229,6 +1234,7 @@ moVideoManager::GetCameraByName( const moText& camera, bool load, moCaptureDevic
             ||
             ( camera=="default" && c>=0 && Cam->GetVideoGraph() )
            ) {
+MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, returnin:"+camera);
           return Cam;
         }
       }
@@ -1258,9 +1264,16 @@ moVideoManager::GetCameraByName( const moText& camera, bool load, moCaptureDevic
           }
 
           // apply custom capture device values from customCD
-          if ( customCD.GetLabelName()!=""
-              && customCD.GetVideoFormat().m_Width>0
-              && customCD.GetVideoFormat().m_Height>0 ) {
+          MODebug2->Message("moVideoManager::GetCameraByName > customCD: WxH:"+IntToStr(customCD.m_SourceWidth) + "x" + IntToStr(customCD.m_SourceHeight));
+
+          if ( /*customCD.GetLabelName()!=""
+              && */(customCD.GetVideoFormat().m_Width>0
+              && customCD.GetVideoFormat().m_Height>0)
+              || (
+              customCD.m_SourceWidth>0
+              &&
+              customCD.m_SourceHeight>0
+              ) ) {
             newCD = customCD;
             newCD.SetName( m_CapDev.GetName() );
             newCD.SetLabelName( m_CapDev.GetLabelName() );

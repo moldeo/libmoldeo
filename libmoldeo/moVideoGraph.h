@@ -463,7 +463,7 @@ class LIBMOLDEO_API moCaptureDevice {
     }
 
 
-	private:
+	public:
 		bool			m_bPresent;///Presencia del dispositivo
 		bool      m_bPreferred;///Dispositivo preferido siempre se dan de alta cuando están presentes.
 		moText			m_Name;///Nombre del dispositivo
