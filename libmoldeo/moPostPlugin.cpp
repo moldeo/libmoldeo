@@ -152,13 +152,13 @@ LIBMOLDEO_API moPostEffect* moNewPostEffect(moText effect_name, moPostPluginsArr
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/posteffects/") + (moText)effect_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/posteffects/") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/posteffects/libmoldeo_") + (moText)effect_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/posteffects/libmoldeo_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -202,13 +202,13 @@ LIBMOLDEO_API bool moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArr
     if(!stricmp(posteffect->GetName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/posteffects/") + moText(posteffect->GetName());
+    complete_name = moText(moDataManager::GetModulesDir()+ "/posteffects/") + moText(posteffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/posteffects/libmoldeo_") + moText(posteffect->GetName());
+    complete_name = moText(moDataManager::GetModulesDir()+ "/posteffects/libmoldeo_") + moText(posteffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
