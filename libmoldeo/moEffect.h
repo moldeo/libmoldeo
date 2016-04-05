@@ -144,6 +144,7 @@ public:
 
     //virtual void SetNombreConfig(moText texto);
 
+    void SetColor( const moColorRGBA& color_rgba, double alpha, moEffectState& pstate );
     void SetColor( moValue& color, moValue& alpha, moEffectState& pstate  );
     void SetColor( moParam& color, moParam& alpha, moEffectState& pstate );
     void SetBlending( moBlendingModes blending );

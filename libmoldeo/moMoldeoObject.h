@@ -720,12 +720,19 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
         /// \if spanish Devuelve el índice del parámetro \endif \if english Get the parameter index \endif
         int luaGetParamIndex(moLuaVirtualMachine& vm);
-        /// \if spanish Devuelve el índice del valor \endif \if english Get the value index \endif
-        int luaGetCurrentValue(moLuaVirtualMachine& vm);
-        int luaSetCurrentValue(moLuaVirtualMachine& vm);
 
+        /// \if spanish Devuelve el índice del valor actual de un parámetro.  \endif \if english Get the actual value index of a parameter. \endif
+        int luaGetCurrentValue(moLuaVirtualMachine& vm);
+        /// \if spanish Fija el índice del valor actual de un parámetro. \endif \if english Set the actual value index of a parameter. \endif
+        int luaSetCurrentValue(moLuaVirtualMachine& vm);
+        /// \if spanish Devuelve la cantidad de valores de un parámetro. \endif \if english Get the number of values of a parameter. \endif
+        int luaGetValuesCount(moLuaVirtualMachine& vm);
+
+        /// \if spanish Devuelve el índice del inlet (o parámetro). Por ejemplo: this:luaGetInletIndex("alpha").  \endif \if english Get the inlet index. \endif
         int luaGetInletIndex(moLuaVirtualMachine& vm);
+        /// \if spanish Devuelve el dato según el índice del inlet.  \endif \if english Get the data from an inlet (or parameter). \endif
         int luaGetInletData(moLuaVirtualMachine& vm);
+        /// \if spanish Fija el dato de un inlet (o parametro) dado el índice del inlet.  \endif \if english Set the inlet (or parameter) data. \endif
         int luaSetInletData(moLuaVirtualMachine& vm);
 
 #ifdef USE_TUIO

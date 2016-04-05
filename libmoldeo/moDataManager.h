@@ -406,6 +406,12 @@ class LIBMOLDEO_API moDataManager : public moResource
 
     int ReloadPluginDefinitions( moText plugindir = "", moMoldeoObjectType mobjecttype=MO_OBJECT_UNDEFINED );
 
+    static const moText& GetDataDir();
+    static const moText& GetModulesDir();
+
+    static moText m_DataDir; /** data dir*/
+    static moText m_ModulesDir;/** plugin dir */
+
 	protected:
 
 		moDataSessionConfig*	m_pDataSessionConfig;

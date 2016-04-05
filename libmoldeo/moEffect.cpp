@@ -408,14 +408,16 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
 
 }
 
-void moEffect::SetColor( moValue& color, moValue& alpha, moEffectState& pstate ) {
+void moEffect::SetColor( const moColorRGBA& color_rgba, double alpha, moEffectState& pstate ) {
 
     m_Effect3D.m_Material.m_Color = moColor(
-            color[MO_RED].Eval() * pstate.tintr,
-            color[MO_GREEN].Eval() * pstate.tintg,
-            color[MO_BLUE].Eval() * pstate.tintb
+            color_rgba.X() * pstate.tintr,
+            color_rgba.Y() * pstate.tintg,
+            color_rgba.Z() * pstate.tintb
             );
-    m_Effect3D.m_Material.m_fOpacity = color[MO_ALPHA].Eval() * alpha[0].Eval() * pstate.alpha;
+
+    m_Effect3D.m_Material.m_fOpacity = color_rgba.W() * alpha * pstate.alpha;
+
 #ifndef OPENGLESV2
  	glColor4f(  m_Effect3D.m_Material.m_Color.X(),
                 m_Effect3D.m_Material.m_Color.Y(),
@@ -424,10 +426,32 @@ void moEffect::SetColor( moValue& color, moValue& alpha, moEffectState& pstate )
 #endif
 }
 
+void moEffect::SetColor( moValue& color, moValue& alpha, moEffectState& pstate ) {
+  moColorRGBA color_rgba = moColorRGBA(
+                                   color[MO_RED].Eval(),
+                                   color[MO_GREEN].Eval(),
+                                   color[MO_BLUE].Eval(),
+                                   color[MO_ALPHA].Eval()
+                                    );
+  double valpha = alpha[0].Eval();
+
+  SetColor( color_rgba, valpha, pstate );
+
+}
+
 void moEffect::SetColor( moParam& color, moParam& alpha, moEffectState& pstate ) {
 
-    moValue& Color( color[MO_SELECTED] );
-    SetColor( Color, alpha[MO_SELECTED], pstate );
+    //moValue& Color( color[MO_SELECTED] );
+    //SetColor( Color, alpha[MO_SELECTED], pstate );
+
+    moColorRGBA color_rgba = moColorRGBA(
+                             color[MO_SELECTED][MO_RED].Eval(),
+                             color[MO_SELECTED][MO_GREEN].Eval(),
+                             color[MO_SELECTED][MO_BLUE].Eval(),
+                             color[MO_SELECTED][MO_ALPHA].Eval()
+                              );
+    double valpha = alpha.GetData()->Eval();
+    SetColor( color_rgba, valpha, pstate );
 }
 
 void moEffect::SetPolygonMode( moPolygonModes polygonmode ) {
@@ -784,7 +808,7 @@ void moEffect::RegisterFunctions()
 
 int moEffect::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
 {
-    m_iMethodBase = 36;
+    m_iMethodBase = 37;
     switch ( iFunctionNumber - m_iMethodBase )
     {
         case 0:

@@ -165,7 +165,7 @@ public:
 		} else return m_NULL;
 	}
 
-	MOuint Count() {
+	MOuint Count() const {
 		return n;
 	}
 

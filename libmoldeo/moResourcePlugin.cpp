@@ -35,6 +35,7 @@
 #include <iostream>
 using namespace std;
 
+#include "moDataManager.h"
 #include "moDebugManager.h"
 
 
@@ -198,13 +199,13 @@ LIBMOLDEO_API moResource* moNewResource(moText resource_name, moResourcePluginsA
     if(!stricmp(resource_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/resources/") + (moText)resource_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/resources/") + (moText)resource_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/resources/libmoldeo_") + (moText)resource_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/resources/libmoldeo_") + (moText)resource_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -252,13 +253,13 @@ LIBMOLDEO_API bool moDeleteResource(moResource *Resource, moResourcePluginsArray
     //if(!stricmp(Resource->GetResourceName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/resources/") + moText(Resource->GetName());
+    complete_name = moText(moDataManager::GetModulesDir()+ "/resources/") + moText(Resource->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name =  moText(MODULESDIR "/resources/libmoldeo_") +  moText(Resource->GetName());
+    complete_name =  moText(moDataManager::GetModulesDir()+ "/resources/libmoldeo_") +  moText(Resource->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

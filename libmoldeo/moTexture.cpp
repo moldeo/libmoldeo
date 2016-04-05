@@ -390,6 +390,16 @@ MOboolean moTexture::SetBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_
         glTexSubImage2D(m_param.target, 0, 0, 0, p_width, p_height, p_format, p_type, p_buffer);
     glBindTexture(m_param.target, 0);
 
+#ifdef OPENGLESV2
+//TODO: in OpenGL ES V2 GPU, we must save the last buffer data, so we dont need to use glGetTexImage, to fetch the texture pixels
+if (m_pBufferData==NULL) {
+    ResetBufferData( true, 3 );
+}
+if (m_pBufferData) {
+    //copy buffer
+    memccpy( m_pBufferData, p_buffer, 1, p_width*p_height  );
+}
+#endif
 	//if (m_gl != NULL) return !m_gl->CheckErrors("copying buffer to texture");
 	//else return true;
 
@@ -421,6 +431,8 @@ p_format!=GL_RGB && p_format!=GL_RGBA ) {
 	try {
 #ifndef OPENGLESV2
     glGetTexImage( m_param.target, 0, p_format, p_type, p_buffer);
+#else
+    return m_pBufferData;
 #endif
 	} catch(...) {
     MODebug2->Error("moTexture::GetBuffer > exception getting texture buffer. p_buffer: " + IntToStr((MOlong)p_buffer));
