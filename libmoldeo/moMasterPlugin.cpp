@@ -194,13 +194,13 @@ LIBMOLDEO_API moMasterEffect* moNewMasterEffect(moText effect_name, moMasterPlug
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/mastereffects/") + (moText)effect_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/mastereffects/") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/mastereffects/libmoldeo_") + (moText)effect_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/mastereffects/libmoldeo_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
@@ -243,13 +243,13 @@ LIBMOLDEO_API bool moDeleteMasterEffect(moMasterEffect *mastereffect, moMasterPl
     if( mastereffect->GetName() == "" ) return false;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/mastereffects/") + moText(mastereffect->GetName());
+    complete_name = moText(moDataManager::GetModulesDir()+ "/mastereffects/") + moText(mastereffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
     complete_name += moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/mastereffects/libmoldeo_") + moText(mastereffect->GetName());
+    complete_name = moText(moDataManager::GetModulesDir()+ "/mastereffects/libmoldeo_") + moText(mastereffect->GetName());
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif

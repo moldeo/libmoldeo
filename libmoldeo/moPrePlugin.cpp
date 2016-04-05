@@ -155,13 +155,13 @@ LIBMOLDEO_API moPreEffect* moNewPreEffect(moText effect_name, moPrePluginsArray 
     if(!stricmp(effect_name, "nil")) return NULL;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/preeffects/") + (moText)effect_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/preeffects/") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif
     complete_name +=  moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/preeffects/libmoldeo_") + (moText)effect_name;
+    complete_name = moText(moDataManager::GetModulesDir()+ "/preeffects/libmoldeo_") + (moText)effect_name;
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif
@@ -204,13 +204,13 @@ LIBMOLDEO_API bool moDeletePreEffect(moPreEffect *preeffect, moPrePluginsArray &
     if(!stricmp(preeffect->GetName(), "")) return false;
 
     #if defined(_WIN32)
-    complete_name = moText(MODULESDIR "/preeffects/") + moText(preeffect->GetName());
+    complete_name = moText(moDataManager::GetModulesDir()+ "/preeffects/") + moText(preeffect->GetName());
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif
     complete_name +=  moText(".dll");
     #else
-    complete_name = moText(MODULESDIR "/preeffects/libmoldeo_") + moText(preeffect->GetName());
+    complete_name = moText(moDataManager::GetModulesDir()+ "/preeffects/libmoldeo_") + moText(preeffect->GetName());
 		#ifdef _DEBUG
 		complete_name+=  moText("_d");
 		#endif

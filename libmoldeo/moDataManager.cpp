@@ -686,7 +686,7 @@ moDataSessionConfig::moDataSessionConfig(   moText p_apppath,
                                             long p_Address ) {
   m_AppPath = p_apppath;
 	m_DataPath = p_datapath;
-	m_PluginsPath = MODULESDIR;
+	m_PluginsPath = moDataManager::GetModulesDir();
 
 	m_ConsoleConfigName = p_consoleconfig;
 	m_SessionFileName = p_SessionFileName;
@@ -739,7 +739,7 @@ moDataSessionConfig::moDataSessionConfig(   moText p_apppath,
 	///check if DATADIR exists
 	/// a) in linux: just take the datadir
 	/// b) in windows: it depends
-	m_AppDataPath = DATADIR;
+	m_AppDataPath = moDataManager::GetDataDir();
 
 	if ( m_AppDataPath == moText("../../data") ) {
 
@@ -760,7 +760,7 @@ moDataSessionConfig::moDataSessionConfig(   moText p_apppath,
       moDebugManager::Message( m_AppDataPath + moText(" doesn't exists > adding absolute path: ") + m_AppDataPath );
       #else
       moDebugManager::Error( moText(" moDataSessionConfig() > App Data Path doesn't exists: ")  + m_AppDataPath );
-      moDebugManager::Error( moText(" please check libmoldeo DATADIR settings (configure.ac) > DATADIR is: ")  + DATADIR );
+      moDebugManager::Error( moText(" please check libmoldeo DATADIR settings (configure.ac) > DATADIR is: ")  + moDataManager::GetDataDir() );
       #endif
     }
 
@@ -839,7 +839,7 @@ moDataManager::~moDataManager() {
 }
 
 MOboolean moDataManager::Init() {
-	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( moText(""), moText(DATADIR), moText(DATADIR "/console.mol") );
+	if (!m_pDataSessionConfig) m_pDataSessionConfig = new moDataSessionConfig( moText(""), moDataManager::GetDataDir(), moText(moDataManager::GetDataDir()+ "/console.mol") );
     if (!m_pDataSession) {
         m_pDataSession = new moDataSession();
         if (m_pDataSession)
@@ -980,6 +980,17 @@ moDataManager::ReloadPluginDefinitions( moText plugindir, moMoldeoObjectType mob
 
 
   return 0;
+}
+
+moText moDataManager::m_DataDir = DATADIR;
+moText moDataManager::m_ModulesDir = MODULESDIR;
+
+const moText& moDataManager::GetDataDir() {
+  return m_DataDir;
+}
+
+const moText& moDataManager::GetModulesDir() {
+  return m_ModulesDir;
 }
 
 
