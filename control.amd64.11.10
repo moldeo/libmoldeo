@@ -1,7 +1,7 @@
 Source: libmoldeo
 Priority: extra
-Maintainer: patala <fabricio.costa@moldeointeractive.com.ar>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Maintainer: Moldeo Interactive <info@moldeointeractive.com.ar>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, libmuparser-dev, liblua5.1-0-dev, libtinyxml-dev, libsdl1.2-dev, libglew-dev, freeglut3-dev, libgle3-dev, ftgl-dev, libfreeimage-dev, libalut-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libboost-dev, libboost-filesystem-dev, libboost-thread-dev,  libboost-system-dev, libasio-dev, autoconf-archive, check
 Standards-Version: 3.9.2
 Section: libs
 Homepage: http:\\www.moldeo.org
