@@ -2,6 +2,8 @@
 
 DIE=0
 
+./autogen.sh --prefix=/usr
+
 echo "deb directory..."
 (mkdir deb ) > /dev/null || {
 	echo "cleaning..."
@@ -59,35 +61,13 @@ echo "extracting..."
   exit 1
 }
 
+cd deb/libmoldeo-*
+dh_make -l -e info@moldeointeractive.com.ar -p libmoldeo
+
+gedit ../../control.amd64.11.10 debian/control ../../libmoldeo1.install.amd64 debian/libmoldeo.install ../../libmoldeo1.dirs.amd64 debian/libmoldeo.dirs ../../libmoldeo-dev.dirs.amd64 debian/libmoldeo-dev.dirs ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install debian/changelog
 
 echo " 
-Now execute in deb folder for Ubuntu 10.10:
  cd deb/libmoldeo-*
- dh_make -l -e info@moldeointeractive.com.ar
- cp ../../control.amd64 debian/control
- cp ../../rules.amd64 debian/rules
- cp ../../libmoldeo1.install.amd64 debian/libmoldeo.install
- cp ../../libmoldeo1.dirs.amd64 debian/libmoldeo.dirs
- cp ../../libmoldeo-dev.dirs.amd64 debian/libmoldeo-dev.dirs
- cp ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install
- vi debian/changelog
- dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
-
-Now execute in deb folder for Ubuntu 11.10:
- cd deb/libmoldeo-*
- dh_make -l -e info@moldeointeractive.com.ar
- cp ../../control.amd64.11.10 debian/control
- cp ../../libmoldeo1.install.amd64 debian/libmoldeo1.install
- cp ../../libmoldeo1.dirs.amd64 debian/libmoldeo1.dirs
- cp ../../libmoldeo-dev.dirs.amd64 debian/libmoldeo-dev.dirs
- cp ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install
- gedit debian/changelog
- dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
-
-Now execute in deb folder for Ubuntu 12.10:
- cd deb/libmoldeo-*
- dh_make -l -e info@moldeointeractive.com.ar
- gedit ../../control.amd64.11.10 debian/control ../../libmoldeo1.install.amd64 debian/libmoldeo.install ../../libmoldeo1.dirs.amd64 debian/libmoldeo.dirs ../../libmoldeo-dev.dirs.amd64 debian/libmoldeo-dev.dirs ../../libmoldeo-dev.install.amd64 debian/libmoldeo-dev.install debian/changelog
  dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
 
 
