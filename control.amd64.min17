@@ -1,7 +1,7 @@
 Source: libmoldeo
 Priority: optional
 Maintainer: Moldeo Interactive <info@moldeointeractive.com.ar>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev, autotools-dev, libmuparser-dev, liblua5.1-0-dev, libtinyxml-dev, libsdl1.2-dev, libglew-dev, freeglut3-dev, libgle3-dev, ftgl-dev, libfreeimage-dev, libalut-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libboost1.55-dev, libboost-filesystem1.55-dev, libboost-thread1.55-dev,  libboost-system1.55-dev, autoconf-archive, check
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, autotools-dev, libmuparser-dev, liblua5.1-0-dev, libtinyxml-dev, libsdl1.2-dev, libglew-dev, freeglut3-dev, libgle3-dev, ftgl-dev, libfreeimage-dev, libalut-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libboost-dev, libboost-filesystem-dev, libboost-thread-dev,  libboost-system-dev, autoconf-archive, check
 Standards-Version: 3.9.4
 Section: libs
 Homepage: http:\\www.moldeo.org
@@ -16,7 +16,7 @@ Description: Moldeo Core Library, development files
 Package: libmoldeo
 Section: libs
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}, liblua5.1-0-dev, libglew1.10, libsdl1.2debian, libfreeimage3, libalut0, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, libmuparser2, libboost1.55-dev, libboost-filesystem1.55-dev, libboost-system1.55-dev, libboost-thread1.55-dev, libtinyxml-dev 
+Depends: ${shlibs:Depends}, ${misc:Depends}, liblua5.1-0-dev, libglew1.10, libsdl1.2debian, libfreeimage3, libalut0, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, libmuparser2, libboost-dev, libboost-filesystem-dev, libboost-system-dev, libboost-thread-dev, libtinyxml-dev 
 Description: Moldeo Core Library
  Moldeo is a multimedia interactive framework based on C++, OpenGL, Gstreamer, Lua, Freeimage, muparser
 
