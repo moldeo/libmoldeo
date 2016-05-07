@@ -1,0 +1,22 @@
+Source: libmoldeo
+Priority: extra
+Maintainer: Fabricio Costa <fabricio.costa@moldeointeractive.com.ar>
+Build-Depends: debhelper (>= 7), autotools-dev, libmuparser-dev, liblua5.1-0-dev, libsdl1.2-dev, libglew1.5-dev, freeglut3-dev, libgle3-dev, libftgl-dev, libfreeimage-dev, libalut-dev, nvidia-cg-toolkit, libgstreamer0.10-dev, check, libboost-dev, libboost-filesystem-dev, libboost-thread-dev, libboost-system-dev, libasio-dev, autoconf, autoconf-archive, libtinyxml-dev
+Standards-Version: 3.8.1
+Section: libs
+Homepage: http:\\www.moldeo.org
+
+Package: libmoldeo-dev
+Section: libdevel
+Architecture: amd64
+Depends: libmoldeo (= ${binary:Version})
+Description: Moldeo Core Library Development Package
+ Moldeo is a multimedia interactive framework based on C++, OpenGL, Gstreamer and wxWidgets.
+
+Package: libmoldeo
+Section: libs
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Moldeo Core Library
+ Moldeo is a multimedia interactive framework based on C++, OpenGL, Gstreamer and wxWidgets.
+
