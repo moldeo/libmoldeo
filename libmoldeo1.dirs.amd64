@@ -1,5 +1,6 @@
 usr/lib
-usr/share
 usr/share/moldeo
-usr/share/moldeo/icons
-usr/share/moldeo/fonts
+usr/share/moldeo/data
+usr/share/moldeo/data/icons
+usr/share/moldeo/data/fonts
+usr/share/moldeo/data/shaders
