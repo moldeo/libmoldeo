@@ -107,8 +107,8 @@ AC_ARG_ENABLE(host,
 	OPENGLESV2='#define OPENGLESV2 1'
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
-	host_cflags="-I/opt/local/include "
-	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa"
+	host_cflags="-I/opt/local/include -I/System/Library/Frameworks/CoreFoundation.framework/Versions/A/Headers"
+	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa -framework CoreFoundation"
     librequires='glew, lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, freetype2, check'
   else
 	echo
