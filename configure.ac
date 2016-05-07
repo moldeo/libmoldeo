@@ -12,6 +12,14 @@ AC_C_CONST
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 
+dnl Set install paths.
+if test "x$prefix" = "xNONE" ; then
+  prefix="/usr/local"
+fi
+if test "x$exec_prefix" = "xNONE" ; then
+  exec_prefix=$prefix
+fi
+
 case "$host" in
         *-*-mingw*|*-*-cygwin*)
                 AC_DEFINE(PLATFORM_WIN32, 1, [Platform is Win32])
@@ -43,6 +51,7 @@ case "$host" in
                 ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
                 ARCH_STRING="X86-64"
                 with_boost_libdir="/usr/lib/x86_64-linux-gnu"
+                libdir=$prefix"/lib"
                 ;;
         ppc-* | powerpc-*)
 		AC_MSG_WARN([HI THERE!])

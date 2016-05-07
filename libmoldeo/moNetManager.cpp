@@ -38,7 +38,7 @@ moDefineDynamicArray( moNetConnections )
 #include <boost/bind.hpp>
 
 #ifndef MO_MACOSX
-#include "asio.hpp"
+#include <boost/asio.hpp>
 #else
 #include <boost/asio.hpp>
 #endif

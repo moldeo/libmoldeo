@@ -2,6 +2,8 @@
 
 DIE=0
 
+./autogen.sh --prefix=/usr
+
 echo "deb directory..."
 (mkdir deb ) > /dev/null || {
 	echo "cleaning..."
