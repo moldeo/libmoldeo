@@ -69,9 +69,6 @@ gedit ../../control.amd64.11.10 debian/control ../../libmoldeo1.install.amd64 de
 echo " 
  cd deb/libmoldeo-*
  dpkg-buildpackage -us -uc -rfakeroot 2>&1 | tee ../../buildpkg_logs.txt
-
-
-
 "
 
 
