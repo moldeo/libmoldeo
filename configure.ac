@@ -6,6 +6,15 @@ AM_CONFIG_HEADER(config.h)
 
 AC_LIBTOOL_CONFIG
 
+AC_PROG_CC
+AC_PROG_CC_STDC
+AC_C_CONST
+AC_PROG_LIBTOOL
+AM_PROG_LIBTOOL
+
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_PROG_CXX_C_O
 
 dnl Set install paths.
 if test "x$prefix" = "xNONE" ; then
@@ -58,16 +67,6 @@ case "$host" in
                 AC_MSG_ERROR([Unknown Architecture])
                 ;;
 esac
-
-AC_PROG_CC
-AC_PROG_CC_STDC
-AC_C_CONST
-AC_PROG_LIBTOOL
-AM_PROG_LIBTOOL
-
-AC_PROG_CXX
-AC_PROG_CXXCPP
-AC_PROG_CXX_C_O
 
 dnl check for muParser
 PKG_CHECK_MODULES([MUPARSER], [muparser] ,has_muparser=yes)
