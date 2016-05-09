@@ -142,7 +142,7 @@ AS_HELP_STRING([--with-gles],
 [with_gles=yes])
 
 host_name="default"
-librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, gl, glew, freetype2, check'
+librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-0.10, gstreamer-app-0.10, gl, glew, freetype2, check'
 OPENGLESV2=''
 AC_ARG_ENABLE(host,
 [--enable-host[=host name] Specify the host os name:
@@ -172,7 +172,7 @@ AC_ARG_ENABLE(host,
 	exit -1
   fi
 ])
-host_cflags="$host_cflags -DGSTVERSION"
+#host_cflags="$host_cflags -DGSTVERSION"
 AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
 AC_SUBST([OPENGLESV2],$OPENGLESV2)
