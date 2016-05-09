@@ -65,6 +65,7 @@ START_TEST(test_data_manager) {
 /*
   res = DataManager->Init( moText(""),moText("data"), moText("config.mol"));
   fail_unless(res != true);
+/*
   fail_unless(DataManager->GetDataPath() == moText("data"));
   fail_unless(DataManager->GetConsoleConfigName() == moText("config.mol"));
 */

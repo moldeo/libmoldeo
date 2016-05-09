@@ -136,6 +136,7 @@
 			<Add option='-DMODULESDIR=\&quot;../../plugins\&quot;' />
 			<Add option="-DGLEW_STATIC" />
 			<Add option="-DMO_WIN32=1" />
+			<Add option="-DGSTVERSION=1" />
 			<Add directory="../../" />
 			<Add directory="../../libmoldeo" />
 			<Add directory="$(externlibs)/boost/include/1_48_0" />
@@ -148,17 +149,19 @@
 			<Add directory="$(externlibs)/SDL/include" />
 			<Add directory="$(externlibs)/tinyxml" />
 			<Add directory="$(externlibs)/FTGL/include" />
-			<Add directory="$(gstreamersdkdir)/include/gstreamer-0.10" />
-			<Add directory="$(gstreamersdkdir)/include/glib-2.0" />
-			<Add directory="$(gstreamersdkdir)/include/libxml2" />
-			<Add directory="$(gstreamersdkdir)/lib/glib-2.0/include" />
+			<Add directory="$(gstreamer1sdkdir)/include/gstreamer-1.0" />
+			<Add directory="$(gstreamer1sdkdir)/include/glib-2.0" />
+			<Add directory="$(gstreamer1sdkdir)/include/libxml2" />
+			<Add directory="$(gstreamer1sdkdir)/lib/glib-2.0/include" />
+			<Add directory="$(gstreamer1sdkdir)/lib/gstreamer-1.0/include" />
 		</Compiler>
 		<Linker>
 			<Add library="liblua" />
 			<Add library="ftgl" />
 			<Add library="FreeImage" />
-			<Add library="gstreamer-0.10" />
-			<Add library="gstinterfaces-0.10" />
+			<Add library="gstreamer-1.0" />
+			<Add library="gstbase-1.0" />
+			<Add library="gstapp-1.0" />
 			<Add library="glib-2.0" />
 			<Add library="gobject-2.0" />
 			<Add library="wsock32" />
@@ -177,7 +180,7 @@
 			<Add library="boost_system-mt" />
 			<Add library="boost_filesystem-mt" />
 			<Add library="glu32" />
-			<Add directory="$(gstreamersdkdir)/lib" />
+			<Add directory="$(gstreamer1sdkdir)/lib" />
 			<Add directory="$(externlibs)/boost/lib/1_48_0" />
 			<Add directory="$(externlibs)/lua/lib" />
 			<Add directory="$(externlibs)/muparser/lib" />

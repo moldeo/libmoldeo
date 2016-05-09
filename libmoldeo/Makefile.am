@@ -110,7 +110,6 @@ libmoldeo_la_SOURCES = mo3dModelManager.cpp \
 libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${GST_CFLAGS} \
     $(GST_INTERFACES_CFLAGS) \
-	${GTK2_CFLAGS} \
 	${MUPARSER_CFLAGS} \
 	${BOOST_CPPFLAGS} \
 	${SDL_CFLAGS} \
@@ -118,15 +117,11 @@ libmoldeo_la_CPPFLAGS = ${FT2_CFLAGS} \
 	${LUA51_CFLAGS}
 
 libmoldeo_la_LIBADD = ${FT2_LIBS} \
-	${GTK2_LIBS} \
 	${SDL_LIBS} \
 	${TINYXML_LIBS} \
 	${GL_LIBS} \
-	${GLE_LIBS} \
 	${FTGL_LIBS} \
 	${GLUT_LIBS} \
-	${GLU_LIBS} \
-	${FREEALUT_LIBS} \
 	${FREEIMAGE_LIBS} \
 	${MUPARSER_LIBS} \
 	${BOOST_ASIO_LIB} \
@@ -136,11 +131,6 @@ libmoldeo_la_LIBADD = ${FT2_LIBS} \
 	${LUA51_LIBS} \
 	${GST_LIBS} \
     $(GST_INTERFACES_LIBS)
-#\
-#	${CG_LIBS} \
-#	${CGGL_LIBS} \
-#	${OPENAL_LIBS} \
-	#${TUIO_LIBS}
 
 libmoldeo_includedir = $(includedir)/libmoldeo
 

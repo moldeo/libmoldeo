@@ -36,7 +36,10 @@
 
 moDefineDynamicArray( moTextArray )
 
+#ifndef USE_MOTEXT0
 #define USE_MOTEXT0 1
+#endif
+
 #ifdef USE_MOTEXT0
 
 //===========================================

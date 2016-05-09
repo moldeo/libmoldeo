@@ -37,6 +37,11 @@
 #include <moRenderManager.h>
 #include <tinyxml.h>
 
+using namespace std;
+#ifdef MO_MACOSX
+#include "CoreFoundation.h"
+#endif
+
 moDefineDynamicArray(moDataSessionKeys)
 moDefineDynamicArray(moDataSessionEventKeys)
 
@@ -832,6 +837,8 @@ moDataManager::moDataManager() {
 
 	m_pDataSession = NULL;
     m_pDataSessionConfig = NULL;
+    
+
 }
 
 moDataManager::~moDataManager() {
@@ -976,20 +983,71 @@ moDataManager::ReloadPluginDefinitions( moText plugindir, moMoldeoObjectType mob
 
           pFile = DirEffects.FindNext();
       }
-  } else MODebug2->Error( moText("Directory doesn´t exists:")+(moText)plugindir );
+  } else MODebug2->Error( moText("Directory doesn't exists:")+(moText)plugindir );
 
 
   return 0;
 }
 
+
 moText moDataManager::m_DataDir = DATADIR;
 moText moDataManager::m_ModulesDir = MODULESDIR;
 
 const moText& moDataManager::GetDataDir() {
+#ifdef MO_MACOSX
+    
+    CFBundleRef mainBundle = CFBundleGetMainBundle();
+    CFURLRef moldeologoURL = CFBundleCopyResourceURL( mainBundle, CFSTR("moldeologo"),CFSTR("png"),NULL );
+    
+    /*std::string moldeologostr(CFStringGetCStringPtr(CFURLGetString(moldeologoURL),kCFStringEncodingUTF8));
+     */
+    string moldeologostr("-");
+    
+    if (moldeologoURL) {
+        moldeologostr = CFStringGetCStringPtr( CFURLGetString(moldeologoURL), kCFStringEncodingUTF8 );
+        CFStringRef cfstr = CFURLCopyFileSystemPath( moldeologoURL, kCFURLPOSIXPathStyle );
+        
+        moldeologostr = CFStringGetCStringPtr( cfstr, kCFStringEncodingUTF8 );
+    }
+    
+    //cout << "moldeologostr: " << moldeologostr << endl;
+    
+    //CFURLRef resourcesURL = CFBundleCopyResourceURL( mainBundle);
+    
+    moText datad = moldeologostr.c_str();
+    moFile logof(datad);
+    moDataManager::m_DataDir = logof.GetPath()+moText("data");
+    moDataManager::m_ModulesDir = logof.GetPath()+moText("plugins");
+#endif
   return m_DataDir;
 }
 
 const moText& moDataManager::GetModulesDir() {
+#ifdef MO_MACOSX
+    
+    CFBundleRef mainBundle = CFBundleGetMainBundle();
+    CFURLRef moldeologoURL = CFBundleCopyResourceURL( mainBundle, CFSTR("moldeologo"),CFSTR("png"),NULL );
+    
+    /*std::string moldeologostr(CFStringGetCStringPtr(CFURLGetString(moldeologoURL),kCFStringEncodingUTF8));
+     */
+    string moldeologostr("-");
+    
+    if (moldeologoURL) {
+        moldeologostr = CFStringGetCStringPtr( CFURLGetString(moldeologoURL), kCFStringEncodingUTF8 );
+        CFStringRef cfstr = CFURLCopyFileSystemPath( moldeologoURL, kCFURLPOSIXPathStyle );
+        
+        moldeologostr = CFStringGetCStringPtr( cfstr, kCFStringEncodingUTF8 );
+    }
+    
+    //cout << "moldeologostr: " << moldeologostr << endl;
+    
+    //CFURLRef resourcesURL = CFBundleCopyResourceURL( mainBundle);
+    
+    moText datad = moldeologostr.c_str();
+    moFile logof(datad);
+    moDataManager::m_DataDir = logof.GetPath()+moText("data");
+    moDataManager::m_ModulesDir = logof.GetPath()+moText("plugins");
+#endif
   return m_ModulesDir;
 }
 

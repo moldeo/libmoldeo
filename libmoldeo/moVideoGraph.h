@@ -121,8 +121,11 @@ enum moAudioMode {
 *   enumeración de formatos de color
 */
 enum moColorMode {
-    YUV = 0,
-    RGB = 1
+    DEFAULT = 0,
+    YUV = 1,
+    RGB = 2,
+    I420 = 3,
+    YUY2 = 4
 };
 
 /**
@@ -460,7 +463,7 @@ class LIBMOLDEO_API moCaptureDevice {
     }
 
 
-	private:
+	public:
 		bool			m_bPresent;///Presencia del dispositivo
 		bool      m_bPreferred;///Dispositivo preferido siempre se dan de alta cuando están presentes.
 		moText			m_Name;///Nombre del dispositivo

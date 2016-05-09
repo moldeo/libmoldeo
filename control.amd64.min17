@@ -16,7 +16,7 @@ Description: Moldeo Core Library, development files
 Package: libmoldeo
 Section: libs
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}, liblua5.1-0-dev, libglew1.10, libsdl1.2debian, libfreeimage3, libalut0, libgstreamer0.10-0, libgstreamer-plugins-base0.10-0, libmuparser2, libboost-dev, libboost-filesystem-dev, libboost-system-dev, libboost-thread-dev, libtinyxml-dev 
+Depends: ${shlibs:Depends}, ${misc:Depends}, liblua5.1-0-dev, libglew1.10, libsdl1.2debian, libfreeimage3, libalut0, libgstreamer0.10-0, libgstreamer-plugins-base0.10-0, gstreamer0.10-tools, libmuparser2, libboost-dev, libboost-filesystem-dev, libboost-system-dev, libboost-thread-dev, libtinyxml-dev 
 Description: Moldeo Core Library
  Moldeo is a multimedia interactive framework based on C++, OpenGL, Gstreamer, Lua, Freeimage, muparser
 

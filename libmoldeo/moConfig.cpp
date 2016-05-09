@@ -228,10 +228,11 @@ moConfigDefinition::SetParamIndex( int defined_array_index, moParamIndex paramin
   }
 
   if ( ! ( 0 <= defined_array_index && defined_array_index < (int)m_ParamIndexes.Count()) ) {
-        MODebug2->Message( moText("WARNING!! moConfigDefinition::SetParamIndex[" + m_ObjectName + "] > defined array entry index not in range : ")
+        /*MODebug2->Message( moText("WARNING!! moConfigDefinition::SetParamIndex[" + m_ObjectName + "] > defined array entry index not in range : ")
                         + IntToStr(defined_array_index)
                         + moText(" Max Indexes : ")
-                        + IntToStr(m_ParamIndexes.Count()) );
+                        + IntToStr(m_ParamIndexes.Count()) );*/
+      MODebug2->Warning( moText("Extra parameters must be defined at the end of config file. \"") + m_ObjectName + moText("\""));
         MODebug2->Message( this->ToJSON() );
         return false;
   }

@@ -1,5 +1,8 @@
 AC_INIT([libmoldeo], [1.0.0.160], [info@moldeointeractive.com.ar], [libmoldeo])
 
+AC_CANONICAL_HOST
+AC_CANONICAL_BUILD
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
 AM_CONFIG_HEADER(config.h)
@@ -11,6 +14,58 @@ AC_PROG_CC_STDC
 AC_C_CONST
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
+
+dnl Set install paths.
+if test "x$prefix" = "xNONE" ; then
+  prefix="/usr/local"
+fi
+if test "x$exec_prefix" = "xNONE" ; then
+  exec_prefix=$prefix
+fi
+
+case "$host" in
+        *-*-mingw*|*-*-cygwin*)
+                AC_DEFINE(PLATFORM_WIN32, 1, [Platform is Win32])
+                PLATFORM_STRING="Win32"
+                ;;
+        *-*-linux*)
+                AC_DEFINE(PLATFORM_LINUX, 1, [Platform is Linux])
+                PLATFORM_STRING="Linux"
+                ;;
+        *-*-darwin*)
+		AC_MSG_WARN([Hello])
+                AC_DEFINE(PLATFORM_APPLE, 1, [Platform is Apple])
+                PLATFORM_STRING="Apple"
+                ;;
+        *)
+                AC_MSG_WARN([*** Please add $host to configure.ac checks!])
+                ;;
+esac
+
+
+case "$host" in
+        i?86-* | k?-* | athlon-* | pentium*-)
+                AC_DEFINE(ARCH_X86, 1, [Architecture is x86])
+                ARCH_SPECIFIC_CFLAGS=""
+                ARCH_STRING="X86"
+                ;;
+        x86_64-*)
+                AC_DEFINE(ARCH_X86_64, 1, [Architecture is x86-64])
+                ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
+                ARCH_STRING="X86-64"
+                with_boost_libdir="/usr/lib/x86_64-linux-gnu"
+                libdir=$prefix"/lib"
+                ;;
+        ppc-* | powerpc-*)
+		AC_MSG_WARN([HI THERE!])
+                AC_DEFINE(ARCH_PPC, 1, [Architecture is PowerPC])
+                ARCH_SPECIFIC_CFLAGS=""
+                ARCH_STRING="PowerPC"
+                ;;
+        *)
+                AC_MSG_ERROR([Unknown Architecture])
+                ;;
+esac
 
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -75,7 +130,7 @@ dnl check tinyxml
 PKG_CHECK_MODULES([TINYXML], [tinyxml] ,has_tinyxml=yes)
 
 dnl check for gtk+-2.0
-PKG_CHECK_MODULES([GTK2], [gtk+-2.0], has_gtk2=yes )
+#PKG_CHECK_MODULES([GTK2], [gtk+-2.0], has_gtk2=yes )
 
 dnl check for sdl
 PKG_CHECK_MODULES([SDL], [sdl] ,has_sdl=yes)
@@ -87,7 +142,8 @@ AS_HELP_STRING([--with-gles],
 [with_gles=yes])
 
 host_name="default"
-
+librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, gl, glew, freetype2, check'
+OPENGLESV2=''
 AC_ARG_ENABLE(host,
 [--enable-host[=host name] Specify the host os name:
 			64: 64 bit linux os [default]
@@ -100,41 +156,46 @@ AC_ARG_ENABLE(host,
 	host_name="64"
   elif test "x$enableval" = "xraspbian" ; then
 	host_name="raspbian"
-	host_cflags="-I/opt/vc/include -DOPENGLESV2"
+	host_cflags="-I/opt/vc/include"
 	host_ldflags="-L/opt/vc/lib"
+    	librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, egl, glesv2, freetype2, check'
+	OPENGLESV2='#define OPENGLESV2 1'
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
-	host_cflags="-I/opt/local/include "
-	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa"
+	host_cflags="-I/opt/local/include -I/System/Library/Frameworks/CoreFoundation.framework/Versions/A/Headers"
+	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa -framework CoreFoundation"
+    librequires='glew, lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, freetype2, check'
   else
-	echo 
+	echo
 	echo "Error!"
 	echo "Unknown host name"
 	exit -1
   fi
 ])
+host_cflags="$host_cflags -DGSTVERSION"
 AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
+AC_SUBST([OPENGLESV2],$OPENGLESV2)
 
 if test "x$host_name" = "xosx" ; then
     PKG_CHECK_MODULES([LUA51], [lua-5.1] ,has_lua51=yes)
     AC_SUBST([GLUT_LIBS], [])
     AC_SUBST([GL_LIBS], [])
     AC_SUBST([GLE_LIBS], [])
-    
+
     dnl check for glew
     AC_CHECK_HEADER(GL/glew.h, , AC_MSG_ERROR([glew header not found.]))
     AC_CHECK_LIB(GLEW, glewInit, AC_SUBST([GL_LIBS], [-lGLEW]), AC_MSG_ERROR([glew not found.]) )
+
 else
     PKG_CHECK_MODULES([LUA51], [lua5.1] ,has_lua51=yes)
     AS_IF([test "x$with_gles" = "xyes"],
         [PKG_CHECK_MODULES([GL], [glesv2, egl] ,has_glesv2=yes)],
         [PKG_CHECK_MODULES([GL], [gl, glew] ,has_gl=yes)])
-    
+
     dnl check for glut
     AC_CHECK_HEADER(GL/glut.h, , AC_MSG_ERROR([glut header not found.]))
     AC_CHECK_LIB(glut, glutMainLoop, AC_SUBST([GLUT_LIBS], [-lglut]), AC_MSG_ERROR([glut not found.]), )
-
 fi
 
 
@@ -142,24 +203,8 @@ dnl check for freeimage
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
 AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfreeimage]), AC_MSG_ERROR([FreeImage not found.]), )
 
-
-#dnl check for openal
-#PKG_CHECK_MODULES([OPENAL], [openal] ,has_openal=yes)
-
-dnl check for glu
-#PKG_CHECK_MODULES([GLU], [glu] ,has_glu=yes)
-
-
-dnl check for gle
-#AC_CHECK_HEADER(GL/gle.h, , AC_MSG_ERROR([gle header not found.]))
-#AC_CHECK_LIB(gle, gleDestroyGC, AC_SUBST([GLE_LIBS], [-lgle]), AC_MSG_ERROR([gle not found.]), )
-
 dnl check for ftgl
 PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
-
-
-dnl check for alut
-#PKG_CHECK_MODULES([FREEALUT], [freealut] ,has_freealut=yes)
 
 dnl check for gstreamer
 GST_VERSION_MAJOR=0
@@ -169,6 +214,15 @@ GSTPLUG_VERSION_RELEASE=7
 GSTREAMER_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GST_VERSION_RELEASE
 GSTPLUGINS_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GSTPLUG_VERSION_RELEASE
 GST_MAJORMINOR=$GST_VERSION_MAJOR.$GST_VERSION_MINOR
+
+#PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
+#  HAVE_GSTREAMER=yes)
+if test "x$host_name" = "xosx" ; then
+
+AC_SUBST(GST_CFLAGS,"-I/Library/Frameworks/GStreamer.framework/Versions/1.0/Headers")
+AC_SUBST(GST_LIBS,"-framework GStreamer")
+
+else
 
 PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
   HAVE_GSTREAMER=yes)
@@ -180,11 +234,14 @@ PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-interfaces-$GST_MAJORMINOR >= $GSTRE
 AC_SUBST(GST_INTERFACES_CFLAGS)
 AC_SUBST(GST_INTERFACES_LIBS)
 
+fi
+
 dnl check for truetype
 AC_CHECK_FT2
 
 dnl check for check test suite
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
+
 
 dnl check boost libraries
 AX_BOOST_BASE
@@ -238,6 +295,7 @@ esac],
 
 AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
 
+AC_SUBST([librequires])
 
 dnl Additional arguments (and substitutions)
 dnl Allow the pkg-config directory to be set
@@ -249,8 +307,10 @@ AC_ARG_WITH(pkgconfigdir,
 
 AC_SUBST([pkgconfigdir])
 
-
+echo "PLATFORM_STRING: $PLATFORM_STRING"
+echo "ARCH_STRING: $ARCH_STRING"
 echo "GLES: $with_gles"
+echo "OPENGLESV2: $OPENGLESV2"
 echo "HOST: $host_name"
 echo "HOSTCFLAGS: $host_cflags"
 echo "HOSTLDFLAGS: $host_ldflags"
@@ -260,6 +320,7 @@ dnl Makefile outputs
 AC_OUTPUT([
 Makefile
 data/Makefile
+libmoldeo/moTypes.h
 libmoldeo/Makefile
 libmoldeotest/Makefile
 libmoldeo.pc

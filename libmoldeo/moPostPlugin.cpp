@@ -212,7 +212,7 @@ LIBMOLDEO_API bool moDeletePostEffect(moPostEffect *posteffect, moPostPluginsArr
 		#ifdef _DEBUG
 		complete_name+= moText("_d");
 		#endif
-    complete_name += moText(".so");
+    complete_name += moPluginExtension;
     #endif
 
     // Indice del plugin que se utilizara para crear a este efecto.
