@@ -112,7 +112,7 @@ moIODeviceManager::Init() {
 
 
 moIODevice*
-moIODeviceManager::NewIODevice( moText p_devname, moText p_cfname, moText p_labelname, moMoldeoObjectType type, int paramindex, int valueindex, bool p_activate  ) {
+moIODeviceManager::NewIODevice( const moText& p_devname,  const moText& p_configname, const moText& p_labelname, const moText& p_keyname, moMoldeoObjectType type, int paramindex, int valueindex, bool p_activate  ) {
 
 	moIODevice* pdevice = NULL;
 
@@ -130,8 +130,9 @@ moIODeviceManager::NewIODevice( moText p_devname, moText p_cfname, moText p_labe
 
 	    MDef.SetConsoleParamIndex(paramindex);
 	    MDef.SetConsoleValueIndex(valueindex);
-      MDef.SetConfigName( p_cfname );
+      MDef.SetConfigName( p_configname );
       MDef.SetLabelName( p_labelname );
+      MDef.SetKeyName( p_keyname );
       MDef.SetActivate(p_activate);
 
       pdevice->SetMobDefinition(MDef);

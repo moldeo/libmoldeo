@@ -767,7 +767,7 @@ moConsole::LoadObjects( moMoldeoObjectType fx_type ) {
 void
 moConsole::LoadIODevices() {
 
-	moText text, fxname, cfname, lblname;
+	moText text, fxname, cfname, lblname, keyname;
 	MOint devices, i, ndevices;
 	bool activate = true;
 	moIODevice*	pdevice = NULL;
@@ -784,14 +784,18 @@ moConsole::LoadIODevices() {
 		cfname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_CONFIG).Text();
 		lblname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_LABEL).Text();
 
+
     if (m_Config.GetParam().GetValue().GetSubValueCount()>=4)
       activate = (m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_ON).Int()>0);
+
+    if (m_Config.GetParam().GetValue().GetSubValueCount()>=6)
+      keyname = m_Config.GetParam().GetValue().GetSubValue(MO_CFG_EFFECT_KEY).Text();
 
     moText completecfname = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash + (moText)cfname+ moText(".cfg");
     moFile FullCF( completecfname );
 
     if ( FullCF.Exists() ) {
-        pdevice = m_pIODeviceManager->NewIODevice( fxname, cfname, lblname,  MO_OBJECT_IODEVICE, devices, i, activate );
+        pdevice = m_pIODeviceManager->NewIODevice( fxname, cfname, lblname, keyname,  MO_OBJECT_IODEVICE, devices, i, activate );
         if (pdevice) {
             m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
             pdevice->SetResourceManager( m_pResourceManager );
@@ -860,7 +864,7 @@ moConsole::AddMoldeoAPIDevices() {
       MD.SetName("netoscin");
       MD.SetConsoleParamIndex( m_Config.GetParamIndex("devices") );
       MD.SetConsoleValueIndex( m_pIODeviceManager->IODevices().Count() );
-      pdevice = m_pIODeviceManager->NewIODevice( MD.GetName(), MD.GetConfigName(), MD.GetLabelName(), MO_OBJECT_IODEVICE, MD.GetMobIndex().GetParamIndex(), MD.GetMobIndex().GetValueIndex() );
+      pdevice = m_pIODeviceManager->NewIODevice( MD.GetName(), MD.GetConfigName(), MD.GetLabelName(), MD.GetKeyName(), MO_OBJECT_IODEVICE, MD.GetMobIndex().GetParamIndex(), MD.GetMobIndex().GetValueIndex() );
       if (pdevice) {
           m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
           moFile pFile( DataMan()->GetDataPath() + moSlash + MD.GetConfigName() + moText(".cfg") );
@@ -876,7 +880,7 @@ moConsole::AddMoldeoAPIDevices() {
       MD.SetName("netoscout");
       MD.SetConsoleParamIndex( m_Config.GetParamIndex("devices") );
       MD.SetConsoleValueIndex( m_pIODeviceManager->IODevices().Count() );
-      pdevice = m_pIODeviceManager->NewIODevice( MD.GetName(), MD.GetConfigName(), MD.GetLabelName(), MO_OBJECT_IODEVICE, MD.GetMobIndex().GetParamIndex(), MD.GetMobIndex().GetValueIndex() );
+      pdevice = m_pIODeviceManager->NewIODevice( MD.GetName(), MD.GetConfigName(), MD.GetLabelName(), MD.GetKeyName(), MO_OBJECT_IODEVICE, MD.GetMobIndex().GetParamIndex(), MD.GetMobIndex().GetValueIndex() );
       if (pdevice) {
           m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
           moFile pFile( DataMan()->GetDataPath() + moSlash + MD.GetConfigName() + moText(".cfg") );
