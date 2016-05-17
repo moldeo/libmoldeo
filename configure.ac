@@ -29,6 +29,9 @@ case "$host" in
                 AC_DEFINE(PLATFORM_LINUX, 1, [Platform is Linux])
                 PLATFORM_STRING="Linux"
                 ;;
+        x86_64-*-linux*)
+                with_boost_libdir="/usr/lib/x86_64-linux-gnu"
+                ;;
         *-*-darwin*)
 		AC_MSG_WARN([Hello])
                 AC_DEFINE(PLATFORM_APPLE, 1, [Platform is Apple])
@@ -50,7 +53,6 @@ case "$host" in
                 AC_DEFINE(ARCH_X86_64, 1, [Architecture is x86-64])
                 ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
                 ARCH_STRING="X86-64"
-                with_boost_libdir="/usr/lib/x86_64-linux-gnu"
                 libdir=$prefix"/lib"
                 ;;
         ppc-* | powerpc-*)
@@ -63,6 +65,7 @@ case "$host" in
                 AC_MSG_ERROR([Unknown Architecture])
                 ;;
 esac
+
 
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -250,7 +253,8 @@ echo "PLATFORM_STRING: $PLATFORM_STRING"
 echo "ARCH_STRING: $ARCH_STRING"
 echo "GLES: $with_gles"
 echo "OPENGLESV2: $OPENGLESV2"
-echo "HOST: $host_name"
+echo "HOST NAME: $host_name"
+echo "HOST: $host"
 echo "HOSTCFLAGS: $host_cflags"
 echo "HOSTLDFLAGS: $host_ldflags"
 echo "DEBUG: $debug"
