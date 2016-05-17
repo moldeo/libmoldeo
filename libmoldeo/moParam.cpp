@@ -599,6 +599,8 @@ moParamDefinition::SetOptions( const moText& p_OptionsStr ) {
   m_Options = m_OptionsStr.Explode(moText(","));
 }
 
+
+
 const moText&
 moParamDefinition::ToJSON() {
   moText fieldseparation  = ",";
