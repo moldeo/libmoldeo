@@ -25,12 +25,13 @@ case "$host" in
                 AC_DEFINE(PLATFORM_WIN32, 1, [Platform is Win32])
                 PLATFORM_STRING="Win32"
                 ;;
+        x86_64-*linux*)
+                with_boost_libdir="/usr/lib/x86_64-linux-gnu"
+                PLATFORM_STRING="Linux"
+                ;;
         *-*-linux*)
                 AC_DEFINE(PLATFORM_LINUX, 1, [Platform is Linux])
                 PLATFORM_STRING="Linux"
-                ;;
-        x86_64-*-linux*)
-                with_boost_libdir="/usr/lib/x86_64-linux-gnu"
                 ;;
         *-*-darwin*)
 		AC_MSG_WARN([Hello])
