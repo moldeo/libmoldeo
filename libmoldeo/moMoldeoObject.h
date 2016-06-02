@@ -145,7 +145,13 @@ class LIBMOLDEO_API moMobIndex : public moAbstract {
 /**
  * clase que define las caracteristicas basicas de un objeto Moldeo
  * los datos básicos dentro de esta definición son suficientes para poder crear un objeto moldeo
- * como son: el nombre del objeto, el nombre del archivo de la configuración del objeto, el tipo de objeto
+ * como son:
+ *  1) m_Name: el nombre del objeto
+ *  2) m_ConfigName:  archivo de la configuración del objeto
+ *  3) m_Type: el tipo de objeto
+ *  4) m_LabelName: el nombre
+ *
+ * luego sus
  * @see moEffect
  * @see moPreEffect
  * @see moPostEffect

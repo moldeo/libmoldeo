@@ -95,10 +95,15 @@ moConsole::moConsole() : moMoldeoObject() {
 
 	m_bExternalResources = false;
 
-    ///Important settings for CONSOLE (using inlets and outlets...)
-    this->SetName("__console__");
-    this->SetLabelName("__console__");
-    this->SetType( MO_OBJECT_CONSOLE );
+  ///Important settings for CONSOLE (using inlets and outlets...)
+  this->SetName("__console__");
+  this->SetLabelName("__console__");
+  this->SetType( MO_OBJECT_CONSOLE );
+
+	ticks = 0;
+	fps_current = 0;
+	fps_mean = 0;
+	fps_count = 0;
 }
 
 moConsole::~moConsole()
@@ -800,6 +805,7 @@ moConsole::LoadIODevices() {
             m_MoldeoObjects.Add( (moMoldeoObject*) pdevice );
             pdevice->SetResourceManager( m_pResourceManager );
             pdevice->Init();
+            if (activate) pdevice->Activate();
         } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText(fxname));
 		} else {
 		    MODebug2->Error(moText("moConsole::LoadIODevices > Error: Config File doesn't exist : ") + (moText)completecfname);
@@ -1642,6 +1648,7 @@ moConsole::Draw() {
 			}
 		}
 
+
 		if (RenderMan) RenderMan->EndDraw();
 
 		if (RenderMan && ( RenderMan->IsRenderToFBOEnabled() || !RenderMan->RenderResEqualScreenRes())  )
@@ -1746,6 +1753,34 @@ moConsole::Interaction() {
     cout << "no renderman!" << endl;
     return -1;
   }
+/*
+  timecodeticks = moGetTicks();
+  minutes = timecodeticks / (1000*60);
+  seconds = (timecodeticks - minutes*1000*60) / 1000;
+  frames = (timecodeticks - minutes*1000*60 - seconds*1000 ) * 25 / 1000;
+
+  Texto+= moText(" ticks: ") + (moText)IntToStr(timecodeticks,10) +
+          moText(" ang: ") + (moText)FloatToStr((float)tempogral->ang) +
+          moText(" timecode: ") + (moText)IntToStr(minutes, 2) + moText(":") + (moText)IntToStr(seconds,2) + moText(":") + (moText)IntToStr(frames,2);
+*/
+
+
+  ticksprevious = ticks;
+	ticks = moGetTicksAbsolute();
+	tickselapsed = ticks - ticksprevious;
+
+	fps_current = 1000.0 / tickselapsed;
+	fps_mean += fps_current;
+
+	fps_count++;
+	if (fps_count % 10 == 0)
+	{
+		fps_mean /= 10;
+		fps_text = moText("FPS = ") + (moText)FloatToStr(fps_mean);
+		fps_mean = 0;
+		fps_count = 0;
+	}
+
 
 	//_IODEVICE ACTUALIZA
 	RenderMan->BeginUpdate();
@@ -2622,6 +2657,120 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GET > [" + arg0+"] not found!" );
       break;
 
+  case MO_ACTION_OBJECT_GETCONFIG:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      MObject = NULL;
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          //FullObjectJSON = fxObject->ToJSON();
+          FullObjectJSON = "{ 'objectconfig': " + fxObject->GetConfig()->ToJSON();
+          FullObjectJSON+= "}";
+          MODebug2->Message(FullObjectJSON);
+      } else {
+        int idobj = GetObjectId( arg0 );
+        MObject = GetObjectByIdx( idobj );
+        if (MObject) {
+          FullObjectJSON = "{ 'objectconfig': " + MObject->GetConfig()->ToJSON();
+          FullObjectJSON+= "}";
+          MODebug2->Message( FullObjectJSON );
+        }
+      }
+
+      if (fxObject || MObject) {
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("objectgetconfig") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( FullObjectJSON ) );
+              //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              // send it: but we need an id
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
+
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETCONFIG > [" + arg0+"] not found!" );
+      break;
+
+  case MO_ACTION_OBJECT_GETPRECONFIG:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      arg1Int  = p_pDataMessage->Get(2).Int();
+      MObject = NULL;
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          //FullObjectJSON = fxObject->ToJSON();
+          FullObjectJSON = "{ 'preconfig': " + fxObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
+          FullObjectJSON+=   ", 'position': "+IntToStr(arg1Int)+" }";
+          MODebug2->Message(FullObjectJSON);
+      } else {
+        int idobj = GetObjectId( arg0 );
+        MObject = GetObjectByIdx( idobj );
+        if (MObject) {
+          FullObjectJSON = "{ 'preconfig': " + MObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
+          FullObjectJSON+=  ", 'position': "+IntToStr(arg1Int)+" }";
+          MODebug2->Message( FullObjectJSON );
+        }
+      }
+
+      if (fxObject || MObject) {
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("objectgetpreconfig") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( FullObjectJSON ) );
+              //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              // send it: but we need an id
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
+
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETPRECONFIG > [" + arg0+"] not found!" );
+      break;
+
+
+  case MO_ACTION_OBJECT_GETPRECONFIGS:
+      arg0  = p_pDataMessage->Get(1).ToText();
+      arg1Int  = p_pDataMessage->Get(2).Int();// [0,2] = 3 preconfigs [0,-1]
+      arg2Int  = p_pDataMessage->Get(3).Int();// -1 > final
+      MObject = NULL;
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          //FullObjectJSON = fxObject->ToJSON();
+          FullObjectJSON = "{ 'preconfig': " + fxObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
+          FullObjectJSON+= ", 'position': "+IntToStr(arg1Int)+" }";
+          MODebug2->Message(FullObjectJSON);
+      } else {
+        int idobj = GetObjectId( arg0 );
+        MObject = GetObjectByIdx( idobj );
+        if (MObject) {
+          FullObjectJSON = "{ 'preconfig': " + MObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
+          FullObjectJSON+=  ", 'position': "+IntToStr(arg1Int)+" }";
+          MODebug2->Message( FullObjectJSON );
+        }
+      }
+
+      if (fxObject || MObject) {
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("objectgetpreconfigs") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( FullObjectJSON ) );
+              //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              // send it: but we need an id
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
+
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETPRECONFIGS > [" + arg0+"] not found!" );
+      break;
 
   /** CONSOLE
 
@@ -2847,9 +2996,9 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         moMoldeoObject* Mobj = m_MoldeoObjects.Get(i);
         FullObjectJSON+= fieldSeparation+"'"+Mobj->GetLabelName()+"': {";
         FullObjectJSON+= "'name': '" + Mobj->GetName() +"',";
-        FullObjectJSON+= "'configname': '" + Mobj->GetConfigName() +"',";
-        FullObjectJSON+= "'keyname': '" + Mobj->GetKeyName() +"',";
-        FullObjectJSON+= "'classname': '" + Mobj->GetMobDefinition().GetTypeToClass( Mobj->GetMobDefinition().GetType() ) +"'";
+        FullObjectJSON+= "'cfg': '" + Mobj->GetConfigName() +"',";
+        FullObjectJSON+= "'key': '" + Mobj->GetKeyName() +"',";
+        FullObjectJSON+= "'cla': '" + Mobj->GetMobDefinition().GetTypeToClass( Mobj->GetMobDefinition().GetType() ) +"'";
         FullObjectJSON+= "}";
         fieldSeparation = ",";
       }
@@ -3047,6 +3196,7 @@ moConsole::Update() {
 	RenderMan->EndUpdate();
 
   moEventList* pEvents = m_pIODeviceManager->GetEvents();
+  int nevents = 0;
   if (pEvents) {
       moEvent *actual=NULL,*tmp;
      // moMessage *pmessage;
@@ -3055,18 +3205,34 @@ moConsole::Update() {
 
       ///Procesamos los eventos recibidos de los MoldeoObject Outlets
       while(actual!=NULL) {
+        nevents++;
         tmp = actual->next;
         ///procesamos aquellos Outlet q estan dirigidos a este objeto
+        //moText debugstr = actual->ToJSON();
+
         if (  actual->deviceid==MO_IODEVICE_CONSOLE
             && actual->devicecode == MO_ACTION_MOLDEOAPI_EVENT_SEND
             && actual->reservedvalue3 == MO_DATAMESSAGE) {
                 moDataMessage* mpDataMessage = (moDataMessage*) actual->pointer;
-                delete mpDataMessage;
+                if (mpDataMessage) {
+                  //tmpstr = "MOLDEOAPI MO_DATAMESSAGE > count:" + mpDataMessage->Count();
+                  delete mpDataMessage;
+                }
                 actual->pointer = NULL;
                 pEvents->Delete(actual);
         }
+
+        if (actual->deviceid>=MO_MOLDEOOBJECTS_OFFSET_ID) {
+          moMoldeoObject* pobj = GetObjectByIdx( actual->deviceid );
+          //debugstr = pobj->GetLabelName()+"("+IntToStr(actual->deviceid)+") >> "+actual->ToJSON();
+        }
         actual = tmp;
+
+        //MODebug2->Message( debugstr );
       }
+
+      //if ()
+        //MODebug2->Message("fps:"+fps_text+" nevents:"+IntToStr(nevents));
 
   }
 

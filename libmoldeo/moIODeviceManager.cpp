@@ -174,7 +174,10 @@ moIODeviceManager::Update() {
 
 	for(MOuint i = 0; i < m_IODevices.Count(); i++) {
 		moIODevice* piodevice = m_IODevices.GetRef(i);
-		if(piodevice!=NULL) piodevice->Update(Events);
+		if(piodevice!=NULL) {
+      if (piodevice->Activated())
+        piodevice->Update(Events);
+    }
 	}
 
 

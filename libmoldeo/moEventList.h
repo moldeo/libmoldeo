@@ -76,6 +76,9 @@ public:
 	/// Destructor
 	virtual ~moEvent();
 
+	moText JSON;
+
+  virtual const moText& ToJSON();
 };
 
 #define MO_MESSAGE 0xFABC05
@@ -118,6 +121,7 @@ class LIBMOLDEO_API moMessage : public moEvent {
 		moMoldeoObjectType		m_TypeSrc;
 		moText					m_NameSrc;
 
+    virtual const moText& ToJSON();
 };
 
 moDeclareExportedDynamicArray( moMessage, moMessages );

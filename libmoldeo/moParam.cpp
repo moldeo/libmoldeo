@@ -607,12 +607,12 @@ moParamDefinition::ToJSON() {
 
   m_FullJSON = "{";
   m_FullJSON+= "'name': '"+ GetName()+"'";
-  m_FullJSON+= fieldseparation + "'type': '"+ GetTypeStr()+"'";
-  m_FullJSON+= fieldseparation + "'index': '"+ IntToStr(GetIndex())+"'";
-  m_FullJSON+= fieldseparation + "'property': '"+ GetProperty()+"'";
-  m_FullJSON+= fieldseparation + "'group': '"+ GetGroup()+"'";
-  m_FullJSON+= fieldseparation + "'interpolation': "+ GetInterpolation().ToJSON();
-  m_FullJSON+= fieldseparation + "'options': [";
+  m_FullJSON+= fieldseparation + "'t': '"+ GetTypeStr()+"'";
+  m_FullJSON+= fieldseparation + "'id': '"+ IntToStr(GetIndex())+"'";
+  m_FullJSON+= fieldseparation + "'pr': '"+ GetProperty()+"'";
+  m_FullJSON+= fieldseparation + "'gr': '"+ GetGroup()+"'";
+  m_FullJSON+= fieldseparation + "'it': "+ GetInterpolation().ToJSON();
+  m_FullJSON+= fieldseparation + "'op': [";
   fieldseparation = "";
   for(int i=0; i<(int)m_Options.Count(); i++ ) {
     moText ostr( m_Options[ i ] );
@@ -1369,16 +1369,15 @@ moParam::ToJSON() {
 
       moText fieldSeparation = ",";
       m_fullJSON = "{";
-      m_fullJSON+= "'paramdefinition': " + GetParamDefinition().ToJSON();
-      m_fullJSON+= fieldSeparation + "'paramindexvalue': " + IntToStr(this->GetIndexValue());
-      m_fullJSON+= fieldSeparation + "'paramvalues': [";
+      m_fullJSON+= "'pdef': " + GetParamDefinition().ToJSON();
+      m_fullJSON+= fieldSeparation + "'pid': " + IntToStr(this->GetIndexValue());
+      m_fullJSON+= fieldSeparation + "'pvals': [";
 
       fieldSeparation = "";
       for( int vi = 0; vi < (int)m_Values.Count(); vi++ ) {
         m_fullJSON+= fieldSeparation + m_Values[vi].ToJSON();
         fieldSeparation = ",";
       }
-     // m_fullJSON+= fieldSeparation + "'paramvalues': " + ToJSON();
       m_fullJSON+= "]";
       m_fullJSON+= "}";
       return m_fullJSON;

@@ -29,6 +29,8 @@
 
 *******************************************************************************/
 
+#include "moActions.h"
+#include "moMoldeoObject.h"
 #include "moEventList.h"
 
 #include "moArray.h"
@@ -144,7 +146,18 @@ moMessage::operator=(const moMessage& src) {
 }
 
 
+const moText& moMessage::ToJSON() {
 
+  moText evtJSON = moEvent::ToJSON();
+  JSON = "{";
+  JSON+= "'src': '"+m_NameSrc+"',";
+  JSON+= "'out': '"+IntToStr(m_OutletIdSrc)+"',";
+  JSON+= "'dest': '"+m_NameDest+"',";
+  JSON+= "'in': '"+IntToStr(m_InletIdDest)+"',";
+  JSON+= "'event': '"+evtJSON+"'";
+  JSON+= "}";
+  return JSON;
+}
 
 
 
@@ -191,6 +204,63 @@ moEvent::moEvent(MOint did, MOint cod, MOint val0, MOpointer ptr ) {
 moEvent::~moEvent() {
 //skip
 }
+/**
+enum edeviceid {
+DID_IODEVICE_KEYBOARD=0,
+DID_IODEVICE_MOUSE=1,
+DID_IODEVICE_MIDI=2,
+DID_IODEVICE_MIXER=3,
+DID_IODEVICE_JOYSTICK=4,
+#define MO_IODEVICE_NET_TCP_IN 5
+#define MO_IODEVICE_NET_UDP_IN 6
+#define MO_IODEVICE_NET_TCP_OUT 7
+#define MO_IODEVICE_NET_UDP_OUT 8
+#define MO_IODEVICE_LIVE 9
+#define MO_IODEVICE_TRACKER 10
+
+#define MO_IODEVICE_TABLET 11
+#define MO_IODEVICE_TOUCH 12
+#define MO_IODEVICE_CONSOLE 20
+#define MO_IODEVICE_ANY -1
+*/
+const moText& moEvent::ToJSON() {
+
+  JSON = "{";
+  switch(deviceid) {
+    case MO_IODEVICE_CONSOLE:
+      JSON+= "'MO_IODEVICE_CONSOLE',";
+      break;
+    default:
+      JSON+= "'"+IntToStr(deviceid)+"',";
+      break;
+  };
+
+  if (devicecode==MO_ACTION_MOLDEOAPI_EVENT_SEND) {
+    JSON+= "'MO_ACTION_MOLDEOAPI_EVENT_SEND',";
+  } else if (devicecode == MO_ACTION_MOLDEOAPI_EVENT_RECEIVE) {
+    JSON+= "'MO_ACTION_MOLDEOAPI_EVENT_RECEIVE',";
+  } else JSON+= "'"+IntToStr(devicecode)+"',";
+
+  JSON+= "'"+IntToStr(reservedvalue0)+"',";
+  JSON+= "'"+IntToStr(reservedvalue1)+"',";
+  JSON+= "'"+IntToStr(reservedvalue2)+"',";
+
+  if (reservedvalue3==MO_MESSAGE) {
+    JSON+= "'MO_MESSAGE',";
+  } else if (reservedvalue3==MO_DATAMESSAGE) {
+    JSON+= "'MO_DATAMESSAGE',";
+  } else JSON+= "'"+IntToStr(reservedvalue3)+"',";
+
+  if (pointer) JSON+= "'"+IntToStr((long)pointer)+"'";
+
+  JSON+= "}";
+  return JSON;
+}
+
+
+
+
+
 
 //EVENTOS
 
@@ -202,6 +272,8 @@ moEventList::moEventList() {
 moEventList::~moEventList() {
 	Finish();
 }
+
+
 
 /*
 void First() {

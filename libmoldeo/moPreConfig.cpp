@@ -133,7 +133,7 @@ moPreConfig::ToJSON() {
   moText fieldseparation = ",";
   m_FullJSON = "{ 'name': '" + m_Name +"'";
   m_FullJSON+= fieldseparation
-               + "'valueindexes': {";
+               + "'vidx': {";
   fieldseparation  = "";
   for( int vi = 0; vi< (int)m_PreconfIndexes.Count(); vi++ ) {
 
@@ -143,8 +143,8 @@ moPreConfig::ToJSON() {
           + "'" + vindex.m_ParamName + "': {";
     fieldseparation = ",";
 
-    m_FullJSON+= "'paramindex': " + IntToStr(vindex.m_ParamIndex);
-    m_FullJSON+= fieldseparation + "'valueindex': " + IntToStr(vindex.m_ValueIndex);
+    m_FullJSON+= "'pid': " + IntToStr(vindex.m_ParamIndex);
+    m_FullJSON+= fieldseparation + "'vid': " + IntToStr(vindex.m_ValueIndex);
     m_FullJSON+=  "}";
   }
   m_FullJSON+=  "}";///fin valueindexes

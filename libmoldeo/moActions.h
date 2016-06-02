@@ -282,6 +282,31 @@ enum moMoldeoActionType {
   */
   MO_ACTION_OBJECT_GETSTATE,
 
+  /// "objectget" : MO_ACTION_OBJECT_GETCONFIG
+  /**
+  * Obtener la info completa de la configuración de un objeto
+  *
+  * param 1: object name | object id
+  */
+  MO_ACTION_OBJECT_GETCONFIG,
+
+  /// "objectgetpreconfig" : MO_ACTION_OBJECT_GETPRECONFIG
+  /**
+  * Obtener la info completa de una preconfiguración
+  *
+  * param 1: object name | object id
+  * param 2: preconfig index
+  */
+  MO_ACTION_OBJECT_GETPRECONFIG,
+
+  /// "objectgetpreconfig" : MO_ACTION_OBJECT_GETPRECONFIG
+  /**
+  * Obtener la info completa de todas las preconfiguraciones
+  *
+  * param 1: object name | object id
+  */
+  MO_ACTION_OBJECT_GETPRECONFIGS,
+
   /// "objectsave" : MO_ACTION_OBJECT_SAVE
   /**
   * Guardar el objeto completo en el archivo de configuración

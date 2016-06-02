@@ -1228,6 +1228,8 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
           //if (pmessage) delete pmessage;
           //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())  );
         }
+        ///reset to update false, so it doesnt continue sending!
+        poutlet->Update(false);
       }
     }
 	}
@@ -2652,7 +2654,7 @@ moMoldeoObject::ToJSON() {
   m_FullJSON+= "'objectstate': " + State.ToJSON();
   m_FullJSON+= fieldSeparation + "'objecttypeid': '" + IntToStr( moGetStrType( Definition.GetName() ) )+"'";
   m_FullJSON+= fieldSeparation + "'objectdefinition': " + Definition.ToJSON();
-  m_FullJSON+= fieldSeparation + "'objectconfig': " + m_Config.ToJSON();
+  //m_FullJSON+= fieldSeparation + "'objectconfig': " + m_Config.ToJSON();
   m_FullJSON+= "}";
 
   return m_FullJSON;

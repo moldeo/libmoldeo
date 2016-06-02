@@ -165,11 +165,12 @@ class LIBMOLDEO_API moBucketsPool {//Last In Last Out
 		bool IsEmpty();
 		bool IsFull();
 
+    MOlong m_nBuckets;
 
 	protected:
 		moBucket*	m_pRetreivedBucket;
 
-		MOlong m_nBuckets;
+
 		MOlong m_lMaxBuckets;//60MB = 60 buckets
 		moLock	m_PoolLock;//lock access to pool
 		moBucket *m_pFirstBucketToGo;
