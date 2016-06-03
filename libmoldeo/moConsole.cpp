@@ -877,6 +877,7 @@ moConsole::AddMoldeoAPIDevices() {
           if (!pFile.Exists()) pdevice->GetConfig()->CreateDefault( pFile.GetCompletePath() );
           pdevice->SetResourceManager( m_pResourceManager );
           pdevice->Init();
+          pdevice->Activate();
       } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText("moldeoapioscin"));
 
   }
@@ -893,6 +894,7 @@ moConsole::AddMoldeoAPIDevices() {
           if (!pFile.Exists()) pdevice->GetConfig()->CreateDefault( pFile.GetCompletePath() );
           pdevice->SetResourceManager( m_pResourceManager );
           pdevice->Init();
+          pdevice->Activate();
       } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText("moldeoapioscout"));
 
   }
