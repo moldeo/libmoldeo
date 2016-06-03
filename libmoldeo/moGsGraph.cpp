@@ -32,15 +32,15 @@
 *******************************************************************************/
 #include "moGsGraph.h"
 
-#include <gst/gst.h>
-#include <gst/interfaces/propertyprobe.h>
-
 #include "moFileManager.h"
 
 moLock BuildLock;
 
 #define MO_GSTREAMER
 #ifdef MO_GSTREAMER
+
+    #include <gst/gst.h>
+    #include <gst/interfaces/propertyprobe.h>
 
     #ifdef MO_MACOSX
         #define DECODEBIN "decodebin"
@@ -161,6 +161,7 @@ moGsGraph::cb_buffer_disconnected (
 	return false;
 }
 
+int cc = 0;
 
 moGBoolean
 moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_data)
@@ -238,7 +239,7 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstBuffer *buffer, moGPointer   u_d
 
                 pbucket->SetBuffer( Gbuffer->size,(MOubyte*)Gbuffer->data );
                 //pbucket->BuildBucket( w*h*4, 100 );
-                //MODebug2->Push("bucket created.");
+                //pGsGraph->MODebug2->Message(moText("bucket created. ") + IntToStr(Gbuffer->size) +moText(" bytes, bucket #") + IntToStr(cc++) );
                 //gst_buffer_extract( Gbuffer, 0, pbucket->GetBuffer(), Gbuffer->size );
 
 

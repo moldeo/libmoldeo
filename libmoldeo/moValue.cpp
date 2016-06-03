@@ -1314,10 +1314,12 @@ moValueDefinition::ToJSON() {
   moText fieldSeparation = ",";
 
   m_FullJSON = "{";
-  m_FullJSON+= "'codename': '" + m_CodeName + "'";
-  m_FullJSON+= fieldSeparation + "'type': '" + GetTypeStr() + "'";
-  m_FullJSON+= fieldSeparation + "'min': " + FloatToStr(m_Min);
-  m_FullJSON+= fieldSeparation + "'max': " + FloatToStr(m_Max);
+    m_FullJSON+=  "'t': '" + GetTypeStr() + "'";
+    if (m_CodeName!="") m_FullJSON+= fieldSeparation+"'cod': '" + m_CodeName + "'";
+    if (m_Min!=m_Max) {
+        m_FullJSON+= fieldSeparation + "'min': " + FloatToStr(m_Min);
+        m_FullJSON+= fieldSeparation + "'max': " + FloatToStr(m_Max);
+    }
   m_FullJSON+= "}";
   return m_FullJSON;
 }
@@ -1480,8 +1482,8 @@ const moText&
 moValueBase::ToJSON() {
   moText fieldSeparation =",";
   m_FullJSON = "{";
-  m_FullJSON+= "'valuedefinition':" + m_ValueDefinition.ToJSON();
-  m_FullJSON+= fieldSeparation + "'value':" + "'" + ToText() + "'";
+  m_FullJSON+= "'d':" + m_ValueDefinition.ToJSON();
+  m_FullJSON+= fieldSeparation + "'v':" + "'" + ToText() + "'";
   m_FullJSON+= "}";
   return m_FullJSON;
 }

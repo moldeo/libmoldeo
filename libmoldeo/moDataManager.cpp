@@ -837,7 +837,7 @@ moDataManager::moDataManager() {
 
 	m_pDataSession = NULL;
     m_pDataSessionConfig = NULL;
-    
+
 
 }
 
@@ -995,25 +995,25 @@ moText moDataManager::m_ModulesDir = MODULESDIR;
 
 const moText& moDataManager::GetDataDir() {
 #ifdef MO_MACOSX
-    
+
     CFBundleRef mainBundle = CFBundleGetMainBundle();
     CFURLRef moldeologoURL = CFBundleCopyResourceURL( mainBundle, CFSTR("moldeologo"),CFSTR("png"),NULL );
-    
+
     /*std::string moldeologostr(CFStringGetCStringPtr(CFURLGetString(moldeologoURL),kCFStringEncodingUTF8));
      */
     string moldeologostr("-");
-    
+
     if (moldeologoURL) {
         moldeologostr = CFStringGetCStringPtr( CFURLGetString(moldeologoURL), kCFStringEncodingUTF8 );
         CFStringRef cfstr = CFURLCopyFileSystemPath( moldeologoURL, kCFURLPOSIXPathStyle );
-        
+
         moldeologostr = CFStringGetCStringPtr( cfstr, kCFStringEncodingUTF8 );
     }
-    
+
     //cout << "moldeologostr: " << moldeologostr << endl;
-    
+
     //CFURLRef resourcesURL = CFBundleCopyResourceURL( mainBundle);
-    
+
     moText datad = moldeologostr.c_str();
     moFile logof(datad);
     moDataManager::m_DataDir = logof.GetPath()+moText("data");
@@ -1024,25 +1024,25 @@ const moText& moDataManager::GetDataDir() {
 
 const moText& moDataManager::GetModulesDir() {
 #ifdef MO_MACOSX
-    
+
     CFBundleRef mainBundle = CFBundleGetMainBundle();
     CFURLRef moldeologoURL = CFBundleCopyResourceURL( mainBundle, CFSTR("moldeologo"),CFSTR("png"),NULL );
-    
+
     /*std::string moldeologostr(CFStringGetCStringPtr(CFURLGetString(moldeologoURL),kCFStringEncodingUTF8));
      */
     string moldeologostr("-");
-    
+
     if (moldeologoURL) {
         moldeologostr = CFStringGetCStringPtr( CFURLGetString(moldeologoURL), kCFStringEncodingUTF8 );
         CFStringRef cfstr = CFURLCopyFileSystemPath( moldeologoURL, kCFURLPOSIXPathStyle );
-        
+
         moldeologostr = CFStringGetCStringPtr( cfstr, kCFStringEncodingUTF8 );
     }
-    
+
     //cout << "moldeologostr: " << moldeologostr << endl;
-    
+
     //CFURLRef resourcesURL = CFBundleCopyResourceURL( mainBundle);
-    
+
     moText datad = moldeologostr.c_str();
     moFile logof(datad);
     moDataManager::m_DataDir = logof.GetPath()+moText("data");
@@ -1304,7 +1304,7 @@ bool moDataManager::ImportFile( const moText& p_import_file_full_path  ) {
   moFile importFile( p_import_file_full_path );
   moText  file_destination_path;
   if (importFile.Exists()) {
-    file_destination_path = GetDataPath() + importFile.GetFullName();
+    file_destination_path = GetDataPath() + "/" + importFile.GetFullName();
     MODebug2->Message("moDataManager::ImportFile > p_import_file_full_path: " + p_import_file_full_path
                       + " to " + file_destination_path );
     result = moFileManager::CopyFile( p_import_file_full_path, file_destination_path );

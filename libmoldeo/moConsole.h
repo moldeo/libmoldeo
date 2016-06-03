@@ -557,10 +557,13 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         int idebug,iligia,iborrado;
 
-        MOfloat fps_current;
-        MOfloat fps_mean;
-        MOint fps_count;
+        MOdouble fps_current;
+        MOdouble fps_mean;
+        MOuint fps_count;
+        MOuint ticks, ticksprevious, tickselapsed;
+        moText fps_text;
         moText  m_LastScreenshot;
+
 
         moText      m_ScreenshotPath;
         moTimer     m_ScreenshotTimer;

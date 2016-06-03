@@ -406,6 +406,10 @@ int moConfig::LoadConfig( moText p_filename ) {
 
 	UnloadConfig();
 
+	//p_filename = p_filename.Replace("\\","//");
+	//p_filename = p_filename.Replace("\\\\","//");
+	p_filename.Replace("\\","/");
+
       if (!moFileManager::FileExists(p_filename)) {
         moDebugManager::Error( "moConfig::LoadConfig > Error " + p_filename + " doesn't exists." );
       }
@@ -635,7 +639,12 @@ int moConfig::LoadConfig( moText p_filename ) {
 
 		}
 
-	} else return MO_CONFIGFILE_NOT_FOUND;
+	} else {
+    if (m_XMLDocument.Error()) {
+      moDebugManager::Error( moText("XML ERROR:") + p_filename+moText(" XML error:") + moText(m_XMLDocument.ErrorDesc()) );
+    }
+    return MO_CONFIGFILE_NOT_FOUND;
+  }
 	m_ConfigLoaded = false;
 	return -1;
 }
@@ -1674,10 +1683,17 @@ moConfig::ToJSON() {
   m_FullJSON+= fieldSeparation + "'parameters': {";
 
   fieldSeparation  = "";
+
   for( int p=0; p<(int)m_Params.Count();p++) {
     moParam Param = m_Params[p];
-    m_FullJSON+= fieldSeparation + "'" + Param.GetParamDefinition().GetName() + "': " + Param.ToJSON();
-    fieldSeparation = ",";
+    if ( Param.GetParamDefinition().GetType()==MO_PARAM_INLET
+    || Param.GetParamDefinition().GetType()==MO_PARAM_OUTLET ) {
+        ///outlets must not be in a param...
+    } else {
+      m_FullJSON+= fieldSeparation + "'" + Param.GetParamDefinition().GetName() + "': " + Param.ToJSON();
+      fieldSeparation = ",";
+    }
+
   }
   m_FullJSON+= "}";
 
@@ -1686,7 +1702,8 @@ moConfig::ToJSON() {
   fieldSeparation  = "";
   for( int pre=0; pre<(int)m_PreConfigs.Count();pre++) {
     moPreConfig PreConfig = m_PreConfigs[pre];
-    m_FullJSON+= fieldSeparation + PreConfig.ToJSON();
+    //m_FullJSON+= fieldSeparation + PreConfig.ToJSON();
+    m_FullJSON+= fieldSeparation + "{'n': '"+PreConfig.m_Name+"'}";
     fieldSeparation = ",";
   }
   m_FullJSON+= "]";

@@ -119,6 +119,9 @@ moReactionListenerManager::moReactionListenerManager() {
   m_MapStrToActionType["objectadd"] = MO_ACTION_OBJECT_ADD;
   m_MapStrToActionType["objectget"] = MO_ACTION_OBJECT_GET;
   m_MapStrToActionType["objectgetstate"] = MO_ACTION_OBJECT_GETSTATE;
+  m_MapStrToActionType["objectgetconfig"] = MO_ACTION_OBJECT_GETCONFIG;
+  m_MapStrToActionType["objectgetpreconfig"] = MO_ACTION_OBJECT_GETPRECONFIG;
+  m_MapStrToActionType["objectgetpreconfigs"] = MO_ACTION_OBJECT_GETPRECONFIGS;
   m_MapStrToActionType["objectsave"] = MO_ACTION_OBJECT_SAVE;
   m_MapStrToActionType["objectset"] = MO_ACTION_OBJECT_SET;
   m_MapStrToActionType["objectdelete"] = MO_ACTION_OBJECT_DELETE;
