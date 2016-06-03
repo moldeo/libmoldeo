@@ -32,15 +32,15 @@
 *******************************************************************************/
 #include "moGsGraph.h"
 
-#include <gst/gst.h>
-#include <gst/interfaces/propertyprobe.h>
-
 #include "moFileManager.h"
 
 moLock BuildLock;
 
 #define MO_GSTREAMER
 #ifdef MO_GSTREAMER
+
+    #include <gst/gst.h>
+    #include <gst/interfaces/propertyprobe.h>
 
     #ifdef MO_MACOSX
         #define DECODEBIN "decodebin"
