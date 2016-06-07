@@ -2827,7 +2827,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       FullObjectJSON+= fieldSeparation+"'apppath': '"+m_pResourceManager->GetDataMan()->GetAppPath()+"'";
       FullObjectJSON+= fieldSeparation+"'appdatapath': '"+m_pResourceManager->GetDataMan()->GetAppDataPath()+"'";
       FullObjectJSON+= fieldSeparation+"'configname': '"+m_pResourceManager->GetDataMan()->GetConsoleConfigName()+"'";
-      FullObjectJSON+= fieldSeparation+"'config': "+this->m_Config.ToJSON();
+      //FullObjectJSON+= fieldSeparation+"'config': "+this->m_Config.ToJSON();
       //FullObjectJSON+= fieldSeparation+"'MapEffects':  {";
       FullObjectJSON+= fieldSeparation+"'MapObjects':  {";
       fieldSeparation = "";
