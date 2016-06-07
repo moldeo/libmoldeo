@@ -903,7 +903,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
         options = PNG_DEFAULT;
         thumbnailfilename+= moText(".png");
     } else
-    if ( p_bufferformat == moText("JPG")) {
+    if ( p_bufferformat == moText("JPG") || p_bufferformat == moText("JPGNORMAL")) {
 
         fif = FIF_JPEG;
         options = JPEG_QUALITYNORMAL;
@@ -1689,7 +1689,7 @@ moTextureAnimated::GetGLId( MOuint p_i ) {
         //WTF
         p_i = 0;
     }
-    
+
 	m_FrameNext = p_i;
 
 	if (NeedsInterpolation()) {

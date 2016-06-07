@@ -877,6 +877,7 @@ moConsole::AddMoldeoAPIDevices() {
           if (!pFile.Exists()) pdevice->GetConfig()->CreateDefault( pFile.GetCompletePath() );
           pdevice->SetResourceManager( m_pResourceManager );
           pdevice->Init();
+          pdevice->Activate();
       } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText("moldeoapioscin"));
 
   }
@@ -893,6 +894,7 @@ moConsole::AddMoldeoAPIDevices() {
           if (!pFile.Exists()) pdevice->GetConfig()->CreateDefault( pFile.GetCompletePath() );
           pdevice->SetResourceManager( m_pResourceManager );
           pdevice->Init();
+          pdevice->Activate();
       } else MODebug2->Error( moText("moConsole::LoadIODevices > Couldn't create the device:") + moText("moldeoapioscout"));
 
   }
@@ -1238,6 +1240,8 @@ moConsole::LoadResources() {
                 presource->SetLabelName(lblname);
                 presource->SetResourceManager( m_pResourceManager );
                 if (presource->Init()) {
+                    if (activate) presource->Activate();
+                    else presource->Deactivate();
                     MODebug2->Message( moText("moConsole::LoadResources > Loaded plugin resource: ") + (moText)resname );
                 } else MODebug2->Error( moText("moConsole::LoadResources > Error: Loading plugin resource: ") + (moText)resname );
             }
@@ -3185,8 +3189,9 @@ moConsole::Update() {
 			else
         pMOB = m_MoldeoSceneObjects[i-m_MoldeoObjects.Count()];
 			if (pMOB) {
-                if (pMOB->GetType()!=MO_OBJECT_IODEVICE)
-                    pMOB->Update(m_pIODeviceManager->GetEvents());
+                if (pMOB->GetType()!=MO_OBJECT_IODEVICE)///MO_OBJECT_IODEVICE WERE ALREADY UPDATED VIA m_pIODeviceManager->Update()
+                    if (pMOB->Activated())
+                      pMOB->Update(m_pIODeviceManager->GetEvents());
 			}
 			RenderMan->EndUpdateObject();
 		}

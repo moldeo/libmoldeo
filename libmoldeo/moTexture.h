@@ -368,7 +368,7 @@ class LIBMOLDEO_API moTexture : public moAbstract {
         *   Salva al disco la textura especificando el nuevo tamaño y el formato
         *   El nombre del archivo es opcional, se toma en general el nombre de la textura
         *   y se le agrega: .thm.jpg   o  .thm.tga
-        *   @param  p_bufferformat  el formato: "JPG" (75:1), "JPGSUPERB" (100:1), "JPGBAD" (10:1), "JPEGNORMAL" (50:1), "JPGAVERAGE" (25:1), "JPGGOOD" (75:1), "TGA"
+        *   @param  p_bufferformat  el formato: "JPG" (75:1), "JPGSUPERB" (100:1), "JPGBAD" (10:1), "JPGNORMAL" (50:1), "JPGAVERAGE" (25:1), "JPGGOOD" (75:1), "TGA"
         *   @param  w   ancho de la nueva imagen
         *   @param  h   alto de la nueva imagen
         *   @param  newfilename el nombre del archivo, si no especifica se usa: GetName()  y se le agrega: .thm.jpg   o  .thm.tga
