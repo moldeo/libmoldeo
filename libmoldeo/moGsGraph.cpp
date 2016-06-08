@@ -252,7 +252,6 @@ moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
   gst_sample_unref(sample);
   return GST_FLOW_OK;
 }
-#endif
 
 moGstFlowReturn
 moGsGraph::appsink_new_preroll( moGstAppSink* appsink, moGPointer user_data ) {
@@ -264,6 +263,9 @@ void
 moGsGraph::appsink_eos( moGstAppSink* appsink, moGPointer user_data ) {
 
 }
+#endif
+
+
 
 
 #ifndef GSTVERSION
@@ -279,13 +281,13 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer  
     GstStructure* str = NULL;
     GstBuffer* Gbuffer;
     GstCaps* caps = NULL;
-    GstPadProbeInfo* Ginfo = (GstPadProbeInfo*) info;
     GstPad* Gpad = NULL;
 
 #ifndef GSTVERSION
     Gbuffer = (GstBuffer*)buffer;
     caps = Gbuffer->caps;
 #else
+    GstPadProbeInfo* Ginfo = (GstPadProbeInfo*) info;
     Gbuffer = GST_PAD_PROBE_INFO_BUFFER ( Ginfo );
     Gpad = (GstPad*)pad;
     if (Gpad)
@@ -343,11 +345,14 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer  
     //cout << "w:" << w << "h:" << h << endl;
 
   if (Gbuffer ) {
-
-    int bsize = gst_buffer_get_size( Gbuffer );
-
+    int bsize;
+#ifndef GSTVERSION
+    bsize = Gbuffer->size;
+#else
+    bsize = gst_buffer_get_size( Gbuffer );
+#endif
     if (isvideo) {
-    if ( bsize>0 && (int)bsize<=(h*w*4) ) {
+      if ( bsize>0 && (int)bsize<=(h*w*4) ) {
         //g_passing buffer to bucketpool
         moBucket *pbucket=NULL;
 
@@ -2225,6 +2230,8 @@ colormode = "";
 									  	res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pColorSpaceSource );
 									  }*/
 #ifndef GSTVERSION
+                  MODebug2->Message("colormode: "+ colormode );
+                  if (colormode=="") colormode = "video/x-raw-yuv";
                    g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
                    "width", G_TYPE_INT, p_sourcewidth,
                    "height", G_TYPE_INT, p_sourceheight,
@@ -2390,9 +2397,11 @@ colormode = "";
                 //RetreivePads( m_pFakeSink );
                 if (m_pFakeSink) {
                      MODebug2->Message(moText("moGsGraph:: created FakeSink! ") ) ;
+#ifdef GSTVERSION
                      g_object_set (G_OBJECT (m_pFakeSink), "caps", caps, NULL);
                      g_object_set (G_OBJECT (m_pFakeSink), "sync", false, NULL);
                      g_object_set (G_OBJECT (m_pFakeSink), "drop", true, NULL);
+#endif
                      res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pFakeSink );
 
 
@@ -2419,7 +2428,7 @@ colormode = "";
                             if (b_forcevideointerlace)
                                 link_result = gst_element_link_many( (GstElement*) m_pColorSpaceInterlace, (GstElement*) m_pVideoDeinterlace, (GstElement*)m_pColorSpace, (GstElement*) m_pCapsFilter, (GstElement*) m_pFakeSink, NULL );
                             else
-                                link_result = gst_element_link_many( (GstElement*) m_pColorSpace, (GstElement*) m_pFakeSink, NULL );
+                                link_result = gst_element_link_many( (GstElement*) m_pColorSpace, (GstElement*) m_pCapsFilter, (GstElement*) m_pFakeSink, NULL );
                                 //link_result = gst_element_link_filtered( (GstElement*) m_pColorSpace, (GstElement*) m_pFakeSink, NULL );
                                 //link_result = gst_element_link_many( (GstElement*) m_pColorSpace, (GstElement*) m_pCapsFilter, (GstElement*) m_pFakeSink, NULL );
                         }

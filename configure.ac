@@ -15,6 +15,10 @@ AC_C_CONST
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_PROG_CXX_C_O
+
 dnl Set install paths.
 if test "x$prefix" = "xNONE" ; then
   prefix="/usr/local"
@@ -90,7 +94,7 @@ AS_HELP_STRING([--with-gles],
 [with_gles=yes])
 
 host_name="default"
-librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-0.10, gstreamer-app-0.10, gl, glew, freetype2, check'
+librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gl, glew, freetype2, check'
 OPENGLESV2=''
 AC_ARG_ENABLE(host,
 [--enable-host[=host name] Specify the host os name:
@@ -106,7 +110,7 @@ AC_ARG_ENABLE(host,
 	host_name="raspbian"
 	host_cflags="-I/opt/vc/include"
 	host_ldflags="-L/opt/vc/lib"
-    	librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, gstreamer-1.0, gstreamer-app-1.0, egl, glesv2, freetype2, check'
+    	librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, egl, glesv2, freetype2, check'
 	OPENGLESV2='#define OPENGLESV2 1'
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
@@ -120,7 +124,27 @@ AC_ARG_ENABLE(host,
 	exit -1
   fi
 ])
-#host_cflags="$host_cflags -DGSTVERSION"
+
+
+GST_VERSION_MAJOR=0
+GST_VERSION_MINOR=10
+GST_VERSION_RELEASE=19
+GSTPLUG_VERSION_RELEASE=7
+
+AC_ARG_ENABLE(gstreamer,
+[--enable-gstreamer[=gstreamer version] Specify the gstreamer version:
+			0.10: Gstreamer version 0.10 [default]
+			1.0: Gstreamer version 1.0],
+[ if test "x$enableval" = "x1.0" ; then
+    GST_VERSION_MAJOR=1
+    GST_VERSION_MINOR=0
+    GST_VERSION_RELEASE=0
+    GSTPLUG_VERSION_RELEASE=0
+    host_cflags="$host_cflags -DGSTVERSION"
+  fi
+])
+
+
 AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
 AC_SUBST([OPENGLESV2],$OPENGLESV2)
@@ -155,16 +179,10 @@ dnl check for ftgl
 PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
 
 dnl check for gstreamer
-GST_VERSION_MAJOR=0
-GST_VERSION_MINOR=10
-GST_VERSION_RELEASE=19
-GSTPLUG_VERSION_RELEASE=7
 GSTREAMER_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GST_VERSION_RELEASE
 GSTPLUGINS_REQ=$GST_VERSION_MAJOR.$GST_VERSION_MINOR.$GSTPLUG_VERSION_RELEASE
 GST_MAJORMINOR=$GST_VERSION_MAJOR.$GST_VERSION_MINOR
 
-#PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
-#  HAVE_GSTREAMER=yes)
 if test "x$host_name" = "xosx" ; then
 
 AC_SUBST(GST_CFLAGS,"-I/Library/Frameworks/GStreamer.framework/Versions/1.0/Headers")
@@ -172,13 +190,19 @@ AC_SUBST(GST_LIBS,"-framework GStreamer")
 
 else
 
-PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
-  HAVE_GSTREAMER=yes)
+PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ, 
+HAVE_GSTREAMER=yes)
 AC_SUBST(GST_CFLAGS)
 AC_SUBST(GST_LIBS)
 
-PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-interfaces-$GST_MAJORMINOR >= $GSTREAMER_REQ,
-  HAVE_GSTREAMER_INTERFACES=yes)
+if test "x$GST_VERSION_MAJOR" = "x1" ; then
+    librequires="$librequires , gstreamer-1.0, gstreamer-app-1.0"
+    PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-app-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
+elif test "x$GST_VERSION_MAJOR" = "x0" ; then
+    librequires="$librequires , gstreamer-0.10, gstreamer-interfaces-0.10, gstreamer-app-0.10"   
+    PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-interfaces-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
+fi
+
 AC_SUBST(GST_INTERFACES_CFLAGS)
 AC_SUBST(GST_INTERFACES_LIBS)
 
@@ -260,6 +284,7 @@ echo "ARCH_STRING: $ARCH_STRING"
 echo "GLES: $with_gles"
 echo "OPENGLESV2: $OPENGLESV2"
 echo "GSTREAMER VERSION: $GSTREAMER_REQ"
+echo "librequires: $librequires"
 echo "HOST NAME: $host_name"
 echo "HOST: $host"
 echo "HOSTCFLAGS: $host_cflags"

@@ -1537,20 +1537,25 @@ void moVideoManager::Update(moEventList * p_EventList)
 		  ts->SetBuffer( pbuffer, GL_RGB);
 #endif
     */
-
                     moVideoFormat vf = pSample->m_VideoFormat;
-                    if (vf.m_RedMask==255 && vf.m_BufferSize>0) {
-                        ///INVERT RED AND BLUE
-                        int bypp = (vf.m_BitCount>>3);
-                        for( int a=0; a<(int)vf.m_BufferSize; a+=bypp ) {
-                            BYTE* pix = &pbuffer[a];
-                            BYTE u = pix[0];
-                            pix[0] = pix[2];
-                            pix[2] = u;
-                        }
-                    }
 
-                  ts->SetBuffer( pbuffer, GL_RGB);
+                    if (vf.m_BitCount>0 && vf.m_BitCount<=64) {
+
+                      if (vf.m_RedMask==255 && vf.m_BufferSize>0) {
+                          ///INVERT RED AND BLUE
+                          int bypp = (vf.m_BitCount>>3);
+                          for( int a=0; a<(int)vf.m_BufferSize; a+=bypp ) {
+                              BYTE* pix = &pbuffer[a];
+                              BYTE u = pix[0];
+                              pix[0] = pix[2];
+                              pix[2] = u;
+                          }
+                      }
+
+                      ts->SetBuffer( pbuffer, GL_RGB);
+
+                    } else MODebug2->Error("moVideoManager::Update > error");
+
                   pbucket->Unlock();
                 }
 
