@@ -37,7 +37,7 @@
 #ifndef GSTVERSION
 #include <gst/interfaces/propertyprobe.h>
 #endif // GSTVERSION
-#define GSTVERSION
+//#define GSTVERSION
 #include "moFileManager.h"
 
 moLock BuildLock;
