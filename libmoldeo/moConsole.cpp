@@ -2550,7 +2550,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
         moParam mParam = MObject->GetConfig()->GetParam(arg1Text);
 
-        moText FullParamJSON = mParam.GetParamDefinition().ToJSON();
+        //
+        moText FullParamJSON = mParam.ToJSON();
         MODebug2->Message( FullParamJSON );
 
         pMessageToSend = new moDataMessage();
@@ -2699,26 +2700,16 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       break;
 
   case MO_ACTION_OBJECT_GETPRECONFIG:
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
       arg1Int  = p_pDataMessage->Get(2).Int();
       MObject = NULL;
-      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
-      if (fxObject) {
-          //FullObjectJSON = fxObject->ToJSON();
-          FullObjectJSON = "{ 'preconfig': " + fxObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
-          FullObjectJSON+=   ", 'position': "+IntToStr(arg1Int)+" }";
-          MODebug2->Message(FullObjectJSON);
-      } else {
-        int idobj = GetObjectId( arg0 );
-        MObject = GetObjectByIdx( idobj );
-        if (MObject) {
-          FullObjectJSON = "{ 'preconfig': " + MObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
+      moPreConfig pC = fxObject->GetConfig()->GetPreconfig(arg1Int);
+      if (MObject) {
+          FullObjectJSON = "{ 'preconfig': " + pC.ToJSON();
           FullObjectJSON+=  ", 'position': "+IntToStr(arg1Int)+" }";
           MODebug2->Message( FullObjectJSON );
-        }
-      }
 
-      if (fxObject || MObject) {
           pMessageToSend = new moDataMessage();
           if (pMessageToSend) {
               pMessageToSend->Add( moData("objectgetpreconfig") );
@@ -2734,31 +2725,22 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETPRECONFIG > [" + arg0+"] not found!" );
+      }
       break;
 
 
   case MO_ACTION_OBJECT_GETPRECONFIGS:
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
       arg1Int  = p_pDataMessage->Get(2).Int();// [0,2] = 3 preconfigs [0,-1]
       arg2Int  = p_pDataMessage->Get(3).Int();// -1 > final
       MObject = NULL;
-      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
-      if (fxObject) {
-          //FullObjectJSON = fxObject->ToJSON();
-          FullObjectJSON = "{ 'preconfig': " + fxObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
+      moPreConfig pC = fxObject->GetConfig()->GetPreconfig(arg1Int);
+      if (MObject) {
+          FullObjectJSON = "{ 'preconfig': " + pC.ToJSON();
           FullObjectJSON+= ", 'position': "+IntToStr(arg1Int)+" }";
           MODebug2->Message(FullObjectJSON);
-      } else {
-        int idobj = GetObjectId( arg0 );
-        MObject = GetObjectByIdx( idobj );
-        if (MObject) {
-          FullObjectJSON = "{ 'preconfig': " + MObject->GetConfig()->GetPreconfig(arg1Int).ToJSON();
-          FullObjectJSON+=  ", 'position': "+IntToStr(arg1Int)+" }";
-          MODebug2->Message( FullObjectJSON );
-        }
-      }
 
-      if (fxObject || MObject) {
           pMessageToSend = new moDataMessage();
           if (pMessageToSend) {
               pMessageToSend->Add( moData("objectgetpreconfigs") );
@@ -2774,6 +2756,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETPRECONFIGS > [" + arg0+"] not found!" );
+      }
       break;
 
   /** CONSOLE

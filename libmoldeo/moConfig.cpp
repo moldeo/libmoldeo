@@ -1690,7 +1690,8 @@ moConfig::ToJSON() {
     || Param.GetParamDefinition().GetType()==MO_PARAM_OUTLET ) {
         ///outlets must not be in a param...
     } else {
-      m_FullJSON+= fieldSeparation + "'" + Param.GetParamDefinition().GetName() + "': " + Param.ToJSON();
+      m_FullJSON+= fieldSeparation + "'" + Param.GetParamDefinition().GetName() + "': " + "{";
+      m_FullJSON+= "}";
       fieldSeparation = ",";
     }
 

@@ -15,7 +15,7 @@
 	"moMathVector3.h"
 	"moMathMatrix.h"
 
-1463526895 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTypes.h
+1465364579 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTypes.h
 	<math.h>
 	<limits.h>
 	<iostream>
@@ -56,7 +56,7 @@
 	"moPort.h"
 	"moText.h"
 
-1455650735 /usr/include/math.h
+1464258426 /usr/include/math.h
 	<features.h>
 	<bits/huge_val.h>
 	<bits/huge_valf.h>
@@ -70,21 +70,21 @@
 	<bits/mathinline.h>
 	<bits/math-finite.h>
 
-1455650713 /usr/include/features.h
+1464258410 /usr/include/features.h
 	<stdc-predef.h>
 	<sys/cdefs.h>
 	<gnu/stubs.h>
 
-1455650713 /usr/include/stdc-predef.h
+1464258410 /usr/include/stdc-predef.h
 
-1455650713 /usr/include/limits.h
+1464258410 /usr/include/limits.h
 	<features.h>
 	<bits/wordsize.h>
 	<bits/posix1_lim.h>
 	<bits/posix2_lim.h>
 	<bits/xopen_lim.h>
 
-1455650740 /usr/include/stdio.h
+1464258429 /usr/include/stdio.h
 	<features.h>
 	<stddef.h>
 	<bits/types.h>
@@ -97,7 +97,7 @@
 	<bits/stdio2.h>
 	<bits/stdio-ldbl.h>
 
-1455650740 /usr/include/libio.h
+1464258429 /usr/include/libio.h
 	<_G_config.h>
 	<stdarg.h>
 	<sys/cdefs.h>
@@ -105,13 +105,13 @@
 	<shlib-compat.h>
 	<bits/libio-ldbl.h>
 
-1455650740 /usr/include/_G_config.h
+1464258429 /usr/include/_G_config.h
 	<bits/types.h>
 	<stddef.h>
 	<wchar.h>
 	<gconv.h>
 
-1455650743 /usr/include/wchar.h
+1464258431 /usr/include/wchar.h
 	<features.h>
 	<stdio.h>
 	<stdarg.h>
@@ -125,35 +125,35 @@
 	<bits/wchar2.h>
 	<bits/wchar-ldbl.h>
 
-1455650749 /usr/include/wctype.h
+1464258436 /usr/include/wctype.h
 	<features.h>
 	<bits/types.h>
 	<wchar.h>
 	<endian.h>
 	<xlocale.h>
 
-1455650742 /usr/include/endian.h
+1464258430 /usr/include/endian.h
 	<features.h>
 	<bits/endian.h>
 	<bits/byteswap.h>
 
-1455650715 /usr/include/xlocale.h
+1464258411 /usr/include/xlocale.h
 
-1455650714 /usr/include/gconv.h
+1464258411 /usr/include/gconv.h
 	<features.h>
 	<wchar.h>
 	<stddef.h>
 
-1455650745 /usr/include/getopt.h
+1464258433 /usr/include/getopt.h
 	<ctype.h>
 
-1455650733 /usr/include/ctype.h
+1464258424 /usr/include/ctype.h
 	<features.h>
 	<bits/types.h>
 	<endian.h>
 	<xlocale.h>
 
-1455650738 /usr/include/stdlib.h
+1464258428 /usr/include/stdlib.h
 	<features.h>
 	<stddef.h>
 	<bits/waitflags.h>
@@ -166,11 +166,11 @@
 	<bits/stdlib.h>
 	<bits/stdlib-ldbl.h>
 
-1455650738 /usr/include/alloca.h
+1464258428 /usr/include/alloca.h
 	<features.h>
 	<stddef.h>
 
-1455650742 /usr/include/string.h
+1464258430 /usr/include/string.h
 	<features.h>
 	<stddef.h>
 	<xlocale.h>
@@ -178,7 +178,7 @@
 	<bits/string2.h>
 	<bits/string3.h>
 
-1455650743 /usr/include/time.h
+1464258432 /usr/include/time.h
 	<features.h>
 	<stddef.h>
 	<bits/time.h>
@@ -197,12 +197,12 @@
 	<OpenGL/glu.h>
 	<GL/glu.h>
 
-1455650738 /usr/include/inttypes.h
+1464258428 /usr/include/inttypes.h
 	<features.h>
 	<stdint.h>
 	<stddef.h>
 
-1455650738 /usr/include/stdint.h
+1464258428 /usr/include/stdint.h
 	<features.h>
 	<bits/wchar.h>
 	<bits/wordsize.h>
@@ -303,7 +303,7 @@
 1462916416 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTimer.h
 	"moTypes.h"
 
-1463782710 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMoldeoObject.h
+1465334856 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMoldeoObject.h
 	"moTypes.h"
 	"moText.h"
 	"moAbstract.h"
@@ -344,7 +344,7 @@
 	<math.h>
 	<unistd.h>
 
-1455650745 /usr/include/unistd.h
+1464258433 /usr/include/unistd.h
 	<features.h>
 	<bits/posix_opt.h>
 	<bits/environments.h>
@@ -391,7 +391,7 @@
 	<readline/rlstdc.h>
 	<readline/rltypedefs.h>
 
-1455650733 /usr/include/assert.h
+1464258424 /usr/include/assert.h
 	<features.h>
 
 1198760545 /usr/include/lua5.1/lauxlib.h
@@ -402,7 +402,7 @@
 1198760545 /usr/include/lua5.1/lualib.h
 	"lua.h"
 
-1463887844 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEventList.h
+1465334856 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEventList.h
 	"moValue.h"
 	"moLock.h"
 
@@ -428,7 +428,7 @@
 1462916416 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMathVector.h
 	"moMath.h"
 
-1463522166 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMath.h
+1465334184 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMath.h
 	"moTypes.h"
 	"moAbstract.h"
 
@@ -483,7 +483,7 @@
 	<windows.h>
 	<dlfcn.h>
 
-1455650741 /usr/include/dlfcn.h
+1464258429 /usr/include/dlfcn.h
 	<features.h>
 	<stddef.h>
 	<bits/dlfcn.h>
@@ -529,7 +529,7 @@
 	"moTempo.h"
 	"moEffectState.h"
 
-1462916415 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moActions.h
+1465334856 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moActions.h
 	"moTypes.h"
 	"moValue.h"
 	<iostream>
@@ -541,7 +541,7 @@
 	"moResourceManager.h"
 	<moFileManager.h>
 
-1453137902 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTexture.h
+1465334856 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTexture.h
 	"moTypes.h"
 	"moText.h"
 	"moParam.h"
@@ -555,7 +555,7 @@
 	"moGLManager.h"
 	"moTextureFilter.h"
 
-1464059374 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moBuckets.h
+1465334856 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moBuckets.h
 	"moTypes.h"
 	"moLock.h"
 
@@ -566,7 +566,7 @@
 	"moArray.h"
 	"moAbstract.h"
 
-1463526664 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGsGraph.h
+1465349872 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGsGraph.h
 	"moConfig.h"
 	"moTypes.h"
 	"moThread.h"
@@ -645,7 +645,7 @@
 	"moLock.h"
 	"moResourceManager.h"
 
-1463526664 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moIODeviceManager.h
+1465334856 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moIODeviceManager.h
 	"moTypes.h"
 	"moText.h"
 	"moMoldeoObject.h"
@@ -700,10 +700,10 @@
 	"moParam.h"
 	"io.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moAbstract.cpp
+1465499057 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moAbstract.cpp
 	"moAbstract.h"
 
-1453137902 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moActions.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moActions.cpp
 	"moActions.h"
 	<moArray.h>
 
@@ -722,7 +722,7 @@
 1441837747 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moBuckets.cpp
 	"moBuckets.h"
 
-1462916415 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConfig.cpp
+1466457365 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConfig.cpp
 	"moTypes.h"
 	<tinyxml.h>
 	"moConfig.h"
@@ -910,7 +910,7 @@
 	"moLunaClasses.h"
 	"moResourceManager.h"
 
-1463522166 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moLunaClasses.h
+1465334184 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moLunaClasses.h
 	"moLuna.h"
 	"moMath.h"
 	"moMathFunction.h"
@@ -986,7 +986,7 @@
 	"moPlugin.h"
 	"moMasterEffect.h"
 
-1463910929 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConsole.h
+1465334856 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConsole.h
 	<moTypes.h>
 	<moText.h>
 	<moResourceManager.h>
@@ -1003,7 +1003,7 @@
 	<tinyxml.h>
 	"moDebugManager.h"
 
-1463890924 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEventList.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEventList.cpp
 	"moActions.h"
 	"moMoldeoObject.h"
 	"moEventList.h"
@@ -3004,7 +3004,7 @@
 1403323484 /usr/include/boost/smart_ptr/detail/atomic_count_pthreads.hpp
 	<pthread.h>
 
-1455650755 /usr/include/pthread.h
+1464258440 /usr/include/pthread.h
 	<features.h>
 	<endian.h>
 	<sched.h>
@@ -3013,7 +3013,7 @@
 	<bits/setjmp.h>
 	<bits/wordsize.h>
 
-1455650745 /usr/include/sched.h
+1464258433 /usr/include/sched.h
 	<features.h>
 	<bits/types.h>
 	<stddef.h>
@@ -3508,21 +3508,21 @@
 
 1399696797 /usr/include/SDL/SDL_platform.h
 
-1455650741 /usr/include/malloc.h
+1464258430 /usr/include/malloc.h
 	<features.h>
 	<stddef.h>
 	<stdio.h>
 
-1455650742 /usr/include/memory.h
+1464258430 /usr/include/memory.h
 	<features.h>
 	<string.h>
 
-1455650742 /usr/include/strings.h
+1464258430 /usr/include/strings.h
 	<features.h>
 	<stddef.h>
 	<xlocale.h>
 
-1455650714 /usr/include/iconv.h
+1464258411 /usr/include/iconv.h
 	<features.h>
 	<stddef.h>
 
@@ -3857,7 +3857,7 @@
 	<linux/version.h>
 	<unistd.h>
 
-1461016940 /usr/include/linux/version.h
+1464124255 /usr/include/linux/version.h
 
 1403323484 /usr/include/boost/asio/handler_type.hpp
 	<boost/asio/detail/config.hpp>
@@ -4039,7 +4039,7 @@
 	<boost/asio/detail/push_options.hpp>
 	<boost/asio/detail/pop_options.hpp>
 
-1455650746 /usr/include/fcntl.h
+1464258433 /usr/include/fcntl.h
 	<features.h>
 	<bits/types.h>
 	<bits/fcntl.h>
@@ -4047,7 +4047,7 @@
 	<bits/stat.h>
 	<bits/fcntl2.h>
 
-1455650759 /usr/include/netinet/in.h
+1464258443 /usr/include/netinet/in.h
 	<features.h>
 	<stdint.h>
 	<sys/socket.h>
@@ -4056,16 +4056,16 @@
 	<endian.h>
 	<bits/byteswap.h>
 
-1455650759 /usr/include/netinet/tcp.h
+1464258443 /usr/include/netinet/tcp.h
 	<features.h>
 	<sys/types.h>
 	<sys/socket.h>
 
-1455650759 /usr/include/arpa/inet.h
+1464258443 /usr/include/arpa/inet.h
 	<features.h>
 	<netinet/in.h>
 
-1455650760 /usr/include/netdb.h
+1464258444 /usr/include/netdb.h
 	<features.h>
 	<netinet/in.h>
 	<stdint.h>
@@ -4074,11 +4074,11 @@
 	<time.h>
 	<bits/netdb.h>
 
-1455650763 /usr/include/rpc/netdb.h
+1464258446 /usr/include/rpc/netdb.h
 	<features.h>
 	<stddef.h>
 
-1455650748 /usr/include/net/if.h
+1464258435 /usr/include/net/if.h
 	<features.h>
 	<sys/types.h>
 	<sys/socket.h>
@@ -6661,7 +6661,7 @@
 	<boost/asio/detail/push_options.hpp>
 	<boost/asio/detail/pop_options.hpp>
 
-1455650738 /usr/include/signal.h
+1464258427 /usr/include/signal.h
 	<features.h>
 	<bits/sigset.h>
 	<bits/types.h>
@@ -7417,7 +7417,7 @@
 	<boost/asio/impl/serial_port_base.hpp>
 	<boost/asio/impl/serial_port_base.ipp>
 
-1455650746 /usr/include/termios.h
+1464258434 /usr/include/termios.h
 	<features.h>
 	<bits/types.h>
 	<bits/termios.h>
@@ -9144,7 +9144,7 @@
 	"moPostPlugin.h"
 	"moArray.h"
 
-1463799166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moPreConfig.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moPreConfig.cpp
 	"moPreConfig.h"
 	"moArray.h"
 
@@ -9164,7 +9164,7 @@
 	<moEffect.h>
 	"moArray.h"
 
-1462916416 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moResourceManager.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moResourceManager.cpp
 	"gst/gst.h"
 	"moResourceManager.h"
 	<moDebugManager.h>
@@ -9401,7 +9401,7 @@
 	<glib/gerror.h>
 	<dirent.h>
 
-1455650744 /usr/include/dirent.h
+1464258432 /usr/include/dirent.h
 	<features.h>
 	<bits/types.h>
 	<bits/dirent.h>
@@ -9983,7 +9983,7 @@
 	<glib-object.h>
 	<errno.h>
 
-1455650738 /usr/include/errno.h
+1464258428 /usr/include/errno.h
 	<features.h>
 	<bits/errno.h>
 
@@ -10117,7 +10117,7 @@
 1462916416 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextFilterParam.cpp
 	"moTextFilterParam.h"
 
-1462916416 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTexture.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTexture.cpp
 	<moTexture.h>
 	<moTextureFilterIndex.h>
 	<FreeImage.h>
@@ -10148,13 +10148,13 @@
 	"moVideoGraph.h"
 	"moArray.h"
 
-1462916416 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moVideoManager.cpp
+1465407503 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moVideoManager.cpp
 	"moVideoManager.h"
 	"moArray.h"
 	"FreeImage.h"
 	<gst/gst.h>
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moDataManager.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moDataManager.cpp
 	"moDataManager.h"
 	<moArray.h>
 	<moVideoGraph.h>
@@ -10164,31 +10164,32 @@
 	<tinyxml.h>
 	"CoreFoundation.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGLManager.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGLManager.cpp
 	"moGLManager.h"
 	"moRenderManager.h"
 	"gtk/gtk.h"
 	"gdk/gdk.h"
 	"gdk/gdkx.h"
 
-1463526664 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGsGraph.cpp
+1465407317 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGsGraph.cpp
 	"moGsGraph.h"
 	<gst/gst.h>
 	<gst/interfaces/propertyprobe.h>
 	"moFileManager.h"
+	<gst/app/gstappsink.h>
 	<gst/gst.h>
 
 1387186108 /usr/include/gstreamer-0.10/gst/interfaces/propertyprobe.h
 	<gst/gst.h>
 
-1463910124 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moIODeviceManager.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moIODeviceManager.cpp
 	"moIODeviceManager.h"
 	"moArray.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moLunaClasses.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moLunaClasses.cpp
 	"moLunaClasses.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMathFunction.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMathFunction.cpp
 	"moTypes.h"
 	"muParser.h"
 	<cstdarg>
@@ -10279,10 +10280,10 @@
 	<cmath>
 	"muParserError.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMathFunctionIndex.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMathFunctionIndex.cpp
 	"moMathFunctionIndex.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMoldeoObject.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMoldeoObject.cpp
 	<moMoldeoObject.h>
 	<moTextureFilterIndex.h>
 	<moScriptManager.h>
@@ -10292,22 +10293,22 @@
 	<moFilterManager.h>
 	"moArray.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moP5.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moP5.cpp
 	"moP5.h"
 	"moMath.h"
 
-1463526671 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moParam.cpp
+1465334856 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moParam.cpp
 	"moParam.h"
 	<tinyxml.h>
 	"moDebugManager.h"
 	"moArray.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moSceneEffect.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moSceneEffect.cpp
 	"moSceneEffect.h"
 	<moArray.h>
 	<tinyxml.h>
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moSoundManager.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moSoundManager.cpp
 	"moSoundManager.h"
 	"moArray.h"
 	<AL/alut.h>
@@ -10333,27 +10334,27 @@
 
 1332950117 /usr/include/AL/efx.h
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moText.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moText.cpp
 	"moText.h"
 	"moArray.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureManager.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureManager.cpp
 	"moTextureManager.h"
 	<FreeImage.h>
 	<moDataManager.h>
 	<moFileManager.h>
 	"moArray.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moThread.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moThread.cpp
 	"moThread.h"
 
-1463522166 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTypes.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTypes.cpp
 	"moTypes.h"
 	"config.h"
 
-1463525891 /home/fabricio/moldeo/moldeoinstaller/libmoldeo//config.h
+1465350484 /home/fabricio/moldeo/moldeoinstaller/libmoldeo//config.h
 
-1463526671 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moValue.cpp
+1465334184 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moValue.cpp
 	"moValue.h"
 	"moTexture.h"
 	"moTextureFilter.h"
@@ -10499,4 +10500,11 @@
 	"SDL_stdinc.h"
 	"begin_code.h"
 	"close_code.h"
+
+1387186111 /usr/include/gstreamer-0.10/gst/app/gstappsink.h
+	<gst/gst.h>
+	<gst/base/gstbasesink.h>
+
+1387309425 /usr/include/gstreamer-0.10/gst/base/gstbasesink.h
+	<gst/gst.h>
 
