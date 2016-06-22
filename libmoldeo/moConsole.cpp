@@ -2663,49 +2663,41 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       break;
 
   case MO_ACTION_OBJECT_GETCONFIG:
-      arg0  = p_pDataMessage->Get(1).ToText();
-      MObject = NULL;
-      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
-      if (fxObject) {
-          //FullObjectJSON = fxObject->ToJSON();
-          FullObjectJSON = "{ 'objectconfig': " + fxObject->GetConfig()->ToJSON();
-          FullObjectJSON+= "}";
-          MODebug2->Message(FullObjectJSON);
-      } else {
+      {
+        arg0  = p_pDataMessage->Get(1).ToText();
         int idobj = GetObjectId( arg0 );
         MObject = GetObjectByIdx( idobj );
         if (MObject) {
-          FullObjectJSON = "{ 'objectconfig': " + MObject->GetConfig()->ToJSON();
-          FullObjectJSON+= "}";
-          MODebug2->Message( FullObjectJSON );
+            FullObjectJSON = "{ 'objectconfig': " + MObject->GetConfig()->ToJSON();
+            FullObjectJSON+= "}";
+            MODebug2->Message( FullObjectJSON );
+
+            pMessageToSend = new moDataMessage();
+            if (pMessageToSend) {
+                pMessageToSend->Add( moData("objectgetconfig") );
+                //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+                pMessageToSend->Add( moData( arg0 ) );
+                pMessageToSend->Add( moData( FullObjectJSON ) );
+                //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+                //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+                // send it: but we need an id
+                SendMoldeoAPIMessage( pMessageToSend );
+            }
+
+            return 0;
         }
+        MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETCONFIG > [" + arg0+"] not found!" );
       }
-
-      if (fxObject || MObject) {
-          pMessageToSend = new moDataMessage();
-          if (pMessageToSend) {
-              pMessageToSend->Add( moData("objectgetconfig") );
-              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
-              pMessageToSend->Add( moData( arg0 ) );
-              pMessageToSend->Add( moData( FullObjectJSON ) );
-              //pMessageToSend->Add( moData( "{'testing': 0}" ) );
-              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
-              // send it: but we need an id
-              SendMoldeoAPIMessage( pMessageToSend );
-          }
-
-          return 0;
-      }
-      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETCONFIG > [" + arg0+"] not found!" );
       break;
 
   case MO_ACTION_OBJECT_GETPRECONFIG:
       {
       arg0  = p_pDataMessage->Get(1).ToText();
       arg1Int  = p_pDataMessage->Get(2).Int();
-      MObject = NULL;
-      moPreConfig pC = fxObject->GetConfig()->GetPreconfig(arg1Int);
+      int idobj = GetObjectId( arg0 );
+      MObject = GetObjectByIdx( idobj );
       if (MObject) {
+          moPreConfig pC = MObject->GetConfig()->GetPreconfig(arg1Int);
           FullObjectJSON = "{ 'preconfig': " + pC.ToJSON();
           FullObjectJSON+=  ", 'position': "+IntToStr(arg1Int)+" }";
           MODebug2->Message( FullObjectJSON );
