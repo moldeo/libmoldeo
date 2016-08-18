@@ -2459,6 +2459,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       break;
 
     case MO_ACTION_EFFECT_PLAY:
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
@@ -2466,9 +2467,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PLAY > [" + arg0+"] not found!" );
+      }
       break;
 
     case MO_ACTION_EFFECT_PAUSE:
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
@@ -2476,9 +2479,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PAUSE > [" + arg0+"] not found!" );
+      }
       break;
 
     case MO_ACTION_EFFECT_STOP:
+      {
       arg0  = p_pDataMessage->Get(1).ToText();
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
@@ -2486,6 +2491,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_STOP > [" + arg0+"] not found!" );
+      }
       break;
 
     /**
@@ -2522,7 +2528,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         }
 
         SetParam( MObject->GetId(), pparam.GetParamDefinition().GetIndex(), pparam.GetParamDefinition() );
-      }
+
 
       /** SEND IT UPDATED!!!*/
       MoldeoApiCommandData.SetText( "paramget" );
@@ -2532,6 +2538,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       p_pDataMessage->Set( 3, moData("") );
       p_pDataMessage->Set( 4, moData("") );
       ProcessMoldeoAPIMessage( p_pDataMessage );
+      }
       break;
 
     case MO_ACTION_PARAM_GET:
@@ -2576,36 +2583,108 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
     */
 
     case MO_ACTION_PRECONFIG_SET:
-      arg0  = p_pDataMessage->Get(1).ToText();
-      arg1Int = p_pDataMessage->Get(2).Int();
+      {
+        arg0  = p_pDataMessage->Get(1).ToText();
+        arg1Int = p_pDataMessage->Get(2).Int();
 
-      MObject = GetObjectByIdx(GetObjectId(arg0) );
-      if (MObject) {
-          //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
-          if ( 0 <= arg1Int && arg1Int<MObject->GetConfig()->GetPreConfCount()) {
-            this->SetPreconf( MObject->GetId(), arg1Int );
-          } else {
-            MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > preconfig index [" + IntToStr(arg1Int)+"] not found!" );
-          }
-          return 0;
+        MObject = GetObjectByIdx(GetObjectId(arg0) );
+        if (MObject) {
+            //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
+            if ( 0 <= arg1Int && arg1Int<MObject->GetConfig()->GetPreConfCount()) {
+              this->SetPreconf( MObject->GetId(), arg1Int );
+            } else {
+              MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > preconfig index [" + IntToStr(arg1Int)+"] not found!" );
+            }
+            return 0;
+        }
+        MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > Moldeo Object [" + arg0+"] not found!" );
       }
-      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > Moldeo Object [" + arg0+"] not found!" );
       break;
+
     case MO_ACTION_PRECONFIG_ADD:
-      arg0  = p_pDataMessage->Get(1).ToText();//label object
-      arg1Int = p_pDataMessage->Get(2).Int();//preconfig index
+      {
+        arg0  = p_pDataMessage->Get(1).ToText();//label object
+        arg1Int = p_pDataMessage->Get(2).Int();//preconfig index
 
-      MObject = GetObjectByIdx(GetObjectId(arg0) );
-      if (MObject) {
-          //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
-          if ( 0 <= arg1Int && arg1Int<MObject->GetConfig()->GetPreConfCount()) {
-            //this->SetPreconf( fxObject->GetId(), arg1Int );
-            //do nothing
-          } else {
-            MObject->GetConfig()->AddPreconfig( arg1Int );
-            FullObjectJSON = MObject->ToJSON();
+        MObject = GetObjectByIdx(GetObjectId(arg0) );
+        if (MObject) {
+            //fxObject->GetConfig()->SetCurrentPreConf( arg1Int );
+            if ( 0 <= arg1Int && arg1Int<MObject->GetConfig()->GetPreConfCount()) {
+              //this->SetPreconf( fxObject->GetId(), arg1Int );
+              //do nothing
+            } else {
+              MObject->GetConfig()->AddPreconfig( arg1Int );
+              FullObjectJSON = MObject->ToJSON();
+              MODebug2->Message(FullObjectJSON);
+
+              pMessageToSend = new moDataMessage();
+              if (pMessageToSend) {
+                  pMessageToSend->Add( moData("objectget") );
+                  //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+                  pMessageToSend->Add( moData( arg0 ) );
+                  pMessageToSend->Add( moData( FullObjectJSON ) );
+                  //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+                  //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+                  // send it: but we need an id
+                  SendMoldeoAPIMessage( pMessageToSend );
+              }
+            }
+            return 0;
+        }
+        MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > Moldeo Object [" + arg0+"] not found!" );
+      }
+      break;
+
+  /** OBJECTS
+
+  */
+
+    case MO_ACTION_OBJECT_ADD:
+      {
+/// adding an object
+
+      }
+      break;
+
+    case MO_ACTION_OBJECT_MOVE:
+      {
+///
+
+      }
+      break;
+
+    case MO_ACTION_OBJECT_DELETE:
+      {
+///
+      }
+      break;
+
+    case MO_ACTION_OBJECT_DUPLICATE:
+      {
+///
+      }
+      break;
+
+
+    case MO_ACTION_OBJECT_GET:
+      {
+        arg0  = p_pDataMessage->Get(1).ToText();
+        MObject = NULL;
+        fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+        if (fxObject) {
+            FullObjectJSON = fxObject->ToJSON();
             MODebug2->Message(FullObjectJSON);
+        } else {
+          int idobj = GetObjectId( arg0 );
+          MObject = GetObjectByIdx( idobj );
+          if (MObject) {
+            FullObjectJSON = "{ 'object': " + MObject->ToJSON();
+            FullObjectJSON+= "}";
+            MODebug2->Message( FullObjectJSON );
+          }
+        }
 
+        if (fxObject || MObject) {
             pMessageToSend = new moDataMessage();
             if (pMessageToSend) {
                 pMessageToSend->Add( moData("objectget") );
@@ -2617,49 +2696,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                 // send it: but we need an id
                 SendMoldeoAPIMessage( pMessageToSend );
             }
-          }
-          return 0;
-      }
-      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > MO_ACTION_PRECONFIG_SET > Moldeo Object [" + arg0+"] not found!" );
-      break;
 
-  /** OBJECTS
-
-  */
-
-    case MO_ACTION_OBJECT_GET:
-      arg0  = p_pDataMessage->Get(1).ToText();
-      MObject = NULL;
-      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
-      if (fxObject) {
-          FullObjectJSON = fxObject->ToJSON();
-          MODebug2->Message(FullObjectJSON);
-      } else {
-        int idobj = GetObjectId( arg0 );
-        MObject = GetObjectByIdx( idobj );
-        if (MObject) {
-          FullObjectJSON = "{ 'object': " + MObject->ToJSON();
-          FullObjectJSON+= "}";
-          MODebug2->Message( FullObjectJSON );
+            return 0;
         }
+        MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GET > [" + arg0+"] not found!" );
       }
-
-      if (fxObject || MObject) {
-          pMessageToSend = new moDataMessage();
-          if (pMessageToSend) {
-              pMessageToSend->Add( moData("objectget") );
-              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
-              pMessageToSend->Add( moData( arg0 ) );
-              pMessageToSend->Add( moData( FullObjectJSON ) );
-              //pMessageToSend->Add( moData( "{'testing': 0}" ) );
-              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
-              // send it: but we need an id
-              SendMoldeoAPIMessage( pMessageToSend );
-          }
-
-          return 0;
-      }
-      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GET > [" + arg0+"] not found!" );
       break;
 
   case MO_ACTION_OBJECT_GETCONFIG:
@@ -2756,6 +2797,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   */
 
     case MO_ACTION_CONSOLE_PRESENTATION:
+      {
       //m_pIODeviceManager->GetEvents()->Add( 7878, SDL_KEYDOWN, SDLK_F12 );
 
       newMessage = new moMessage( 999 /**PLAYER*/,
@@ -2765,9 +2807,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       m_pIODeviceManager->GetEvents()->Add( (moEvent*) newMessage );
       MODebug2->Message("MO_ACTION_CONSOLE_PRESENTATION");
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_SCREENSHOT:
+      {
       //ScreenShot();
       if (m_pResourceManager->GetRenderMan()->Screenshot(moText(""), m_LastScreenshot)) {
         pMessageToSend = new moDataMessage();
@@ -2780,9 +2824,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         }
       }
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_PREVIEW_SHOT:
+      {
       //ScreenShot();
       if (m_pResourceManager->GetRenderMan()->PreviewShot( true ) ) {
         pMessageToSend = new moDataMessage();
@@ -2796,9 +2842,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       }
 
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_SAVE:
+      {
       //ScreenShot();
       ///SAVING ALL
       MODebug2->Message("moConsole::Processing > Saving ALL");
@@ -2814,8 +2862,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           SendMoldeoAPIMessage( pMessageToSend );
       }
       return 0;
+      }
       break;
+
     case MO_ACTION_CONSOLE_SAVEAS:
+      {
       MODebug2->Message("moConsole::Processing > Save As");
       arg0  = p_pDataMessage->Get(1).ToText();//DIRECTORY
       ///si no existe ese directorio crearlo!!!
@@ -2853,9 +2904,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
             SendMoldeoAPIMessage( pMessageToSend );
         }
       }
+      }
       break;
 
     case MO_ACTION_CONSOLE_PLAY:
+      {
       ConsolePlay();
 
       EffectStateJSON = m_ConsoleState.ToJSON();
@@ -2871,9 +2924,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       }
 
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_STOP:
+      {
       ConsoleStop();
 
       EffectStateJSON = m_ConsoleState.ToJSON();
@@ -2888,9 +2943,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           SendMoldeoAPIMessage( pMessageToSend );
       }
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_PAUSE:
+      {
       ConsolePause();
 
       EffectStateJSON = m_ConsoleState.ToJSON();
@@ -2905,9 +2962,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           SendMoldeoAPIMessage( pMessageToSend );
       }
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_RECORD_SESSION:
+      {
       ConsoleRecordSession();
 
       EffectStateJSON = m_ConsoleState.ToJSON();
@@ -2922,6 +2981,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           SendMoldeoAPIMessage( pMessageToSend );
       }
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_RENDER_SESSION:
@@ -2953,7 +3013,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       break;
 
     case MO_ACTION_CONSOLE_GET:
-
+      {
       FullObjectJSON = "{";
       FullObjectJSON+= moText("'datapath': '")+m_pResourceManager->GetDataMan()->GetDataPath()+"'";
       FullObjectJSON+= fieldSeparation+"'apppath': '"+m_pResourceManager->GetDataMan()->GetAppPath()+"'";
@@ -2998,9 +3058,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       }
 
       return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_GETSTATE:
+      {
       /** must return console state */
       EffectStateJSON = m_ConsoleState.ToJSON();
 
@@ -3015,12 +3077,14 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       }
 
       return 0;
-      return 0;
+      }
       break;
 
     case MO_ACTION_CONSOLE_SETSTATE:
+      {
       /** must set the new actual console state */
       return 0;
+      }
       break;
 
     default:
@@ -3032,6 +3096,501 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   return -1; /*PROCESS NOT OK*/
 }
 
+void moConsole::Error( const moText &p_message ) {
+  MODebug2->Error( p_message );
+}
+
+int moConsole::NewMob( const moMobDefinition &p_MobDef ) {
+
+    moText confignamecomplete = "";
+    bool res = false;
+
+    //p_MobDesc.SetProjectDescriptor( GetProject() );
+
+    moMobDefinition pMobDef = p_MobDef;//p_MobDesc.GetMobDefinition();
+
+    moEffect* pEffect = NULL;
+    moResource* pResource = NULL;
+    MOint rid = -1;
+    moMoldeoObject* pMOB = NULL;
+    moMoldeoObject* pFatherMOB = NULL;
+    moEffectManager* pFxManager = NULL;
+
+    moConfig* pConfig = NULL;
+
+    if (pMobDef.GetMoldeoFatherId()==-1) {
+        pConfig = &m_Config;
+        pFxManager = &m_EffectManager;
+    }
+    else if (pMobDef.GetMoldeoFatherId()>=0) {
+        pFatherMOB = GetObjectByIdx( pMobDef.GetMoldeoFatherId() );
+        if (pFatherMOB && pFatherMOB->GetName()=="scene") {
+          moSceneEffect* pScene = (moSceneEffect*) pFatherMOB;
+          pConfig = pScene->GetConfig();
+          pFxManager = &pScene->GetEffectManager();
+        }
+    }
+
+    switch( (int) pMobDef.GetType()) {
+        case MO_OBJECT_PREEFFECT:
+              pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("preeffect") );
+              pMobDef.SetConsoleValueIndex( pFxManager->PreEffects().Count() );
+              pMOB = (moMoldeoObject*)pFxManager->New( pMobDef );
+              pEffect = (moEffect*) pMOB;
+              if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "preeffect" );
+              break;
+          case MO_OBJECT_EFFECT:
+              pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("effect") );
+              pMobDef.SetConsoleValueIndex( pFxManager->Effects().Count() );
+              pMOB = (moMoldeoObject*)pFxManager->New( pMobDef );
+              pEffect = (moEffect*) pMOB;
+              if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "effect" );
+              break;
+          case MO_OBJECT_POSTEFFECT:
+              pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("posteffect") );
+              pMobDef.SetConsoleValueIndex( pFxManager->PostEffects().Count() );
+              pMOB = (moMoldeoObject*)pFxManager->New( pMobDef );
+              pEffect = (moEffect*) pMOB;
+              if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "posteffect" );
+              break;
+          case MO_OBJECT_MASTEREFFECT:
+              pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("mastereffect") );
+              pMobDef.SetConsoleValueIndex( pFxManager->MasterEffects().Count() );
+              pMOB = (moMoldeoObject*) pFxManager->New( pMobDef );
+              pEffect = (moEffect*) pMOB;
+              if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "mastereffect" );
+              break;
+          case MO_OBJECT_IODEVICE:
+              pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("devices") );
+              pMobDef.SetConsoleValueIndex( m_pIODeviceManager->IODevices().Count() );
+              pMOB = (moMoldeoObject*) m_pIODeviceManager->NewIODevice( pMobDef.GetName(), pMobDef.GetConfigName(), pMobDef.GetLabelName(), pMobDef.GetKeyName(), MO_OBJECT_IODEVICE, pMobDef.GetMobIndex().GetParamIndex(), pMobDef.GetMobIndex().GetValueIndex() );
+              if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "iodevice" );
+              break;
+          case MO_OBJECT_RESOURCE:
+              pMobDef.SetConsoleParamIndex( m_Config.GetParamIndex("resources") );
+              pMobDef.SetConsoleValueIndex( m_Config.GetParam("resources").GetValuesCount() );
+              rid = m_pResourceManager->GetResourceIndex( pMobDef.GetLabelName() );
+              if(rid>-1) pResource = m_pResourceManager->GetResource(rid);
+
+              if (pResource ) {
+                  //do nothing
+                  if (pResource->GetLabelName()!=pMobDef.GetLabelName()) {
+                      pResource->SetConfigName( pMobDef.GetConfigName() );
+                      pResource->SetLabelName( pMobDef.GetLabelName() );
+                  } else Error( moText("Resource already loaded: ") + (moText)pResource->GetLabelName() );
+              } else
+              if (m_pResourceManager->NewResource( pMobDef.GetName(), pMobDef.GetConfigName(), pMobDef.GetLabelName(), pMobDef.GetKeyName() )) {
+                  rid = m_pResourceManager->GetResourceIndex( pMobDef.GetLabelName() );
+                  if (rid>=0) {
+                      pResource = m_pResourceManager->GetResource(rid);
+                      if (pResource) {
+                          pResource->SetConfigName( pMobDef.GetConfigName() );
+                          pResource->SetLabelName( pMobDef.GetLabelName() );
+                      }
+                  }
+              }
+              pMOB = (moMoldeoObject*) pResource;
+
+              pMOB->SetMobDefinition( pMobDef );
+
+              if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "resource" );
+              break;
+          default:
+              Error(moText("moConsole::NewMob: No mob type defined."));
+              return -1;
+              break;
+      }
+
+      if (pMOB) {
+
+          if (pMOB->GetConfigName().Length()>0) {
+
+              confignamecomplete = m_pResourceManager->GetDataMan()->GetDataPath();
+              confignamecomplete +=  moSlash + moText(pMOB->GetConfigName());
+              confignamecomplete +=  moText(".cfg");
+
+              pMOB->GetDefinition();
+
+              ///Creates the config file based on definition plugin
+              moFile pFile(confignamecomplete);
+
+              ///veamos si existe antes...
+              if (!pFile.Exists()) {
+                  ///si no existe lo creamos...
+                  res = pMOB->GetConfig()->CreateDefault( confignamecomplete );
+
+              } else {
+                  ///si existe lo cargamos...
+                  res = true;
+
+              }
+
+              if (res) {
+                  pMOB->GetConfig()->UnloadConfig();
+
+                  pMOB->SetResourceManager( m_pResourceManager );
+
+                  res = pMOB->Init();
+                  if (res) {
+                      if (pEffect) {
+                          pEffect->LoadCodes( m_pIODeviceManager );
+                          pEffect->Activate();
+                      }
+                  } else {
+                      Error( moText("moConsole::NewMob Couldn't initialized effect" ) );
+                  }
+
+                  //pEffect->Draw( &m_EffectState.tempo );
+                  /** TODO: convert to XML !!!*/
+                  moValue effectvalue( pMOB->GetName(), "TXT" );
+                  effectvalue.AddSubValue( pMOB->GetConfigName() , "TXT" );
+                  effectvalue.AddSubValue( pMOB->GetLabelName() , "TXT" );
+                  effectvalue.AddSubValue( "0" , "NUM" );
+                  if (pMOB->GetMobDefinition().GetActivate())
+                    effectvalue.AddSubValue( "1" , "NUM" );
+                  else
+                    effectvalue.AddSubValue( "0" , "NUM" );
+
+                  if (pMOB->GetMobDefinition().GetKeyName()!="")
+                    effectvalue.AddSubValue( pMOB->GetMobDefinition().GetKeyName() , "TXT" );
+                  else
+                    effectvalue.AddSubValue( "" , "TXT" );
+
+                  if (pConfig) pConfig->GetParam( pMOB->GetMobDefinition().GetMobIndex().GetParamIndex() ).AddValue( effectvalue );
+
+                  LoadConnections();
+                  moMobDefinition MDef = pMOB->GetMobDefinition();
+                  bool validity = MDef.IsValid();
+                  if (validity==false) {
+                    Error( moText("moConsole::NewMob:: Source > MobDefinition Invalid") );
+                  } else {
+                    //ProjectUpdated( m_ProjectDescriptor );
+                    return 1;
+                  }
+
+              } else {
+                  Error( moText("moConsole::NewMob Couldn't create default configuration") );
+              }
+
+          } else {
+              Error( moText("moConsole::NewMob Config filename undefined" ) );
+          }
+      } else {
+          Error( moText("moConsole::NewMob Couldn't create effect: " ) + pMobDef.GetName() );
+      }
+
+      return -1;
+
+}
+
+int moConsole::AddChildMob( const moMobDefinition &p_MobDef, const moMobDefinition &p_MobDefFather ) {
+
+  moMobDefinition pMobDef = p_MobDef;
+  /*moMoldeoObject* pMOB = GetObject( p_MobDesc );*/
+  /*really must be check by NewMob... it shouldnt let create MOBs with same label and configname...*/
+
+  pMobDef.SetMoldeoFatherId( p_MobDefFather.GetMoldeoId() );
+
+  return NewMob( pMobDef );
+}
+
+
+int moConsole::MoveMob( const moMobDefinition& p_MobDef, int position ) {
+
+  ///chequea el objeto a mover
+
+  moMoldeoObject* pObj = NULL;
+  moMoldeoObject* pObjAux = NULL;
+  int array_count = 0;
+  moMobDefinition pMobDef = p_MobDef;
+  moMoldeoObjectType MobType = pMobDef.GetType();
+  int index_object = pMobDef.GetMobIndex().GetValueIndex();
+
+  pObj = m_MoldeoObjects.GetRef(
+                            RelativeToGeneralIndex( index_object, MobType )
+                             );
+
+  ///si el valor del indice nuevo es valido (esta en rango)
+  switch( pMobDef.GetType() ) {
+
+    case MO_OBJECT_EFFECT:
+      array_count = m_EffectManager.Effects().Count();
+      break;
+    case MO_OBJECT_PREEFFECT:
+      array_count = m_EffectManager.PreEffects().Count();
+      break;
+    case MO_OBJECT_POSTEFFECT:
+      array_count = m_EffectManager.PostEffects().Count();
+      break;
+    case MO_OBJECT_MASTEREFFECT:
+      array_count = m_EffectManager.MasterEffects().Count();
+      break;
+
+    case MO_OBJECT_IODEVICE:
+      array_count = m_pIODeviceManager->IODevices().Count();
+      break;
+    case MO_OBJECT_RESOURCE:
+      //array_count = m_pResourceManager->Resources().Count();
+      array_count = 0;
+      Error( "Sorry. Changing order of resources is not allowed yet." );
+      return -1;
+      break;
+    default:
+      array_count = 0;
+      break;
+
+  }
+
+
+      if ( position >= 0 && position < array_count ) {
+
+          ///hace un switch entre el objeto q estaba ahi y este...
+          //p_MobDesc.GetMobDefinition().GetMobIndex().GetValueIndex()
+          //moEffect* pObjFx = m_EffectManager.Effects().GetRef(index_object);
+          int paramindex = pMobDef.GetMobIndex().GetParamIndex();
+          int valueindex = pMobDef.GetMobIndex().GetValueIndex();
+
+          int preconf1 = m_Config.GetValue( paramindex, valueindex ).GetSubValue(3).Int();
+          int active1 = m_Config.GetValue( paramindex, valueindex ).GetSubValue(4).Int();
+
+          ///intercambiamos los objetos dentro del array del effectmanager
+
+
+          int diff = position - index_object;
+          if (diff==0) {
+            ///no se hace nada
+          } else if (diff>0) {
+            ///position es mas que index_object, el objeto baja en los indices
+
+            /// se reordenan los objetos entre el position y el index_object....
+            /// arrancando desde el index_object hasta el position
+            for( int o = index_object; o < (position); o++ ) {
+
+              ///intercambiamos los objetos... en el array
+              pObjAux = m_MoldeoObjects.GetRef( RelativeToGeneralIndex( o+1, MobType ) );
+
+              if ( MO_OBJECT_EFFECT<=MobType && MobType<=MO_OBJECT_PREEFFECT) m_EffectManager.Set( o, pObjAux );
+              else if (MobType==MO_OBJECT_IODEVICE) m_pIODeviceManager->IODevices().Set( o, (moIODevice*)pObjAux );
+
+              m_MoldeoObjects.Set( RelativeToGeneralIndex( o, MobType ) , pObjAux );
+
+              ///intercambiamos los valores en el config y actualizamos los mobindex.... importante!!
+              //moMobIndex mindex2 = pObjFxAux->GetMobDefinition().GetMobIndex();
+              moMobIndex mindex2 = pObjAux->GetMobDefinition().GetMobIndex();
+              int preconf2 = m_Config.GetValue( paramindex, mindex2.GetValueIndex() ).GetSubValue(3).Int();
+              int active2 = m_Config.GetValue( paramindex, mindex2.GetValueIndex() ).GetSubValue(4).Int();
+
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(0).SetText( pObjAux->GetName() );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(1).SetText( pObjAux->GetConfigName() );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(2).SetText( pObjAux->GetLabelName() );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(3).SetInt( preconf2 );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(4).SetInt( active2 );
+              pObjAux->SetConsoleValueIndex( o );
+
+            }
+            ///al fin...
+            if ( MO_OBJECT_EFFECT<=MobType && MobType<=MO_OBJECT_PREEFFECT) m_EffectManager.Set( position, pObj );
+            else if (MobType==MO_OBJECT_IODEVICE) m_pIODeviceManager->IODevices().Set( position, (moIODevice*)pObj );
+
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(0).SetText( pObj->GetName() );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(1).SetText( pObj->GetConfigName() );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(2).SetText( pObj->GetLabelName() );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(3).SetInt( preconf1 );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(4).SetInt( active1 );
+            pObj->SetConsoleValueIndex( position );
+            int mobsindx = RelativeToGeneralIndex( position, MobType );
+            m_MoldeoObjects.Set( mobsindx, pObj );
+
+          } else if (diff<0) {
+            ///position es menos que index_object, el objeto sube en los indices
+
+            /// se reordenan los objetos entre el position y el index_object....
+            /// arrancando desde el position hasta el index_object
+            for( int o = index_object ; o >= (position+1)  ; o-- ) {
+
+             pObjAux = m_MoldeoObjects.GetRef( RelativeToGeneralIndex( o-1, MobType ) );
+
+              if ( MO_OBJECT_EFFECT<=MobType && MobType<=MO_OBJECT_PREEFFECT) m_EffectManager.Set( o, pObjAux );
+              else if (MobType==MO_OBJECT_IODEVICE) m_pIODeviceManager->IODevices().Set( o, (moIODevice*)pObjAux );
+
+              m_MoldeoObjects.Set( RelativeToGeneralIndex( o, MobType ), pObjAux );
+
+              moMobIndex mindex2 = pObjAux->GetMobDefinition().GetMobIndex();
+              int preconf2 = m_Config.GetValue( paramindex, mindex2.GetValueIndex() ).GetSubValue(3).Int();
+              int active2 = m_Config.GetValue( paramindex, mindex2.GetValueIndex() ).GetSubValue(4).Int();
+
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(0).SetText( pObjAux->GetName() );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(1).SetText( pObjAux->GetConfigName() );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(2).SetText( pObjAux->GetLabelName() );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(3).SetInt( preconf2 );
+              m_Config.GetParam( paramindex ).GetValue( o ).GetSubValue(4).SetInt( active2 );
+
+              pObjAux->SetConsoleValueIndex( o );
+
+            }
+            ///al fin...
+            if ( MO_OBJECT_EFFECT<=MobType && MobType<=MO_OBJECT_PREEFFECT) m_EffectManager.Set( position, pObj );
+            else if (MobType==MO_OBJECT_IODEVICE) m_pIODeviceManager->IODevices().Set( position, (moIODevice*)pObj );
+
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(0).SetText( pObj->GetName() );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(1).SetText( pObj->GetConfigName() );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(2).SetText( pObj->GetLabelName() );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(3).SetInt( preconf1 );
+            m_Config.GetParam( paramindex ).GetValue( position ).GetSubValue(4).SetInt( active1 );
+            pObj->SetConsoleValueIndex( position );
+            int mobsindx = RelativeToGeneralIndex( position, MobType );
+            m_MoldeoObjects.Set( mobsindx, pObj );
+          }
+
+      }
+
+  LoadConnections();
+
+  return 1;
+
+}
+
+
+int moConsole::DuplicateMob( const moMobDefinition& p_MobDef ) {
+
+  ///duplicar el archivo de configuracion agregandole un numero al final...
+  moText datapath;
+  moText filenameduplicate;
+  moFile newfile;
+  moText filename = p_MobDef.GetConfigName();
+  moText labelname = p_MobDef.GetLabelName();
+  moText labelnameduplicate;
+  int mStatus = -1;
+  moMobDefinition pMobDef = p_MobDef;
+
+  if (m_pResourceManager) {
+
+    datapath = moMoldeoObject::m_pResourceManager->GetDataMan()->GetDataPath();
+
+    filename = filename;
+    labelname = labelname;
+
+    filenameduplicate = filename + moText(".cfg");
+
+    newfile.SetCompletePath( datapath + filenameduplicate );
+
+    int count = 1;
+    while( newfile.Exists() ) {
+      filenameduplicate = filename + IntToStr( count );
+      newfile.SetCompletePath( datapath + filenameduplicate + moText(".cfg") );
+      count++;
+    }
+
+    m_pResourceManager->GetFileMan()->CopyFile( datapath + filename + moText(".cfg"), datapath + filenameduplicate + moText(".cfg")  );
+
+
+    labelnameduplicate = labelname;
+
+    ///modificar el labelname agregándole un número al final
+    count = 1;
+    while(LabelNameExists(labelnameduplicate)) {
+      labelnameduplicate = labelname + IntToStr( count );
+      count++;
+    }
+
+    ///importar este nuevo Mob...!!! que facil!!!
+    pMobDef.SetConfigName( filenameduplicate );
+    pMobDef.SetLabelName( labelnameduplicate );
+
+    mStatus = NewMob( pMobDef );
+
+  }
+
+  return mStatus;
+}
+
+int moConsole::DeleteMob( const moMobDefinition& p_MobDef ) {
+
+  moMoldeoObject* pMOB;
+
+  pMOB = GetObjectByIdx(p_MobDef.GetMoldeoId());
+
+  bool consoleinit = m_bInitialized;
+
+  moMobDefinition pMobDef = p_MobDef;
+
+  moMoldeoObject* pFatherMOB = NULL;
+  moEffectManager* pFxManager = NULL;
+
+  moConfig* pConfig = NULL;
+  moMobIndex mobindex = pMobDef.GetMobIndex();
+  int removeid = pMOB->GetMobDefinition().GetMobIndex().GetValueIndex();
+
+  if (pMobDef.GetMoldeoFatherId()==-1) {
+      pConfig = &m_Config;
+      pFxManager = &m_EffectManager;
+  }
+  else if (pMobDef.GetMoldeoFatherId()>=0) {
+      pFatherMOB = GetObjectByIdx( pMobDef.GetMoldeoFatherId() );
+      if (pFatherMOB && pFatherMOB->GetName()=="scene") {
+        moSceneEffect* pScene = (moSceneEffect*) pFatherMOB;
+        pConfig = pScene->GetConfig();
+        pFxManager = &pScene->GetEffectManager();
+        //removeid = pFxManager->GetEffectId( pMobDef.GetLabelName() );
+      }
+  }
+
+
+
+      if (pMOB && pFxManager) {
+
+          if ( pMOB->GetId() >= MO_MOLDEOOBJECTS_OFFSET_ID ) {
+
+              //just wait until we delete the object
+              //important to avoid conflicts on loop...
+              //maybe MUST BE A LOCK
+              m_bInitialized = false;
+
+
+
+
+              if (removeid>-1) {
+                  switch( (int)pMOB->GetType() ) {
+                      case MO_OBJECT_PREEFFECT:
+                      case MO_OBJECT_EFFECT:
+                      case MO_OBJECT_POSTEFFECT:
+                      case MO_OBJECT_MASTEREFFECT:
+
+                          if (pFxManager->RemoveEffect( removeid, pMOB->GetType())) {
+                              ///remove from config
+                              pConfig->GetParam( mobindex.GetParamIndex() ).DeleteValue( removeid );
+                          }
+                          break;
+                      case MO_OBJECT_IODEVICE:
+                          if ( m_pIODeviceManager ) {
+                              m_pIODeviceManager->IODevices().Remove( removeid );
+                              ///remove from config
+                              m_Config.GetParam( mobindex.GetParamIndex() ).DeleteValue( removeid );
+                          }
+                          break;
+                      case MO_OBJECT_RESOURCE:
+                          if (m_pResourceManager && m_pResourceManager->RemoveResource( removeid ) ) {
+                              ///remove from config
+                              m_Config.GetParam( mobindex.GetParamIndex() ).DeleteValue( removeid );
+                          }
+                          break;
+                  }
+              }
+
+              LoadConnections();
+
+              ///back to previous state
+              //m_bInitialized = consoleinit;
+
+              ///we've finished, update project
+              //ProjectUpdated( GetProject() );
+
+          }
+      }
+
+
+  return 1;
+}
 
 void
 moConsole::ProcessConsoleMessage( moMessage* p_pMessage ) {
