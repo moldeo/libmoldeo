@@ -51,6 +51,8 @@ class moShaderManager;
 
 #include "moTextFilterParam.h"
 
+#define MAX_UNIFORM_VARS 256
+
 // Base class to implement color transformation matrices.
 class LIBMOLDEO_API moColorMatrix
 {
@@ -203,7 +205,7 @@ public:
 	void Apply(moTempo *p_tempo, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL);
 
 
-  void Apply( moMoldeoObject *p_src_mob = NULL, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL );
+  virtual void Apply( moMoldeoObject *p_src_mob = NULL, moTempo *p_tempo = NULL, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL );
 
     /**
      * Devuelve el puntero a la lista de texturas de orígen.
@@ -245,8 +247,17 @@ protected:
 	GLint m_src_tex_unit[MO_MAX_TEXTURE_UNITS];
 	GLint m_src_tex_offset[MO_MAX_TEXTURE_UNITS];
 	GLint m_tempo_angle;
+	GLint m_tempo_dt;
+	GLint m_tempo_syncro;
+	GLint m_tempo_delta;
+	GLint m_tempo_ticks;
 	GLint m_fade_const;
 	GLint m_dest_tex_size;
+	GLint m_random_uniform;
+
+
+	int m_uniform_idx;/// idx of uniform parameters variables in moMoldeoObject
+	int m_uniform_variables_idx[MAX_UNIFORM_VARS]; ///idx of uniform variables in shader code moShader
 
 	moTextFilterParam *m_DefParams;
 
@@ -261,7 +272,7 @@ protected:
 	MOboolean m_use_screen_tex;
 	MOboolean m_reattach_dest_tex;
 
-	void SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params, moMoldeoObject* p_src_object = NULL);
+	virtual void SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params, moMoldeoObject* p_src_object = NULL);
 	void SetGLConf(MOint w, MOint h);
 	void RestoreGLConf();
 	void BindDestFBO();

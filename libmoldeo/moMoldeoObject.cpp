@@ -722,7 +722,7 @@ moMoldeoObject::ResolveValue( moParam& param, int value_index, bool p_refresh ) 
                       //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
                   }
 
-                  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + valuebase0.Text());
+                  //MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + valuebase0.Text());
 
               }
           } else {

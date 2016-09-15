@@ -253,7 +253,7 @@ class LIBMOLDEO_API moData {
 		GLint       GetGLId( moTempo *p_tempo, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
 		GLint       GetGLId( MOuint p_i, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
 		GLint       GetGLId( MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-		GLint       GetGLId( moMoldeoObject* p_mob, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
+		GLint       GetGLId( moMoldeoObject* p_mob, moTempo* p_tempo = NULL, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
 
 	protected:
 		moDataType		m_DataType;

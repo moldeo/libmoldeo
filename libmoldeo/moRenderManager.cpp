@@ -213,6 +213,9 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + IntToStr(GLEW_ARB_imaging) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + IntToStr(GLEW_ARB_shading_language_100) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
+  MODebug2->Message( moText("moRenderManager::Init >       GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB: ") + IntToStr(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB) );
+  MODebug2->Message( moText("moRenderManager::Init >       GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB: ") + IntToStr(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB) );
+
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex_size);
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Size: ") + IntToStr(max_tex_size) );
   glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &max_tex_rect_size);
