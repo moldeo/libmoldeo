@@ -1173,11 +1173,24 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
 
         m_CaptureDevices.Empty();
 
+if (m_PreferredDevices.Count()==0) {
+	    moText cap_dev_name = moText("default");
+            moCaptureDevice newdev;
+            newdev.Present(true);
 
+            newdev.SetName(cap_dev_name);
+            newdev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
+
+	    m_PreferredDevices.Add( newdev );
+	}
   #ifdef MO_WIN32
         //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("-") ) );
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("-"), moText("-") ) );
+        #ifdef GSTVERSION
+        moText dname( "ksvideosrc" );
+        #else
         moText dname( "dshowvideosrc" );
+        #endif
         device_name = dname;
 
         for( MOuint i=0; i<m_PreferredDevices.Count();i++) {
@@ -1219,16 +1232,7 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
         #endif
         // in linux: for v4l2src   device could be  /dev/video0   -   /dev/video1   etc...
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default") );
-	if (m_PreferredDevices.Count()==0) {
-	    moText cap_dev_name = moText("default");
-            moCaptureDevice newdev;
-            newdev.Present(true);
 
-            newdev.SetName(cap_dev_name);
-            newdev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
-
-	    m_PreferredDevices.Add( newdev );
-	}
 
         for(int i=0; i<m_PreferredDevices.Count();i++) {
             moCaptureDevice CaptDev = m_PreferredDevices[i];

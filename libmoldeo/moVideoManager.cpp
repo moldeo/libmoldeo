@@ -1555,8 +1555,11 @@ void moVideoManager::Update(moEventList * p_EventList)
 #ifdef MO_MACOSX
                         ts->SetBuffer( pbuffer, GL_RGB);
 #else
-                        //ts->SetBuffer( pbuffer, GL_BGR_EXT);
+  #ifdef GSTVERSION
                         ts->SetBuffer( pbuffer, GL_RGB);
+  #else
+                        ts->SetBuffer( pbuffer, GL_BGR_EXT);
+  #endif
 #endif
 #else
                         ts->SetBuffer( pbuffer, GL_RGB);
