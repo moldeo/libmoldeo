@@ -2281,6 +2281,15 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
             //queue = gst_element_factory_make("queue", "vqueue");
 //b_sourceselect = true;
 //colormode = "";
+
+           if (b_sourceselect) {
+              #ifdef MO_WIN32
+              #ifdef GSTVERSION
+              b_sourceselect = false;
+              #endif // GSTVERSION
+              #endif // WIN32
+           }
+
            if (b_sourceselect) {
                MODebug2->Message(moText("moGsGraph:: sourceselect:") + (moText)colormode
                                  + moText(" ") + IntToStr(p_sourcewidth)
