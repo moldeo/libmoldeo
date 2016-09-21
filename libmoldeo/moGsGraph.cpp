@@ -1333,6 +1333,63 @@ if (m_PreferredDevices.Count()==0) {
   }
 #else
 
+  GstDeviceMonitor *monitor = NULL;
+  GList *devices = NULL;
+
+  monitor = gst_device_monitor_new();
+  if (!gst_device_monitor_start (monitor))
+      g_error ("Failed to start device monitor!");
+
+    devices = gst_device_monitor_get_devices (monitor);
+    int idev = 0;
+    if (devices != NULL) {
+      while (devices != NULL) {
+        GstDevice *device = (GstDevice*)devices->data;
+
+        gchar *device_class, *caps_str, *name;
+        GstCaps *caps;
+        guint i, size = 0;
+
+        caps = gst_device_get_caps (device);
+        if (caps != NULL)
+          size = gst_caps_get_size (caps);
+
+        name = gst_device_get_display_name (device);
+        device_class = gst_device_get_device_class (device);
+        for (i = 0; i < size; ++i) {
+            GstStructure *s = gst_caps_get_structure (caps, i);
+            caps_str = gst_structure_to_string (s);
+            //g_print ("\t%s %s\n", (i == 0) ? "caps  :" : "       ", caps_str);
+            MODebug2->Message( moText("LoadCaptureDevice > name: ") + moText(name) + moText("caps: ") + moText(caps_str) );
+            g_free (caps_str);
+        }
+
+
+
+        if (idev==0) {
+
+            moText cap_dev_name = name;
+            moCaptureDevice newdev;
+            newdev.Present(true);
+
+            newdev.SetName(cap_dev_name);
+            newdev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
+
+            m_CaptureDevices.Add( newdev );
+
+        }
+
+
+
+        //device_added (device);
+        gst_object_unref (device);
+        devices = g_list_remove_link (devices, devices);
+        idev++;
+      }
+    } else {
+      g_print ("No devices found!\n");
+  }
+
 #endif
   ///iterate thru list and populate m_CaptureDevices (best as we can)
 
