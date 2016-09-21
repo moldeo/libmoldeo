@@ -281,6 +281,10 @@ public:
      * @param l número de capas de textura a aplicar.
      */
 	void DrawGrid(MOint w, MOint h, MOint l) { m_grid.Draw(w, h, l); }
+
+
+	moConfig   m_Config;
+
 protected:
 	MOuint m_type;
 	moText m_name;

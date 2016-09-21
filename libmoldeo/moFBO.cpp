@@ -272,13 +272,13 @@ void moFBO::ClearAttachements()
 
 MOuint moFBO::CheckStatus()  const
 {
-	if (MODebug2 != NULL) MODebug2->Message("moFBO::CheckStatus > Framebuffer status: ");
+	if (MODebug2 != NULL) MODebug2->Log("moFBO::CheckStatus > Framebuffer status: ");
 	GLenum status;
 	status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	switch (status)
 	{
 		case GL_FRAMEBUFFER_COMPLETE_EXT:
-			if (MODebug2 != NULL) MODebug2->Message("moFBO::CheckStatus > GL_FRAMEBUFFER_COMPLETE_EXT");
+			if (MODebug2 != NULL) MODebug2->Log("moFBO::CheckStatus > GL_FRAMEBUFFER_COMPLETE_EXT");
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
 			if (MODebug2 != NULL) MODebug2->Error("moFBO::CheckStatus > GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT");

@@ -3030,9 +3030,9 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                                                                        "format", G_TYPE_STRING, "RGB",
                                                                                        NULL), NULL);
                     g_object_set (G_OBJECT (m_pFakeSink), "sync", (bool)true, NULL);
-                    g_object_set (G_OBJECT (m_pFakeSink), "drop", true, NULL);
-                    gst_app_sink_set_emit_signals( (GstAppSink*)m_pFakeSink, true);
-                    gst_app_sink_set_max_buffers( (GstAppSink*)m_pFakeSink, 100);
+                    g_object_set (G_OBJECT (m_pFakeSink), "drop", false, NULL);
+                    //gst_app_sink_set_emit_signals( (GstAppSink*)m_pFakeSink, true);
+                    gst_app_sink_set_max_buffers( (GstAppSink*)m_pFakeSink, 10000);
 #else
                      ///marcamos el sync a true para que reproduzca en sync.
                     g_object_set (G_OBJECT (m_pFakeSink), "sync", (bool)true, NULL);

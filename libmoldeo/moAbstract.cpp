@@ -80,11 +80,11 @@ moDebug::Error( moText p_text ) {
   Lock();
   moText prefx_error = moText("Error! ");
   //system("Color 04");
-  cout << prefx_error << p_text << endl;
-//cout << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
 #ifndef MO_WIN32
+  cout << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
   moErr << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
 #else
+  cout << prefx_error << p_text << endl;
   moErr << prefx_error << p_text << endl;
 #endif
   moLog << prefx_error << p_text << endl;

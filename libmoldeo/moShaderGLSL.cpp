@@ -144,6 +144,7 @@ void moShaderGLSL::PrintFragShaderLog()
 
 GLint moShaderGLSL::GetUniformID(const moText& uName)
 {
+    //MODebug2->Message("uName:"+uName);
     return glGetUniformLocationARB(m_ProgramObject, uName);
 }
 

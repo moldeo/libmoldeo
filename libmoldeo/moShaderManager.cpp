@@ -296,8 +296,9 @@ MOint moShaderManager::AddShader(MOuint p_type, moText p_name)
 	if (p_type == MO_SHADER_GLSL)
 	{
 		pshader_glsl = new moShaderGLSL();
-		pshader_glsl->Init();
 		pshader_glsl->SetName(p_name);
+		pshader_glsl->Init();
+
 		pshader = (moShader*)pshader_glsl;
 		m_shaders_array.Add(pshader);
 		return m_shaders_array.Count() - 1;
@@ -397,9 +398,19 @@ MOint moShaderManager::AddShader(moText p_filename)
 	if (grid_idx == MO_PARAM_NOT_FOUND)	tex_grid.Set1QuadGrid();
 	else tex_grid.Init(&config, grid_idx);
 
-	return AddShader(config.GetParam(type_idx).GetValue().GetSubValue().Int(),
+	int result = AddShader(config.GetParam(type_idx).GetValue().GetSubValue().Int(),
                   p_filename,
                   vertex_fn, fragment_fn, tex_grid);
+
+  if ( result > -1 ) {
+    moShader* pshader = GetShader(result);
+    if (pshader) {
+      MODebug2->Message("Added shader, loading config: " + p_filename );
+      pshader->m_Config.LoadConfig( p_filename );
+    }
+  }
+
+  return result;
 }
 
 MOint moShaderManager::AddShader(MOuint p_type, moText p_name, moText p_vert_fn, moText p_frag_fn, moTexturedGrid p_tex_grid)
