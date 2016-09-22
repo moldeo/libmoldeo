@@ -82,7 +82,7 @@ moDebug::Error( moText p_text ) {
   //system("Color 04");
 #ifndef MO_WIN32
   cout << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
-  moErr << "\x1b[31;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+  moErr << prefx_error << p_text << endl;
 #else
   cout << prefx_error << p_text << endl;
   moErr << prefx_error << p_text << endl;
@@ -99,8 +99,8 @@ moDebug::Warning( moText p_text ) {
     moText prefx_error = moText("Warning! ");
 #ifndef MO_WIN32
     cout << "\x1b[33;1m" << prefx_error << p_text << "\x1b[0m" << endl;
-    moErr << "\x1b[33;1m" << prefx_error << p_text << "\x1b[0m" << endl;
-    moLog << "\x1b[33;1m" << prefx_error << p_text << "\x1b[0m" << endl;
+    moErr << prefx_error << p_text << endl;
+    moLog << prefx_error << p_text << endl;
 #else
     cout << prefx_error << p_text << endl;
     moErr << prefx_error << p_text << endl;
