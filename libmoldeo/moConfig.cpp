@@ -1170,6 +1170,16 @@ moConfig::Eval( moText p_param_name ) {
 
 
 GLint
+moConfig::GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+      return pdata->GetGLId( p_object, p_tempo, p_fade, p_filterparam );
+    }
+    return 0;
+}
+
+GLint
 moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
 
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
