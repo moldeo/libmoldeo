@@ -455,6 +455,11 @@ class LIBMOLDEO_API moTetrahedronGeometry : public moGeometry {
     virtual ~moTetrahedronGeometry();
 };
 
+class LIBMOLDEO_API moOctahedronGeometry : public moGeometry {
+  public:
+    moOctahedronGeometry( float radius=1.0, float detail=0.0 );
+    virtual ~moOctahedronGeometry();
+};
 
 class LIBMOLDEO_API moShapeGeometry : public moGeometry {
   public:
