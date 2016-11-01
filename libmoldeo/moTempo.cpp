@@ -62,6 +62,8 @@ moTempo::operator = (const moTempo &src) {
 	delta = src.delta;
 	deltaprevious = src.deltaprevious;
 	factor = src.factor;
+	//added for precise calculation
+	ang = src.ang;
 
 	beatpulsecount = src.beatpulsecount;
 	return (*this);
