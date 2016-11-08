@@ -284,6 +284,228 @@ moGeometry::GetNormalsBuffer() {
 
 moBoxGeometry::moBoxGeometry( float width, float height,float depth, int wsegments, int hsegments, int dsegments ) : moGeometry( MO_GEOMETRY_BOX ) {
 
+    m_Name = "oneBox";
+    m_Type = MO_GEOMETRY_BOX;
+
+    //m_Vertices.Init( 0, moVector3f( 0.0, 0.0, 0.0) );
+    //m_VerticesUvs.Init( 0,  moTCoord( 0.0, 0.0 ) );
+    m_Faces.Init( 0, moFace( 0, 0, 0 ) );
+    m_FaceVertexUvs.Init( 0, moTCoord( 0.0, 0.0 ) );
+    //m_Colors.Init( 0, moColor( 0.0, 0.0, 0.0 ) );
+
+
+
+    ///INITIALIZATION AND save attributes
+    //radius = ;
+    wsegments = max( 1, wsegments );
+    hsegments = max( 1, hsegments );
+    dsegments = max( 1, dsegments );
+    int vertexCount = ( wsegments * hsegments * 2 ) + ( wsegments * dsegments * 2 ) + ( wsegments * hsegments * 2 );
+    m_Vertices.Init( vertexCount, moVector3f( 0.0, 0.0, 0.0) );
+    m_VerticesUvs.Init( vertexCount, moTCoord( 0.0, 0.0) );
+    m_Colors.Init( vertexCount, moColor( 1.0, 1.0, 1.0 ) );
+    m_Normals.Init( vertexCount, moColor( 0.0, 0.0, 1.0 ) );
+
+/*
+    int vertexCount = 4;
+
+    m_Vertices.Set( 0, moVector3f( -1.0*radius, -1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 0, moTCoord( 0.0, 1.0 ) );
+    m_Colors.Set(  0, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Vertices.Set( 1, moVector3f( -1.0*radius, 1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 1, moTCoord( 0.0, 0.0 ) );
+    m_Colors.Set(  1, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Vertices.Set( 2, moVector3f( 1.0*radius, 1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 2, moTCoord( 1.0, 0.0 ) );
+    m_Colors.Set(  2, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Vertices.Set( 3, moVector3f( 1.0*radius, -1.0*radius, 0.0) );
+    m_VerticesUvs.Set( 3, moTCoord( 1.0, 1.0 ) );
+    m_Colors.Set(  3, moColor( 1.0, 1.0, 1.0 ) );
+
+    m_Faces.Add( moFace( 0, 1, 2 ) );
+    m_Faces.Add( moFace( 2, 3, 0 ) );
+*/
+
+    ///GENERATE GEOMETRY VERTEX,TEXTUREMAPPING AND COLORS
+    int index = 0;
+    int ixline = 0;
+    float px=0.0f,py=0.0f,pz = 0.0f;
+    int fk = 0;
+    float u=0.0f, v=0.0f, w = -0.5f + (float)fk / (float)dsegments ;
+
+    for ( int j = 0; j <= hsegments; j++ ) {
+
+      v = -0.5f + (float)j / (float)hsegments;
+
+      for ( int i = 0; i <= wsegments; i++ ) {
+
+        u = -0.5f +  (float)i / (float)wsegments;
+
+        px = u;
+        py = v;
+        pz = w;
+
+        moVector3f normal( px, py, pz );
+        normal.Normalize();
+        moVector3f position( px, py, pz );
+        moTCoord tcoord( u, 1-v );
+
+        ///FRONT
+        m_Vertices.Set( index, position );
+        m_VerticesUvs.Set( index, tcoord );
+        m_Normals.Set( index, normal );
+        index ++;
+
+        ///BACK
+        position.Z() = w + 1.0f;
+        normal.Z() = w + 1.0f;
+        m_Vertices.Set( index, position );
+        m_VerticesUvs.Set( index, tcoord );
+        m_Normals.Set( index, normal );
+        index ++;
+
+        if ( j>0 && (i%2)==0) {
+            ixline = index - (j-1)*wsegments;
+            m_Faces.Add( moFace( ixline, ixline+1, index ) );
+        }
+        if ( j>0 && (i%2)==1) {
+            ixline = index - (j-1)*wsegments;
+            m_Faces.Add( moFace( index, index+1, ixline+1 ) );
+        }
+      }
+    }
+
+    u = -0.5f;
+    for ( int k = 0; k <= dsegments; k++ ) {
+
+      w = -0.5f + (float)k / (float)dsegments;
+
+      for ( int i = 0; i <= wsegments; i++ ) {
+
+        u = -0.5f +  (float)i / (float)wsegments;
+
+        px = u;
+        py = v;
+        pz = w;
+
+        moVector3f normal( px, py, pz );
+        normal.Normalize();
+        moVector3f position( px, py, pz );
+        moTCoord tcoord( u, 1-v );
+
+        ///TOP
+        m_Vertices.Set( index, position );
+        m_VerticesUvs.Set( index, tcoord );
+        m_Normals.Set( index, normal );
+        index++;
+
+        ///BOTTOM
+        position.X() = u + 1.0f;
+        normal.X() = u + 1.0f;
+        m_Vertices.Set( index, position );
+        m_VerticesUvs.Set( index, tcoord );
+        m_Normals.Set( index, normal );
+        index++;
+
+        if ( k>0 && (i%2)==0) {
+            ixline = index - (k-1)*wsegments;
+            m_Faces.Add( moFace( ixline, ixline+1, index ) );
+        }
+        if ( k>0 && (i%2)==1) {
+            ixline = index - (k-1)*wsegments;
+            m_Faces.Add( moFace( index, index+1, ixline+1 ) );
+        }
+
+      }
+    }
+
+    u = -0.5f;
+    for ( int k = 0; k <= dsegments; k++ ) {
+
+      w = -0.5f + (float)k / (float)dsegments;
+
+      for ( int j = 0; j <= hsegments; j++ ) {
+
+        v = -0.5f +  (float)j / (float)hsegments;
+
+        px = u;
+        py = v;
+        pz = w;
+
+        moVector3f normal( px, py, pz );
+        normal.Normalize();
+        moVector3f position( px, py, pz );
+        moTCoord tcoord( u, 1-v );
+
+        ///TOP
+        m_Vertices.Set( index, position );
+        m_VerticesUvs.Set( index, tcoord );
+        m_Normals.Set( index, normal );
+        index ++;
+
+        ///BOTTOM
+        position.X() = u + 1.0f;
+        normal.X() = u + 1.0f;
+        m_Vertices.Set( index, position );
+        m_VerticesUvs.Set( index, tcoord );
+        m_Normals.Set( index, normal );
+        index ++;
+
+        if ( k>0 && (k%2)==0) {
+            ixline = index - (k-1)*wsegments;
+            m_Faces.Add( moFace( ixline, ixline+1, index ) );
+        }
+        if ( k>0 && (j%2)==1) {
+            ixline = index - (k-1)*wsegments;
+            m_Faces.Add( moFace( index, index+1, ixline+1 ) );
+        }
+
+
+      }
+    }
+
+/*
+    for ( int k = 0; k <= dsegments; k++ ) {
+
+        float w = -0.5f + (((float)j) / (float)hsegments );
+
+        for ( int j = 0; j <= hsegments; j++ ) {
+
+          float v = -0.5f + (((float)j) / (float)hsegments );
+
+          for ( int i = 0; i <= wsegments; i++ ) {
+
+            float u = -0.5f +  ((float)i) / ((float)wsegments);
+
+            if (k==0) {
+
+                moVector3f normal( px, py, pz );
+                normal.Normalize();
+                moVector3f position( px, py, pz );
+                moTCoord tcoord( u, 1-v );
+                m_Vertices.Set( index, position );
+                m_VerticesUvs.Set( index, tcoord );
+                m_Normals.Set( index, normal );
+
+            } else ( k==(dsegments-1) ) {
+
+                moVector3f normal( px, py, pz );
+                normal.Normalize();
+                moVector3f position( px, py, pz );
+                moTCoord tcoord( u, 1-v );
+                m_Vertices.Set( index, position );
+                m_VerticesUvs.Set( index, tcoord );
+                m_Normals.Set( index, normal );
+
+            }
+            index ++;
+          }
+        }
+    }
+    */
 }
 
 moBoxGeometry::~moBoxGeometry(  ) {
@@ -474,7 +696,7 @@ moSphereGeometry::moSphereGeometry( float radius, int widthSegments, int heightS
     float thetaEnd = thetaStart + thetaLength;
     for ( int j = 0; j <= heightSegments; j++ ) {
 
-      float v = ((float)j) / (float)heightSegments;
+      float v = (float)j / (float)heightSegments;
 
       for ( int i = 0; i <= widthSegments; i++ ) {
 

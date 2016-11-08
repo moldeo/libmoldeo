@@ -877,18 +877,65 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
           moText uniform_var_type = vb.GetSubValue(1).GetData()->Text();
 
           if (m_uniform_variables_idx[u]>-1) {
+            int paramidx = p_src_object->GetConfig()->GetParamIndex(uniform_var_name);
             if (uniform_var_type=="FLOAT") {
-              float p_float = p_src_object->GetConfig()->Eval( uniform_var_name  );
+              if (paramidx>-1) {
+                float p_float = p_src_object->GetConfig()->Eval( uniform_var_name  );
+                glUniform1fARB( m_uniform_variables_idx[u], p_float );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  float p_float = p_src_object->GetInlets()->Get(inletidx)->GetData()->Float();
+                  glUniform1fARB( m_uniform_variables_idx[u], p_float );
+                }
+              }
+            } else
+            if (uniform_var_type=="INT") {
+              if (paramidx>-1) {
+                int p_int = p_src_object->GetConfig()->Int( uniform_var_name );
+                glUniform1iARB( m_uniform_variables_idx[u], p_int );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  int p_int = p_src_object->GetInlets()->Get(inletidx)->GetData()->Int();
+                  glUniform1iARB( m_uniform_variables_idx[u], p_int );
+                }
+              }
+            }
+          /**
+            if (uniform_var_type=="FLOAT") {
+              float p_float = 0.0;
+              int paramidx = p_src_object->GetConfig()->GetParamIndex(uniform_var_name);
+              if (paramidx>-1) {
+                p_float = p_src_object->GetConfig()->Eval( moParamReference(paramidx)  );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  p_float = p_src_object->GetInlets()->Get(inletidx)->GetData()->Float();
+                }
+              }
               glUniform1fARB( m_uniform_variables_idx[u], p_float );
               //MODebug2->Message("Assigning FLOAT:" + FloatToStr(p_float));
             } else
             if (uniform_var_type=="INT") {
-              float p_int = p_src_object->GetConfig()->Int( uniform_var_name  );
+              float p_int = 0;
+              int paramidx = p_src_object->GetConfig()->GetParamIndex(uniform_var_name);
+              if (paramidx>-1) {
+                p_int = p_src_object->GetConfig()->Int( moParamReference(paramidx)  );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  p_int = p_src_object->GetInlets()->Get(inletidx)->GetData()->Int();
+                }
+              }
               glUniform1iARB( m_uniform_variables_idx[u], p_int );
               //MODebug2->Message("Assigning FLOAT:" + FloatToStr(p_float));
             }
+            */
           }
         }
+
+
 
     }
   }
@@ -1003,6 +1050,7 @@ void moTextureFilter::BindSrcTex( moMoldeoObject* p_mob ) {
   if (p_mob==NULL) return;
 
   moTempo* src_tempo  = NULL;
+  moEffectState fs;
 
   if (  p_mob->GetType()==MO_OBJECT_EFFECT
       || p_mob->GetType()==MO_OBJECT_PREEFFECT
@@ -1012,17 +1060,20 @@ void moTextureFilter::BindSrcTex( moMoldeoObject* p_mob ) {
     moEffect* pFx = (moEffect*) p_mob;
 
     if (pFx) {
-      moEffectState fs = pFx->GetEffectState();
+      fs = pFx->GetEffectState();
       src_tempo = &fs.tempo;
     }
 
   }
 
+
   for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
 		glActiveTextureARB(GL_TEXTURE0_ARB + i);
+		//glBindTexture(m_src_tex[i]->GetTexTarget(), m_src_tex.GetGLId(i, p_mob));
 		glBindTexture(m_src_tex[i]->GetTexTarget(), m_src_tex.GetGLId(i, src_tempo));
 	}
+
 }
 
 

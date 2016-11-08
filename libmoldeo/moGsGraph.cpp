@@ -36,6 +36,7 @@
 
 #ifndef GSTVERSION
 #include <gst/interfaces/propertyprobe.h>
+#else
 #endif // GSTVERSION
 //#define GSTVERSION
 #include "moFileManager.h"
@@ -1332,7 +1333,7 @@ if (m_PreferredDevices.Count()==0) {
     MODebug2->Error("moGsFramework::LoadCaptureDevices > exception error.");
   }
 #else
-
+#if (GST_VERSION_MINOR > 2)
   GstDeviceMonitor *monitor = NULL;
   GList *devices = NULL;
 
@@ -1389,7 +1390,7 @@ if (m_PreferredDevices.Count()==0) {
     } else {
       g_print ("No devices found!\n");
   }
-
+#endif // GST_VERSION_MINOR
 #endif
   ///iterate thru list and populate m_CaptureDevices (best as we can)
 
