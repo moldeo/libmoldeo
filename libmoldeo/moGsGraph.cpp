@@ -3039,9 +3039,9 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                                                                        "format", G_TYPE_STRING, "RGB",
                                                                                        NULL), NULL);
                     g_object_set (G_OBJECT (m_pFakeSink), "sync", (bool)true, NULL);
-                    g_object_set (G_OBJECT (m_pFakeSink), "drop", false, NULL);
+                    g_object_set (G_OBJECT (m_pFakeSink), "drop", true, NULL);
                     //gst_app_sink_set_emit_signals( (GstAppSink*)m_pFakeSink, true);
-                    gst_app_sink_set_max_buffers( (GstAppSink*)m_pFakeSink, 10000);
+                    gst_app_sink_set_max_buffers( (GstAppSink*)m_pFakeSink, 100 );
 #else
                      ///marcamos el sync a true para que reproduzca en sync.
                     g_object_set (G_OBJECT (m_pFakeSink), "sync", (bool)true, NULL);
@@ -3094,7 +3094,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                     gst_app_sink_set_emit_signals((GstAppSink*)m_pFakeSink, true);
                                     gst_app_sink_set_drop((GstAppSink*)m_pFakeSink, true);
                                     //g_object_set (G_OBJECT (m_pFakeSink), "sync", false, NULL);
-                                    gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 1);
+                                    gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 10000 );
                                     g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
                                     //gst_app_sink_set_callbacks( (GstAppSink*)m_pFakeSink,  )
 
