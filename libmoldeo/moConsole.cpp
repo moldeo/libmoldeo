@@ -641,7 +641,7 @@ moConsole::LoadConnections() {
                                         connector_found = true;
                                         //update destination connector id
                                         p_connection->SetDestinationConnectorId( pinlet->GetConnectorId() );
-                                        MODebug2->Message(
+                                        MODebug2->Log(
                                             moText("moConsole::LoadConnections > Object <") +
                                             psrcobject->GetLabelName() +
                                             moText("> Outlet <") +

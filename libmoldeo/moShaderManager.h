@@ -158,6 +158,10 @@ public:
     return m_RenderShaderColorIndex;
   }
 
+  MOuint GetRSHOpacityIndex() {
+    return m_RenderShaderOpacityIndex;
+  }
+
   MOuint GetRSHTextureIndex() {
     return m_RenderShaderTextureIndex;
   }
@@ -199,6 +203,7 @@ private:
 	moShaderGLSL m_RenderShader;
 
 	MOuint m_RenderShaderColorIndex;
+	MOuint m_RenderShaderOpacityIndex;
 	MOuint m_RenderShaderColorsIndex;
 	MOuint m_RenderShaderPositionIndex;
 	MOuint m_RenderShaderTextureIndex;

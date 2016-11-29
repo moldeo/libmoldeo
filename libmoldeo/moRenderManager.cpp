@@ -435,6 +435,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
 
 
     MOuint color_index = m_pSHManager->GetRSHColorIndex();
+    MOuint opacity_index = m_pSHManager->GetRSHOpacityIndex();
     MOuint colors_index = m_pSHManager->GetRSHColorsIndex();
     MOuint position_index = m_pSHManager->GetRSHPositionIndex();
     MOuint normal_index = m_pSHManager->GetRSHNormalIndex();
@@ -491,6 +492,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     glUniform1f( tex_hsegments_index, Mat.m_fTextHSegments );
     glUniform3fv( light_index, 1, &Mat.m_vLight[0] );
     glUniform3fv( color_index, 1, &Mat.m_Color[0] );
+    glUniform1f( opacity_index, Mat.m_fOpacity );
 
     glEnableVertexAttribArray( position_index );
     glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, &Gpx[0] );  // Set data type and location.
