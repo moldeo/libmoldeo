@@ -27,6 +27,8 @@ if test "x$exec_prefix" = "xNONE" ; then
   exec_prefix=$prefix
 fi
 
+echo $host
+
 case "$host" in
         *-*-mingw*|*-*-cygwin*)
                 AC_DEFINE(PLATFORM_WIN32, 1, [Platform is Win32])
@@ -59,6 +61,12 @@ case "$host" in
                 ;;
         x86_64-*)
                 AC_DEFINE(ARCH_X86_64, 1, [Architecture is x86-64])
+                ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
+                ARCH_STRING="X86-64"
+                libdir=$prefix"/lib"
+                ;;
+        armv7l-*)
+                AC_DEFINE(ARCH_X86_64, 1, [Architecture is armv7l x86-64])
                 ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
                 ARCH_STRING="X86-64"
                 libdir=$prefix"/lib"
