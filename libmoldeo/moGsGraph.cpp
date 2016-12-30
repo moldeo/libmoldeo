@@ -210,7 +210,8 @@ moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
   int h = pGsGraph->GetVideoFormat().m_Height;
 
   if (!pGsGraph) return GST_FLOW_ERROR;
-  //pGsGraph->MODebug2->Message("new sample");
+  pGsGraph->MODebug2->Message("new sample");
+
 
   GstAppSink* psink = (GstAppSink*) appsink;
   if (!psink) return GST_FLOW_ERROR;
@@ -1230,10 +1231,12 @@ if (m_PreferredDevices.Count()==0) {
         device_name = "wrappercamerabinsrc";
         #else
         device_name = moText("v4l2src");
+        m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default"), moText("/dev/video0") ) );
         #endif
         // in linux: for v4l2src   device could be  /dev/video0   -   /dev/video1   etc...
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default") );
-
+    	//m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("/dev/video0") ) );
+        //m_CaptureDevices.Add( moCaptureDevice( moText("DV"), moText("DV IEEE 1394"), moText("-"), 0 ) );
 
         for(int i=0; i<m_PreferredDevices.Count();i++) {
             moCaptureDevice CaptDev = m_PreferredDevices[i];
@@ -1243,9 +1246,7 @@ if (m_PreferredDevices.Count()==0) {
         }
 
 
-    //m_CaptureDevices.Add( moCaptureDevice( moText("Laptop Integrated Webcam"), moText("webcam"), moText("/dev/video0") ) );
-        //m_CaptureDevices.Add( moCaptureDevice( moText(""), moText("webcam"), moText("/dev/video0") ) );
-        //m_CaptureDevices.Add( moCaptureDevice( moText("DV"), moText("DV IEEE 1394"), moText("-"), 0 ) );
+
     #endif
 
 
@@ -1333,7 +1334,7 @@ if (m_PreferredDevices.Count()==0) {
     MODebug2->Error("moGsFramework::LoadCaptureDevices > exception error.");
   }
 #else
-#if (GST_VERSION_MINOR > 2)
+#if (GST_VERSION_MINOR > 8)
   GstDeviceMonitor *monitor = NULL;
   GList *devices = NULL;
 
@@ -2307,6 +2308,7 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 #ifndef GSTVERSION
                   MODebug2->Message("colormode: "+ colormode );
                   if (colormode=="") colormode = "video/x-raw-yuv";
+		  //if (colormode=="") colormode = "video/x-raw-rgb";
                    g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
                    "width", G_TYPE_INT, p_sourcewidth,
                    "height", G_TYPE_INT, p_sourceheight,
@@ -2337,12 +2339,13 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                       //colormodef = "UYVY";
                       colormodef = "RGB";
                       moText fullf = colormode+ ","+ colormodef;
-                      MODebug2->Message("moGsGraph::BuildLiveWebcamGraph > p_sourcewidth:" + fullf );
+                      MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > (colormode, format): (") + fullf + moText(")") );
                       //opt_framerate = 30;
                       g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
                                                                                                  "format", G_TYPE_STRING, (char*)colormodef,
                                                                                                  "width", G_TYPE_INT, p_sourcewidth,
                                                                                                  "height", G_TYPE_INT, p_sourceheight,
+												 "framerate", GST_TYPE_FRACTION, opt_framerate, 1,
                                                                                                  NULL), NULL);
                   } else {
 
@@ -2535,7 +2538,9 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                                 cout << "linking m_pColorSpace, /*m_pCapsFilter*/, m_pFakeSink" << endl;
                                 link_result = gst_element_link_many(
                                         (GstElement*) m_pColorSpace,
-                                        /*(GstElement*) m_pCapsFilter, */
+#ifndef GSTVERSION
+                                        (GstElement*) m_pCapsFilter,
+#endif
                                         (GstElement*) m_pFakeSink, NULL );
 
 
@@ -2556,6 +2561,7 @@ MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > GST_STATE_PLAYING >
 
                             sample = gst_app_sink_pull_preroll( (GstAppSink*) m_pFakeSink );
                             if (sample) {
+				MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > RECEIVED sample from gst_app_sink_pull_preroll!"));
                                 GstBuffer *Gbuffer;
                                 GstCaps *bcaps;
                                 GstStructure *bstr;
@@ -2576,7 +2582,9 @@ MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > GST_STATE_PLAYING >
                                   //gst_app_sink_set_callbacks( (GstAppSink*)m_pFakeSink,  )
 
                                 }
-                            }
+                            } else MODebug2->Error( moText("moGsGraph::BuildLiveWebcamGraph > NO sample from gst_app_sink_pull_preroll!"));
+			    MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > gst_app_sink_pull_preroll for appsink ended"));
+			    
 #else
                             WaitForFormatDefinition( 1600 );
 #endif

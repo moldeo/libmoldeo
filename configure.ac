@@ -120,6 +120,7 @@ AC_ARG_ENABLE(host,
 	host_ldflags="-L/opt/vc/lib"
     	librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, egl, glesv2, freetype2, check'
 	OPENGLESV2='#define OPENGLESV2 1'
+	with_gles=yes
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
 	host_cflags="-I/opt/local/include -I/System/Library/Frameworks/CoreFoundation.framework/Versions/A/Headers"
