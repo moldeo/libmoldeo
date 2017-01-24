@@ -1,9 +1,8 @@
 #ifndef _TEXTFILTERPARAM_H
 #define _TEXTFILTERPARAM_H
 
-#include "moShader.h"
-#include "moShaderCG.h"
-#include "moShaderGLSL.h"
+#include "moTypes.h"
+
 
 /**
  * Esta clase almacena los parámetros de un filtro. Hay 6 parámetros pre-definidos:
@@ -19,9 +18,9 @@ public:
     moTextFilterParam()
     {
         par_flt1 = par_flt2 = par_flt3 = 0.0;
-        par_mat2 = new MOfloat[2 * 2];
-        par_mat3 = new MOfloat[3 * 3];
-        par_mat4 = new MOfloat[4 * 4];
+        for(int i=0; i<4; i++) par_mat2[i]=0.0;
+        for(int i=0; i<9; i++) par_mat3[i]=0.0;
+        for(int i=0; i<16; i++) par_mat4[i]=0.0;
 
         m_par_flt1 = m_par_flt2 = m_par_flt3 = -1;
         m_par_mat2 = m_par_mat3 = m_par_mat4 = -1;
@@ -30,23 +29,30 @@ public:
     /**
      * Destructor por defecto.
      */
-    ~moTextFilterParam()
+    virtual ~moTextFilterParam()
     {
-        if (par_mat2 != NULL)
-        {
-            delete[] par_mat2;
-            par_mat2 = NULL;
-        }
-        if (par_mat3 != NULL)
-        {
-            delete[] par_mat3;
-            par_mat3 = NULL;
-        }
-        if (par_mat4 != NULL)
-        {
-            delete[] par_mat4;
-            par_mat4 = NULL;
-        }
+    }
+    
+    moTextFilterParam(const moTextFilterParam& p_src){
+        (*this) = p_src;
+    }
+    
+    const moTextFilterParam& operator=(const moTextFilterParam& p_src ) {
+        m_par_flt1 = p_src.m_par_flt1;
+        m_par_flt2 = p_src.m_par_flt2;
+        m_par_flt3 = p_src.m_par_flt3;
+        m_par_mat2 = p_src.m_par_mat2;
+        m_par_mat3 = p_src.m_par_mat3;
+        m_par_mat4 = p_src.m_par_mat4;
+        
+        par_flt1 = p_src.par_flt1;
+        par_flt2 = p_src.par_flt2;
+        par_flt3 = p_src.par_flt3;        
+        for(int i=0; i<4; i++) par_mat2[i] = p_src.par_mat2[i];
+        for(int i=0; i<9; i++) par_mat3[i] = p_src.par_mat3[i];
+        for(int i=0; i<16; i++) par_mat4[i] = p_src.par_mat4[i];
+        
+        return (*this);
     }
 
     /**
@@ -54,46 +60,7 @@ public:
      * almacenados en esta clase.
      * @param p_glsl puntero al shader.
      */
-	void getParamIDs(moShaderGLSL* p_glsl)
-    {
-        moText uname;
-        if (p_glsl) {
-            uname = moText("par_flt1");
-            m_par_flt1 = p_glsl->GetUniformID(uname);
-            uname = moText("par_flt2");
-            m_par_flt2 = p_glsl->GetUniformID(uname);
-            uname = moText("par_flt3");
-            m_par_flt3 = p_glsl->GetUniformID(uname);
-            uname = moText("par_mat2");
-            m_par_mat2 = p_glsl->GetUniformID(uname);
-            uname = moText("par_mat3");
-            m_par_mat3 = p_glsl->GetUniformID(uname);
-            uname = moText("par_mat4");
-            m_par_mat4 = p_glsl->GetUniformID(uname);
-        }
-    }
-#ifdef SHADER_CG
-	void getParamIDs(moShaderCG* p_cg)
-    {
-        moText uname;
-        if (p_cg) {
-            /*
-            uname = moText("par_flt1");
-            m_par_flt1 = (int)p_cg->GetFragParameter(uname);
-            uname = moText("par_flt2");
-            m_par_flt2 = (int)p_cg->GetFragParameter(uname);
-            uname = moText("par_flt3");
-            m_par_flt3 = (int)p_cg->GetFragParameter(uname);
-            uname = moText("par_mat2");
-            m_par_mat2 = (int)p_cg->GetFragParameter(uname);
-            uname = moText("par_mat3");
-            m_par_mat3 = (int)p_cg->GetFragParameter(uname);
-            uname = moText("par_mat4");
-            m_par_mat4 = (int)p_cg->GetFragParameter(uname);
-            */
-        }
-    }
-#endif
+	void getParamIDs(void* p_shader);
     /**
      * Determina los valores de los parámetros uniformes.
      */
@@ -110,10 +77,11 @@ public:
             p_params->m_par_flt1 = m_par_flt1;
             p_params->m_par_flt2 = m_par_flt2;
             p_params->m_par_flt3 = m_par_flt3;
+            p_params->m_par_mat2 = m_par_mat2;
+            p_params->m_par_mat3 = m_par_mat3;
+            p_params->m_par_mat4 = m_par_mat4;
 
-            p_params->par_mat2 = par_mat2;
-            p_params->par_mat3 = par_mat3;
-            p_params->par_mat4 = par_mat4;
+
         }
     }
 
@@ -121,10 +89,10 @@ public:
 	MOfloat par_flt2;
 	MOfloat par_flt3;
 
-	MOfloat* par_mat2;
-	MOfloat* par_mat3;
-	MOfloat* par_mat4;
-protected:
+	MOfloat par_mat2[4];
+	MOfloat par_mat3[9];
+	MOfloat par_mat4[16];
+
 	GLint m_par_flt1, m_par_flt2, m_par_flt3;
 	GLint m_par_mat2, m_par_mat3, m_par_mat4;
 };

@@ -1596,8 +1596,9 @@ moTextureAnimated::NeedsInterpolation() {
 			m_bInterpolating = false;
 			ActivateInterpolation(false);
 			//TODO: fix this
-			if (m_pCopyStart) m_pCopyStart->Apply( m_FrameStart );
-			if (m_pCopyEnd) m_pCopyEnd->Apply( m_FrameEnd );
+            moTextFilterParam DefParam;
+			if (m_pCopyStart) m_pCopyStart->Apply( m_FrameStart, 1.0, DefParam );
+			if (m_pCopyEnd) m_pCopyEnd->Apply( m_FrameEnd, 1.0, DefParam );
 			//activamos nuevamente la interpolacion una vez copiados los cuadros
 			ActivateInterpolation(true);
 			m_bInterpolating = true;
@@ -1629,9 +1630,10 @@ moTextureAnimated::Interpolate() {
 			if ( m_InterpolationPosition <= 0.0) m_InterpolationPosition = 0.0;
 			filterparam.par_flt1 = m_InterpolationPosition;
       //TODO: fix this
-			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, &filterparam );
+            //MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition) );
+			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, filterparam );
 
-			//MODebug2->Push( moText("IP:")+FloatToStr(m_InterpolationPosition) );
+			//MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition) );
 			return 1;
 		}
 	}

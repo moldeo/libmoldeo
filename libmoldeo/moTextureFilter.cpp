@@ -494,12 +494,12 @@ moTextureFilter::moTextureFilter()	{
 		m_glman = NULL;
 		m_renderman = NULL;
 		m_shader = NULL;
-		m_DefParams = NULL;
+		///m_DefParams = NULL;
     m_TextureFilterLabelName = "";
 }
 
 
-MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderman, moTextureArray &p_src_tex, moTextureArray &p_dest_tex, moShader *p_shader, moTextFilterParam *p_params)
+MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderman, moTextureArray &p_src_tex, moTextureArray &p_dest_tex, moShader *p_shader, const moTextFilterParam& p_params)
 {
 	MOuint i;
 	moText uname;
@@ -609,16 +609,16 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
     //if (pcg)
     //pcg->GetFragParameter(uname)==NULL )
 #endif
-    if (p_params == NULL) m_DefParams = new moTextFilterParam();
-    else m_DefParams = p_params;
-
-    if (pglsl) {
-        m_DefParams->getParamIDs(pglsl);
-    }
+    //if (p_params == NULL) m_DefParams = new moTextFilterParam();
+    //else m_DefParams = p_params;
+    m_DefParams = p_params;
+    //if (pglsl) {
+    //    m_DefParams->getParamIDs(pglsl);
+    //}
 #ifdef SHADER_CG
-    else if (pcg) {
-        m_DefParams->getParamIDs(pcg);
-    }
+    //else if (pcg) {
+    //    m_DefParams->getParamIDs(pcg);
+    //}
 #endif
 
 	return true;
@@ -626,15 +626,20 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
 
 MOboolean moTextureFilter::Finish()
 {
-    if (m_DefParams != NULL)
-    {
-        delete m_DefParams;
-        m_DefParams = NULL;
-    }
+    //if (m_DefParams != NULL)
+    //{
+    //    delete m_DefParams;
+    //    m_DefParams = NULL;
+    //}
 	return true;
 }
 
-void moTextureFilter::Apply( MOuint p_i, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilter::Apply( MOuint p_i) {
+    moTextFilterParam p_params;
+    Apply( p_i, 1.0, p_params);
+}
+
+void moTextureFilter::Apply( MOuint p_i, MOfloat p_fade, const moTextFilterParam& p_params)
 {
 	MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
@@ -659,7 +664,13 @@ void moTextureFilter::Apply( MOuint p_i, MOfloat p_fade, moTextFilterParam *p_pa
 	RestoreGLConf();
 }
 
-void moTextureFilter::Apply(MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_params)
+
+void moTextureFilter::Apply(MOfloat p_cycle) {
+    moTextFilterParam p_params;
+    Apply( p_cycle, 1.0, p_params);
+}
+
+void moTextureFilter::Apply(MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam& p_params)
 {
 	MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
@@ -685,7 +696,12 @@ void moTextureFilter::Apply(MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *
 	RestoreGLConf();
 }
 
-void moTextureFilter::Apply(moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilter::Apply(moTempo *p_tempo) {
+    moTextFilterParam p_params;
+    Apply( p_tempo, 1.0, p_params);
+}
+
+void moTextureFilter::Apply(moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params)
 {
 	MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
@@ -710,7 +726,12 @@ void moTextureFilter::Apply(moTempo *p_tempo, MOfloat p_fade, moTextFilterParam 
 	RestoreGLConf();
 }
 
-void moTextureFilter::Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, moTextFilterParam *p_params ) {
+void moTextureFilter::Apply(moMoldeoObject *p_src_mob) {
+    moTextFilterParam p_params;
+    Apply( p_src_mob, 1.0, p_params);
+}
+
+void moTextureFilter::Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, const moTextFilterParam& p_params ) {
 
   if (p_src_mob==NULL) return;
   if (m_shader==NULL) return;
@@ -735,7 +756,7 @@ void moTextureFilter::Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, moTextFi
 }
 
 
-void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params, moMoldeoObject* p_src_object)
+void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params, moMoldeoObject* p_src_object)
 {
 	for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
@@ -785,12 +806,16 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
     //do something
     p_src_object = NULL;
   }
+    /*
     if (p_params != NULL)
     {
         m_DefParams->CopyDefParamIDs(p_params);
         p_params->setParamValues();
     }
     else m_DefParams->setParamValues();
+     */
+    m_DefParams = p_params;
+    m_DefParams.setParamValues();
 }
 
 void moTextureFilter::SetGLConf(MOint w, MOint h)
