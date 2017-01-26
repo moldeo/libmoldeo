@@ -237,6 +237,10 @@ public:
     moText      GetTextureFilterLabelName() {
         return m_TextureFilterLabelName;
     }
+    
+    const moTextFilterParam& GetTextFilterParam() {
+        return m_DefParams;
+    }
 
 protected:
 	moShader* m_shader;

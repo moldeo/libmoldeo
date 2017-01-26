@@ -1628,9 +1628,11 @@ moTextureAnimated::Interpolate() {
 			m_InterpolationPosition = (float)( m_ActualTime - m_StartTime ) / (m_InterpolationTime);
 			if ( m_InterpolationPosition >= 1.0) m_InterpolationPosition = 1.0;
 			if ( m_InterpolationPosition <= 0.0) m_InterpolationPosition = 0.0;
+            filterparam = m_pInterpolator->GetTextFilterParam();
 			filterparam.par_flt1 = m_InterpolationPosition;
       //TODO: fix this
-            //MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition) );
+            MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition)+moText(" Param par_flt1:")+FloatToStr(filterparam.par_flt1)+moText(" Param UNIFORM ID:")+IntToStr(filterparam.m_par_flt1) );
+            
 			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, filterparam );
 
 			//MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition) );
@@ -1688,21 +1690,21 @@ MOint
 moTextureAnimated::GetGLId( MOuint p_i ) {
 
     if (p_i>2000 || p_i>m_nFrames) {
-        //WTF
-        p_i = 0;
+        //TODO: WTF
+        //p_i = 0;
     }
 
 	m_FrameNext = p_i;
 
 	if (NeedsInterpolation()) {
-    /**
-    MODebug2->Message( moText("moTextureAnimated::GetGLId( MOuint p_i ) > Interpolating image! ")+
-                      "From m_FramePrevious: " + IntToStr( m_FramePrevious )+
+    
+    MODebug2->Message( moText("moTextureAnimated::GetGLId( MOuint p_i ) > Interpolating image! ")+GetName()+
+                      " From m_FramePrevious: " + IntToStr( m_FramePrevious )+
                       " To m_FrameNext: " + IntToStr( m_FrameNext )+
                       " At m_InterpolationPosition: " + FloatToStr( m_InterpolationPosition, 2, 2 )+
                       "From m_FrameStart: " + IntToStr( m_FrameStart )+
                       " To m_FrameEnd: " + IntToStr( m_FrameEnd )
-                        );*/
+                        );
 		Interpolate();
 	} else {
 		if(m_FramePrevious!=p_i) this->GetFrame(p_i);
