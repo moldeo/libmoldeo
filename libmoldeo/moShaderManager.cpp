@@ -161,6 +161,7 @@ MOboolean moShaderManager::Init()
             "uniform float wireframe_width;"
             "uniform vec3 a_light;\n"
             "uniform vec3 color;\n"
+            "uniform float opacity;\n"
             "\n"
             "void main() {\n"
             "	vec4 texcolor = texture2D( t_image, v_texcoord );\n"
@@ -196,7 +197,7 @@ MOboolean moShaderManager::Init()
             "   if (distance_to_borderXd>(-wireframe_width+1.0/wseg)) texcolor = wirecolor;\n"
             "   if (distance_to_borderYd>(-wireframe_width+1.0/hseg)) texcolor = wirecolor;\n"
             //"	vec4 mulcolor = vec4( colorVarying, 1.0 );\n"
-            "	vec4 mulcolor = intensity*vec4( 1.0*color.r, 1.0*color.g, 1.0*color.b, 1.0 );\n"
+            "	vec4 mulcolor = intensity*vec4( 1.0*color.r, 1.0*color.g, 1.0*color.b, 1.0*opacity );\n"
             "	gl_FragColor = vec4( mulcolor.x*texcolor.x, mulcolor.y*texcolor.y, mulcolor.z*texcolor.z, mulcolor.w*texcolor.w );\n"
             "}\n"
             )
@@ -212,6 +213,7 @@ MOboolean moShaderManager::Init()
          m_RenderShaderNormalIndex = m_RenderShader.GetAttribID(moText("normal"));
 
          m_RenderShaderColorIndex = m_RenderShader.GetUniformID(moText("color"));
+         m_RenderShaderOpacityIndex = m_RenderShader.GetUniformID(moText("opacity"));
          m_RenderShaderTextureIndex = m_RenderShader.GetUniformID(moText("t_image"));
          m_RenderShaderProjectionMatrixIndex = m_RenderShader.GetUniformID("projmatrix");
          m_RenderShaderWireframeWidthIndex = m_RenderShader.GetUniformID(moText("wireframe_width"));
@@ -225,6 +227,7 @@ MOboolean moShaderManager::Init()
                             " position:"+IntToStr(m_RenderShaderPositionIndex)+""
                             " normal:"+IntToStr(m_RenderShaderNormalIndex)+""
                             " color:"+IntToStr(m_RenderShaderColorIndex)+""
+                            " opacity:"+IntToStr(m_RenderShaderOpacityIndex)+""
                             " t_coord:"+IntToStr(m_RenderShaderTexCoordIndex)+""
                             " t_coordedge:"+IntToStr(m_RenderShaderTexCoordEdgeIndex)
 
@@ -296,8 +299,9 @@ MOint moShaderManager::AddShader(MOuint p_type, moText p_name)
 	if (p_type == MO_SHADER_GLSL)
 	{
 		pshader_glsl = new moShaderGLSL();
-		pshader_glsl->Init();
 		pshader_glsl->SetName(p_name);
+		pshader_glsl->Init();
+
 		pshader = (moShader*)pshader_glsl;
 		m_shaders_array.Add(pshader);
 		return m_shaders_array.Count() - 1;
@@ -329,7 +333,7 @@ MOint moShaderManager::AddShader(moText p_filename)
 
 
 	if (config.LoadConfig(complete_fn) != MO_CONFIG_OK) {
-        moDebugManager::Error( moText("Couldn´t load shader config :") + complete_fn );
+        moDebugManager::Error( moText("Couldn't load shader config :") + complete_fn );
 	    return -1;
 	}
 
@@ -348,12 +352,12 @@ MOint moShaderManager::AddShader(moText p_filename)
 	MOint fragment_idx = config.GetParamIndex("fragment");
 
 	if ((vertex_idx == MO_PARAM_NOT_FOUND) && (fragment_idx == MO_PARAM_NOT_FOUND)) {
-	    if ((fragment_idx == MO_PARAM_NOT_FOUND))
+	    if (fragment_idx == MO_PARAM_NOT_FOUND)
             moDebugManager::Error( moText("In shader config :")
                                 + complete_fn
                                 + moText(" fragment(pixel) shader parameter not founded.")
                                  );
-	    if ((vertex_idx == MO_PARAM_NOT_FOUND))
+	    if (vertex_idx == MO_PARAM_NOT_FOUND)
             moDebugManager::Error( moText("In shader config :")
                                 + complete_fn
                                 + moText(" vertex shader parameter not founded.")
@@ -397,9 +401,19 @@ MOint moShaderManager::AddShader(moText p_filename)
 	if (grid_idx == MO_PARAM_NOT_FOUND)	tex_grid.Set1QuadGrid();
 	else tex_grid.Init(&config, grid_idx);
 
-	return AddShader(config.GetParam(type_idx).GetValue().GetSubValue().Int(),
+	int result = AddShader(config.GetParam(type_idx).GetValue().GetSubValue().Int(),
                   p_filename,
                   vertex_fn, fragment_fn, tex_grid);
+
+  if ( result > -1 ) {
+    moShader* pshader = GetShader(result);
+    if (pshader) {
+      MODebug2->Message("Added shader, loading config: " + p_filename );
+      pshader->m_Config.LoadConfig( p_filename );
+    }
+  }
+
+  return result;
 }
 
 MOint moShaderManager::AddShader(MOuint p_type, moText p_name, moText p_vert_fn, moText p_frag_fn, moTexturedGrid p_tex_grid)

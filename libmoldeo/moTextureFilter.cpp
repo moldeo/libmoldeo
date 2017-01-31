@@ -494,8 +494,8 @@ moTextureFilter::moTextureFilter()	{
 		m_glman = NULL;
 		m_renderman = NULL;
 		m_shader = NULL;
-		///m_DefParams = NULL;
-    m_TextureFilterLabelName = "";
+        m_TextureFilterLabelName = "";
+        m_uniform_idx = -1;
 }
 
 
@@ -565,17 +565,62 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
     uname = moText("fade_const");
 	if (pglsl) m_fade_const  = pglsl->GetUniformID(uname);
 
-    //if (p_params == NULL) m_DefParams = new moTextFilterParam();
-    //else m_DefParams = p_params;
+	uname = moText("tempo_dt");
+	if (pglsl) m_tempo_dt = pglsl->GetUniformID(uname);
+
+	uname = moText("tempo_delta");
+	if (pglsl) m_tempo_delta = pglsl->GetUniformID(uname);
+
+	uname = moText("tempo_syncro");
+	if (pglsl) m_tempo_syncro = pglsl->GetUniformID(uname);
+
+	uname = moText("tempo_ticks");
+	if (pglsl) m_tempo_ticks = pglsl->GetUniformID(uname);
+
+	uname = moText("dest_tex_size");
+	if (pglsl) m_dest_tex_size = pglsl->GetUniformID(uname);
+
+    uname = moText("fade_const");
+	if (pglsl) m_fade_const  = pglsl->GetUniformID(uname);
+
+    uname = moText("random_uniform");
+    if (pglsl) m_random_uniform = pglsl->GetUniformID(uname);
+    //MODebug2->Message("moTextureFilter::Init >"+uname+" idx:"+IntToStr(m_random_uniform));
+
+  m_uniform_idx = -1;
+  for(int u=0; u<MAX_UNIFORM_VARS; u++ ) {
+    m_uniform_variables_idx[u] = -1;
+  }
+
+  if (m_shader) {
+    //do something
+    //p_src_object = NULL;
+    if (m_uniform_idx==-1) {
+      m_uniform_idx = m_shader->m_Config.GetParamIndex( "uniform" );
+      //MODebug2->Message("moTextureFilter::Init > founded uniform param in: m_uniform_idx:"+IntToStr(m_uniform_idx));
+    }
+
+    if (m_uniform_idx>-1) {
+        for( int u=0; u<m_shader->m_Config.GetParam(m_uniform_idx).GetValuesCount(); u++ ) {
+          moValue vb = m_shader->m_Config.GetParam(m_uniform_idx).GetValues().Get(u);
+          moText uniform_var_name = vb.GetSubValue(0).GetData()->Text();
+          moText uniform_var_type = vb.GetSubValue(1).GetData()->Text();
+          uname = uniform_var_name;
+          if (m_uniform_variables_idx[u]==-1 && pglsl) {
+            m_uniform_variables_idx[u] = pglsl->GetUniformID(uname);
+            //MODebug2->Message("moTextureFilter::Init > setting uniform id for ("+uname+","+uniform_var_type+") in:"+IntToStr(m_uniform_variables_idx[u]));
+          }
+        }
+    }
+  }
+
+
     m_DefParams = p_params;
     if (pglsl) {
         m_DefParams.getParamIDs(pglsl);
     }
-#ifdef SHADER_CG
-    //else if (pcg) {
-    //    m_DefParams->getParamIDs(pcg);
-    //}
-#endif
+
+
 
 	return true;
 }
@@ -687,27 +732,36 @@ void moTextureFilter::Apply(moMoldeoObject *p_src_mob) {
     Apply( p_src_mob, 1.0, p_params);
 }
 
-void moTextureFilter::Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, const moTextFilterParam& p_params ) {
-
-  if (p_src_mob==NULL) return;
-  if (m_shader==NULL) return;
-
-  MOint w = m_dest_tex[0]->GetWidth();
+void moTextureFilter::Apply( moMoldeoObject *p_src_mob, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params ) {
+    if (p_src_mob==NULL) return;
+    if (m_shader==NULL) return;
+    
+    MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
 	SetGLConf(w, h);
-
+    
+    if (m_use_screen_tex) m_renderman->SaveScreen();
+    
+	BindDestFBO();
+    
 	m_shader->StartShader();
-	SetupShader(w, h, NULL, p_fade, p_params, p_src_mob);
-
+	SetupShader(w, h, p_tempo, p_fade, p_params, p_src_mob);
+    
 	BindSrcTex( p_src_mob );
 	m_shader->DrawGrid(w, h, m_src_tex.Count());
 	UnbindSrcTex();
-
+    
 	m_shader->StopShader();
-
+    
 	UnbindDestFBO();
-
+    
 	RestoreGLConf();
+}
+
+
+void moTextureFilter::Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, const moTextFilterParam& p_params ) {
+
+    Apply( p_src_mob, NULL, p_fade, p_params );
 
 }
 
@@ -727,21 +781,37 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
 		}
 	}
 
-	if (-1 < m_tempo_angle) {
-		if (p_tempo != NULL)
-		{
-			float a = p_tempo->ang;
-			float f = fmod(float(a), float(2.0 * moMathf::PI)) / (2.0 * moMathf::PI);
 
-			glUniform2fARB(m_tempo_angle, a, f);
+  if (p_tempo != NULL)
+  {
 
-		}
-		else {
-		    glUniform2fARB(m_tempo_angle, 0.0, 0.0);
+   if (-1 < m_tempo_angle) {
+    float a = p_tempo->ang;
+    float f = fmod(float(a), float(2.0 * moMathf::PI)) / (2.0 * moMathf::PI);
 
-		}
-	}
+    glUniform2fARB(m_tempo_angle, a, f);
+   }
 
+   if (-1<m_tempo_dt) {
+    glUniform1fARB(m_tempo_dt, p_tempo->dt );
+   }
+   if (-1<m_tempo_syncro) {
+    glUniform1fARB(m_tempo_syncro, p_tempo->syncro );
+   }
+   if (-1<m_tempo_delta) {
+    glUniform1fARB(m_tempo_delta, p_tempo->delta );
+   }
+   if (-1<m_tempo_ticks) {
+    glUniform1fARB(m_tempo_ticks, (float)p_tempo->ticks );
+   }
+    //moDebugManager::Push("m_tempo_angle:" + FloatToStr(a));
+    //(m_shader->GetType() == (MOuint)MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, a, f) : m_tempo_angle=0;/*cgGLSetParameter2f( (CGparameter)m_tempo_angle, a, f)*/
+  }
+  else {
+      glUniform2fARB(m_tempo_angle, 0.0, 0.0);
+      glUniform1fARB(m_tempo_dt, 0.0);
+      //(m_shader->GetType() == (MOuint)MO_SHADER_GLSL) ? glUniform2fARB(m_tempo_angle, 0.0, 0.0) : m_tempo_angle=0;/*cgGLSetParameter2f( (CGparameter)m_tempo_angle, 0.0, 0.0 )*/
+  }
 	if (-1 < m_dest_tex_size) {
 	    glUniform2fARB(m_dest_tex_size, w, h);
 
@@ -756,17 +826,95 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
     //do something
     p_src_object = NULL;
   }
-    /*
-    if (p_params != NULL)
-    {
-        m_DefParams->CopyDefParamIDs(p_params);
-        p_params->setParamValues();
+
+	if (-1 < m_random_uniform) {
+			float seed = 0.0f;
+			float r = moMathf::UnitRandom(seed);
+
+			glUniform2fARB(m_random_uniform, r, seed);
+	}
+
+
+	///TODO: load and evaluate each parameter of m_shader->config using also p_src_object as parameters!!!
+  if (p_src_object && m_shader) {
+
+    moShaderGLSL* pglsl = (moShaderGLSL*)m_shader;
+    //do something
+    //p_src_object = NULL;
+    if (m_uniform_idx>-1) {
+        for( int u=0; u<m_shader->m_Config.GetParam(m_uniform_idx).GetValuesCount(); u++ ) {
+          moValue vb = m_shader->m_Config.GetParam(m_uniform_idx).GetValues().Get(u);
+          moText uniform_var_name = vb.GetSubValue(0).GetData()->Text();
+          moText uniform_var_type = vb.GetSubValue(1).GetData()->Text();
+
+          if (m_uniform_variables_idx[u]>-1) {
+            int paramidx = p_src_object->GetConfig()->GetParamIndex(uniform_var_name);
+            if (uniform_var_type=="FLOAT") {
+              if (paramidx>-1) {
+                float p_float = p_src_object->GetConfig()->Eval( uniform_var_name  );
+                glUniform1fARB( m_uniform_variables_idx[u], p_float );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  float p_float = p_src_object->GetInlets()->Get(inletidx)->GetData()->Float();
+                  glUniform1fARB( m_uniform_variables_idx[u], p_float );
+                }
+              }
+            } else
+            if (uniform_var_type=="INT") {
+              if (paramidx>-1) {
+                int p_int = p_src_object->GetConfig()->Int( uniform_var_name );
+                glUniform1iARB( m_uniform_variables_idx[u], p_int );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  int p_int = p_src_object->GetInlets()->Get(inletidx)->GetData()->Int();
+                  glUniform1iARB( m_uniform_variables_idx[u], p_int );
+                }
+              }
+            }
+          /**
+            if (uniform_var_type=="FLOAT") {
+              float p_float = 0.0;
+              int paramidx = p_src_object->GetConfig()->GetParamIndex(uniform_var_name);
+              if (paramidx>-1) {
+                p_float = p_src_object->GetConfig()->Eval( moParamReference(paramidx)  );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  p_float = p_src_object->GetInlets()->Get(inletidx)->GetData()->Float();
+                }
+              }
+              glUniform1fARB( m_uniform_variables_idx[u], p_float );
+              //MODebug2->Message("Assigning FLOAT:" + FloatToStr(p_float));
+            } else
+            if (uniform_var_type=="INT") {
+              float p_int = 0;
+              int paramidx = p_src_object->GetConfig()->GetParamIndex(uniform_var_name);
+              if (paramidx>-1) {
+                p_int = p_src_object->GetConfig()->Int( moParamReference(paramidx)  );
+              } else {
+                int inletidx = p_src_object->GetInletIndex(uniform_var_name);
+                if (inletidx>-1) {
+                  p_int = p_src_object->GetInlets()->Get(inletidx)->GetData()->Int();
+                }
+              }
+              glUniform1iARB( m_uniform_variables_idx[u], p_int );
+              //MODebug2->Message("Assigning FLOAT:" + FloatToStr(p_float));
+            }
+            */
+          }
+        }
+
+
+
     }
-    else m_DefParams->setParamValues();
-     */
+  }
+
     m_DefParams = p_params;
     m_DefParams.setParamValues();
     MODebug2->Message( moText("setParamValues > m_par_flt1: ") + IntToStr(m_DefParams.m_par_flt1) );
+
 }
 
 void moTextureFilter::SetGLConf(MOint w, MOint h)
@@ -868,6 +1016,7 @@ void moTextureFilter::BindSrcTex( moMoldeoObject* p_mob ) {
   if (p_mob==NULL) return;
 
   moTempo* src_tempo  = NULL;
+  moEffectState fs;
 
   if (  p_mob->GetType()==MO_OBJECT_EFFECT
       || p_mob->GetType()==MO_OBJECT_PREEFFECT
@@ -877,7 +1026,7 @@ void moTextureFilter::BindSrcTex( moMoldeoObject* p_mob ) {
     moEffect* pFx = (moEffect*) p_mob;
 
     if (pFx) {
-      moEffectState fs = pFx->GetEffectState();
+      fs = pFx->GetEffectState();
       src_tempo = &fs.tempo;
     }
 
@@ -886,6 +1035,7 @@ void moTextureFilter::BindSrcTex( moMoldeoObject* p_mob ) {
   for (MOuint i = 0; i < m_src_tex.Count(); i++)
 	{
 		glActiveTextureARB(GL_TEXTURE0_ARB + i);
+		//glBindTexture(m_src_tex[i]->GetTexTarget(), m_src_tex.GetGLId(i, p_mob));
 		glBindTexture(m_src_tex[i]->GetTexTarget(), m_src_tex.GetGLId(i, src_tempo));
 	}
 }

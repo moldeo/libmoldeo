@@ -351,6 +351,7 @@ class LIBMOLDEO_API moConfig
     GLint       GetGLId( moParamReference p_paramreference, MOuint p_i );
     GLint       GetGLId( moParamReference p_paramreference );
 
+
         ///referencias a clases
         moMathFunction&               Fun(  moParamReference p_paramreference );
         const moFont&                 Font( moParamReference p_paramreference );

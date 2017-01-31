@@ -51,6 +51,8 @@ class moShaderManager;
 
 #include "moTextFilterParam.h"
 
+#define MAX_UNIFORM_VARS 256
+
 // Base class to implement color transformation matrices.
 class LIBMOLDEO_API moColorMatrix
 {
@@ -207,6 +209,7 @@ public:
 
 
     void Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, const moTextFilterParam& p_params );
+    void Apply( moMoldeoObject *p_src_mob, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params);
     void Apply( moMoldeoObject *p_src_mob);
 
     /**
@@ -253,8 +256,17 @@ protected:
 	GLint m_src_tex_unit[MO_MAX_TEXTURE_UNITS];
 	GLint m_src_tex_offset[MO_MAX_TEXTURE_UNITS];
 	GLint m_tempo_angle;
+	GLint m_tempo_dt;
+	GLint m_tempo_syncro;
+	GLint m_tempo_delta;
+	GLint m_tempo_ticks;
 	GLint m_fade_const;
 	GLint m_dest_tex_size;
+	GLint m_random_uniform;
+
+
+	int m_uniform_idx;/// idx of uniform parameters variables in moMoldeoObject
+	int m_uniform_variables_idx[MAX_UNIFORM_VARS]; ///idx of uniform variables in shader code moShader
 
 	//moTextFilterParam *m_DefParams;
     moTextFilterParam m_DefParams;

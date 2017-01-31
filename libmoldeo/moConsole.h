@@ -459,6 +459,14 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         int TestScreen( const moDisplay& p_display_info );
 
+        int NewMob( const moMobDefinition &p_MobDef );
+        int AddChildMob( const moMobDefinition &p_MobDef, const moMobDefinition &p_MobDefFather );
+        int MoveMob( const moMobDefinition& p_MobDef, int position );
+        int DuplicateMob( const moMobDefinition& p_MobDef );
+        int DeleteMob( const moMobDefinition& p_MobDef );
+
+        virtual void Error( const moText &p_message );
+
     protected:
 
         /** \defgroup luascript_console Funciones específicas de scripting de moConsole

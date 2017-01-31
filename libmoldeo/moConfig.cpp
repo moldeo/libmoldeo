@@ -1171,7 +1171,6 @@ moConfig::Eval( moText p_param_name ) {
 
 GLint
 moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
-
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {

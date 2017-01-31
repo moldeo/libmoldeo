@@ -1124,16 +1124,25 @@ moData::GetGLId( MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
 
 GLint
 moData::GetGLId( moMoldeoObject* p_mob ) {
+    return GetGLId( p_mob, NULL);
+}
+
+GLint
+moData::GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo ) {
     moTextFilterParam p_filterparam;
-    return GetGLId( p_mob, 1.0, p_filterparam);
+    return GetGLId( p_mob, p_tempo, 1.0, p_filterparam);
 }
 
 
 GLint
 moData::GetGLId( moMoldeoObject* p_mob, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
+ 
+    GetGLId( p_mob, NULL, p_fade, p_filterparam );
+}
 
+GLint
+moData::GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
     moTexture*	pTexture = NULL;
-    moTempo* p_tempo = NULL;
 
     if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
         moTextureFilter* pTF = (moTextureFilter*) m_Number.m_Pointer;
@@ -1150,7 +1159,7 @@ moData::GetGLId( moMoldeoObject* p_mob, MOfloat p_fade, const moTextFilterParam 
             //if (m_pFilterParam)
             //    p_filterparam = m_pFilterParam;
 
-            pTF->Apply( p_mob, p_fade, p_filterparam);
+            pTF->Apply( p_mob, p_tempo, p_fade, p_filterparam);
             moTextureIndex* PTI = pTF->GetDestTex();
             if (PTI) {
                 pTexture = PTI->GetTexture(0);

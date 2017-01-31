@@ -27,6 +27,8 @@ if test "x$exec_prefix" = "xNONE" ; then
   exec_prefix=$prefix
 fi
 
+echo $host
+
 case "$host" in
         *-*-mingw*|*-*-cygwin*)
                 AC_DEFINE(PLATFORM_WIN32, 1, [Platform is Win32])
@@ -59,6 +61,12 @@ case "$host" in
                 ;;
         x86_64-*)
                 AC_DEFINE(ARCH_X86_64, 1, [Architecture is x86-64])
+                ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
+                ARCH_STRING="X86-64"
+                libdir=$prefix"/lib"
+                ;;
+        armv7l-*)
+                AC_DEFINE(ARCH_X86_64, 1, [Architecture is armv7l x86-64])
                 ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
                 ARCH_STRING="X86-64"
                 libdir=$prefix"/lib"
@@ -112,6 +120,7 @@ AC_ARG_ENABLE(host,
 	host_ldflags="-L/opt/vc/lib"
     	librequires='lua5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, egl, glesv2, freetype2, check'
 	OPENGLESV2='#define OPENGLESV2 1'
+	with_gles=yes
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
 	host_cflags="-I/opt/local/include -I/System/Library/Frameworks/CoreFoundation.framework/Versions/A/Headers"

@@ -197,7 +197,7 @@ MOboolean moMathFunction::Init( const moText& p_Expression, moMoldeoObject* p_pM
 
               if ( pInlet->GetConnectorLabelName() == pVariable->GetName() ) {
                   ///found inlet! check index
-                  MODebug2->Message( moText("moMathFunction::Init > assigning variable [") + pVariable->GetName() + moText("] to inlet with the same name. Inlet index is: " + IntToStr(m)) );
+                  MODebug2->Log( moText("moMathFunction::Init > assigning variable [") + pVariable->GetName() + moText("] to inlet with the same name. Inlet index is: " + IntToStr(m)) );
                   pVariable->SetInlet( pInlet );
               }
 
@@ -628,7 +628,7 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
                 if ( param.GetParamDefinition().GetName() == pVariable->GetName() ) {
 
                     ///assign pointer to variable!!!!
-                    MODebug2->Message( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText(" to parameter with the same name.") );
+                    MODebug2->Log( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText(" to parameter with the same name.") );
                     pVariable->SetParam( param.GetPtr() );
 
                 }
@@ -641,7 +641,7 @@ MOboolean moParserFunction::Init(const moText& p_Expression, moMoldeoObject* p_p
               moInlet* pInlet = m_pMOB->GetInlets()->Get(m);
 
               if ( pInlet->GetConnectorLabelName() == pVariable->GetName() ) {
-                  MODebug2->Message( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText("] to inlet with the same name. Inlet index is: " + IntToStr(m)) );
+                  MODebug2->Log( moText("moParserFunction::Init > assigning variable [") + pVariable->GetName() + moText("] to inlet with the same name. Inlet index is: " + IntToStr(m)) );
                   pVariable->SetInlet( pInlet );
               }
 

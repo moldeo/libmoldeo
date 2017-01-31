@@ -700,6 +700,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
     moInlet*        InletScreenWidth;
     moInlet*        InletScreenHeight;
     moInlet*        InletTimeabs;
+    moInlet*        InletPreconfig;
 
 		MOboolean m_bConnectorsLoaded;
 

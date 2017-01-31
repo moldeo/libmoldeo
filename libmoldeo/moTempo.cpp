@@ -62,6 +62,8 @@ moTempo::operator = (const moTempo &src) {
 	delta = src.delta;
 	deltaprevious = src.deltaprevious;
 	factor = src.factor;
+	//added for precise calculation
+	ang = src.ang;
 
 	beatpulsecount = src.beatpulsecount;
 	return (*this);
@@ -180,7 +182,10 @@ MOdouble moTempo::getTempo() {
 		ang =(double) intv * dy / dx;
 
 		//t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
-		t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
+		if ( (factor + delta - 1.0)!=0.0) {
+      t0 = ticks - ang * modv /(2.0 * moMathf::PI *(factor + delta - 1.0) );
+		} else t0 = ticks;
+
 
 		//corregimos el ticks_0(desfazaje que fuerza el desplazamiento de la funcion para su continuidad)
 		ticks_0 =(int) t0;

@@ -69,6 +69,9 @@ public:
 	MOdouble delta;
 	MOdouble deltaprevious;
 
+  ///incremento diferencial de tiempo
+  MOdouble dt;
+
 	///Multiplicador a partir de 2X hasta KX, donde K en principio es entero
 	MOdouble factor;
 

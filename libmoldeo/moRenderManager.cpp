@@ -213,6 +213,9 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_imaging: ") + IntToStr(GLEW_ARB_imaging) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_ARB_shading_language_100: ") + IntToStr(GLEW_ARB_shading_language_100) );
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
+  MODebug2->Message( moText("moRenderManager::Init >       GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB: ") + IntToStr(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB) );
+  MODebug2->Message( moText("moRenderManager::Init >       GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB: ") + IntToStr(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB) );
+
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex_size);
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Size: ") + IntToStr(max_tex_size) );
   glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &max_tex_rect_size);
@@ -432,6 +435,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
 
 
     MOuint color_index = m_pSHManager->GetRSHColorIndex();
+    MOuint opacity_index = m_pSHManager->GetRSHOpacityIndex();
     MOuint colors_index = m_pSHManager->GetRSHColorsIndex();
     MOuint position_index = m_pSHManager->GetRSHPositionIndex();
     MOuint normal_index = m_pSHManager->GetRSHNormalIndex();
@@ -488,6 +492,7 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     glUniform1f( tex_hsegments_index, Mat.m_fTextHSegments );
     glUniform3fv( light_index, 1, &Mat.m_vLight[0] );
     glUniform3fv( color_index, 1, &Mat.m_Color[0] );
+    glUniform1f( opacity_index, Mat.m_fOpacity );
 
     glEnableVertexAttribArray( position_index );
     glVertexAttribPointer( position_index, 3, GL_FLOAT, false, 0, &Gpx[0] );  // Set data type and location.

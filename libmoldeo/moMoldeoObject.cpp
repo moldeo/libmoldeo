@@ -399,7 +399,7 @@ moMoldeoObject::moMoldeoObject() {
 	m_Outlets.Init( 0 , NULL );
 	m_bConnectorsLoaded = false;
 	__iscript = -1;
-	InletScreenWidth = InletScreenHeight = InletTimeabs = NULL;
+	InletScreenWidth = InletScreenHeight = InletTimeabs = InletPreconfig = NULL;
 }
 
 moMoldeoObject::~moMoldeoObject() {
@@ -493,6 +493,14 @@ moMoldeoObject::Init() {
       //param.SetExternData( Inlet->GetData() );
       ((moConnector*)InletTimeabs)->Init( moText("timeabs"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(InletTimeabs);
+    }
+
+    InletPreconfig = new moInlet();
+    if (InletPreconfig) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletPreconfig)->Init( moText("preconfig"), m_Inlets.Count(), MO_DATA_NUMBER_INT );
+      m_Inlets.Add(InletPreconfig);
     }
 
     moText confignamecompleto="";
@@ -722,7 +730,7 @@ moMoldeoObject::ResolveValue( moParam& param, int value_index, bool p_refresh ) 
                       //valuebase.SetTextureFilterParam( value.GetSubValue(4).GetData() );
                   }
 
-                  MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + valuebase0.Text());
+                  //MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + valuebase0.Text());
 
               }
           } else {
@@ -889,11 +897,11 @@ moMoldeoObject::CreateConnectors() {
 
         if ( m_Config.GetParamIndex(OutletName) > -1 ) {
           ///CREAMOS UN OUTLET nuevo para este parametro....
-          MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter \"") + OutletName + "\""  );
+          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter \"") + OutletName + "\""  );
           Outlet->Init( OutletName, i, m_Config.GetParam(OutletName).GetPtr());
         } else {
           ///CREAMOS UN OUTLET desde el .cfg, teniendo en cuenta los tipos...
-          MODebug2->Message( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
+          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
           Outlet->Init( OutletName, i, poutlets[i][MO_OUTLET_TYPE].Text() );
         }
         m_Outlets.Add( Outlet );
@@ -1134,13 +1142,17 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 	  if (InletTimeabs) {
         if (InletTimeabs->GetData()) InletTimeabs->GetData()->SetDouble( moGetDuration() );
     }
+    if (InletPreconfig) {
+        if (InletPreconfig->GetData()) InletPreconfig->GetData()->SetInt( m_Config.GetCurrentPreConf() );
+    }
 
 	moEvent *actual,*tmp;
 	moMessage *pmessage;
 
 	actual = p_EventList->First;
 
-	///Procesamos los eventos recibidos de los MoldeoObject Outlets
+	///Procesamos los eventos recibidos
+	/// de los MoldeoObject Outlets
 	while(actual!=NULL) {
 		tmp = actual->next;
 		///procesamos aquellos Outlet q estan dirigidos a este objeto
@@ -1173,6 +1185,10 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 
 
 				pinlet->Update();///notifica al inlet que ya esta actualizado...
+
+        //MODebug2->Message("Updating inlet: object: " + GetLabelName() + " inlet: " + pinlet->GetConnectorLabelName()
+        //                  + " outlet_data: " + pinlet->GetData()->ToText() );
+
 			}
 
 		} else if (actual->reservedvalue3 == MO_MESSAGE) {

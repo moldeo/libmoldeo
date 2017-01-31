@@ -96,6 +96,7 @@ MOuint moTextureIndex::GetGLId(MOuint p_idx, moTempo *p_tempo) // With synchro.
 								(m_textures_array[p_idx]->GetType() == MO_TYPE_VIDEOBUFFER)))
 		{
 			moTextureAnimated* ptex_anim = (moTextureAnimated*)m_textures_array[p_idx];
+			float d = p_tempo->ang;
 			return ptex_anim->GetGLId(p_tempo);
 		}
 		else return m_textures_array[p_idx]->GetGLId();
@@ -104,6 +105,8 @@ MOuint moTextureIndex::GetGLId(MOuint p_idx, moTempo *p_tempo) // With synchro.
 
 MOuint moTextureIndex::GetGLId(MOuint p_idx, moMoldeoObject *p_mob) // With synchro.
 {
+  moTempo *p_tempo = NULL;
+/*
 	if (ValidIndex(p_idx)) {
     if (p_mob!=NULL) {
       return m_textures_array[p_idx]->GetGLId( p_mob );
@@ -111,6 +114,17 @@ MOuint moTextureIndex::GetGLId(MOuint p_idx, moMoldeoObject *p_mob) // With sync
       return m_textures_array[p_idx]->GetGLId();
     }
 	} else return 0;
+	*/
+	if (ValidIndex(p_idx))
+		if ((p_tempo != NULL) && ((m_textures_array[p_idx]->GetType() == MO_TYPE_TEXTURE_MULTIPLE) ||
+								(m_textures_array[p_idx]->GetType() == MO_TYPE_MOVIE) ||
+								(m_textures_array[p_idx]->GetType() == MO_TYPE_VIDEOBUFFER)))
+		{
+			moTextureAnimated* ptex_anim = (moTextureAnimated*)m_textures_array[p_idx];
+			return ptex_anim->GetGLId(p_tempo);
+		}
+		else return m_textures_array[p_idx]->GetGLId();
+	else return 0;
 }
 
 MOint moTextureIndex::GetType(MOuint p_idx)

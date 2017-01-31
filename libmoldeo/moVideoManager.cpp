@@ -1531,11 +1531,11 @@ void moVideoManager::Update(moEventList * p_EventList)
                 if (pbuffer) {
                   pbucket->Lock();
 
-                    
+
                     moVideoFormat vf = pSample->m_VideoFormat;
-                    
+
                     if (vf.m_BitCount>0 && vf.m_BitCount<=64) {
-                        
+
                         if (vf.m_RedMask==255 && vf.m_BufferSize>0) {
                             ///INVERT RED AND BLUE
                             int bypp = (vf.m_BitCount>>3);
@@ -1546,21 +1546,25 @@ void moVideoManager::Update(moEventList * p_EventList)
                                 pix[2] = u;
                             }
                         }
-                        
+
                         ts->SetBuffer( pbuffer, GL_RGB);
-                        
+
                     } else {
                         //MODebug2->Error("moVideoManager::Update > error");
 #ifndef OPENGLESV2
 #ifdef MO_MACOSX
                         ts->SetBuffer( pbuffer, GL_RGB);
 #else
+  #ifdef GSTVERSION
+                        ts->SetBuffer( pbuffer, GL_RGB);
+  #else
                         ts->SetBuffer( pbuffer, GL_BGR_EXT);
+  #endif
 #endif
 #else
                         ts->SetBuffer( pbuffer, GL_RGB);
 #endif
-                        
+
                     }
 
                   pbucket->Unlock();

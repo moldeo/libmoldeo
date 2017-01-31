@@ -265,6 +265,22 @@ enum moMoldeoActionType {
   */
   MO_ACTION_OBJECT_ADD, /// 1:  father object name | id, 2: object info
 
+  /// "objectduplicate" : MO_ACTION_OBJECT_DUPLICATE
+  /**
+  * Duplicar un objeto
+  *
+  * param 1: object name | object id
+  */
+  MO_ACTION_OBJECT_DUPLICATE, /// 1:  object name | id
+
+  /// "objectimport" : MO_ACTION_OBJECT_IMPORT
+  /**
+  * Importar un objeto
+  *
+  * param 1: config full file path
+  */
+  MO_ACTION_OBJECT_IMPORT, /// 1:  config full file path
+
   /// "objectget" : MO_ACTION_OBJECT_GET
   /**
   * Obtener la info completa de un objeto
@@ -344,7 +360,7 @@ enum moMoldeoActionType {
   * param 1: new father object name | new father object id
   * param 3: new object position index
   */
-  MO_ACTION_OBJECT_MOVE, /// param 1: object name | object id
+  MO_ACTION_OBJECT_MOVE, ///
 
   /// "objetenable" : MO_ACTION_OBJECT_ENABLE
   /**
