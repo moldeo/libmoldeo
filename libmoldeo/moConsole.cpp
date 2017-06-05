@@ -2967,6 +2967,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_CONSOLE_RECORD_SESSION:
       {
+      MODebug2->Message("moConsole::Processing > Console Record Session");
       ConsoleRecordSession();
 
       EffectStateJSON = m_ConsoleState.ToJSON();
@@ -2991,6 +2992,10 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
 
         moText rendered_folder = DataMan()->GetSession()->GetRenderedFolder();
+
+        MODebug2->Message("moConsole::Processing > Console Render Session (quality): " + arg0);
+        MODebug2->Message("moConsole::Processing > Console Render Session (rendered_folder): " + rendered_folder);
+
         moText RenderSessionInfo = "{";
         moText data_session = DataMan()->GetSession()->ToJSON();
         EffectStateJSON = m_ConsoleState.ToJSON();
@@ -3000,6 +3005,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         RenderSessionInfo+= "}";
 
         pMessageToSend = new moDataMessage();
+
+        MODebug2->Message("moConsole::Processing > Console Render Session: " + RenderSessionInfo);
 
         if (pMessageToSend) {
             pMessageToSend->Add( moData("consolerendersession") );

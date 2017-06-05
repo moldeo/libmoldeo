@@ -174,11 +174,10 @@ void moShaderGLSL::compileVertShader(const moText& vert_source)
 
 	glGetShaderInfoLog(m_VertexShader, maxLength, &maxLength, vertexInfoLog);
 
-
 	if(IsCompiled_FS == MO_FALSE)
 	{
     if (MODebug2 != NULL)
-      MODebug2->Error(moText("Vertex Shader compile error:")
+        MODebug2->Error(moText("Vertex Shader compile error:")
                       + "("+GetName()+")"
                       + moText(vertexInfoLog) );
 
@@ -187,7 +186,7 @@ void moShaderGLSL::compileVertShader(const moText& vert_source)
 
 		//return;
 	} else {
-MODebug2->Message(moText("Vertex Shader compile log:")
+        MODebug2->Message(moText("Vertex Shader compile log:")
                       + "("+GetName()+")"
                       + moText(vertexInfoLog) );
 	}

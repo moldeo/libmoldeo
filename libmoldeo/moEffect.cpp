@@ -222,12 +222,12 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
 	if(isyncro != MO_PARAM_NOT_FOUND) {
 		moData *sync = m_Config.GetParam(isyncro).GetData();
 		if (sync) {
-		  moMathFunction* pFun = sync->Fun();
-      if (sync->Type()==MO_DATA_FUNCTION && pFun) {
-        //m_EffectState.tempo.syncro = pFun->Eval(m_EffectState.tempo.ang);
-        m_EffectState.tempo.syncro = pFun->Eval();
-      }
-      else m_EffectState.tempo.syncro = sync->Double();
+            moMathFunction* pFun = sync->Fun();
+            if (sync->Type()==MO_DATA_FUNCTION && pFun) {
+                //m_EffectState.tempo.syncro = pFun->Eval(m_EffectState.tempo.ang);
+                m_EffectState.tempo.syncro = pFun->Eval();
+            }
+            else m_EffectState.tempo.syncro = sync->Double();
 		}
 
 		/**código alternativo*/

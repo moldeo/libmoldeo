@@ -62,7 +62,7 @@
 			<Add option="`pkg-config ftgl --libs`" />
 			<Add option="`pkg-config tinyxml --libs`" />
 			<Add library="freeimage" />
-			<Add library="libboost_filesystem-mt" />
+			<Add library="libboost_filesystem" />
 		</Linker>
 		<Unit filename="../../libmoldeo/mo3dModelManager.cpp" />
 		<Unit filename="../../libmoldeo/mo3dModelManager.h" />

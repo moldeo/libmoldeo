@@ -210,7 +210,7 @@ moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
   int h = pGsGraph->GetVideoFormat().m_Height;
 
   if (!pGsGraph) return GST_FLOW_ERROR;
-  pGsGraph->MODebug2->Message("new sample");
+  //pGsGraph->MODebug2->Message("new sample");
 
 
   GstAppSink* psink = (GstAppSink*) appsink;
@@ -1175,6 +1175,19 @@ moCaptureDevices* moGsFramework::LoadCaptureDevices() {
 
         m_CaptureDevices.Empty();
 
+        for( int i=0; i<m_PreferredDevices.Count(); i++) {
+            MODebug2->Message( moText("moGsFramework::PreferredDevices: ") + IntToStr(i)
+            + moText(" Name: ") + m_PreferredDevices[i].GetName()
+            + moText(" LabelName: ") + m_PreferredDevices[i].GetLabelName()
+            + moText(" Path: ") + m_PreferredDevices[i].GetPath()
+            + moText(" Port: ") + IntToStr(m_PreferredDevices[i].GetPort())
+            + moText(" W: ") + IntToStr(m_PreferredDevices[i].GetSourceWidth())
+            + moText(" H: ") + IntToStr(m_PreferredDevices[i].GetSourceHeight())
+            + moText(" FlipH: ") + IntToStr(m_PreferredDevices[i].GetSourceFlipH())
+            + moText(" FlipV: ") + IntToStr(m_PreferredDevices[i].GetSourceFlipV())
+            + moText(" Bpp: ") + IntToStr(m_PreferredDevices[i].GetSourceBpp()) );
+        }
+
 if (m_PreferredDevices.Count()==0) {
 	    moText cap_dev_name = moText("default");
             moCaptureDevice newdev;
@@ -1231,7 +1244,7 @@ if (m_PreferredDevices.Count()==0) {
         device_name = "wrappercamerabinsrc";
         #else
         device_name = moText("v4l2src");
-        m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default"), moText("/dev/video0") ) );
+        //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default"), moText("/dev/video0") ) );
         #endif
         // in linux: for v4l2src   device could be  /dev/video0   -   /dev/video1   etc...
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default") );
@@ -1299,7 +1312,7 @@ if (m_PreferredDevices.Count()==0) {
 
             m_CaptureDevices.Add( newdev );
 
-            MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added Default capture device: " + newdev.GetName() + " label:" + newdev.GetLabelName() );
+            MODebug2->Message( "moGsFramework::LoadCaptureDevices > AUTO Added Default capture device: " + newdev.GetName() + " label:" + newdev.GetLabelName() );
         }
     }
     if (!va)
@@ -1317,8 +1330,7 @@ if (m_PreferredDevices.Count()==0) {
           newdev.SetLabelName("LIVEIN"+IntToStr(m_CaptureDevices.Count()));
 
           m_CaptureDevices.Add( newdev );
-
-          MODebug2->Message( "moGsFramework::LoadCaptureDevices > Added capture device: " + newdev.GetName() + " label:" + newdev.GetLabelName() );
+          MODebug2->Message( "moGsFramework::LoadCaptureDevices > AUTO Added" );
       }
       //list = g_list_append(list, );
     }
@@ -1362,7 +1374,7 @@ if (m_PreferredDevices.Count()==0) {
             GstStructure *s = gst_caps_get_structure (caps, i);
             caps_str = gst_structure_to_string (s);
             //g_print ("\t%s %s\n", (i == 0) ? "caps  :" : "       ", caps_str);
-            MODebug2->Message( moText("LoadCaptureDevice > name: ") + moText(name) + moText("caps: ") + moText(caps_str) );
+            MODebug2->Message( moText("moGsFramework::LoadCaptureDevice > name: ") + moText(name) + moText("caps: ") + moText(caps_str) );
             g_free (caps_str);
         }
 
@@ -1431,7 +1443,7 @@ moGsFramework::AddCaptureDevice(  moCaptureDevice& p_capdev ) {
 
     m_CaptureDevices.Add( p_capdev );
 
-    MODebug2->Message( moText("Added capture device:") + p_capdev.GetName() );
+    MODebug2->Message( moText("moGsFramework::AddCaptureDevice > Added capture device:") + p_capdev.GetName() + " label:" + p_capdev.GetLabelName() );
 
     return true;
 }
@@ -2584,7 +2596,7 @@ MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > GST_STATE_PLAYING >
                                 }
                             } else MODebug2->Error( moText("moGsGraph::BuildLiveWebcamGraph > NO sample from gst_app_sink_pull_preroll!"));
 			    MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > gst_app_sink_pull_preroll for appsink ended"));
-			    
+
 #else
                             WaitForFormatDefinition( 1600 );
 #endif

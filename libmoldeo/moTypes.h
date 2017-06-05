@@ -87,7 +87,7 @@
 
 
 using namespace std;
-#define OPENGLESV2 1
+
 
 /*MOLDEO SETUP DEFINITIONS*/
 #ifndef OPENGLESV2

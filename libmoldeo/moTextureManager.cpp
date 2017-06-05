@@ -315,7 +315,7 @@ moTextureBuffer::LoadImage( moText p_ImageName, moBitmap* pImage, int indeximage
 
     //if (!GLEW_ARB_texture_non_power_of_two) {
     if (RenderMan()->IsTextureNonPowerOf2Disabled()) {
-        
+
         w = FreeImage_GetWidth(pImageResult);
         h = FreeImage_GetHeight(pImageResult);
 
@@ -831,7 +831,7 @@ MOint moTextureManager::AddTexture(moText p_filename)
 			return ptex->GetMOId();
 
 		}	else {
-      MODebug2->Error("moTextureManager::AddTexture > filename: " + p_filename + " failed BuildFromFile()/LoadMovieFile()");
+            MODebug2->Error("moTextureManager::AddTexture > filename: " + p_filename + " failed BuildFromFile()/LoadMovieFile()");
 			DeleteTexture(ptex->GetMOId());
 			return -1;
 		}

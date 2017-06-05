@@ -549,6 +549,7 @@ MOint moTextureFilterIndex::LoadSourceTexture(moText& name, moTextureArray& src_
 	{
 		moTexture* ptex = m_texman->GetTexture(idx);
 		src_tex.Add(ptex);
+        MODebug2->Message("moTextureFilterIndex::LoadSourceTexture > Added source texture Name:" + ptex->GetName());
 		if (first_tex)
 		{
 			// By default, the resolution of the destination textures is the same
@@ -589,6 +590,7 @@ MOint moTextureFilterIndex::LoadDestTexture( const moText& name, moTextureArray&
 		// The destination texture already exists...
 		ptex = m_texman->GetTexture(idx);
 		dest_tex.Add(ptex);
+		MODebug2->Message("moTextureFilterIndex::LoadDestTexture > Added dest texture: " + ptex->GetName());
 		return 0;
 	}
 	else
@@ -598,6 +600,7 @@ MOint moTextureFilterIndex::LoadDestTexture( const moText& name, moTextureArray&
 		{
 			ptex = m_texman->GetTexture(idx);
 			dest_tex.Add(ptex);
+            MODebug2->Message("moTextureFilterIndex::LoadDestTexture > Created and Added Dest Texture:" + ptex->GetName());
 			return 0;
 		}
 		else return 4;
@@ -605,7 +608,7 @@ MOint moTextureFilterIndex::LoadDestTexture( const moText& name, moTextureArray&
 }
 
 // Checks if all the destination textures can be assigned to the same fbo, to avoid context changes.
-// This implementation is very simple, it not all the textures cannot be assigned to a single fbo,
+// This implementation is very simple, if not all the textures cannot be assigned to a single fbo,
 // then the textures of each filter have their own fbo.
 void moTextureFilterIndex::SetupDestTexFBO()
 {
@@ -659,11 +662,15 @@ void moTextureFilterIndex::SetupDestTexFBO()
 		}
 	}
 
+    compatible_tex = false;
+
 	if (compatible_tex)
 	{
 		// All the textures can be assigned to the same fbo.
 		idx = m_fbman->CreateFBO();
 		pfbo = m_fbman->GetFBO(idx);
+
+		MODebug2->Warning("Creating compatible FBO for all... (WARNING, not working above 8) FBO: " + IntToStr(idx) );
 
 		if (pfbo == NULL) return;
 
@@ -706,7 +713,8 @@ void moTextureFilterIndex::SetupDestTexFBO()
 		// Creating a different fbo for each filter.
 		for (i = 0; i < m_filters_array.Count(); i++)
 		{
-			dest_tex = m_filters_array[i]->GetDestTex();
+            moTextureFilter* pTFilter = m_filters_array[i];
+			dest_tex = pTFilter->GetDestTex();
 
 			idx = -1;
 			pfbo = NULL;
@@ -714,9 +722,13 @@ void moTextureFilterIndex::SetupDestTexFBO()
 			{
 				ptex = dest_tex->GetTexture(j);
 
-				if (j == 0)	idx = m_fbman->CreateFBO();
+				if (j == 0)	{
+                    idx = m_fbman->CreateFBO();
+                    //moTextureFilter->GetTextureFilterLabelName()
+                    MODebug2->Warning("Creating Filter FBO: "+ pTFilter->GetTextureFilterLabelName()
+                                    +" idx:" + IntToStr(idx) );
+				}
 				pfbo = m_fbman->GetFBO(idx);
-
 				if (pfbo != NULL)
 				{
 					ptex->SetFBO(pfbo);

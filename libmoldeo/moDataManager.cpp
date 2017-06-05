@@ -290,7 +290,7 @@ moDataSession::Render( moConsoleState& p_console_state ) {
   m_iActualKey = 0;
   MODebug2->Message("moConsole::ConsoleModeUpdate > START RENDER session: m_StartTimeCode: " + IntToStr(m_StartTimeCode) );
 
-  moText temp_render_base = DataMan()->GetDataPath() + moText("temp_render");
+  moText temp_render_base = DataMan()->GetDataPath() + moSlash + moText("temp_render");
   this->m_Rendered_Folder = temp_render_base;
 
   int ntemp = 0;
