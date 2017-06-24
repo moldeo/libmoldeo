@@ -984,8 +984,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
                                            bpp,
                                            0xFF0000,
                                            0x00FF00,
-                                           0x0000FF,
-                                           true );
+                                           0x0000FF  );
 
     //TODO: add alpha channel for RGBA: FreeImage_SetTransparent(fbitmap, image.flags & ImageData::ALPHA_BIT);
 
