@@ -2250,7 +2250,8 @@ void moMovie::GetFrame( MOuint p_i )
           ///lock to prevent any data or reference loss...
           pbucket->Lock();
 #ifndef OPENGLESV2
-          SetBuffer(pbuffer, GL_BGR_EXT );
+          //SetBuffer(pbuffer, GL_BGR_EXT );
+          SetBuffer(pbuffer, GL_RGB );
 #else
           SetBuffer(pbuffer, GL_RGB );
 #endif

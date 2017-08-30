@@ -4517,6 +4517,11 @@ void moConsole::RegisterFunctions()
     RegisterFunction("GetDirectoryFileCount");//25
     RegisterFunction("Screenshot");//26
 
+    RegisterFunction("EffectPlay");//27
+    RegisterFunction("EffectStop");//28
+    RegisterFunction("EffectPause");//29
+    RegisterFunction("EffectTimerState");//30
+
     ResetScriptCalling();
 
 }
@@ -4624,6 +4629,19 @@ int moConsole::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
         case 26:
             ResetScriptCalling();
             return luaScreenshot(vm);
+
+        case 27:
+            ResetScriptCalling();
+            return luaEffectPlay(vm);
+        case 28:
+            ResetScriptCalling();
+            return luaEffectStop(vm);
+        case 29:
+            ResetScriptCalling();
+            return luaEffectPause(vm);
+        case 30:
+            ResetScriptCalling();
+            return luaEffectTimerState(vm);
 
 
         default:
@@ -4804,6 +4822,105 @@ int moConsole::luaObjectDisable(moLuaVirtualMachine& vm)
     }
 
     return 0;
+}
+
+int moConsole::luaEffectPlay(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        EffectPlay(Object->GetId());
+    } else {
+        MODebug2->Error( moText("in console script: EffectPlay : object not founded : id:")+(moText)IntToStr(objectid));
+    }
+
+    return 0;
+}
+
+int moConsole::luaEffectStop(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        EffectStop(Object->GetId());
+    } else {
+        MODebug2->Error( moText("in console script: EffectStop : object not founded : id:")+(moText)IntToStr(objectid));
+    }
+
+    return 0;
+}
+
+int moConsole::luaEffectPause(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        EffectPause(Object->GetId());
+    } else {
+        MODebug2->Error( moText("in console script: EffectPause : object not founded : id:")+(moText)IntToStr(objectid));
+    }
+
+    return 0;
+}
+
+
+int moConsole::luaEffectTimerState(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    moText playstr = "none";
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        moEffect* fxEffect = (moEffect*)Object;
+        if (fxEffect) {
+            moTimer ptimer = fxEffect->GetEffectState().tempo;
+            playstr = ptimer.StateToStr();
+        }
+    }
+
+    lua_pushstring( state, playstr );
+
+    return 1;
 }
 
 

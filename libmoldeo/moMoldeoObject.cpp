@@ -1649,8 +1649,9 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
 
     unsigned int i;
     moData MData;
+    moDataMessage MDataMessage;
     moDataMessage* pDataMessage;
-    ///moDataMessages* pDataMessages;
+    moDataMessages* pDataMessages;
 
     ///void* pv;
 
@@ -1701,6 +1702,37 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
                                   lua_pushstring( state, (char*) MData.ToText() );
                                 }
                                 return i;
+                            }
+                            return 1;
+                    case    MO_DATA_MESSAGES:
+                            pDataMessages = (moDataMessages*)pData->Pointer();
+                            //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGES");
+                            if (pDataMessages) {
+                                //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGES > count: " + IntToStr(pDataMessages->Count()) );
+
+                                if (pDataMessages->Count()==0) {
+                                    lua_pushstring( state, (char*) "NO MESSAGES" );
+                                    return 1;
+                                }
+
+                                int m = 0;
+                                int mi = 0;
+                                for(i=0;i<pDataMessages->Count();i++) {
+                                  MDataMessage = pDataMessages->Get(i);
+                                  for(m=0;m<MDataMessage.Count();m++) {
+                                    MData = MDataMessage.Get(m);
+                                    //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > data: " + MData.ToText() );
+                                    lua_pushstring( state, (char*) MData.ToText() );
+                                    //if (MDataMessage.Count()==(m-1)) {
+                                    //    lua_pushstring( state, (char*) "X" );
+                                    //}
+                                    mi++;
+                                  }
+                                }
+                                return mi;
+                            } else {
+                                lua_pushstring( state, (char*) "NO MESSAGES" );
+                                return 1;
                             }
                             return 1;
                     case MO_DATA_VECTOR2F:

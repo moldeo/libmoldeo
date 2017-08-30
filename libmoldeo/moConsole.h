@@ -540,6 +540,12 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         int luaGet(moLuaVirtualMachine& vm);
 
+        int luaEffectPlay(moLuaVirtualMachine& vm);
+        int luaEffectStop(moLuaVirtualMachine& vm);
+        int luaEffectPause(moLuaVirtualMachine& vm);
+        int luaEffectTimerState(moLuaVirtualMachine& vm);
+
+
 
         //@}
 
