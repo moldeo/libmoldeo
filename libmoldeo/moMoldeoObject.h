@@ -608,7 +608,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		 * función que devuelve el indice del conector Outlet del correspondiente nombre
 		 * @param p_connector_name nombre del conector (generalmente el mismo del parametro u otro arbitrario definido por el usuario)
 		 */
-		MOint GetOutletIndex( moText p_connector_name ) const;
+		MOint GetOutletIndex( const moText& p_connector_name ) const;
 
 		/**
 		 * función que registra las funciones para lua en particular para esta clase y las derivadas

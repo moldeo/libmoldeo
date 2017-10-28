@@ -82,6 +82,7 @@ moTextureBuffer::moTextureBuffer() {
     ///how many levels: 100
     LevelDiagram = new MObyte [ 100 * 100 * 3];
 
+  m_texture_array = 0;
 }
 
 moTextureBuffer::~moTextureBuffer() {
@@ -470,6 +471,67 @@ moTextureFrames&  moTextureBuffer::GetBufferLevels( int L, int C ) {
 
 }
 
+
+MOuint moTextureBuffer::GetTextureArray( int width, int height, int levels, bool force_reload ) {
+  if (!force_reload && m_texture_array) return m_texture_array;
+
+  glActiveTexture( GL_TEXTURE0 + 5);
+  glGenTextures( 1,&m_texture_array);
+  //glEnable(GL_TEXTURE_2D_ARRAY);
+  glBindTexture( GL_TEXTURE_2D_ARRAY, m_texture_array );
+  //width = 2;
+  //height = 2;
+  levels = momin( levels, log(width)/log(2) );
+  MODebug2->Message("Creating Texture Array, levels: "+IntToStr(levels));
+  glTexStorage3D(GL_TEXTURE_2D_ARRAY, levels, GL_RGBA8, width, height, m_ImagesProcessed);
+  //int i = 0;
+  for(int i=0; i<m_ImagesProcessed; i++) {
+    //
+    moTextureMemory* pTextureMemory = m_Frames[i];
+    if (pTextureMemory) {
+      FIBITMAP *pImage = (FIBITMAP*) pTextureMemory->LoadFromMemory();
+      if (pImage) {
+        FIBITMAP *pImageS;
+        pImageS = FreeImage_Rescale(pImage, width, height, FILTER_BICUBIC );
+        MOubyte* bits = FreeImage_GetBits(pImageS);
+        /*MOubyte bits[width*height*4];
+        for(int h=0; h<height;h++) {
+          for(int w=0; w<width;w++) {
+            bits[w*4 + h*width*4] = w/2;
+            bits[w*4+1+h*width*4] = h/2;
+            bits[w*4+2+h*width*4] = (w+h)/4;
+            bits[w*4+3+h*width*4] = 55+(i+1)*20;
+          }
+        }*/
+        if (bits) {
+            glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
+                0,                      //Mipmap number
+                0, 0, i, //xoffset, yoffset, zoffset
+                width, height, 1,          //width, height, depth
+                GL_RGBA,                 //format
+                GL_UNSIGNED_BYTE,       //type
+                bits );
+            MODebug2->Message("Adding texture 2d array image:" + IntToStr(i) );
+        }
+      } else {
+        MODebug2->Error("Error adding texture 2d array image (loadfrommemory failed):" + IntToStr(i) );
+      }
+    }
+  }
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR );
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER,   GL_LINEAR  );
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, levels);
+  if (levels>1) {
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+  }
+  if (m_pResourceManager) {
+    m_pResourceManager->GetGLMan()->CheckErrors("GetTextureArray");
+  }
+  glBindTexture( GL_TEXTURE_2D_ARRAY, 0 );
+  return m_texture_array;
+}
 
 /*
 */

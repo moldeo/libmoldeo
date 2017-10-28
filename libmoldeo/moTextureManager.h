@@ -83,6 +83,9 @@ class LIBMOLDEO_API moTextureBuffer : public moAbstract {
         moTextureFrames& GetBufferLevels( int L, int C );
         moTextureFrames& GetBufferPatterns( moTexture* p_ImageReference, int x, int y, int width=0, int height=0 );
         moTextureFrames& GetBufferPatterns( const moTexture& p_ImageReference, int x, int y, int width=0, int height=0 );
+        MOuint GetTextureArray( int width, int height, int levels, bool force_load = false  );
+
+        MOuint m_texture_array;
 
         int max_luminance;
         int min_luminance;

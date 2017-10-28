@@ -1227,13 +1227,15 @@ MOboolean moTextureMemory::LoadFromBitmap( moBitmap* p_bitmap ) {
 
 }
 
-MOboolean moTextureMemory::BuildFromMemory() {
+moBitmap* moTextureMemory::LoadFromMemory() {
 
-    if (hmem!=NULL && m_glid>0) {
-        FIBITMAP *pImage;
+    FIBITMAP *pImage;
+    MODebug2->Message("LoadFromMemory: size in memory: " + IntToStr(m_SizeInMemory)+" m_glid:" + IntToStr(m_glid));
+    if (hmem!=NULL && m_glid>=0) {
+
         //FIMEMORY	*hmem;
 
-        MOuint _format;
+        //MOuint _format;
 
         //MOint FrameSize =
         FreeImage_TellMemory((FIMEMORY*)hmem);
@@ -1278,10 +1280,34 @@ MOboolean moTextureMemory::BuildFromMemory() {
                 _format = GL_RGBA;
                 break;
         }
+        FlipBufferVert((MOubyte *)FreeImage_GetBits(pImage), FreeImage_GetBPP(pImage) / 8 );
+        return (moBitmap*)pImage;
+  }
+  return NULL;
+}
+
+MOubyte* moTextureMemory::GetBits() {
+  FIBITMAP *pImage = (FIBITMAP*) LoadFromMemory();
+  if (pImage) {
+    return (MOubyte*)FreeImage_GetBits(pImage);
+  }
+  return NULL;
+}
+
+void moTextureMemory::Unload( moBitmap* p_bitmap  ) {
+  if (p_bitmap) {
+    FreeImage_Unload( (FIBITMAP*)p_bitmap );
+  }
+}
+
+MOboolean moTextureMemory::BuildFromMemory() {
+
+
+  FIBITMAP *pImage = (FIBITMAP*) LoadFromMemory();
+  if (pImage) {
         ///just execute this time for building the texture really in card memory
         Build();
         ///then apply the buffer
-        FlipBufferVert((MOubyte *)FreeImage_GetBits(pImage), FreeImage_GetBPP(pImage) / 8 );
         SetBuffer( m_width, m_height, FreeImage_GetBits(pImage), _format);
         FreeImage_Unload( pImage );
         //MODebug2->Push( moText("moTextureMemory::BuildFromMemory: success: hmem:") + IntToStr((int)hmem) + moText("glid:") + IntToStr(m_glid));
@@ -1291,6 +1317,7 @@ MOboolean moTextureMemory::BuildFromMemory() {
         return false;
     }
 }
+
 
 
 MOboolean moTextureMemory::BuildFromBitmap( moBitmap* p_bitmap, moText p_bufferformat )

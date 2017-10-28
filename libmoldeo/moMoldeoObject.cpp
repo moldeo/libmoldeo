@@ -897,11 +897,11 @@ moMoldeoObject::CreateConnectors() {
 
         if ( m_Config.GetParamIndex(OutletName) > -1 ) {
           ///CREAMOS UN OUTLET nuevo para este parametro....
-          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter \"") + OutletName + "\""  );
+          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter: \"") + OutletName + "\""  );
           Outlet->Init( OutletName, i, m_Config.GetParam(OutletName).GetPtr());
         } else {
           ///CREAMOS UN OUTLET desde el .cfg, teniendo en cuenta los tipos...
-          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
+          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param: \"") + OutletName+ "\""  );
           Outlet->Init( OutletName, i, poutlets[i][MO_OUTLET_TYPE].Text() );
         }
         m_Outlets.Add( Outlet );
@@ -1103,7 +1103,7 @@ moMoldeoObject::GetInletIndex( moText p_connector_name ) const {
 }
 
 MOint
-moMoldeoObject::GetOutletIndex( moText p_connector_name ) const {
+moMoldeoObject::GetOutletIndex( const moText& p_connector_name ) const {
 
 	for( MOuint i=0; i< m_Outlets.Count(); i++ ) {
 	    moOutlet* pOutlet = m_Outlets.Get(i);
@@ -1242,7 +1242,9 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
                                     pdata );
           p_EventList->Add( (moEvent*) pmessage );
           //if (pmessage) delete pmessage;
-          //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())  );
+          //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())
+          //+" label:" + pconnection->GetDestinationMoldeoLabelName()
+          //+" connector:" + pconnection->GetDestinationConnectorLabelName()  );
         }
         ///reset to update false, so it doesnt continue sending!
         poutlet->Update(false);

@@ -250,6 +250,16 @@ MOint moShader::FragErrorCode()
     return m_FragErrorCode;
 }
 
+MOint moShader::GeomErrorCode()
+{
+    return m_GeomErrorCode;
+}
+
+MOint moShader::TessErrorCode()
+{
+    return m_TessErrorCode;
+}
+
 moText moShader::LoadShaderSource(const moText& p_fn)
 {
 	FILE *src_file = fopen(p_fn, "rt");

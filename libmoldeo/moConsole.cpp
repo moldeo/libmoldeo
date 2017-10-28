@@ -840,24 +840,27 @@ moConsole::AddMoldeoAPIDevices() {
       for( MOuint i=0; i<(m_pIODeviceManager->IODevices().Count()); i++ ) {
         moIODevice* pDevice = m_pIODeviceManager->IODevices().GetRef(i);
         if (pDevice) {
-          if (pDevice->GetName()=="netoscin" ) {
-            if (pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1" ) {
-              if (pDevice->GetConfig()->Int( "port" ) == 3334 ) {
-                  MoldeoAPIListener = true;
-                  if (MoldeoAPISender) break;
-              }
+          if ( pDevice->GetName()=="netoscin" ) {
+            if (
+              (pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1"
+                && pDevice->GetConfig()->Int( "port" ) == 3334)
+              || ( pDevice->GetLabelName()=="moldeoapioscin")
+            ) {
+                MoldeoAPIListener = true;
+                if (MoldeoAPISender) break;
             }
-
           }
 
           if ( pDevice->GetName()=="netoscout" ) {
-            if ( pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1" ) {
-              if ( pDevice->GetConfig()->GetValue( "hosts" ).GetSubValue(1).Int() == 3335 ) {
+            if (
+            ( pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1"
+              && pDevice->GetConfig()->GetValue( "hosts" ).GetSubValue(1).Int() == 3335)
+              ||
+              (pDevice->GetLabelName()=="moldeoapioscout")
+            ) {
                   MoldeoAPISender = true;
                  if (MoldeoAPIListener) break;
-              }
             }
-
           }
         }
       }
