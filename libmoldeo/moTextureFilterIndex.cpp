@@ -723,10 +723,13 @@ void moTextureFilterIndex::SetupDestTexFBO()
 				ptex = dest_tex->GetTexture(j);
 
 				if (j == 0)	{
-                    idx = m_fbman->CreateFBO();
+                    pfbo = ptex->GetFBO();
+                    if (pfbo==NULL) {
+                      idx = m_fbman->CreateFBO();
+                    }
                     //moTextureFilter->GetTextureFilterLabelName()
-                    MODebug2->Warning("Creating Filter FBO: "+ pTFilter->GetTextureFilterLabelName()
-                                    +" idx:" + IntToStr(idx) );
+                    //MODebug2->Warning("Creating Filter FBO: "+ pTFilter->GetTextureFilterLabelName()
+                    //                +" idx:" + IntToStr(idx) );
 				}
 				pfbo = m_fbman->GetFBO(idx);
 				if (pfbo != NULL)

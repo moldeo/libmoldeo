@@ -139,6 +139,12 @@ moTexture* moTextureIndex::GetTexture(MOuint p_idx)
 	return NULL;
 }
 
+bool moTextureIndex::SetTexture(MOuint p_idx, moTexture * p_tex)
+{
+	if (ValidIndex(p_idx)) return (m_textures_array[p_idx] = p_tex  );
+	return false;
+}
+
 MOboolean moTextureIndex::ValidIndex(MOuint p_idx)
 {
 	if (0<=p_idx && p_idx < m_textures_array.Count()) return true;

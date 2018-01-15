@@ -2177,6 +2177,9 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
             switch(rParam.GetParamDefinition().GetType()) {
               case MO_PARAM_TEXT:
+              case MO_PARAM_SCRIPT:
+              case MO_PARAM_FILE:
+              case MO_PARAM_TEXTUREFOLDER:
                 VB.SetText(arg3Text);
                 break;
               case MO_PARAM_TEXTURE:
@@ -2209,6 +2212,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                 }
                 break;
               default:
+                MODebug2->Warning("no param type implemented:"+rParam.GetParamDefinition().GetTypeStr() );
                 break;
             }
             break;

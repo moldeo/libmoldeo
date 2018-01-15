@@ -1672,7 +1672,8 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 	int t;
 	float ft,PeliV;
 
-
+  //MODebug2->Message("moTextureAnimated::GetGLId > "+this->GetName()
+  //+ " m_FrameNext:"+IntToStr(m_FrameNext)+"/m_nFrames:"+IntToStr(m_nFrames));
 	if(p_tempo==NULL) {
 			t = m_Time - moGetTicks();
 			ft = (t / 1000) * m_fFramesPerSecond;//frames que deberian haber pasado en este lapso...

@@ -1164,10 +1164,12 @@ LIBMOLDEO_API moText0 FloatToStr(double a, int nzeros, int ndecimals )
 	char *buffer;
 	buffer = new char[100];
 
-	nzeros = 2;
-	ndecimals = 2;
+	//nzeros = 2;
+	//ndecimals = 2;
 
-    snprintf(buffer, 100, "%02.3f", a); // Memory-safe version of sprintf.
+    moText pat = moText("%0") + IntToStr(nzeros) + moText(".") + IntToStr(ndecimals)+moText("f");
+
+    snprintf(buffer, 100, pat, a); // Memory-safe version of sprintf.
 
     moText str = buffer;
 
