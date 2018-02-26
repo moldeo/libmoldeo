@@ -125,7 +125,7 @@ moBucketsPool::moBucketsPool() {
 	m_pFirstBucketToGo = m_pLastBucketToGo = NULL;
 	m_pFirstEmptyBucket = m_pLastEmptyBucket = NULL;
 	m_nBuckets = 0;
-	m_lMaxBuckets = 1;
+	m_lMaxBuckets = 10;
 }
 
 moBucketsPool::~moBucketsPool() {
@@ -156,7 +156,7 @@ bool moBucketsPool::AddBucket(moBucket *pBucket ) {
 	if( m_nBuckets == 0) {//lista vacia
 		m_pFirstBucketToGo = pBucket;
 		m_pLastBucketToGo = pBucket;
-	} else {
+	} else if (m_pLastBucketToGo) {
 		m_pLastBucketToGo->AttachBucket( pBucket );
 		m_pLastBucketToGo = m_pLastBucketToGo->GetAttachedBucket();
 	}

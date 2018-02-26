@@ -1699,6 +1699,7 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 	if (NeedsInterpolation()) {
 		Interpolate();
 	} else {
+    MODebug2->Message(" fprev:"+IntToStr(m_FramePrevious)+" fnext:" + IntToStr(m_FrameNext));
 		if(m_FramePrevious!=m_FrameNext) this->GetFrame( m_FrameNext );
 		m_FramePrevious = m_FrameNext;
 	}
@@ -1712,7 +1713,7 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 MOint
 moTextureAnimated::GetGLId( MOuint p_i ) {
 
-    if (p_i>2000 || p_i>m_nFrames) {
+    if (/*p_i>2000 ||*/ p_i>m_nFrames) {
         //WTF
         p_i = 0;
     }
@@ -1730,6 +1731,7 @@ moTextureAnimated::GetGLId( MOuint p_i ) {
                         );*/
 		Interpolate();
 	} else {
+	  //MODebug2->Message(" fprev:"+IntToStr(m_FramePrevious)+" fnext:" + IntToStr(m_FrameNext));
 		if(m_FramePrevious!=p_i) this->GetFrame(p_i);
 		m_FramePrevious = m_FrameNext = p_i;
 	}
@@ -2236,6 +2238,9 @@ void moMovie::EnableAudio(int enable) {
 
 void moMovie::GetFrame( MOuint p_i )
 {
+
+  //MODebug2->Message("GetFrame "+IntToStr(p_i));
+
 	if(m_pGraph)
 	{
 
@@ -2256,7 +2261,9 @@ void moMovie::GetFrame( MOuint p_i )
           */
 
         //m_pGraph->Pause();
-        MODebug2->Push( "moMovie::GetFrame > Going to p_i:"+IntToStr(p_i)+" Actual real timebase position:" + IntToStr(m_pGraph->GetPosition()) );
+        //MODebug2->Message( "moMovie::GetFrame > Going to p_i:"+IntToStr(p_i)+" Actual real timebase position:" + IntToStr(m_pGraph->GetPosition()) );
+      } else {
+        //MODebug2->Message( "moMovie::GetFrame MO_PLAYMODE_TIMEBASE > " + m_pGraph->StateToText(state) );
       }
 	} else {
       m_pGraph->Seek( p_i );
@@ -2287,20 +2294,21 @@ void moMovie::GetFrame( MOuint p_i )
           pbucket->Unlock();
 
           pbucket->EmptyBucket();
+        } else {
+          MODebug2->Message("Empty bucket");
         }
-        m_BucketsPool.DestroyRetreivedBucket();
+        bool destroy = m_BucketsPool.DestroyRetreivedBucket();
+        //if (destroy) MODebug2->Message("Dstroyed bucket!");
       }
-	}
-		/*
-		else {
+	} else {
 
-      MODebug2->Error(  moText("moMovie::GetFrame()")
+      MODebug2->Warning(  moText("moMovie::GetFrame()")
                       + moText(" m_BucketsPool is EMPTY !!!")
                       + moText(" state:")
                       + m_pGraph->StateToText(state) );
 
     }
-    */
+
 	} else {
       MODebug2->Error( moText("moMovie::GetFrame()") + moText(" m_pGraph is NULL !!!") );
   }
