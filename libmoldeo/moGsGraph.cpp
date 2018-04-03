@@ -2308,11 +2308,11 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 //colormode = "";
 
            if (b_sourceselect) {
-              #ifdef MO_WIN32
+              //#ifdef MO_WIN32
               #ifdef GSTVERSION
               b_sourceselect = false;
               #endif // GSTVERSION
-              #endif // WIN32
+              //#endif // WIN32
            }
 
            if (b_sourceselect) {
