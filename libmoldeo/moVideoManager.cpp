@@ -429,7 +429,7 @@ moCircularVideoBuffer::LoadSample( moVideoSample* pvideosample ) {
 		0x00FF00,
 		0x0000FF);
 
-		if (pImage==NULL) return;
+		if (pImage==NULL) return false;
 
 	FIBITMAP* pImageResult = NULL;
 	FIBITMAP* pImageCropped = NULL;
