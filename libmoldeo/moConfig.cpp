@@ -401,18 +401,18 @@ moConfig::FixConfig() {
 
 int moConfig::LoadConfig( moText p_filename ) {
 
-	TiXmlDocument			m_XMLDocument;
-    TiXmlEncoding           xencoding = TIXML_ENCODING_LEGACY;
+  TiXmlDocument			m_XMLDocument;
+  TiXmlEncoding           xencoding = TIXML_ENCODING_LEGACY;
 
-	UnloadConfig();
+  UnloadConfig();
 
-	//p_filename = p_filename.Replace("\\","//");
-	//p_filename = p_filename.Replace("\\\\","//");
-	p_filename.Replace("\\","/");
+  //p_filename = p_filename.Replace("\\","//");
+  //p_filename = p_filename.Replace("\\\\","//");
+  p_filename.Replace("\\","/");
 
-      if (!moFileManager::FileExists(p_filename)) {
-        moDebugManager::Error( "moConfig::LoadConfig > Error " + p_filename + " doesn't exists." );
-      }
+  if (!moFileManager::FileExists(p_filename)) {
+    moDebugManager::Error( "moConfig::LoadConfig > Error " + p_filename + " doesn't exists." );
+  }
 
 	cout << "XML DOM about to load..." << endl;
 

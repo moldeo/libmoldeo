@@ -38,7 +38,7 @@
 #include <gst/interfaces/propertyprobe.h>
 #else
 #endif // GSTVERSION
-//#define GSTVERSION
+#define GSTVERSION
 #include "moFileManager.h"
 
 moLock BuildLock;
@@ -227,11 +227,14 @@ moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
   if (!( bsize>0 && (int)bsize<=(h*w*4) )) return GST_FLOW_ERROR;
   //pGsGraph->MODebug2->Message(moText("Bucket receiving size: ") + IntToStr(bsize) );
 
+
   //gst buffer to moldeo bucketpool
   moBucket *pbucket=NULL;
 
   if (!pGsGraph->m_pBucketsPool) return GST_FLOW_ERROR;
   if(pGsGraph->m_pBucketsPool->IsFull()) {
+      //pGsGraph->MODebug2->Warning("appsink_new_sample > bckt full");
+      gst_sample_unref(sample);
       return GST_FLOW_OK;
   }
 
@@ -248,10 +251,12 @@ moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
 
   bool added_bucket = pGsGraph->m_pBucketsPool->AddBucket( pbucket );
   if(!added_bucket)
-    pGsGraph->MODebug2->Error(moText("Bucket error"));
+    pGsGraph->MODebug2->Error(moText("appsink_new_sample > Bucket error"));
+  //else pGsGraph->MODebug2->Message("bckt added!!"+IntToStr(pGsGraph->m_pBucketsPool->m_nBuckets) );
 
   gst_buffer_unmap ( Gbuffer, &mapinfo );
   gst_sample_unref(sample);
+
   return GST_FLOW_OK;
 }
 
@@ -386,8 +391,12 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer  
 
                 if(!pGsGraph->m_pBucketsPool->AddBucket( pbucket )) {
                     pGsGraph->MODebug2->Error(moText("Bucket error"));
-                }// else MODebug2->Push("bucket Added.");
-                // else cout << "bucket passed!!" << buffer->size << "timestamp:" << buffer->timestamp << endl;
+                }// else pGsGraph->MODebug2->Message("bucket Added.");
+                else {
+                  //cout << "bckt added!!" << bsize << " #" << pGsGraph->m_pBucketsPool->m_nBuckets << endl;
+                  pGsGraph->MODebug2->Message("bucket Added.");
+
+                }
             }
 
         }
@@ -401,6 +410,8 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer  
   } else {
     pGsGraph->MODebug2->Error( moText(" moGsGraph:: cb_have_data error: no Gbuffer data!!") );
   }
+
+  gst_object_unref( caps );
 
   return TRUE;
 }
@@ -2297,11 +2308,11 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 //colormode = "";
 
            if (b_sourceselect) {
-              #ifdef MO_WIN32
+              //#ifdef MO_WIN32
               #ifdef GSTVERSION
               b_sourceselect = false;
               #endif // GSTVERSION
-              #endif // WIN32
+              //#endif // WIN32
            }
 
            if (b_sourceselect) {
@@ -3115,7 +3126,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                     gst_app_sink_set_emit_signals((GstAppSink*)m_pFakeSink, true);
                                     gst_app_sink_set_drop((GstAppSink*)m_pFakeSink, true);
                                     //g_object_set (G_OBJECT (m_pFakeSink), "sync", false, NULL);
-                                    gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 10000 );
+                                    gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 100 );
                                     g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
                                     //gst_app_sink_set_callbacks( (GstAppSink*)m_pFakeSink,  )
 

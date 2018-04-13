@@ -328,20 +328,22 @@ MOint moShaderManager::AddShader(moText p_filename)
 
 	moConfig config;
 
-	moText complete_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
+	moText complete_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash;
 	complete_fn +=  p_filename;
 
 
 	if (config.LoadConfig(complete_fn) != MO_CONFIG_OK) {
-        moDebugManager::Error( moText("Couldn´t load shader config :") + complete_fn );
+        moDebugManager::Error( moText("moShaderManager::AddShader >> Could not load shader config :") + complete_fn );
 	    return -1;
+	} else {
+    moDebugManager::Message( moText("moShaderManager::AddShader >> Loaded shader config: ") + complete_fn );
 	}
 
   moFile cfgFile( complete_fn );
 
 	MOint type_idx = config.GetParamIndex("type");
 	if (type_idx == MO_PARAM_NOT_FOUND) {
-	    moDebugManager::Error( moText("In shader config :")
+	    moDebugManager::Error( moText("moShaderManager::AddShader >> In shader config :")
                                 + complete_fn
                                 + moText(" type parameter not founded.")
                                  );
@@ -353,12 +355,12 @@ MOint moShaderManager::AddShader(moText p_filename)
 
 	if ((vertex_idx == MO_PARAM_NOT_FOUND) && (fragment_idx == MO_PARAM_NOT_FOUND)) {
 	    if ((fragment_idx == MO_PARAM_NOT_FOUND))
-            moDebugManager::Error( moText("In shader config :")
+            moDebugManager::Error( moText("moShaderManager::AddShader >> In shader config :")
                                 + complete_fn
                                 + moText(" fragment(pixel) shader parameter not founded.")
                                  );
 	    if ((vertex_idx == MO_PARAM_NOT_FOUND))
-            moDebugManager::Error( moText("In shader config :")
+            moDebugManager::Error( moText("moShaderManager::AddShader >> In shader config :")
                                 + complete_fn
                                 + moText(" vertex shader parameter not founded.")
                                  );
@@ -374,11 +376,11 @@ MOint moShaderManager::AddShader(moText p_filename)
 	if (vertex_idx == MO_PARAM_NOT_FOUND) vertex_fn = moText("");
 	else
 	{
-		vertex_fn = cfgFile.GetPath() + moText("/");
+		vertex_fn = cfgFile.GetPath() + moSlash;
 		vertex_fn = vertex_fn + config.GetParam(vertex_idx).GetValue().GetSubValue().Text();
 		vertexFile.SetCompletePath( vertex_fn );
     if (!vertexFile.Exists()) {
-      vertex_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
+      vertex_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash;
       vertex_fn = vertex_fn + config.GetParam(vertex_idx).GetValue().GetSubValue().Text();
     }
 
@@ -387,11 +389,11 @@ MOint moShaderManager::AddShader(moText p_filename)
 	if (fragment_idx == MO_PARAM_NOT_FOUND) fragment_fn = moText("");
 	else
 	{
-		fragment_fn = cfgFile.GetPath() + moText("/");
+		fragment_fn = cfgFile.GetPath() + moSlash;
 		fragment_fn = fragment_fn + config.GetParam(fragment_idx).GetValue().GetSubValue().Text();
     fragmentFile.SetCompletePath(fragment_fn);
     if (!fragmentFile.Exists()) {
-      fragment_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moText("/");
+      fragment_fn = m_pResourceManager->GetDataMan()->GetDataPath() + moSlash;
       fragment_fn = fragment_fn + config.Text(fragment_idx);
     }
 	}
@@ -408,8 +410,8 @@ MOint moShaderManager::AddShader(moText p_filename)
   if ( result > -1 ) {
     moShader* pshader = GetShader(result);
     if (pshader) {
-      MODebug2->Message("Added shader, loading config: " + p_filename );
-      pshader->m_Config.LoadConfig( p_filename );
+      MODebug2->Message("moShaderManager::AddShader >> Added shader, loading config: " + complete_fn );
+      pshader->m_Config.LoadConfig( complete_fn );
     }
   }
 

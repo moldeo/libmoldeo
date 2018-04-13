@@ -147,6 +147,14 @@ public:
 	moTexture* GetTexture(MOuint p_idx);
 
     /**
+     * Fija el puntero a la textura en el índice p_idx.
+     * @param p_idx índice de la textura.
+     * @param p_tex puntero de clase moTexture.
+     * @return bool true si exitoso, false si no.
+     */
+    bool SetTexture(MOuint p_idx, moTexture * p_tex = NULL );
+
+    /**
      * Valida el índice de textura p_idx.
      * @param p_idx índice de textura a validar.
      * @return true si el índice es válido, false en caso contrario.

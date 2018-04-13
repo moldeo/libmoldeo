@@ -716,6 +716,12 @@ moDataSessionConfig::moDataSessionConfig(   moText p_apppath,
   moFile molFile(  m_ConsoleConfigName );
   moFile mosFile( m_SessionFileName );
 
+  if ( m_DataPath==moText("") ) {
+    if ( m_AppPath!=moText("")) {
+        m_DataPath = m_AppPath;
+    }
+  }
+
   if ( molFile.GetPath()==moText("") ) {
     m_ConsoleConfigName = m_DataPath + moSlash + m_ConsoleConfigName;
     moDebugManager::Message(  moText(" moDataSessionConfig() > m_ConsoleConfigName fixed to: ") + m_ConsoleConfigName );

@@ -468,6 +468,9 @@ class LIBMOLDEO_API moTextureMemory : public moTexture {
 
         ///Construye la textura opengl desde el bitmap en memoria
         virtual MOboolean BuildFromMemory();
+        moBitmap* LoadFromMemory();
+        MOubyte* GetBits();
+        void Unload( moBitmap* p_bitmap  );
 
         ///Guarda el bitmap con el formato elegido en memoria, luego construye la textura opengl
         virtual MOboolean BuildFromBitmap( moBitmap* p_bitmap, moText p_bufferformat = "JPG" );
@@ -516,6 +519,7 @@ class LIBMOLDEO_API moTextureMemory : public moTexture {
 
         moMemory	*hmem;
 		moBitmapFormat fif;
+		MOuint _format;
 		//FIBITMAP *m_pImage;
 
 		MOlong m_SizeInMemory;

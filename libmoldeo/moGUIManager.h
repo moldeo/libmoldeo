@@ -351,8 +351,24 @@ class LIBMOLDEO_API moLineSegments : public moObject3D {
 
 class LIBMOLDEO_API moPoints : public moObject3D {
   public:
-    moPoints();
-    virtual ~moPoints();
+    moPoints( const moGeometry& p_geometry, const moMaterial& p_material ) :  moObject3D(p_geometry, p_material) {
+
+        m_Geometry = p_geometry;
+        m_Material = p_material;
+
+    }
+    moPoints( const moPoints& p_src ) : moObject3D( p_src ) {
+        (*this) = p_src;
+    }
+
+    moPoints& operator=( const moPoints& p_src ) {
+        m_Geometry = p_src.m_Geometry;
+        m_Material = p_src.m_Material;
+        return (*this);
+    }
+
+    virtual ~moPoints() {
+    }
 
 };
 

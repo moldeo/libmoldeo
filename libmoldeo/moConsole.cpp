@@ -840,24 +840,27 @@ moConsole::AddMoldeoAPIDevices() {
       for( MOuint i=0; i<(m_pIODeviceManager->IODevices().Count()); i++ ) {
         moIODevice* pDevice = m_pIODeviceManager->IODevices().GetRef(i);
         if (pDevice) {
-          if (pDevice->GetName()=="netoscin" ) {
-            if (pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1" ) {
-              if (pDevice->GetConfig()->Int( "port" ) == 3334 ) {
-                  MoldeoAPIListener = true;
-                  if (MoldeoAPISender) break;
-              }
+          if ( pDevice->GetName()=="netoscin" ) {
+            if (
+              (pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1"
+                && pDevice->GetConfig()->Int( "port" ) == 3334)
+              || ( pDevice->GetLabelName()=="moldeoapioscin")
+            ) {
+                MoldeoAPIListener = true;
+                if (MoldeoAPISender) break;
             }
-
           }
 
           if ( pDevice->GetName()=="netoscout" ) {
-            if ( pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1" ) {
-              if ( pDevice->GetConfig()->GetValue( "hosts" ).GetSubValue(1).Int() == 3335 ) {
+            if (
+            ( pDevice->GetConfig()->Text( "hosts" ) == "127.0.0.1"
+              && pDevice->GetConfig()->GetValue( "hosts" ).GetSubValue(1).Int() == 3335)
+              ||
+              (pDevice->GetLabelName()=="moldeoapioscout")
+            ) {
                   MoldeoAPISender = true;
                  if (MoldeoAPIListener) break;
-              }
             }
-
           }
         }
       }
@@ -2174,6 +2177,9 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
             switch(rParam.GetParamDefinition().GetType()) {
               case MO_PARAM_TEXT:
+              case MO_PARAM_SCRIPT:
+              case MO_PARAM_FILE:
+              case MO_PARAM_TEXTUREFOLDER:
                 VB.SetText(arg3Text);
                 break;
               case MO_PARAM_TEXTURE:
@@ -2206,6 +2212,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
                 }
                 break;
               default:
+                MODebug2->Warning("no param type implemented:"+rParam.GetParamDefinition().GetTypeStr() );
                 break;
             }
             break;
@@ -4517,6 +4524,11 @@ void moConsole::RegisterFunctions()
     RegisterFunction("GetDirectoryFileCount");//25
     RegisterFunction("Screenshot");//26
 
+    RegisterFunction("EffectPlay");//27
+    RegisterFunction("EffectStop");//28
+    RegisterFunction("EffectPause");//29
+    RegisterFunction("EffectTimerState");//30
+
     ResetScriptCalling();
 
 }
@@ -4624,6 +4636,19 @@ int moConsole::ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber)
         case 26:
             ResetScriptCalling();
             return luaScreenshot(vm);
+
+        case 27:
+            ResetScriptCalling();
+            return luaEffectPlay(vm);
+        case 28:
+            ResetScriptCalling();
+            return luaEffectStop(vm);
+        case 29:
+            ResetScriptCalling();
+            return luaEffectPause(vm);
+        case 30:
+            ResetScriptCalling();
+            return luaEffectTimerState(vm);
 
 
         default:
@@ -4804,6 +4829,105 @@ int moConsole::luaObjectDisable(moLuaVirtualMachine& vm)
     }
 
     return 0;
+}
+
+int moConsole::luaEffectPlay(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        EffectPlay(Object->GetId());
+    } else {
+        MODebug2->Error( moText("in console script: EffectPlay : object not founded : id:")+(moText)IntToStr(objectid));
+    }
+
+    return 0;
+}
+
+int moConsole::luaEffectStop(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        EffectStop(Object->GetId());
+    } else {
+        MODebug2->Error( moText("in console script: EffectStop : object not founded : id:")+(moText)IntToStr(objectid));
+    }
+
+    return 0;
+}
+
+int moConsole::luaEffectPause(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        EffectPause(Object->GetId());
+    } else {
+        MODebug2->Error( moText("in console script: EffectPause : object not founded : id:")+(moText)IntToStr(objectid));
+    }
+
+    return 0;
+}
+
+
+int moConsole::luaEffectTimerState(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    moText playstr = "none";
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        moEffect* fxEffect = (moEffect*)Object;
+        if (fxEffect) {
+            moTimer ptimer = fxEffect->GetEffectState().tempo;
+            playstr = ptimer.StateToStr();
+        }
+    }
+
+    lua_pushstring( state, playstr );
+
+    return 1;
 }
 
 

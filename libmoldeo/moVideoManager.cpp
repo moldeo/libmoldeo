@@ -110,7 +110,11 @@ moVideoFrame::Init( moText bufferformat, moBitmap* pImageResult ) {
 		m_FrameSize = FreeImage_TellMemory((FIMEMORY*)hmem);
 		if (m_FrameSize==0) {
             MODebug2->Error( moText("moVideoFrame::Init")
-                        + moText(" Couldn't save image to memory, format may be unsupported") );
+                        + moText(" Couldn't save image to memory, format may be unsupported or image is empty!") );
+            MODebug2->Error( moText("bufferformat:") + bufferformat);
+            MODebug2->Error( moText("Width:") + IntToStr(FreeImage_GetWidth(_pImageResult)) );
+            MODebug2->Error( moText("Height:") + IntToStr(FreeImage_GetHeight(_pImageResult)) );
+
             return false;
 		}
 	}
@@ -386,7 +390,7 @@ moCircularVideoBuffer::Init( moText videoinput, moText bufferformat, moResourceM
 	}
 
 	m_nFrames = m_Frames.Count();
-
+ MODebug2->Message("moCircularVideoBuffer::Init > m_nFrames: " + IntToStr(m_nFrames));
 
 	return Init();
 }
@@ -425,22 +429,46 @@ moCircularVideoBuffer::LoadSample( moVideoSample* pvideosample ) {
 		0x00FF00,
 		0x0000FF);
 
+		if (pImage==NULL) return false;
+
 	FIBITMAP* pImageResult = NULL;
 	FIBITMAP* pImageCropped = NULL;
 	FIBITMAP* pImageScaled = NULL;
+/*
+  MODebug2->Message("moCircularVideoBuffer::LoadSample > "
+                        +moText("m_width:") + IntToStr(m_width)
+                        +"m_height:" + IntToStr(m_height)
+                        +"m_XSource:" + IntToStr(m_XSource)
+                        +"m_YSource:" + IntToStr(m_YSource)
+                        +"m_SourceWidth:" + IntToStr(m_SourceWidth)
+                        +"m_SourceHeight:" + IntToStr(m_SourceHeight) );
+  MODebug2->Message("moCircularVideoBuffer::LoadSample > Width loaded:" + IntToStr(FreeImage_GetWidth(pImage)) );
+  MODebug2->Message("moCircularVideoBuffer::LoadSample > Height loaded:" + IntToStr(FreeImage_GetHeight(pImage)) );
+  //MODebug2->Message("moCircularVideoBuffer::LoadSample > :" + IntToStr(FreeImage_GetInfo(pImage)) );
+*/
+  int w = FreeImage_GetWidth(pImage);
+  int h = FreeImage_GetHeight(pImage);
 
+  pImageResult = pImage;
+  bool validcrop = false;
+  bool validscale = false;
+  validcrop = (m_width!=w) || (m_height!=h);
+  validcrop = validcrop && (m_XSource<w) && (m_XSource>=0) && (m_YSource<h) && (m_YSource>=0);
+	validcrop = validcrop && (m_SourceWidth>=0) && (m_SourceHeight>=0);
+	validcrop = validcrop && ( momin(m_XSource + m_SourceWidth,w) <= w) && (momin(m_YSource + m_SourceHeight,h) <= h);
 
+  validscale = ((m_width!=w) || (m_height!=h)) && ((m_width != m_SourceWidth) || (m_height != m_SourceHeight));
 
-
-	if ( m_width!=FreeImage_GetWidth(pImage) || m_height!=FreeImage_GetHeight(pImage) ) {
+	if ( validcrop ) {
 		//CROP MODE
-		pImageCropped = FreeImage_Copy( pImage, m_XSource , m_YSource , m_XSource + m_SourceWidth , m_YSource+m_SourceHeight );
-		pImageResult = pImageCropped;
-
-	} else pImageResult = pImage;
+      pImageCropped = FreeImage_Copy( pImage, m_XSource , m_YSource , momin(m_XSource + m_SourceWidth,w) , momin(m_YSource + m_SourceHeight,h) );
+      pImageResult = pImageCropped;
+      //MODebug2->Message("moCircularVideoBuffer::LoadSample > Image Cropped W:" + IntToStr(FreeImage_GetWidth(pImageResult)) );
+      validscale = ((m_width!=FreeImage_GetWidth(pImageCropped)) || (m_height!=FreeImage_GetHeight(pImageCropped)));
+  }
 
 	///RESCALE
-	if ( m_width != m_SourceWidth || m_height != m_SourceHeight ) {
+	if ( validscale ) {
 		/*
 		FILTER_BOX Box, pulse, Fourier window, 1st order (constant) B-Spline
 		FILTER_BILINEAR Bilinear filter
@@ -454,6 +482,7 @@ moCircularVideoBuffer::LoadSample( moVideoSample* pvideosample ) {
 			FreeImage_Unload(pImageResult);
 			pImageResult = pImageScaled;
 		}
+		//MODebug2->Message("moCircularVideoBuffer::LoadSample > Image Scaled  W:" + IntToStr(FreeImage_GetWidth(pImageScaled)) );
 	}
 
 	//aqui cambia
@@ -490,7 +519,7 @@ MOboolean moVideoBuffer::LoadFromVideo(  moText p_moviefile ) {
 /*
 */
 void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
-
+  //MODebug2->Message("moCircularVideoBuffer::GetFrame > Reading image from circularvideobuffer"+IntToStr(p_i));
 	if ( p_i<m_Frames.Count()) {
 
 		MOint ddd = ( m_ReadIndex - (int)p_i);
@@ -507,6 +536,7 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 			MOuint p_format;
 
 			//MOint FrameSize =
+			//MODebug2->Message("moCircularVideoBuffer::GetFrame > Loading image to texture from circularvideobuffer"+IntToStr(p_i));
 			FreeImage_TellMemory((FIMEMORY*)pVideoFrame->hmem);
 			FreeImage_SeekMemory( (FIMEMORY*)pVideoFrame->hmem, 0L, SEEK_SET);
 
@@ -526,10 +556,10 @@ void moCircularVideoBuffer::GetFrame( MOuint p_i ) {
 				case 24: // 24 bits
 					m_param.internal_format = GL_RGB;
 #ifndef OPENGLESV2
-					if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
-					else
+					//if (FreeImage_GetBlueMask(pImage) == 0x000000FF) p_format = GL_BGR;
+					//else
 #endif
-p_format = GL_RGB;
+          p_format = GL_RGB;
 					break;
 				case 32: // 32 bits
 					m_param.internal_format = GL_RGBA;
@@ -971,6 +1001,18 @@ MOboolean moVideoManager::Init()
         ysource = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEYOFFSET).Int();
         sourcewidth = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEWIDTH).Int();
         sourceheight = m_Config.GetParam(circularbuffer).GetValue(i).GetSubValue(MO_VIDEO_CIRCULARSOURCEHEIGHT).Int();
+
+        MODebug2->Message("moVideoManager::Init > CircularVideoBuffer");
+        MODebug2->Message("moVideoManager::Init > videobufferinput:" + videobufferinput);
+        MODebug2->Message("moVideoManager::Init > videobuffername:" + videobuffername);
+        MODebug2->Message("moVideoManager::Init > videobufferformat:" + videobufferformat);
+        MODebug2->Message("moVideoManager::Init > frames:" + IntToStr(frames));
+        MODebug2->Message("moVideoManager::Init > width:" + IntToStr(width));
+        MODebug2->Message("moVideoManager::Init > height:" +  IntToStr(height));
+        MODebug2->Message("moVideoManager::Init > xsource:" + IntToStr(xsource));
+        MODebug2->Message("moVideoManager::Init > ysource:" + IntToStr(ysource));
+        MODebug2->Message("moVideoManager::Init > sourcewidth:" + IntToStr(sourcewidth));
+        MODebug2->Message("moVideoManager::Init > sourceheight:" + IntToStr(sourceheight));
 
         if(videobufferinput!=moText("")) {
           moCircularVideoBuffer* pCircularBuffer = NULL;
@@ -1571,20 +1613,28 @@ void moVideoManager::Update(moEventList * p_EventList)
                 }
 
                 //Update Circular buffers
+                bool circularvbuf_check = (m_CircularVideoBuffers.Count()==0);
                 for( MOuint c=0; c<m_CircularVideoBuffers.Count(); c++) {
 
                   moCircularVideoBuffer*	pCircularVideoBuffer;
                   pCircularVideoBuffer = m_CircularVideoBuffers[c];
                   if (pCircularVideoBuffer &&
                     pCircularVideoBuffer->GetVideoInput() == ts->GetName() ) {
-
+                    circularvbuf_check = true;
                     if (pCircularVideoBuffer->IsRecording()) {
                       pCircularVideoBuffer->LoadSample( pSample );
                     }
-
                   }
 
                 }
+                if (circularvbuf_check==false) {
+                  MODebug2->Warning( moText("moVideoManager::Update > ") + ts->GetName() +
+                  moText(" texture not used in any circular video buffers."));
+                } else {
+                  //MODebug2->Message( moText("moVideoManager::Update > ") + ts->GetName() + moText(" used.") );
+
+                }
+
               }
 
               //post to other moldeo objects
@@ -1605,6 +1655,21 @@ void moVideoManager::Update(moEventList * p_EventList)
 
 		}
 	}
+
+	for( MOuint c=0; c<m_CircularVideoBuffers.Count(); c++) {
+
+    moCircularVideoBuffer*	pCircularVideoBuffer;
+    pCircularVideoBuffer = m_CircularVideoBuffers[c];
+
+    if (pCircularVideoBuffer) {
+      if (pCircularVideoBuffer->IsRecording()) {
+
+        //MODebug2->Message("moVideoManager::Update > Check CVBs");
+        //pCircularVideoBuffer->LoadSample( pSample );
+      }
+    }
+
+  }
 
 
 	//LOADING ROUTINE

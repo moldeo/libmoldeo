@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [1.0.0.172], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [1.1.0.0], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
@@ -135,24 +135,26 @@ AC_ARG_ENABLE(host,
 ])
 
 
-GST_VERSION_MAJOR=0
-GST_VERSION_MINOR=10
-GST_VERSION_RELEASE=19
-GSTPLUG_VERSION_RELEASE=7
+GST_VERSION_MAJOR=1
+GST_VERSION_MINOR=0
+GST_VERSION_RELEASE=0
+GSTPLUG_VERSION_RELEASE=0
 
 AC_ARG_ENABLE(gstreamer,
 [--enable-gstreamer[=gstreamer version] Specify the gstreamer version:
-			0.10: Gstreamer version 0.10 [default]
-			1.0: Gstreamer version 1.0],
-[ if test "x$enableval" = "x1.0" ; then
-    GST_VERSION_MAJOR=1
-    GST_VERSION_MINOR=0
-    GST_VERSION_RELEASE=0
-    GSTPLUG_VERSION_RELEASE=0
-    host_cflags="$host_cflags -DGSTVERSION"
+			1.0: Gstreamer version 1.0 [default]
+      0.10: Gstreamer version 0.10 ],
+[ if test "x$enableval" = "x0.10" ; then
+    GST_VERSION_MAJOR=0
+    GST_VERSION_MINOR=10
+    GST_VERSION_RELEASE=19
+    GSTPLUG_VERSION_RELEASE=7
   fi
 ])
 
+if test "x$GST_VERSION_MAJOR" = "x1" ; then
+	host_cflags="$host_cflags -DGSTVERSION"
+fi
 
 AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
@@ -311,4 +313,3 @@ libmoldeo.pc
 libmoldeotest.pc
 test-suite/Makefile
 ])
-

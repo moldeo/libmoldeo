@@ -897,11 +897,11 @@ moMoldeoObject::CreateConnectors() {
 
         if ( m_Config.GetParamIndex(OutletName) > -1 ) {
           ///CREAMOS UN OUTLET nuevo para este parametro....
-          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter \"") + OutletName + "\""  );
+          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" creating Outlet as parameter: \"") + OutletName + "\""  );
           Outlet->Init( OutletName, i, m_Config.GetParam(OutletName).GetPtr());
         } else {
           ///CREAMOS UN OUTLET desde el .cfg, teniendo en cuenta los tipos...
-          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param.") + OutletName  );
+          MODebug2->Log( moText("moMoldeoObject::CreateConnectors > ") + this->GetLabelName() + moText(" Init > creating outlet not as param: \"") + OutletName+ "\""  );
           Outlet->Init( OutletName, i, poutlets[i][MO_OUTLET_TYPE].Text() );
         }
         m_Outlets.Add( Outlet );
@@ -1103,7 +1103,7 @@ moMoldeoObject::GetInletIndex( moText p_connector_name ) const {
 }
 
 MOint
-moMoldeoObject::GetOutletIndex( moText p_connector_name ) const {
+moMoldeoObject::GetOutletIndex( const moText& p_connector_name ) const {
 
 	for( MOuint i=0; i< m_Outlets.Count(); i++ ) {
 	    moOutlet* pOutlet = m_Outlets.Get(i);
@@ -1242,7 +1242,9 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
                                     pdata );
           p_EventList->Add( (moEvent*) pmessage );
           //if (pmessage) delete pmessage;
-          //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())  );
+          //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())
+          //+" label:" + pconnection->GetDestinationMoldeoLabelName()
+          //+" connector:" + pconnection->GetDestinationConnectorLabelName()  );
         }
         ///reset to update false, so it doesnt continue sending!
         poutlet->Update(false);
@@ -1649,8 +1651,9 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
 
     unsigned int i;
     moData MData;
+    moDataMessage MDataMessage;
     moDataMessage* pDataMessage;
-    ///moDataMessages* pDataMessages;
+    moDataMessages* pDataMessages;
 
     ///void* pv;
 
@@ -1701,6 +1704,37 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
                                   lua_pushstring( state, (char*) MData.ToText() );
                                 }
                                 return i;
+                            }
+                            return 1;
+                    case    MO_DATA_MESSAGES:
+                            pDataMessages = (moDataMessages*)pData->Pointer();
+                            //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGES");
+                            if (pDataMessages) {
+                                //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGES > count: " + IntToStr(pDataMessages->Count()) );
+
+                                if (pDataMessages->Count()==0) {
+                                    lua_pushstring( state, (char*) "NO MESSAGES" );
+                                    return 1;
+                                }
+
+                                int m = 0;
+                                int mi = 0;
+                                for(i=0;i<pDataMessages->Count();i++) {
+                                  MDataMessage = pDataMessages->Get(i);
+                                  for(m=0;m<MDataMessage.Count();m++) {
+                                    MData = MDataMessage.Get(m);
+                                    //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > data: " + MData.ToText() );
+                                    lua_pushstring( state, (char*) MData.ToText() );
+                                    //if (MDataMessage.Count()==(m-1)) {
+                                    //    lua_pushstring( state, (char*) "X" );
+                                    //}
+                                    mi++;
+                                  }
+                                }
+                                return mi;
+                            } else {
+                                lua_pushstring( state, (char*) "NO MESSAGES" );
+                                return 1;
                             }
                             return 1;
                     case MO_DATA_VECTOR2F:

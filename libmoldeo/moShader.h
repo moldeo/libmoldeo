@@ -194,11 +194,24 @@ public:
      */
     virtual void CreateFragShader(const moText& frag_source) = 0;
     /**
+     * Crea el shader de geometría a partir del código fuente en geom_source.
+     * @param geom_source código fuente del shader de vértices.
+     */
+    virtual void CreateGeomShader(const moText& geom_source) = 0;
+
+    /**
+     * Crea el shader de teselación a partir del código fuente en tess_source.
+     * @param geom_source código fuente del shader de vértices.
+     */
+    virtual void CreateTessShader(const moText& tess_source) = 0;
+    /**
      * Crea los shaders de vértices y fragmentos a partir del código fuente en vert_source y frag_source.
      * @param vert_source código fuente del shader de vértices.
      * @param frag_source código fuente del shader de vértices.
      */
     virtual void CreateShader(const moText& vert_source, const moText& frag_source) = 0;
+    virtual void CreateShader(const moText& vert_source, const moText& frag_source, const moText& geom_source) = 0;
+    virtual void CreateShader(const moText& vert_source, const moText& frag_source, const moText& geom_source, const moText& tess_source) = 0;
     /**
      * Crea el shader de vértices a partir del código fuente en el archivo vert_filename.
      * @param vert_filename nombre del archivo con el código fuente del shader de vértices.
@@ -210,12 +223,24 @@ public:
      */
     virtual void LoadFragShader(const moText& frag_filename) = 0;
     /**
+     * Crea el shader de geometría a partir del código fuente en el archivo geom_filename.
+     * @param geom_filename nombre del archivo con el código fuente del shader de geometría.
+     */
+    virtual void LoadGeomShader(const moText& geom_filename) = 0;
+    /**
+     * Crea el shader de teselación a partir del código fuente en el archivo tess_filename.
+     * @param tess_filename nombre del archivo con el código fuente del shader de teselación.
+     */
+    virtual void LoadTessShader(const moText& tess_filename) = 0;
+    /**
      * Crea los shaders de vértices y fragmentos a partir del código fuente en los archivos vert_filename y
      * frag_filename.
      * @param vert_filename nombre del archivo con el código fuente del shader de vértices.
      * @param frag_filename nombre del archivo con el código fuente del shader de fragmentos.
      */
     virtual void LoadShader(const moText& vert_filename, const moText& frag_filename) = 0;
+    virtual void LoadShader(const moText& vert_filename, const moText& frag_filename, const moText& geom_filename)  = 0;
+    virtual void LoadShader(const moText& vert_filename, const moText& frag_filename, const moText& geom_filename, const moText& tess_filename) = 0;
 
     /**
      * Activa el shader.
@@ -241,7 +266,16 @@ public:
      * @return código de error.
      */
     MOint FragErrorCode();
-
+    /**
+     * Devuelve el código del último error ocurrido en el shader de geometría.
+     * @return código de error.
+     */
+    MOint GeomErrorCode();
+    /**
+     * Devuelve el código del último error ocurrido en el shader de teselación.
+     * @return código de error.
+     */
+    MOint TessErrorCode();
     /**
      * Devuelve el tipo de shader: MO_SHADER_GLSL o MO_SHADER_CG.
      * @return tipo de shader.
@@ -283,6 +317,7 @@ public:
 	void DrawGrid(MOint w, MOint h, MOint l) { m_grid.Draw(w, h, l); }
 
 
+
 	moConfig   m_Config;
 
 protected:
@@ -294,9 +329,13 @@ protected:
     MOboolean m_Active;
     MOint m_VertErrorCode;
     MOint m_FragErrorCode;
+    MOint m_GeomErrorCode;
+    MOint m_TessErrorCode;
 
     virtual void compileVertShader(const moText& vert_source) = 0;
     virtual void compileFragShader(const moText& frag_source) = 0;
+    virtual void compileGeomShader(const moText& geom_source) = 0;
+    virtual void compileTessShader(const moText& tess_source) = 0;
 
     virtual moText LoadShaderSource(const moText& p_fn);
 };

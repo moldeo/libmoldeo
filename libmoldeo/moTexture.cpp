@@ -984,8 +984,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
                                            bpp,
                                            0xFF0000,
                                            0x00FF00,
-                                           0x0000FF,
-                                           true );
+                                           0x0000FF  );
 
     //TODO: add alpha channel for RGBA: FreeImage_SetTransparent(fbitmap, image.flags & ImageData::ALPHA_BIT);
 
@@ -1228,13 +1227,15 @@ MOboolean moTextureMemory::LoadFromBitmap( moBitmap* p_bitmap ) {
 
 }
 
-MOboolean moTextureMemory::BuildFromMemory() {
+moBitmap* moTextureMemory::LoadFromMemory() {
 
-    if (hmem!=NULL && m_glid>0) {
-        FIBITMAP *pImage;
+    FIBITMAP *pImage;
+    MODebug2->Message("LoadFromMemory: size in memory: " + IntToStr(m_SizeInMemory)+" m_glid:" + IntToStr(m_glid));
+    if (hmem!=NULL && m_glid>=0) {
+
         //FIMEMORY	*hmem;
 
-        MOuint _format;
+        //MOuint _format;
 
         //MOint FrameSize =
         FreeImage_TellMemory((FIMEMORY*)hmem);
@@ -1279,10 +1280,34 @@ MOboolean moTextureMemory::BuildFromMemory() {
                 _format = GL_RGBA;
                 break;
         }
+        FlipBufferVert((MOubyte *)FreeImage_GetBits(pImage), FreeImage_GetBPP(pImage) / 8 );
+        return (moBitmap*)pImage;
+  }
+  return NULL;
+}
+
+MOubyte* moTextureMemory::GetBits() {
+  FIBITMAP *pImage = (FIBITMAP*) LoadFromMemory();
+  if (pImage) {
+    return (MOubyte*)FreeImage_GetBits(pImage);
+  }
+  return NULL;
+}
+
+void moTextureMemory::Unload( moBitmap* p_bitmap  ) {
+  if (p_bitmap) {
+    FreeImage_Unload( (FIBITMAP*)p_bitmap );
+  }
+}
+
+MOboolean moTextureMemory::BuildFromMemory() {
+
+
+  FIBITMAP *pImage = (FIBITMAP*) LoadFromMemory();
+  if (pImage) {
         ///just execute this time for building the texture really in card memory
         Build();
         ///then apply the buffer
-        FlipBufferVert((MOubyte *)FreeImage_GetBits(pImage), FreeImage_GetBPP(pImage) / 8 );
         SetBuffer( m_width, m_height, FreeImage_GetBits(pImage), _format);
         FreeImage_Unload( pImage );
         //MODebug2->Push( moText("moTextureMemory::BuildFromMemory: success: hmem:") + IntToStr((int)hmem) + moText("glid:") + IntToStr(m_glid));
@@ -1292,6 +1317,7 @@ MOboolean moTextureMemory::BuildFromMemory() {
         return false;
     }
 }
+
 
 
 MOboolean moTextureMemory::BuildFromBitmap( moBitmap* p_bitmap, moText p_bufferformat )
@@ -1646,7 +1672,8 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 	int t;
 	float ft,PeliV;
 
-
+  //MODebug2->Message("moTextureAnimated::GetGLId > "+this->GetName()
+  //+ " m_FrameNext:"+IntToStr(m_FrameNext)+"/m_nFrames:"+IntToStr(m_nFrames));
 	if(p_tempo==NULL) {
 			t = m_Time - moGetTicks();
 			ft = (t / 1000) * m_fFramesPerSecond;//frames que deberian haber pasado en este lapso...
@@ -1672,6 +1699,7 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 	if (NeedsInterpolation()) {
 		Interpolate();
 	} else {
+    MODebug2->Message(" fprev:"+IntToStr(m_FramePrevious)+" fnext:" + IntToStr(m_FrameNext));
 		if(m_FramePrevious!=m_FrameNext) this->GetFrame( m_FrameNext );
 		m_FramePrevious = m_FrameNext;
 	}
@@ -1685,7 +1713,7 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 MOint
 moTextureAnimated::GetGLId( MOuint p_i ) {
 
-    if (p_i>2000 || p_i>m_nFrames) {
+    if (/*p_i>2000 ||*/ p_i>m_nFrames) {
         //WTF
         p_i = 0;
     }
@@ -1703,6 +1731,7 @@ moTextureAnimated::GetGLId( MOuint p_i ) {
                         );*/
 		Interpolate();
 	} else {
+	  //MODebug2->Message(" fprev:"+IntToStr(m_FramePrevious)+" fnext:" + IntToStr(m_FrameNext));
 		if(m_FramePrevious!=p_i) this->GetFrame(p_i);
 		m_FramePrevious = m_FrameNext = p_i;
 	}
@@ -2209,6 +2238,9 @@ void moMovie::EnableAudio(int enable) {
 
 void moMovie::GetFrame( MOuint p_i )
 {
+
+  //MODebug2->Message("GetFrame "+IntToStr(p_i));
+
 	if(m_pGraph)
 	{
 
@@ -2229,7 +2261,9 @@ void moMovie::GetFrame( MOuint p_i )
           */
 
         //m_pGraph->Pause();
-        MODebug2->Push( "moMovie::GetFrame > Going to p_i:"+IntToStr(p_i)+" Actual real timebase position:" + IntToStr(m_pGraph->GetPosition()) );
+        //MODebug2->Message( "moMovie::GetFrame > Going to p_i:"+IntToStr(p_i)+" Actual real timebase position:" + IntToStr(m_pGraph->GetPosition()) );
+      } else {
+        //MODebug2->Message( "moMovie::GetFrame MO_PLAYMODE_TIMEBASE > " + m_pGraph->StateToText(state) );
       }
 	} else {
       m_pGraph->Seek( p_i );
@@ -2251,7 +2285,8 @@ void moMovie::GetFrame( MOuint p_i )
           ///lock to prevent any data or reference loss...
           pbucket->Lock();
 #ifndef OPENGLESV2
-          SetBuffer(pbuffer, GL_BGR_EXT );
+          //SetBuffer(pbuffer, GL_BGR_EXT );
+          SetBuffer(pbuffer, GL_RGB );
 #else
           SetBuffer(pbuffer, GL_RGB );
 #endif
@@ -2259,20 +2294,21 @@ void moMovie::GetFrame( MOuint p_i )
           pbucket->Unlock();
 
           pbucket->EmptyBucket();
+        } else {
+          MODebug2->Message("Empty bucket");
         }
-        m_BucketsPool.DestroyRetreivedBucket();
+        bool destroy = m_BucketsPool.DestroyRetreivedBucket();
+        //if (destroy) MODebug2->Message("Dstroyed bucket!");
       }
-	}
-		/*
-		else {
+	} else {
 
-      MODebug2->Error(  moText("moMovie::GetFrame()")
+      MODebug2->Warning(  moText("moMovie::GetFrame()")
                       + moText(" m_BucketsPool is EMPTY !!!")
                       + moText(" state:")
                       + m_pGraph->StateToText(state) );
 
     }
-    */
+
 	} else {
       MODebug2->Error( moText("moMovie::GetFrame()") + moText(" m_pGraph is NULL !!!") );
   }
