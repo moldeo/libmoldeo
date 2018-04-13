@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [1.0.0.160], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [1.0.0.172], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
@@ -199,7 +199,7 @@ AC_SUBST(GST_LIBS,"-framework GStreamer")
 
 else
 
-PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ, 
+PKG_CHECK_MODULES(GST, gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ,
 HAVE_GSTREAMER=yes)
 AC_SUBST(GST_CFLAGS)
 AC_SUBST(GST_LIBS)
@@ -208,7 +208,7 @@ if test "x$GST_VERSION_MAJOR" = "x1" ; then
     librequires="$librequires , gstreamer-1.0, gstreamer-app-1.0"
     PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-app-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
 elif test "x$GST_VERSION_MAJOR" = "x0" ; then
-    librequires="$librequires , gstreamer-0.10, gstreamer-interfaces-0.10, gstreamer-app-0.10"   
+    librequires="$librequires , gstreamer-0.10, gstreamer-interfaces-0.10, gstreamer-app-0.10"
     PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-interfaces-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
 fi
 
