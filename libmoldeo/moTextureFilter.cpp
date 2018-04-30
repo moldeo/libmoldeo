@@ -732,29 +732,34 @@ void moTextureFilter::Apply(moMoldeoObject *p_src_mob) {
     Apply( p_src_mob, 1.0, p_params);
 }
 
+void moTextureFilter::Apply(moMoldeoObject *p_src_mob, moTempo *p_tempo) {
+    moTextFilterParam p_params;
+    Apply( p_src_mob, p_tempo, 1.0, p_params);
+}
+
 void moTextureFilter::Apply( moMoldeoObject *p_src_mob, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params ) {
     if (p_src_mob==NULL) return;
     if (m_shader==NULL) return;
-    
+
     MOint w = m_dest_tex[0]->GetWidth();
 	MOint h = m_dest_tex[0]->GetHeight();
 	SetGLConf(w, h);
-    
+
     if (m_use_screen_tex) m_renderman->SaveScreen();
-    
+
 	BindDestFBO();
-    
+
 	m_shader->StartShader();
 	SetupShader(w, h, p_tempo, p_fade, p_params, p_src_mob);
-    
+
 	BindSrcTex( p_src_mob );
 	m_shader->DrawGrid(w, h, m_src_tex.Count());
 	UnbindSrcTex();
-    
+
 	m_shader->StopShader();
-    
+
 	UnbindDestFBO();
-    
+
 	RestoreGLConf();
 }
 
@@ -1060,4 +1065,3 @@ void moTextureFilter::CheckDestTexAttachStatus()
 			break;
 		}
 }
-

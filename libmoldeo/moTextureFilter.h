@@ -147,10 +147,10 @@ class moTextureIndex;
 
 #include "moVideoManager.h"
 /**
- * Esta clase define un filtro 2D para aplicar en texturas. Un filtro es básicamente
- * un programa de shader (escrito en CG o GLSL) con un conjunto de predefinido de parámetros
+ * Esta clase define un filtro 2D para aplicar en texturas. Un filtro es bï¿½sicamente
+ * un programa de shader (escrito en CG o GLSL) con un conjunto de predefinido de parï¿½metros
  * uniformes y una grilla 2D donde las texturas fuente son mapeadas. Los puntos de la grilla 2D
- * pueden ser modificados en el estadio de vértices del filtro, permitiendo distorsiones arbitrarias
+ * pueden ser modificados en el estadio de vï¿½rtices del filtro, permitiendo distorsiones arbitrarias
  * en la forma de la texturas.
  */
 class LIBMOLDEO_API moTextureFilter : public moAbstract
@@ -166,43 +166,43 @@ public:
 	virtual ~moTextureFilter() { Finish(); }
 
     /**
-     * Método de inicialización de la grilla.
+     * Mï¿½todo de inicializaciï¿½n de la grilla.
      * @param p_glman puntero al administrador de OpenGL.
      * @param p_renderman puntero al administrador de render.
-     * @param p_src_tex referencia a la lista de texturas de orígen.
+     * @param p_src_tex referencia a la lista de texturas de orï¿½gen.
      * @param p_dest_tex referencia a la lista de texturas de destino.
      * @param p_shader puntero al programa de shader que define el filtro.
-     * @param p_params puntero al objeto de parámetros a utilizar en este filtro.
-     * @return true si la operación fue exitosa, false en caso contrario.
+     * @param p_params puntero al objeto de parï¿½metros a utilizar en este filtro.
+     * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
      */
 	virtual MOboolean Init(moGLManager* p_glman, moRenderManager* p_renderman, moTextureArray &p_src_tex, moTextureArray &p_dest_tex, moShader *p_shader, const moTextFilterParam& p_params);
     /**
-     * Método de finalización.
-     * @return true si la operación fue exitosa, false en caso contrario.
+     * Mï¿½todo de finalizaciï¿½n.
+     * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
      */
 	virtual MOboolean Finish();
 
     /**
-     * Aplica el filtro sobre las texturas de orígen y escribiendo el resutlado en las texturas de destino.
-     * @param p_i cuadro a utilizar en las texturas de orígen (en el caso de que sean animadas).
+     * Aplica el filtro sobre las texturas de orï¿½gen y escribiendo el resutlado en las texturas de destino.
+     * @param p_i cuadro a utilizar en las texturas de orï¿½gen (en el caso de que sean animadas).
      * @param p_fade constante de "fading" utilizada para mezclar el resultado del filtro.
-     * @param p_params parámetros del filtro.
+     * @param p_params parï¿½metros del filtro.
      */
 	void Apply(MOuint p_i, MOfloat p_fade, const moTextFilterParam& p_params);
     void Apply(MOuint p_i);
     /**
-     * Aplica el filtro sobre las texturas de orígen y escribiendo el resutlado en las texturas de destino.
-     * @param p_cycle fracción del ciclo entre 0.0 y 1.0 a utilizar en las texturas de orígen (en el caso de que sean animadas).
+     * Aplica el filtro sobre las texturas de orï¿½gen y escribiendo el resutlado en las texturas de destino.
+     * @param p_cycle fracciï¿½n del ciclo entre 0.0 y 1.0 a utilizar en las texturas de orï¿½gen (en el caso de que sean animadas).
      * @param p_fade constante de "fading" utilizada para mezclar el resultado del filtro.
-     * @param p_params parámetros del filtro.
+     * @param p_params parï¿½metros del filtro.
      */
 	void Apply(MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam& p_params);
     void Apply(MOfloat p_cycle);
     /**
-     * Aplica el filtro sobre las texturas de orígen y escribiendo el resutlado en las texturas de destino.
-     * @param p_tempo tempo a utilizar en las texturas de orígen (en el caso de que sean animadas).
+     * Aplica el filtro sobre las texturas de orï¿½gen y escribiendo el resutlado en las texturas de destino.
+     * @param p_tempo tempo a utilizar en las texturas de orï¿½gen (en el caso de que sean animadas).
      * @param p_fade constante de "fading" utilizada para mezclar el resultado del filtro.
-     * @param p_params parámetros del filtro.
+     * @param p_params parï¿½metros del filtro.
      */
 	void Apply(moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params);
     void Apply(moTempo *p_tempo);
@@ -210,11 +210,12 @@ public:
 
     void Apply( moMoldeoObject *p_src_mob, MOfloat p_fade, const moTextFilterParam& p_params );
     void Apply( moMoldeoObject *p_src_mob, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params);
-    void Apply( moMoldeoObject *p_src_mob);
+    void Apply( moMoldeoObject *p_src_mob, moTempo *p_tempo);
+		void Apply( moMoldeoObject *p_src_mob);
 
     /**
-     * Devuelve el puntero a la lista de texturas de orígen.
-     * @return puntero a la lista de texturas de orígen.
+     * Devuelve el puntero a la lista de texturas de orï¿½gen.
+     * @return puntero a la lista de texturas de orï¿½gen.
      */
 	moTextureIndex* GetSrcTex() { return &m_src_tex; }
     /**
@@ -227,8 +228,8 @@ public:
 
 
     /**
-     * Verifica que todas las texturas de destino estén asociadas a lo búfers de color del mismo FBO. En caso
-     * contrario, las mismas serán re-asociadas (utilizando el FBO de la primera textura de destino) en el
+     * Verifica que todas las texturas de destino estï¿½n asociadas a lo bï¿½fers de color del mismo FBO. En caso
+     * contrario, las mismas serï¿½n re-asociadas (utilizando el FBO de la primera textura de destino) en el
      * momento de aplicar el filtro.
      */
 	void CheckDestTexAttachStatus();
@@ -240,7 +241,7 @@ public:
     moText      GetTextureFilterLabelName() {
         return m_TextureFilterLabelName;
     }
-    
+
     const moTextFilterParam& GetTextFilterParam() {
         return m_DefParams;
     }
@@ -305,4 +306,3 @@ moDeclareExportedDynamicArray( moTextureFilter*, moTextureFilterArray)
 #include "moRenderManager.h"
 
 #endif
-
