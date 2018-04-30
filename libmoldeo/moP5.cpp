@@ -63,7 +63,7 @@ void moP5::triangle(float x1, float y1, float x2, float y2, float x3, float y3)
 		glVertex2f(x3, y3);
 	glEnd();
 #else
-	
+
 #endif
 }
 
@@ -78,7 +78,7 @@ void moP5::line(float x1, float y1, float x2, float y2)
 		glVertex2f(x2, y2);
 	glEnd();
 #else
-	
+
 #endif
 }
 
@@ -93,7 +93,7 @@ void moP5::line(float x1, float y1, float z1, float x2, float y2, float z2)
 		glVertex3f(x2, y2, z2);
 	glEnd();
 #else
-	
+
 #endif
 }
 
@@ -117,7 +117,7 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
             glColor4f(strokeColor[0], strokeColor[1], strokeColor[2], strokeColor[3]);
             glBegin(GL_LINE_LOOP);
 #else
-	
+
 #endif
             break;
 
@@ -130,7 +130,7 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
                 glBegin(GL_TRIANGLE_STRIP);
             } else glBegin(GL_TRIANGLE_FAN);
 #else
-	
+
 #endif
             break;
 
@@ -157,7 +157,7 @@ void moP5::arc(float x, float y, float width, float height, float start, float s
         }
     glEnd();
 #else
-	
+
 #endif
 
 }
@@ -169,7 +169,7 @@ void moP5::point(float x, float y)
         glVertex2f(x, y);
     glEnd();
 #else
-	
+
 #endif
 }
 
@@ -181,7 +181,7 @@ void moP5::point(float x, float y, float z)
         glVertex3f(x, y, z);
     glEnd();
 #else
-	
+
 #endif
 }
 
@@ -195,7 +195,7 @@ void moP5::quad(float x1, float y1, float x2, float y2, float x3, float y3, floa
 		glVertex2f(x4, y4);
 	glEnd();
 #else
-	
+
 #endif
 }
 
@@ -231,7 +231,7 @@ void moP5::ellipse(float x, float y, float width, float height, int slices )
             break;
 	}
 #else
-	
+
 #endif
 }
 
@@ -259,7 +259,7 @@ void moP5::rect(float x, float y, float width, float height)
 
 	glRectf(x, y, x + width, y + height);
 #else
-	
+
 #endif
 }
 
@@ -434,7 +434,7 @@ void moP5::noFill()
 #ifndef OPENGLESV2
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 #else
-	
+
 #endif
 }
 
@@ -467,7 +467,7 @@ void moP5::fill(float value1, float value2, float value3, float alpha)
 #ifndef OPENGLESV2
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 #else
-	
+
 #endif
     fillColor[0] = value1;
     fillColor[1] = value2;
@@ -481,7 +481,7 @@ void moP5::pushMatrix()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 #else
-	
+
 #endif
 }
 
@@ -491,7 +491,7 @@ void moP5::popMatrix()
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 #else
-	
+
 #endif
 }
 
@@ -501,7 +501,7 @@ void moP5::resetMatrix()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 #else
-	
+
 #endif
 }
 
@@ -510,7 +510,7 @@ void moP5::scale(float size)
 #ifndef OPENGLESV2
 	glScalef(size, size, size);
 #else
-	
+
 #endif
 }
 
@@ -519,7 +519,7 @@ void moP5::scale(float x, float y, float z)
 #ifndef OPENGLESV2
 	glScalef(x, y, z);
 #else
-	
+
 #endif
 }
 
@@ -528,7 +528,7 @@ void moP5::translate(float x, float y, float z)
 #ifndef OPENGLESV2
 	glTranslatef(x, y, z);
 #else
-	
+
 #endif
 }
 
@@ -537,7 +537,7 @@ void moP5::rotate(float angle, float x, float y, float z)
 #ifndef OPENGLESV2
 	glRotatef(angle * moMathf::RAD_TO_DEG, x, y, z);
 #else
-	
+
 #endif
 }
 

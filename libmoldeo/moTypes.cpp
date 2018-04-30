@@ -151,7 +151,7 @@ if (H>=360)
 
 */
 #ifdef MO_WIN32
-#define PACKAGE_VERSION "0.9.1.0"
+#define PACKAGE_VERSION "1.0.0.172"
 #else
 #include "config.h"
 #endif
