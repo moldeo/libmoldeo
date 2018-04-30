@@ -105,22 +105,22 @@ MOint moTextureFilterIndex::Add(moTextureFilter* p_filter)
 	return idx;
 }
 
-void moTextureFilterIndex::Apply(MOuint p_idx, MOuint p_i, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilterIndex::Apply(MOuint p_idx, MOuint p_i, MOfloat p_fade, const moTextFilterParam& p_params )
 {
 	if (ValidIndex(p_idx)) m_filters_array[p_idx]->Apply(p_i, p_fade, p_params);
 }
 
-void moTextureFilterIndex::Apply(MOuint p_idx, MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilterIndex::Apply(MOuint p_idx, MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam& p_params)
 {
 	if (ValidIndex(p_idx)) m_filters_array[p_idx]->Apply(p_cycle, p_fade, p_params);
 }
 
-void moTextureFilterIndex::Apply(MOuint p_idx, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilterIndex::Apply(MOuint p_idx, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params)
 {
 	if (ValidIndex(p_idx)) m_filters_array[p_idx]->Apply(p_tempo, p_fade, p_params);
 }
 
-void moTextureFilterIndex::Apply(moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_params)
+void moTextureFilterIndex::Apply(moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params)
 {
 	for (MOuint i = 0; i < m_filters_array.Count(); i++) m_filters_array[i]->Apply(p_tempo, p_fade, p_params);
 }
@@ -236,7 +236,8 @@ MOuint moTextureFilterIndex::LoadFilter(moValue* p_value) {
     if (error_code == 0)
     {
         pfilter = new moTextureFilter();
-        pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+        moTextFilterParam DefParam;
+        pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader, DefParam);
         pfilter->SetTextureFilterLabelName( MakeTextureFilterLabelName( p_value ) );
         Add(pfilter);
     }
@@ -322,7 +323,8 @@ MOuint moTextureFilterIndex::LoadFilters(moParam* p_param)
 		if (error_code == 0)
 		{
 			pfilter = new moTextureFilter();
-			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+            moTextFilterParam DefParam;
+			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader, DefParam);
       pfilter->SetTextureFilterLabelName( MakeTextureFilterLabelName( &param->GetValue() ) );
 			Add(pfilter);
 		}
@@ -411,7 +413,8 @@ MOuint moTextureFilterIndex::LoadFilters(moConfig* p_cfg, MOuint p_param_idx)
 		if (error_code == 0)
 		{
 			pfilter = new moTextureFilter();
-			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+            moTextFilterParam DefParam;
+			pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader, DefParam);
       pfilter->SetTextureFilterLabelName( MakeTextureFilterLabelName( &param->GetValue() ) );
 			Add(pfilter);
 		}
@@ -503,7 +506,8 @@ MOuint moTextureFilterIndex::LoadFilters(moTextArray* p_filters_str)
 
 		  } else {
         pfilter = new moTextureFilter();
-        pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader);
+             moTextFilterParam DefParam;
+        pfilter->Init(m_glman, m_renderman, src_tex, dest_tex, pshader, DefParam);
         pfilter->SetTextureFilterLabelName( filterlabelname );
         Add(pfilter);
 		  }

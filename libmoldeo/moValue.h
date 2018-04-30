@@ -69,6 +69,8 @@ NOTES:
 #include "moMathVector.h"
 #include "moMathVector3.h"
 #include "moMathVector4.h"
+#include "moTextFilterParam.h"
+
 #include <iostream>
 #include <map>
 #include <string>
@@ -192,7 +194,7 @@ class LIBMOLDEO_API moData {
 		void        SetVideoBuffer( moVideoBuffer*	p_VideoBuffer );
 		void        SetTextureFilter( moTextureFilter*	p_TextureFilter );
 		void        SetTextureFilterAlpha( moData* p_alpha );
-		void        SetTextureFilterParam( moTextFilterParam *p_filterparam );
+		void        SetTextureFilterParam( const moTextFilterParam &p_filterparam );
 		void        SetFont( moFont*	p_Font );
 		void        SetModel( moSceneNode*    p_Model );
 		void        SetSound( moSound*	p_Sound );
@@ -249,11 +251,20 @@ class LIBMOLDEO_API moData {
 		moText                  TypeToText();
 		moDataType              TextToType( moText texttype );
 
-		GLint       GetGLId( MOfloat p_cycle, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-		GLint       GetGLId( moTempo *p_tempo, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-		GLint       GetGLId( MOuint p_i, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-		GLint       GetGLId( MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-		GLint       GetGLId( moMoldeoObject* p_mob, moTempo* p_tempo = NULL, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
+
+		GLint       GetGLId( MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam &p_filterparam);
+		GLint       GetGLId( moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+		GLint       GetGLId( MOuint p_i, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+		GLint       GetGLId( MOfloat p_fade, const moTextFilterParam &p_filterparam );
+		GLint       GetGLId( moMoldeoObject* p_mob, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+    GLint       GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+    GLint       GetGLId( MOfloat p_cycle);
+    GLint       GetGLId( moTempo *p_tempo );
+    GLint       GetGLId( MOuint p_i);
+    GLint       GetGLId();
+    GLint       GetGLId( moMoldeoObject* p_mob );
+    GLint       GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo );
+
 
 	protected:
 		moDataType		m_DataType;
@@ -265,7 +276,7 @@ class LIBMOLDEO_API moData {
 		bool            m_bFilteredAlpha;
 		bool            m_bFilteredParams;
 		MOfloat         m_AlphaFilter;
-		moTextFilterParam*  m_pFilterParam;
+		moTextFilterParam  m_pFilterParam;
 		moData*         m_pAlphaFilter;
 
 		MOdouble        m_LastEval;

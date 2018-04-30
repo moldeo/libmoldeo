@@ -57,7 +57,7 @@ moData::moData() {
 	m_bFilteredAlpha = false;
 	m_bFilteredParams = false;
 	m_AlphaFilter = 1.0;
-	m_pFilterParam = NULL;
+	//m_pFilterParam = NULL;
 	m_pAlphaFilter = NULL;
 }
 
@@ -307,7 +307,7 @@ moData::SetTextureFilterAlpha( moData* p_alpha ) {
 }
 
 void
-moData::SetTextureFilterParam( moTextFilterParam *p_filterparam ) {
+moData::SetTextureFilterParam( const moTextFilterParam &p_filterparam ) {
     m_bFilteredParams = true;
     m_pFilterParam = p_filterparam;
 
@@ -947,7 +947,13 @@ moData::GetData() {
 }
 
 GLint
-moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moData::GetGLId( MOfloat p_cycle ) {
+    moTextFilterParam p_filterparam;
+    return GetGLId( p_cycle, 1.0, p_filterparam);
+}
+
+GLint
+moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
 
     moTexture*	pTexture = NULL;
 
@@ -960,8 +966,8 @@ moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterpar
                     p_fade = m_pAlphaFilter->Fun()->Eval(p_cycle);
                 }
             }
-            if (m_pFilterParam)
-                p_filterparam = m_pFilterParam;
+            //if (m_pFilterParam)
+            //    p_filterparam = m_pFilterParam;
 
             pTF->Apply( p_cycle, p_fade, p_filterparam);
             moTextureIndex* PTI = pTF->GetDestTex();
@@ -985,7 +991,13 @@ moData::GetGLId( MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterpar
 }
 
 GLint
-moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moData::GetGLId( moTempo *p_tempo ) {
+    moTextFilterParam p_filterparam;
+    return GetGLId( p_tempo, 1.0, p_filterparam);
+}
+
+GLint
+moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
 
     moTexture*	pTexture = NULL;
 
@@ -999,8 +1011,8 @@ moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterpa
                     p_fade = m_pAlphaFilter->Fun()->Eval(p_tempo->ang);
                 }
             }
-            if (m_pFilterParam)
-                p_filterparam = m_pFilterParam;
+            //if (m_pFilterParam)
+            //    p_filterparam = m_pFilterParam;
 
             pTF->Apply( p_tempo, p_fade, p_filterparam);
             moTextureIndex* PTI = pTF->GetDestTex();
@@ -1023,8 +1035,15 @@ moData::GetGLId( moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterpa
     } else return 0;
 }
 
+
 GLint
-moData::GetGLId( MOuint p_i , MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moData::GetGLId( MOuint p_i ) {
+    moTextFilterParam p_filterparam;
+    return GetGLId( p_i, 1.0, p_filterparam);
+}
+
+GLint
+moData::GetGLId( MOuint p_i , MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
 
     moTexture*	pTexture = NULL;
 
@@ -1038,8 +1057,8 @@ moData::GetGLId( MOuint p_i , MOfloat p_fade, moTextFilterParam *p_filterparam )
                     p_fade = m_pAlphaFilter->Fun()->Eval(p_i);
                 }
             }
-            if (m_pFilterParam)
-                p_filterparam = m_pFilterParam;
+            //if (m_pFilterParam)
+            //    p_filterparam = m_pFilterParam;
 
 
             pTF->Apply( p_i, p_fade, p_filterparam);
@@ -1063,8 +1082,15 @@ moData::GetGLId( MOuint p_i , MOfloat p_fade, moTextFilterParam *p_filterparam )
     } else return 0;
 }
 
+
 GLint
-moData::GetGLId( MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moData::GetGLId() {
+    moTextFilterParam p_filterparam;
+    return GetGLId(1.0, p_filterparam);
+}
+
+GLint
+moData::GetGLId( MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
 
     moTexture*	pTexture = NULL;
 
@@ -1078,8 +1104,8 @@ moData::GetGLId( MOfloat p_fade, moTextFilterParam *p_filterparam ) {
                     p_fade = m_pAlphaFilter->Fun()->Eval(0);
                 }
             }
-            if (m_pFilterParam)
-                p_filterparam = m_pFilterParam;
+            //if (m_pFilterParam)
+            //    p_filterparam = m_pFilterParam;
 
 
             pTF->Apply( (MOuint)0, p_fade, p_filterparam );
@@ -1096,10 +1122,26 @@ moData::GetGLId( MOfloat p_fade, moTextFilterParam *p_filterparam ) {
     else return 0;
 }
 
+GLint
+moData::GetGLId( moMoldeoObject* p_mob ) {
+    return GetGLId( p_mob, NULL);
+}
 
 GLint
-moData::GetGLId( moMoldeoObject* p_mob, moTempo* p_tempo, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moData::GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo ) {
+    moTextFilterParam p_filterparam;
+    return GetGLId( p_mob, p_tempo, 1.0, p_filterparam);
+}
 
+
+GLint
+moData::GetGLId( moMoldeoObject* p_mob, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
+ 
+    GetGLId( p_mob, NULL, p_fade, p_filterparam );
+}
+
+GLint
+moData::GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
     moTexture*	pTexture = NULL;
 
     if (m_DataType==MO_DATA_IMAGESAMPLE_FILTERED) {
@@ -1114,8 +1156,8 @@ moData::GetGLId( moMoldeoObject* p_mob, moTempo* p_tempo, MOfloat p_fade, moText
                     p_fade = m_pAlphaFilter->Fun()->Eval();
                 }
             }
-            if (m_pFilterParam)
-                p_filterparam = m_pFilterParam;
+            //if (m_pFilterParam)
+            //    p_filterparam = m_pFilterParam;
 
             pTF->Apply( p_mob, p_tempo, p_fade, p_filterparam);
             moTextureIndex* PTI = pTF->GetDestTex();

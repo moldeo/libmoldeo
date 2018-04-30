@@ -341,11 +341,16 @@ class LIBMOLDEO_API moConfig
         /// Acceso rápido a los datos de una textura
         /**  @param indexparam índice del parámetro
         * @return el id de la textura*/
-        GLint       GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object, moTempo *p_tempo=NULL, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-        GLint       GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-        GLint       GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-        GLint       GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
-        GLint       GetGLId( moParamReference p_paramreference, MOfloat p_fade=1.0, moTextFilterParam *p_filterparam = NULL );
+        GLint       GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+        GLint       GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+        GLint       GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+        GLint       GetGLId( moParamReference p_paramreference, MOfloat p_fade, const moTextFilterParam &p_filterparam );
+    
+    GLint       GetGLId( moParamReference p_paramreference, MOfloat p_cycle);
+    GLint       GetGLId( moParamReference p_paramreference, moTempo *p_tempo );
+    GLint       GetGLId( moParamReference p_paramreference, MOuint p_i );
+    GLint       GetGLId( moParamReference p_paramreference );
+
 
         ///referencias a clases
         moMathFunction&               Fun(  moParamReference p_paramreference );

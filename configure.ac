@@ -134,6 +134,7 @@ AC_ARG_ENABLE(host,
   fi
 ])
 
+AC_SUBST([OPENGLESV2],$OPENGLESV2)
 
 GST_VERSION_MAJOR=1
 GST_VERSION_MINOR=0
@@ -155,10 +156,6 @@ AC_ARG_ENABLE(gstreamer,
 if test "x$GST_VERSION_MAJOR" = "x1" ; then
 	host_cflags="$host_cflags -DGSTVERSION"
 fi
-
-AC_SUBST([HOSTCFLAGS],$host_cflags)
-AC_SUBST([HOSTLDFLAGS],$host_ldflags)
-AC_SUBST([OPENGLESV2],$OPENGLESV2)
 
 if test "x$host_name" = "xosx" ; then
     PKG_CHECK_MODULES([LUA51], [lua-5.1] ,has_lua51=yes)
@@ -208,6 +205,7 @@ AC_SUBST(GST_LIBS)
 
 if test "x$GST_VERSION_MAJOR" = "x1" ; then
     librequires="$librequires , gstreamer-1.0, gstreamer-app-1.0"
+    host_cflags="$host_cflags -DGSTVERSION"
     PKG_CHECK_MODULES(GST_INTERFACES, gstreamer-app-$GST_MAJORMINOR >= $GSTREAMER_REQ, HAVE_GSTREAMER_INTERFACES=yes)
 elif test "x$GST_VERSION_MAJOR" = "x0" ; then
     librequires="$librequires , gstreamer-0.10, gstreamer-interfaces-0.10, gstreamer-app-0.10"
@@ -218,6 +216,11 @@ AC_SUBST(GST_INTERFACES_CFLAGS)
 AC_SUBST(GST_INTERFACES_LIBS)
 
 fi
+
+
+AC_SUBST([HOSTCFLAGS],$host_cflags)
+AC_SUBST([HOSTLDFLAGS],$host_ldflags)
+
 
 dnl check for truetype
 AC_CHECK_FT2

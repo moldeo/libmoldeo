@@ -2,7 +2,7 @@
 
 DIE=0
 
-./autogen.sh --prefix=/usr
+./autogen.sh --prefix=/usr --enable-gstreamer=1.0
 
 echo "deb directory..."
 (mkdir deb ) > /dev/null || {
@@ -62,7 +62,7 @@ echo "extracting..."
 }
 
 cd deb/libmoldeo-*
-dh_make -l -e info@moldeointeractive.com.ar -p libmoldeo
+dh_make -l -e info@moldeo.org -p libmoldeo -c gpl3
 
 sed -i -e 's/Architecture: any/Architecture: amd64/g' debian/control
 sed -i -e 's/Maintainer: fabricio /Maintainer: Moldeo Interactive /g' debian/control

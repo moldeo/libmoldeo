@@ -1622,8 +1622,9 @@ moTextureAnimated::NeedsInterpolation() {
 			m_bInterpolating = false;
 			ActivateInterpolation(false);
 			//TODO: fix this
-			if (m_pCopyStart) m_pCopyStart->Apply( m_FrameStart );
-			if (m_pCopyEnd) m_pCopyEnd->Apply( m_FrameEnd );
+            moTextFilterParam DefParam;
+			if (m_pCopyStart) m_pCopyStart->Apply( m_FrameStart, 1.0, DefParam );
+			if (m_pCopyEnd) m_pCopyEnd->Apply( m_FrameEnd, 1.0, DefParam );
 			//activamos nuevamente la interpolacion una vez copiados los cuadros
 			ActivateInterpolation(true);
 			m_bInterpolating = true;
@@ -1653,11 +1654,14 @@ moTextureAnimated::Interpolate() {
 			m_InterpolationPosition = (float)( m_ActualTime - m_StartTime ) / (m_InterpolationTime);
 			if ( m_InterpolationPosition >= 1.0) m_InterpolationPosition = 1.0;
 			if ( m_InterpolationPosition <= 0.0) m_InterpolationPosition = 0.0;
+            filterparam = m_pInterpolator->GetTextFilterParam();
 			filterparam.par_flt1 = m_InterpolationPosition;
       //TODO: fix this
-			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, &filterparam );
+            MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition)+moText(" Param par_flt1:")+FloatToStr(filterparam.par_flt1)+moText(" Param UNIFORM ID:")+IntToStr(filterparam.m_par_flt1) );
+            
+			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, filterparam );
 
-			//MODebug2->Push( moText("IP:")+FloatToStr(m_InterpolationPosition) );
+			//MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition) );
 			return 1;
 		}
 	}
@@ -1721,14 +1725,14 @@ moTextureAnimated::GetGLId( MOuint p_i ) {
 	m_FrameNext = p_i;
 
 	if (NeedsInterpolation()) {
-    /**
-    MODebug2->Message( moText("moTextureAnimated::GetGLId( MOuint p_i ) > Interpolating image! ")+
-                      "From m_FramePrevious: " + IntToStr( m_FramePrevious )+
+    
+    MODebug2->Message( moText("moTextureAnimated::GetGLId( MOuint p_i ) > Interpolating image! ")+GetName()+
+                      " From m_FramePrevious: " + IntToStr( m_FramePrevious )+
                       " To m_FrameNext: " + IntToStr( m_FrameNext )+
                       " At m_InterpolationPosition: " + FloatToStr( m_InterpolationPosition, 2, 2 )+
                       "From m_FrameStart: " + IntToStr( m_FrameStart )+
                       " To m_FrameEnd: " + IntToStr( m_FrameEnd )
-                        );*/
+                        );
 		Interpolate();
 	} else {
 	  //MODebug2->Message(" fprev:"+IntToStr(m_FramePrevious)+" fnext:" + IntToStr(m_FrameNext));

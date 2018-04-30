@@ -1170,18 +1170,7 @@ moConfig::Eval( moText p_param_name ) {
 
 
 GLint
-moConfig::GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
-    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
-    moData* pdata = param.GetData();
-    if (pdata) {
-      return pdata->GetGLId( p_object, p_tempo, p_fade, p_filterparam );
-    }
-    return 0;
-}
-
-GLint
-moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
-
+moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
@@ -1191,7 +1180,7 @@ moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p
 }
 
 GLint
-moConfig::GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moConfig::GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
@@ -1201,7 +1190,7 @@ moConfig::GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat 
 }
 
 GLint
-moConfig::GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moConfig::GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
@@ -1211,7 +1200,7 @@ moConfig::GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade
 }
 
 GLint
-moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_fade, moTextFilterParam *p_filterparam ) {
+moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
@@ -1220,6 +1209,51 @@ moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_fade, moTextFilt
     return 0;
 }
 
+
+GLint
+moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle ) {
+    
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+        moTextFilterParam filterparam;
+        return pdata->GetGLId( p_cycle, 1.0, filterparam );
+    }
+    return 0;
+}
+
+GLint
+moConfig::GetGLId( moParamReference p_paramreference, moTempo *p_tempo) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+        moTextFilterParam filterparam;
+        return pdata->GetGLId( p_tempo, 1.0, filterparam );
+    }
+    return 0;
+}
+
+GLint
+moConfig::GetGLId( moParamReference p_paramreference, MOuint p_i ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+        moTextFilterParam filterparam;
+        return pdata->GetGLId( p_i, 1.0, filterparam );
+    }
+    return 0;
+}
+
+GLint
+moConfig::GetGLId( moParamReference p_paramreference ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+        moTextFilterParam filterparam;
+        return pdata->GetGLId( 1.0, filterparam );
+    }
+    return 0;
+}
 
 moMathFunction&
 moConfig::Fun(  moParamReference p_paramreference ) {

@@ -120,7 +120,7 @@ public:
      * @param p_fade constante de "fading" utilizada para mezclar el resultado del filtro.
      * @param p_params parámetros del filtro.
      */
-	void Apply(MOuint p_idx, MOuint p_i, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL);
+	void Apply(MOuint p_idx, MOuint p_i, MOfloat p_fade, const moTextFilterParam& p_params);
     /**
      * Aplica el filtro p_idx sobre las texturas de orígen y escribiendo el resutlado en las texturas de destino.
      * @param p_idx índice del filtro a aplicar.
@@ -128,7 +128,7 @@ public:
      * @param p_fade constante de "fading" utilizada para mezclar el resultado del filtro.
      * @param p_params parámetros del filtro.
      */
-	void Apply(MOuint p_idx, MOfloat p_cycle, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL);
+	void Apply(MOuint p_idx, MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam& p_params);
     /**
      * Aplica el filtro p_idx sobre las texturas de orígen y escribiendo el resutlado en las texturas de destino.
      * @param p_idx índice del filtro a aplicar.
@@ -136,7 +136,7 @@ public:
      * @param p_fade constante de "fading" utilizada para mezclar el resultado del filtro.
      * @param p_params parámetros del filtro.
      */
-	void Apply(MOuint p_idx, moTempo *p_tempo, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL);
+	void Apply(MOuint p_idx, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params);
 
     /**
      * Aplica todos los filtros sobre las texturas de orígen y escribiendo el resutlado en las texturas de destino.
@@ -144,7 +144,7 @@ public:
      * @param p_fade constante de "fading" utilizada para mezclar el resultado del filtro.
      * @param p_params parámetros del filtro.
      */
-	void Apply(moTempo *p_tempo, MOfloat p_fade = 1.0, moTextFilterParam *p_params = NULL);
+	void Apply(moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam& p_params);
 
     /**
      * Verifica el índice p_idx.
