@@ -203,7 +203,7 @@ moConfigDefinition::Add( moText p_name, moParamType p_type , MOint p_index) {
 	m_ParamDefinitions.Add( pdef );
 
    ATENCION!!!! si p_index no coincide con el indice real de la entrada d el array de m_ParamIndexes....
-      entonces no funcionará.... hay que evitar este problema....
+      entonces no funcionarï¿½.... hay que evitar este problema....
       sobre todo  y tambien si no se llama en el orden correcto.
 
       soluciones:
@@ -687,7 +687,7 @@ int moConfig::SaveConfig( moText p_filename ) {
 
             for( int p = 0; p< (int)m_Params.Count(); p++ ) {
 
-                //proximo parámetro
+                //proximo parï¿½metro
                 moParam& xparam( m_Params[p] );
                 moParamDefinition definition = xparam.GetParamDefinition();
 
@@ -863,7 +863,7 @@ moConfig::CreateDefault( const moText &p_fullconfigfilename ) {
         return false;
     }
 
-    //crea los parámetros en función de las definiciones, con valores por default...
+    //crea los parï¿½metros en funciï¿½n de las definiciones, con valores por default...
     moParamDefinitions* pParamDefinitions = NULL;
 
     pParamDefinitions = this->GetConfigDefinition()->GetParamDefinitions();
@@ -1168,6 +1168,37 @@ moConfig::Eval( moText p_param_name ) {
 
 }
 
+GLint
+moConfig::GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+      return pdata->GetGLId( p_object, p_tempo, p_fade, p_filterparam );
+    }
+    return 0;
+}
+
+GLint
+moConfig::GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object, moTempo *p_tempo ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+      return pdata->GetGLId( p_object, p_tempo );
+    }
+    return 0;
+}
+
+
+GLint
+moConfig::GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    moData* pdata = param.GetData();
+    if (pdata) {
+      return pdata->GetGLId( p_object );
+    }
+    return 0;
+}
+
 
 GLint
 moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
@@ -1212,7 +1243,7 @@ moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_fade, const moTe
 
 GLint
 moConfig::GetGLId( moParamReference p_paramreference, MOfloat p_cycle ) {
-    
+
     moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
     moData* pdata = param.GetData();
     if (pdata) {
@@ -1757,5 +1788,3 @@ moConfig::ToJSON() {
   return m_FullJSON;
 
 }
-
-

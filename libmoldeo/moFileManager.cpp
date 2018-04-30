@@ -971,13 +971,15 @@ moText
 moFileManager::GetWorkPath() {
     char lbuf[1024];
 
-	#ifdef MO_USING_VC
-		_getcwd( lbuf , sizeof( lbuf ) );
-	#else
-		getcwd( lbuf , sizeof( lbuf ) );
-	#endif
+    moText workpath = "";
 
-    moText workpath = lbuf;
+	#ifdef MO_USING_VC
+		if (_getcwd( lbuf , sizeof( lbuf ) )) {
+	#else
+		if (getcwd( lbuf , sizeof( lbuf ) )) {
+	#endif
+    workpath = lbuf;
+    }
 
     return workpath;
 

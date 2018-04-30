@@ -43,12 +43,12 @@
 #define MO_CONFIG_OK 0
 #define MO_SELECTED -1
 
-/// definición de todos los parámetros a encontrar o a crear dentro del moConfig
+/// definiciï¿½n de todos los parï¿½metros a encontrar o a crear dentro del moConfig
 /**
- *  Cumple la función de describir detalladamente que nombres de parámetros y de que tipo
+ *  Cumple la funciï¿½n de describir detalladamente que nombres de parï¿½metros y de que tipo
  *  deben ser encontrados en el moConfig correspondiente.
  *
- *  Esta clase es rellenada por cada plugin y objeto moldeo que necesite tener controlado el formato de su archivo de configuración
+ *  Esta clase es rellenada por cada plugin y objeto moldeo que necesite tener controlado el formato de su archivo de configuraciï¿½n
  *  @see    moParamDefinition
  *  @see    moMoldeoObject
  *  @see    moConfig
@@ -70,29 +70,29 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
     /// assignment copy operator
     moConfigDefinition& operator =( const moConfigDefinition& p_src );
 
-    /// Agrega la definición de un parámetro con un valor predeterminado a tomar
+    /// Agrega la definiciï¿½n de un parï¿½metro con un valor predeterminado a tomar
     /**
     *
-    * @param p_name nombre del parámetro
-    * @param p_type tipo del parámetro
-    * @param p_index    índice del parámetro dentro del archivo de configuración (-1 si no está definido aún)
+    * @param p_name nombre del parï¿½metro
+    * @param p_type tipo del parï¿½metro
+    * @param p_index    ï¿½ndice del parï¿½metro dentro del archivo de configuraciï¿½n (-1 si no estï¿½ definido aï¿½n)
     * @param p_defaultvalue  valor predeterminado
     */
     void Add( const moText& p_name, moParamType p_type, int p_index=-1, const moValue& p_defaultvalue = moValue("INVALID",MO_VALUE_UNDEFINED), const moText& p_OptionsStr = moText("") );
 
-    /// Devuelve el puntero al arreglo de definciones de parámetros
+    /// Devuelve el puntero al arreglo de definciones de parï¿½metros
     /**
-    *   Este objeto permite la enumeración de las definiciones de cada parámetro
-    * @return el puntero al arreglo de definiciones de parámetros moParamDefinitions
+    *   Este objeto permite la enumeraciï¿½n de las definiciones de cada parï¿½metro
+    * @return el puntero al arreglo de definiciones de parï¿½metros moParamDefinitions
     */
     moParamDefinitions*	GetParamDefinitions() {
     return &m_ParamDefinitions;
     }
 
-    /// Devuelve el puntero al arreglo de índices de los parámetros
+    /// Devuelve el puntero al arreglo de ï¿½ndices de los parï¿½metros
     /**
-    *   Este objeto permite la enumeración de los índices correspondiente a cada parámetro
-    * @return el puntero al arreglo de índices de los parámetros
+    *   Este objeto permite la enumeraciï¿½n de los ï¿½ndices correspondiente a cada parï¿½metro
+    * @return el puntero al arreglo de ï¿½ndices de los parï¿½metros
     */
     moParamIndexes& ParamIndexes() { return m_ParamIndexes; }
 
@@ -134,7 +134,7 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
     *   permitiendo tener configs de muchos parametros con acceso de orden 1. (no N)
     *
     *   @param defined_array_index el entero con el que se asocia el parametro
-    *   @param paramindex es el indice que corresponde a la posicion del parámetro dentro del xml del archivo de configuracion
+    *   @param paramindex es el indice que corresponde a la posicion del parï¿½metro dentro del xml del archivo de configuracion
     *   @return verdadero si pudo asociarlo correctamente...
     */
     bool SetParamIndex( int defined_array_index, moParamIndex paramindex );
@@ -181,9 +181,9 @@ class LIBMOLDEO_API moConfigDefinition : public moAbstract
                                       }\
                                     } else MODebug2->Error( m_Config.GetObjectClass()+": "+m_Config.GetObjectName()+ " parameter \"" + moText(Y) + moText("\" not found."));\
                                 }
-/// almacena la configuración de los parámetros de un objeto en un archivo XML
+/// almacena la configuraciï¿½n de los parï¿½metros de un objeto en un archivo XML
 /**
- *  Es una clase de manejo de archivo de configuración basado en XML
+ *  Es una clase de manejo de archivo de configuraciï¿½n basado en XML
  *
  *  ex:	Config[ PARAM_INDEX ][ VALUE_INDEX ][ SUBVALUE_INDEX ].Float()
  *
@@ -229,16 +229,16 @@ class LIBMOLDEO_API moConfig
             return m_ConfigDefinition.GetObjectClass();
         }
 
-        /// Devuelve el nombre del archivo de configuración
-        /** @return el nombre del archivo de configuración */
+        /// Devuelve el nombre del archivo de configuraciï¿½n
+        /** @return el nombre del archivo de configuraciï¿½n */
         const moText& GetName() { return m_FileName; }
 
-        /// Devuelve el puntero al arreglo de parámetros
-        /** @return una referencia al arreglo de parámetros*/
+        /// Devuelve el puntero al arreglo de parï¿½metros
+        /** @return una referencia al arreglo de parï¿½metros*/
         moParams&				GetParams();
 
 
-        /// Indica si ha sido cargado con éxito el archivo de configuración
+        /// Indica si ha sido cargado con ï¿½xito el archivo de configuraciï¿½n
         /** @return verdadero si ha sido cargado el archivo, falso si no*/
         MOboolean				IsConfigLoaded();
 
@@ -246,9 +246,9 @@ class LIBMOLDEO_API moConfig
         /**  @return MO_CONFIG_OK, MO_CONFIGFILE_NOT_FOUND, -1 si es otro error*/
         int						LoadConfig( moText p_filename );
 
-        /// Corrige el archivo de configuración
+        /// Corrige el archivo de configuraciï¿½n
         /**
-        * Corrige el archivo de configuración agregando aquellos parámetros faltantes
+        * Corrige el archivo de configuraciï¿½n agregando aquellos parï¿½metros faltantes
         * TODO : 1) Que arregle problemas de formato de tipos de dato o
         * 2) versionado (core creador, director creador, plugin creador, os creador)
         * 3) convierta de ANSI a UTF
@@ -256,7 +256,7 @@ class LIBMOLDEO_API moConfig
         */
         void						FixConfig();
 
-        /// Indexa los parámetros
+        /// Indexa los parï¿½metros
         /**
         *   Asocia indices de parametros a las definiciones.
         *
@@ -264,71 +264,71 @@ class LIBMOLDEO_API moConfig
         */
         void        Indexation();
 
-        /// Devuelve true si pudo crear el archivo de configuración junto con su archivo correspondiente
+        /// Devuelve true si pudo crear el archivo de configuraciï¿½n junto con su archivo correspondiente
         /**
         * @param
         * @return true si fue exitoso, false si no lo fue
         */
         MOboolean               CreateDefault( const moText &p_fullconfigfilename );
 
-        /// Elimina todos los parámetros anteriormente cargados
+        /// Elimina todos los parï¿½metros anteriormente cargados
         /**
-        * Limpia la configuración.
+        * Limpia la configuraciï¿½n.
         */
         void					UnloadConfig();
 
-        /// Guarda la configuracion en un archivo físico
+        /// Guarda la configuracion en un archivo fï¿½sico
         /**  @param p_filename   nombre completo del archivo incluyendo el camino
         * @return 0 si fue exitoso, otro valor en otro caso*/
         int						SaveConfig( moText p_filename = moText(""));
 
 
-        /// Borra la configuracion de parámetros con sus respectivos valores
+        /// Borra la configuracion de parï¿½metros con sus respectivos valores
         void					DeleteConfig();
 
-        /// Devuelve el contenido completo de la configuración como texto plano
-        /**  @return el texto completo de la configuración*/
+        /// Devuelve el contenido completo de la configuraciï¿½n como texto plano
+        /**  @return el texto completo de la configuraciï¿½n*/
         moText					GetFullText();
 
-        /// Devuelve la cantidad de valores que contiene el parámetro indexado
-        /**  @param p_paramindex índice del parámetro
+        /// Devuelve la cantidad de valores que contiene el parï¿½metro indexado
+        /**  @param p_paramindex ï¿½ndice del parï¿½metro
         * @return cantidad de valores*/
         MOuint						GetValuesCount( int p_paramindex );
 
-        /// Devuelve el valor indicado por el nombre del parámetro y el índice del valor
-        /**  @param nameparam nombre del parámetro
-        * @param indexvalue   índice del valor dentro del parámetro
+        /// Devuelve el valor indicado por el nombre del parï¿½metro y el ï¿½ndice del valor
+        /**  @param nameparam nombre del parï¿½metro
+        * @param indexvalue   ï¿½ndice del valor dentro del parï¿½metro
         * @return referencia al valor moValue*/
         moValue&				GetValue( moText nameparam, int indexvalue = -1 );//el valor seleccionado del parametro
 
-        /// Devuelve el valor indicado por el índice del parámetro y el índice del valor
-        /**  @param indexparam índice del parámetro
-        * @param indexvalue   índice del valor dentro del parámetro
+        /// Devuelve el valor indicado por el ï¿½ndice del parï¿½metro y el ï¿½ndice del valor
+        /**  @param indexparam ï¿½ndice del parï¿½metro
+        * @param indexvalue   ï¿½ndice del valor dentro del parï¿½metro
         * @return referencia al valor moValue*/
         moValue&				GetValue( int indexparam, int indexvalue = -1 );//el valor seleccionado del parametro
 
 
-        /// Acceso rápido a un valor entero
-        /**  @param indexparam índice del parámetro
+        /// Acceso rï¿½pido a un valor entero
+        /**  @param indexparam ï¿½ndice del parï¿½metro
         * @return el entero*/
         MOint                   Int( moParamReference p_paramreference );
         MOint                   Int( moText p_param_name );
 
-        /// Acceso rápido a un valor double
-        /**  @param indexparam índice del parámetro
+        /// Acceso rï¿½pido a un valor double
+        /**  @param indexparam ï¿½ndice del parï¿½metro
         * @return el entero*/
         MOdouble                   Double( moParamReference p_paramreference );
         MOdouble                   Double( moText p_param_name );
 
-        /// Acceso rápido a un valor de texto
-        /**  @param indexparam índice del parámetro
+        /// Acceso rï¿½pido a un valor de texto
+        /**  @param indexparam ï¿½ndice del parï¿½metro
         * @return el entero*/
         moText                   Text( moParamReference p_paramreference );
         moText                   Text( moText p_param_name );
         moText                   Text( int p_param_index );
 
-        /// Acceso rápido a evaluar la función
-        /**  @param indexparam índice del parámetro
+        /// Acceso rï¿½pido a evaluar la funciï¿½n
+        /**  @param indexparam ï¿½ndice del parï¿½metro
         * @return el entero*/
         MOdouble                   Eval( moParamReference p_paramreference, double x, ... );
         MOdouble                   Eval( moParamReference p_paramreference);
@@ -338,14 +338,17 @@ class LIBMOLDEO_API moConfig
         moVector4d                 EvalColor( moParamReference p_paramreference );
         moVector4d                 EvalColor( moParamReference p_paramreference, double x, ... );
 
-        /// Acceso rápido a los datos de una textura
-        /**  @param indexparam índice del parámetro
+        /// Acceso rï¿½pido a los datos de una textura
+        /**  @param indexparam ï¿½ndice del parï¿½metro
         * @return el id de la textura*/
+				GLint       GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam );
         GLint       GetGLId( moParamReference p_paramreference, MOfloat p_cycle, MOfloat p_fade, const moTextFilterParam &p_filterparam );
         GLint       GetGLId( moParamReference p_paramreference, moTempo *p_tempo, MOfloat p_fade, const moTextFilterParam &p_filterparam );
         GLint       GetGLId( moParamReference p_paramreference, MOuint p_i, MOfloat p_fade, const moTextFilterParam &p_filterparam );
         GLint       GetGLId( moParamReference p_paramreference, MOfloat p_fade, const moTextFilterParam &p_filterparam );
-    
+
+		GLint       GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object, moTempo *p_tempo );
+		GLint       GetGLId( moParamReference p_paramreference, moMoldeoObject *p_object );
     GLint       GetGLId( moParamReference p_paramreference, MOfloat p_cycle);
     GLint       GetGLId( moParamReference p_paramreference, moTempo *p_tempo );
     GLint       GetGLId( moParamReference p_paramreference, MOuint p_i );
@@ -369,118 +372,118 @@ class LIBMOLDEO_API moConfig
         const moTexture&              Texture(  moParamReference p_paramreference );
 
 
-        /// Operador de acceso directo a un parámetro por índice
-        /**  @param p_paramindex índice del parámetro
-        * @return referencia al parámetro moParam*/
+        /// Operador de acceso directo a un parï¿½metro por ï¿½ndice
+        /**  @param p_paramindex ï¿½ndice del parï¿½metro
+        * @return referencia al parï¿½metro moParam*/
         moParam&				operator [] ( MOint p_paramindex ) {
           return GetParam( p_paramindex );
         }
 
-        /// Operador de acceso directo a un parámetro por nombre
-        /**  @param p_paramname nombre del parámetro
-        * @return referencia al parámetro moParam*/
+        /// Operador de acceso directo a un parï¿½metro por nombre
+        /**  @param p_paramname nombre del parï¿½metro
+        * @return referencia al parï¿½metro moParam*/
         moParam&				operator [] ( moText p_paramname ) {
           return GetParam( p_paramname );
         }
 
-        /// Operador de acceso directo a un parámetro por estructura de índice (moParamIndex)
-        /**  @param p_paramindex estructura de índice del parámetro
-        * @return referencia al parámetro moParam*/
+        /// Operador de acceso directo a un parï¿½metro por estructura de ï¿½ndice (moParamIndex)
+        /**  @param p_paramindex estructura de ï¿½ndice del parï¿½metro
+        * @return referencia al parï¿½metro moParam*/
         moParam&				operator [] ( moParamIndex p_paramindex ) {
           return GetParam(p_paramindex.index );
         }
 
-        /// Operador de acceso directo a un parámetro por referencia de parámetro (moParamReference)
-        /**  @param p_paramreference estructura de referenciado de parámetro moParamReference
-        * @return referencia al parámetro moParam*/
+        /// Operador de acceso directo a un parï¿½metro por referencia de parï¿½metro (moParamReference)
+        /**  @param p_paramreference estructura de referenciado de parï¿½metro moParamReference
+        * @return referencia al parï¿½metro moParam*/
         moParam&				operator [] ( moParamReference p_paramreference ) {
           return GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) );
         }
 
-        /// Devuelve el parámetro actualmente seleccionado
-        /**  @return referencia al parámetro moParam*/
+        /// Devuelve el parï¿½metro actualmente seleccionado
+        /**  @return referencia al parï¿½metro moParam*/
         moParam&				GetCurrentParam();
 
-        /// Devuelve el parámetro por índice
-        /**  @param p_paramindex estructura de índice del parámetro
-        * @return referencia al parámetro moParam*/
+        /// Devuelve el parï¿½metro por ï¿½ndice
+        /**  @param p_paramindex estructura de ï¿½ndice del parï¿½metro
+        * @return referencia al parï¿½metro moParam*/
         moParam&				GetParam( MOint	p_paramindex = -1 );
 
-        /// Devuelve el parámetro por nombre
-        /**  @param p_paramname nombre del parámetro
-        * @return referencia al parámetro moParam*/
+        /// Devuelve el parï¿½metro por nombre
+        /**  @param p_paramname nombre del parï¿½metro
+        * @return referencia al parï¿½metro moParam*/
         moParam&				GetParam( moText	p_paramname );
 
-        /// Devuelve el parámetro por estructura de índice (moParamIndex)
-        /**  @param p_paramindex estructura de índice del parámetro
-        * @return referencia al parámetro moParam*/
+        /// Devuelve el parï¿½metro por estructura de ï¿½ndice (moParamIndex)
+        /**  @param p_paramindex estructura de ï¿½ndice del parï¿½metro
+        * @return referencia al parï¿½metro moParam*/
         moParam&				GetParam( moParamIndex p_paramindex ) {
           return GetParam(p_paramindex.index );
         }
 
-        /// Devuelve el parámetro por referencia de parámetro (moParamReference)
-        /**  @param p_paramreference estructura de referenciado de parámetro moParamReference
-        * @return referencia al parámetro moParam*/
+        /// Devuelve el parï¿½metro por referencia de parï¿½metro (moParamReference)
+        /**  @param p_paramreference estructura de referenciado de parï¿½metro moParamReference
+        * @return referencia al parï¿½metro moParam*/
         moParam&				GetParam( moParamReference p_paramreference ) {
           return GetParam( m_ConfigDefinition.ParamIndexes().Get(p_paramreference.reference) );
         }
 
 
-        /// Devuelve la cantidad de parámetros de la configuracíón
-        /**  @return cantidad de parámetros*/
+        /// Devuelve la cantidad de parï¿½metros de la configuracï¿½ï¿½n
+        /**  @return cantidad de parï¿½metros*/
         int						GetParamsCount();
 
-        /// Devuelve el índice correspondiente al valor seleccionado del parámetro por índice de parámetro
-        /**  @param p_paramindex índice del parámetro
-        * @return índice del valor*/
+        /// Devuelve el ï¿½ndice correspondiente al valor seleccionado del parï¿½metro por ï¿½ndice de parï¿½metro
+        /**  @param p_paramindex ï¿½ndice del parï¿½metro
+        * @return ï¿½ndice del valor*/
         int						GetCurrentValueIndex( MOint p_paramindex );
 
-        /// Devuelve el índice correspondiente al parámetro por nombre
-        /**  @param p_paramname nombre del parámetro
-        * @return índice del parámetro*/
+        /// Devuelve el ï¿½ndice correspondiente al parï¿½metro por nombre
+        /**  @param p_paramname nombre del parï¿½metro
+        * @return ï¿½ndice del parï¿½metro*/
         int						GetParamIndex( moText p_paramname);
 
-        /// Devuelve el índice del parámetro actualmente seleccionado
-        /**  @return índice del parámetro*/
+        /// Devuelve el ï¿½ndice del parï¿½metro actualmente seleccionado
+        /**  @return ï¿½ndice del parï¿½metro*/
         int						GetCurrentParamIndex() const;
 
-        /// Selecciona el parámetro por el índice
-        /**  @param índice del parámetro*/
+        /// Selecciona el parï¿½metro por el ï¿½ndice
+        /**  @param ï¿½ndice del parï¿½metro*/
         bool					SetCurrentParamIndex( int);
 
         bool					SetCurrentParam( const moText& p_param_name ) {
           return SetCurrentParamIndex( GetParamIndex( p_param_name ) );
         }
 
-        /// Selecciona el primer parámetro
+        /// Selecciona el primer parï¿½metro
         void					FirstParam();
 
-        /// Selecciona el próximo parámetro
+        /// Selecciona el prï¿½ximo parï¿½metro
         void					NextParam();
 
-        /// Selecciona el parámetro anterior
+        /// Selecciona el parï¿½metro anterior
         void					PrevParam();
 
-        /// Posiciona el puntero de selección del valor del parámetro a la posición indicada
-        /**  @param p_paramindex índice de parámetro a posicionar el valor
-        * @param p_valueindex índice de valor a posicionar*/
+        /// Posiciona el puntero de selecciï¿½n del valor del parï¿½metro a la posiciï¿½n indicada
+        /**  @param p_paramindex ï¿½ndice de parï¿½metro a posicionar el valor
+        * @param p_valueindex ï¿½ndice de valor a posicionar*/
         void					SetCurrentValueIndex( int p_paramindex, int p_valueindex );
 
-        /// Devuelve el valor actual del parámetro actual
+        /// Devuelve el valor actual del parï¿½metro actual
         /**  @return referencia al valor moValue*/
         moValue&				GetCurrentValue();
 
-        /// Selecciona el primer valor del parámetro actual
+        /// Selecciona el primer valor del parï¿½metro actual
         bool					FirstValue();
 
-        /// Selecciona el próximo valor del parámetro actual
+        /// Selecciona el prï¿½ximo valor del parï¿½metro actual
         bool					NextValue();
 
-        /// Selecciona el valor anterior del parámetro actual
+        /// Selecciona el valor anterior del parï¿½metro actual
         bool					PreviousValue();
 
-        /// Devuelve el puntero al objeto de definición de la configuración
-        /**  @return puntero al objeto de definición de la configuración moConfigDefinition*/
+        /// Devuelve el puntero al objeto de definiciï¿½n de la configuraciï¿½n
+        /**  @return puntero al objeto de definiciï¿½n de la configuraciï¿½n moConfigDefinition*/
         moConfigDefinition*		GetConfigDefinition();
 
 
@@ -488,21 +491,21 @@ class LIBMOLDEO_API moConfig
         /**  @return cantidad de preconfiguraciones*/
         MOint					GetPreConfCount();
 
-        /// Devuelve el índice de la preconfiguración seleccionada
-        /**  @return índice de la preconfiguración*/
+        /// Devuelve el ï¿½ndice de la preconfiguraciï¿½n seleccionada
+        /**  @return ï¿½ndice de la preconfiguraciï¿½n*/
         MOint					GetCurrentPreConf();
 
-        /// Posiciona la preconfiguración actual en el índice indicado
-        /**  @param índice de la preconfiguración*/
+        /// Posiciona la preconfiguraciï¿½n actual en el ï¿½ndice indicado
+        /**  @param ï¿½ndice de la preconfiguraciï¿½n*/
         void					SetCurrentPreConf( MOint p_actual );
 
-        /// Selecciona el primer valor de la preconfiguración
+        /// Selecciona el primer valor de la preconfiguraciï¿½n
         void					PreConfFirst();
 
-        /// Selecciona el próximo valor de la preconfiguración
+        /// Selecciona el prï¿½ximo valor de la preconfiguraciï¿½n
         void					PreConfNext();
 
-        /// Selecciona el valor anterior de la preconfiguración
+        /// Selecciona el valor anterior de la preconfiguraciï¿½n
         void					PreConfPrev();
 
 
@@ -522,22 +525,22 @@ class LIBMOLDEO_API moConfig
         void                    DeleteValue( int paramindex,  int valueindex );
 
 
-        /// Agrega una pre-configuración
+        /// Agrega una pre-configuraciï¿½n
         const moPreConfig& GetPreconfig( int valueindex );
 
-        /// Agrega una pre-configuración
+        /// Agrega una pre-configuraciï¿½n
         void                    AddPreconfig( moPreconfigIndexes& p_preconfindexes );
 
-        /// Agrega una pre-configuración y las precendentes
+        /// Agrega una pre-configuraciï¿½n y las precendentes
         void AddPreconfig( int preconfig_index);
 
-        /// Inserta una pre-configuración
+        /// Inserta una pre-configuraciï¿½n
         void                    InsertPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes );
 
-        /// Setea una pre-configuración
+        /// Setea una pre-configuraciï¿½n
         void                    SetPreconfig( int valueindex, moPreconfigIndexes& p_preconfindexes );
 
-        /// Borra una pre-configuración
+        /// Borra una pre-configuraciï¿½n
         void                    DeletePreconfig( int valueindex );
 
         /// Devuelve la estructura del config en formato JSON
@@ -581,4 +584,3 @@ class LIBMOLDEO_API moConfig
 };
 
 #endif
-

@@ -43,7 +43,7 @@ moDebug::moDebug() {
     #ifdef MO_WIN32XX
     psbuf = moStdOut.rdbuf();   // get file's streambuf
     cout.rdbuf( psbuf );         // assign streambuf to cout
-    freopen("stdout.txt", "w", stdout);
+    FILE* fp = freopen("stdout.txt", "w", stdout);
     #endif
 }
 
@@ -68,7 +68,7 @@ moDebug::SetStdout( const moText& filename ) {
         psbuf = moStdOut.rdbuf();   // get file's streambuf
         cout.rdbuf( psbuf );         // assign streambuf to cout
 
-        freopen( fname, "w", stdout);
+        FILE* fp = freopen( fname, "w", stdout);
     } else {
         cout.rdbuf( backup );         // assign streambuf to cout
     }

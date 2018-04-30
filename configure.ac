@@ -153,9 +153,6 @@ AC_ARG_ENABLE(gstreamer,
   fi
 ])
 
-if test "x$GST_VERSION_MAJOR" = "x1" ; then
-	host_cflags="$host_cflags -DGSTVERSION"
-fi
 
 if test "x$host_name" = "xosx" ; then
     PKG_CHECK_MODULES([LUA51], [lua-5.1] ,has_lua51=yes)
@@ -195,6 +192,10 @@ if test "x$host_name" = "xosx" ; then
 
 AC_SUBST(GST_CFLAGS,"-I/Library/Frameworks/GStreamer.framework/Versions/1.0/Headers")
 AC_SUBST(GST_LIBS,"-framework GStreamer")
+
+if test "x$GST_VERSION_MAJOR" = "x1" ; then
+	host_cflags="$host_cflags -DGSTVERSION"
+fi
 
 else
 
