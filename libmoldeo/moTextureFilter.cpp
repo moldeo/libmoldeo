@@ -918,7 +918,7 @@ void moTextureFilter::SetupShader(MOint w, MOint h, moTempo *p_tempo, MOfloat p_
 
     m_DefParams = p_params;
     m_DefParams.setParamValues();
-    MODebug2->Message( moText("setParamValues > m_par_flt1: ") + IntToStr(m_DefParams.m_par_flt1) );
+    //MODebug2->Message( moText("setParamValues > m_par_flt1: ") + IntToStr(m_DefParams.m_par_flt1) );
 
 }
 
