@@ -556,19 +556,26 @@ moGsGraph::cb_pad_added_new ( moGstElement *decodebin, moGstPad *pad, moGPointer
           if (is_audio) {
             pGsGraph->m_pAudioPad = Gpad;
 
-            //MODebug2->Push(moText("moGsGraph::cb_newpad: audio pad created"));
+            MODebug2->Message(moText("moGsGraph::cb_newpad: audio pad created > building filters"));
+
+            pGsGraph->BuildAudioFilters();
 
             if (pGsGraph->m_pAudioConverter) {
 #ifndef GSTVERSION
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
 #else
+                MODebug2->Message(moText("moGsGraph::cb_newpad: get static pad sink audio converter"));
 audiopadinconverter = gst_element_get_static_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
 #endif
+                MODebug2->Message(moText("moGsGraph::cb_newpad: audio pad link"));
                 padlink = gst_pad_link (Gpad, audiopadinconverter);
 
+                MODebug2->Message(moText("moGsGraph::cb_newpad: srcAudio"));
                 GstPad* srcAudio = gst_element_get_static_pad ( (GstElement*)pGsGraph->m_pAudioConverter, "src");
 
+                MODebug2->Message(moText("moGsGraph::cb_newpad: pad link ok?"));
                 if (padlink==GST_PAD_LINK_OK) {
+                MODebug2->Message(moText("moGsGraph::cb_newpad: pad link is ok GST_PAD_LINK_OK"));
 #ifndef GSTVERSION
                     pGsGraph->cb_have_data_handler_id = gst_pad_add_buffer_probe_full ( srcAudio, G_CALLBACK (cb_have_data), pGsGraph, (GDestroyNotify) (cb_buffer_disconnected) );
 #else
@@ -718,11 +725,11 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
           if (g_strrstr (strname, "audio")) {
             pGsGraph->m_pAudioPad = Gpad;
 
-            //MODebug2->Push(moText("moGsGraph::cb_pad_added: audio pad created"));
+            MODebug2->Message("moGsGraph::cb_pad_added: audio pad created > creating audio filters!");
 
-            //pGsGraph->BuildAudioFilters();
+            pGsGraph->BuildAudioFilters();
 
-            if (pGsGraph->m_pAudioConverter && 1==1) {
+            if (/*pGsGraph->m_pAudioConverter &&*/ 1==1) {
 
                 gboolean link_audioresult = gst_element_link_many( (GstElement*)pGsGraph->m_pAudioConverter,
                                       (GstElement*)pGsGraph->m_pAudioVolume,
@@ -2966,6 +2973,9 @@ void moGsGraph::BuildAudioFilters() {
            if (m_pAudioSink) {
                 res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pAudioSink );
            }
+
+           bool link_audio_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
+           MODebug2->Message("BuildAudioFilters: link_audio_result: "+IntToStr(int(link_audio_result)) );
     }
     //BuildLock.Unlock();
 
@@ -3040,7 +3050,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            //RetreivePads( m_pFileSource );
 
           ///SOUND...
-            BuildAudioFilters();
+            //BuildAudioFilters();
 
            ///FIN SOUND
 
@@ -3096,14 +3106,17 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 #endif
                         ///agrega sonido en sincro
 
-                        if (m_pAudioConverter)
-                          bool link_audio_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
-
+                        //if (m_pAudioConverter)
+                        //  bool link_audio_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
 
                         if (link_result) {
 
                             CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PAUSED), true /*SYNCRUNASLI*/ );
                             MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > GST_STATE_PAUSED > OK"));
+                            //CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_NULL), true /*SYNCRUNASLI*/ );
+                            //MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > GST_STATE_NULL > OK"));
+                            Pause();
+                            Seek(0);
 #ifdef GSTVERSION
                             GstSample *sample;
                             MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > gst_app_sink_pull_preroll for appsink"));

@@ -984,7 +984,11 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
                                            bpp,
                                            0xFF0000,
                                            0x00FF00,
-                                           0x0000FF  );
+                                           0x0000FF
+#ifdef MO_WIN32
+    , MO_TRUE
+#endif // MO_WIN
+                                             );
 
     //TODO: add alpha channel for RGBA: FreeImage_SetTransparent(fbitmap, image.flags & ImageData::ALPHA_BIT);
 
@@ -1658,7 +1662,7 @@ moTextureAnimated::Interpolate() {
 			filterparam.par_flt1 = m_InterpolationPosition;
       //TODO: fix this
             MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition)+moText(" Param par_flt1:")+FloatToStr(filterparam.par_flt1)+moText(" Param UNIFORM ID:")+IntToStr(filterparam.m_par_flt1) );
-            
+
 			m_pInterpolator->Apply( m_InterpolationPosition, 1.0, filterparam );
 
 			//MODebug2->Message( moText("IP:")+FloatToStr(m_InterpolationPosition) );
@@ -1703,7 +1707,7 @@ moTextureAnimated::GetGLId(moTempo *p_tempo) {
 	if (NeedsInterpolation()) {
 		Interpolate();
 	} else {
-    MODebug2->Message(" fprev:"+IntToStr(m_FramePrevious)+" fnext:" + IntToStr(m_FrameNext));
+    //MODebug2->Message(" fprev:"+IntToStr(m_FramePrevious)+" fnext:" + IntToStr(m_FrameNext));
 		if(m_FramePrevious!=m_FrameNext) this->GetFrame( m_FrameNext );
 		m_FramePrevious = m_FrameNext;
 	}
@@ -1725,7 +1729,7 @@ moTextureAnimated::GetGLId( MOuint p_i ) {
 	m_FrameNext = p_i;
 
 	if (NeedsInterpolation()) {
-    
+
     MODebug2->Message( moText("moTextureAnimated::GetGLId( MOuint p_i ) > Interpolating image! ")+GetName()+
                       " From m_FramePrevious: " + IntToStr( m_FramePrevious )+
                       " To m_FrameNext: " + IntToStr( m_FrameNext )+

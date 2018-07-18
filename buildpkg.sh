@@ -71,7 +71,7 @@ sed -i -e 's/libmoldeoBROKEN/libmoldeo/g' debian/control
 sed -i -e 's/,autotools-dev/, autotools-dev, libmuparser-dev, liblua5.1-0-dev, libtinyxml-dev, libsdl1.2-dev, libglew-dev, freeglut3-dev, libgle3-dev, ftgl-dev, libfreeimage-dev, libalut-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libboost-dev, libboost-filesystem-dev, libboost-thread-dev,  libboost-system-dev, autoconf-archive, check/g' debian/control
 
 #development
-sed -i -e '0,/, ${misc:Depends}/{s/, ${misc:Depends}/,${misc:Depends}, liblua5.1-0-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libglew-dev, libalut-dev/g}' debian/control
+sed -i -e '0,/, ${misc:Depends}/{s/, ${misc:Depends}/,${misc:Depends}, libtool, doxygen, automake, autoconf, liblua5.1-0-dev, libgstreamer1.0-dev, libsdl1.2-dev, libftgl-dev, check, libgstreamer-plugins-base1.0-dev, libglew-dev, libalut-dev/g}' debian/control
 sed -i -e '0,/<insert up to 60 chars description>/{s/<insert up to 60 chars description>/Moldeo Core Library, Dev Package/}'  debian/control
 
 #binary
