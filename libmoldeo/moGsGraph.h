@@ -292,10 +292,13 @@ public:
     virtual bool IsEOS();
     virtual void SetEOS(bool iseos);
 
+    moBucket           m_Buckets[100];
+
 private:
 
 
     moBucketsPool       *m_pBucketsPool;
+
 
 	moGsFramework*		m_pGsFramework;
 

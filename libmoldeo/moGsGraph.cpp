@@ -205,58 +205,91 @@ void appsink_new_buffer (GstElement *sink, CustomData *data) {
 moGstFlowReturn
 moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
 
+  GstSample* sample;
+  GstMapInfo mapinfo;
+  GstAppSink* psink = (GstAppSink*) appsink;
+  if (!psink) return GST_FLOW_ERROR;
+
   moGsGraph* pGsGraph = (moGsGraph*) user_data;
   int w = pGsGraph->GetVideoFormat().m_Width;
   int h = pGsGraph->GetVideoFormat().m_Height;
 
   if (!pGsGraph) return GST_FLOW_ERROR;
   //pGsGraph->MODebug2->Message("new sample");
+    moBucket *pbucket=NULL;
+
+//pGsGraph->MODebug2->Message(moText("new-sample") );
+
+  if (1==1) {
+      GstSample* sample = gst_app_sink_try_pull_sample ( psink, 1000000  );
+      //GstSample* sample = gst_app_sink_pull_sample ( psink  );
+      //g_signal_emit_by_name (psink, "pull-sample", &sample);
+      //GstSample* sample = gst_base_sink_get_last_sample(GST_BASE_SINK(psink));
+      if (!sample) {
+            pGsGraph->MODebug2->Message(moText("no sample") );
+            return GST_FLOW_ERROR;
+      } else {
+          //pGsGraph->MODebug2->Message(moText("sample!") );
+      }
+
+      GstCaps* bcaps = gst_sample_get_caps( sample );
+      if (!bcaps) return GST_FLOW_OK;
+
+      GstBuffer* Gbuffer = gst_sample_get_buffer (sample);
+      int bsize = gst_buffer_get_size( Gbuffer );
+      if (!( bsize>0 && (int)bsize<=(h*w*4) )) return GST_FLOW_ERROR;
+      //pGsGraph->MODebug2->Message(moText("Bucket receiving size: ") + IntToStr(bsize) );
+
+    if (1==1) {
+
+      //gst buffer to moldeo bucketpool
+
+      if (!pGsGraph->m_pBucketsPool) return GST_FLOW_ERROR;
+      if(pGsGraph->m_pBucketsPool->IsFull()) {
+          //pGsGraph->MODebug2->Warning("appsink_new_sample > bckt full");
+          gst_sample_unref(sample);
+          return GST_FLOW_OK;
+      }
+
+      pbucket = new moBucket();
+      if (pbucket==NULL) return GST_FLOW_ERROR;
+    }
+
+      if (Gbuffer) {
+        gst_buffer_map ( Gbuffer, &mapinfo, GST_MAP_READ);
+        //GstBuffer* Gbuffer2 = gst_buffer_ref (Gbuffer);
+        //if (Gbuffer2) {
+          //gst_buffer_map ( Gbuffer2, &mapinfo, GST_MAP_READ);
+
+          //MOubyte color = mapinfo.data[0];
+          //pGsGraph->MODebug2->Message(moText("color: ") + IntToStr(color) );
+          if (bsize) {
+            //pGsGraph->MODebug2->Message(moText("copying: ") + IntToStr(bsize) );
+            //pGsGraph->m_Buckets[0].Copy( bsize, (MOubyte*)mapinfo.data );
+            pbucket->SetBuffer( bsize,(MOubyte*)mapinfo.data );
+            //pbucket->BuildBucket(bsize,128);
+          } else {
+            pGsGraph->MODebug2->Error(moText("m_Buckets  size: ") + IntToStr(pGsGraph->m_Buckets[0].GetSize()) + moText(" do not match with buffer size: ") + IntToStr(bsize) );
+          }
+          //gst_buffer_unmap ( Gbuffer2, &mapinfo );
+          //gst_buffer_unref(Gbuffer2);
+
+        //}
+        gst_buffer_unmap ( Gbuffer, &mapinfo );
+      }
+
+    if (1==1) {
 
 
-  GstAppSink* psink = (GstAppSink*) appsink;
-  if (!psink) return GST_FLOW_ERROR;
-
-  GstSample* sample = gst_app_sink_pull_sample( psink );
-  if (!sample) return GST_FLOW_OK;
-
-  GstCaps* bcaps = gst_sample_get_caps( sample );
-  if (!bcaps) return GST_FLOW_OK;
-
-  GstBuffer* Gbuffer = gst_sample_get_buffer (sample);
-  int bsize = gst_buffer_get_size( Gbuffer );
-  if (!( bsize>0 && (int)bsize<=(h*w*4) )) return GST_FLOW_ERROR;
-  //pGsGraph->MODebug2->Message(moText("Bucket receiving size: ") + IntToStr(bsize) );
+      bool added_bucket = pGsGraph->m_pBucketsPool->AddBucket( pbucket );
+      if(!added_bucket)
+        pGsGraph->MODebug2->Error(moText("appsink_new_sample > Bucket error"));
+      //else pGsGraph->MODebug2->Message("bckt added!!"+IntToStr(pGsGraph->m_pBucketsPool->m_nBuckets) );
+    }
 
 
-  //gst buffer to moldeo bucketpool
-  moBucket *pbucket=NULL;
-
-  if (!pGsGraph->m_pBucketsPool) return GST_FLOW_ERROR;
-  if(pGsGraph->m_pBucketsPool->IsFull()) {
-      //pGsGraph->MODebug2->Warning("appsink_new_sample > bckt full");
       gst_sample_unref(sample);
-      return GST_FLOW_OK;
   }
-
-  pbucket = new moBucket();
-  if (pbucket==NULL) return GST_FLOW_ERROR;
-
-  GstMapInfo mapinfo;
-  gst_buffer_map ( Gbuffer, &mapinfo, GST_MAP_READ);
-
-  MOubyte color = mapinfo.data[0];
-  //pGsGraph->MODebug2->Message(moText("color: ") + IntToStr(color) );
-
-  pbucket->SetBuffer( bsize,(MOubyte*)mapinfo.data );
-
-  bool added_bucket = pGsGraph->m_pBucketsPool->AddBucket( pbucket );
-  if(!added_bucket)
-    pGsGraph->MODebug2->Error(moText("appsink_new_sample > Bucket error"));
-  //else pGsGraph->MODebug2->Message("bckt added!!"+IntToStr(pGsGraph->m_pBucketsPool->m_nBuckets) );
-
-  gst_buffer_unmap ( Gbuffer, &mapinfo );
-  gst_sample_unref(sample);
-
   return GST_FLOW_OK;
 }
 
@@ -558,7 +591,8 @@ moGsGraph::cb_pad_added_new ( moGstElement *decodebin, moGstPad *pad, moGPointer
 
             MODebug2->Message(moText("moGsGraph::cb_newpad: audio pad created > building filters"));
 
-            pGsGraph->BuildAudioFilters();
+            ///TODO: no anda en win
+            ///pGsGraph->BuildAudioFilters();
 
             if (pGsGraph->m_pAudioConverter) {
 #ifndef GSTVERSION
@@ -727,9 +761,10 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
 
             MODebug2->Message("moGsGraph::cb_pad_added: audio pad created > creating audio filters!");
 
-            pGsGraph->BuildAudioFilters();
-
-            if (/*pGsGraph->m_pAudioConverter &&*/ 1==1) {
+            ///TODO: no andan en win
+            ///pGsGraph->BuildAudioFilters();
+            ///if (/*pGsGraph->m_pAudioConverter &&*/ 1==1) {
+            if (pGsGraph->m_pAudioConverter) {
 
                 gboolean link_audioresult = gst_element_link_many( (GstElement*)pGsGraph->m_pAudioConverter,
                                       (GstElement*)pGsGraph->m_pAudioVolume,
@@ -2606,6 +2641,7 @@ MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > GST_STATE_PLAYING >
                                   SetVideoFormat( bcaps, Gbuffer );
                                   gst_app_sink_set_emit_signals((GstAppSink*)m_pFakeSink, true);
                                   gst_app_sink_set_drop((GstAppSink*)m_pFakeSink, true);
+                                  gst_app_sink_set_wait_on_eos ((GstAppSink*)m_pFakeSink, false);
                                   //g_object_set (G_OBJECT (m_pFakeSink), "sync", false, NULL);
                                   gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 1);
                                   g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
@@ -3115,8 +3151,9 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                             MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > GST_STATE_PAUSED > OK"));
                             //CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_NULL), true /*SYNCRUNASLI*/ );
                             //MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > GST_STATE_NULL > OK"));
-                            Pause();
-                            Seek(0);
+                            ///TODO: not working in win
+                            ///Pause();
+                            ///Seek(0);
 #ifdef GSTVERSION
                             GstSample *sample;
                             MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > gst_app_sink_pull_preroll for appsink"));
@@ -3138,10 +3175,13 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                     SetVideoFormat( bcaps, Gbuffer );
                                     gst_app_sink_set_emit_signals((GstAppSink*)m_pFakeSink, true);
                                     gst_app_sink_set_drop((GstAppSink*)m_pFakeSink, true);
+                                    gst_app_sink_set_wait_on_eos ((GstAppSink*)m_pFakeSink, false);
                                     //g_object_set (G_OBJECT (m_pFakeSink), "sync", false, NULL);
                                     gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 100 );
-                                    g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
+                                    //g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
+                                    //g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
                                     //gst_app_sink_set_callbacks( (GstAppSink*)m_pFakeSink,  )
+                                    //g_signal_connect (G_OBJECT (bus), "message::error", (GCallback)error_cb, &data);
 
                                 }
                             } else {
@@ -3455,6 +3495,10 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
         m_VideoFormat.SetVideoMode();
         m_VideoFormat.m_WaitForFormat = false;
 
+        m_Buckets[0].BuildBucket( m_VideoFormat.m_BufferSize, 0 );
+        m_Buckets[1].BuildBucket( m_VideoFormat.m_BufferSize, 0 );
+        m_Buckets[2].BuildBucket( m_VideoFormat.m_BufferSize, 0 );
+
     }
 
     MODebug2->Message(
@@ -3558,18 +3602,23 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
   time_out = GST_SECOND;
 
   while(waitforsync) {
+      MODebug2->Message("while wait for sync");
       state_wait = gst_element_get_state(GST_ELEMENT (m_pGstPipeline),&current_state, &pending_state, time_out);
+      MODebug2->Message("state_wait result:");
       switch(state_wait) {
           case GST_STATE_CHANGE_SUCCESS:
             waitforsync = false;
+            MODebug2->Message("change success");
             return true;
             break;
           case GST_STATE_CHANGE_FAILURE:
             waitforsync = false;
+            MODebug2->Message("change failure!");
             return false;
             break;
           default:
             waitforsync = false;
+            MODebug2->Message("default");
             break;
             /*
           case GST_STATE_CHANGE_ASYNC:
@@ -3697,7 +3746,18 @@ moGsGraph::Pause() {
 /*set state to NULL*/
   ///TODO: for live-stream pause works ok... not for others
   if (m_VideoFormat.m_TimePerFrame==0 || GetState()==MO_STREAMSTATE_PLAYING ) {
-    CheckState( gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PAUSED));
+    MODebug2->Message( "moGsGraph::Pause() pausing" );
+    int b = 2;
+    while(b!=0) {
+        b = gst_element_is_locked_state (GST_ELEMENT (m_pGstPipeline));
+        MODebug2->Message( moText("moGsGraph::Pause() check locked ") + IntToStr(b) );
+    }
+    MODebug2->Message( moText("moGsGraph::Pause() set state"));
+    GstStateChangeReturn st = gst_element_set_state (GST_ELEMENT (m_pGstPipeline), GST_STATE_PAUSED);
+    MODebug2->Message( moText("moGsGraph::Pause() check state ") + IntToStr((int)st) );
+    CheckState( st, true );
+    MODebug2->Message( "moGsGraph::Pause() passed" );
+
   }
 }
 
@@ -3952,7 +4012,54 @@ MObyte *
 moGsGraph::GetFrameBuffer( MOlong *size )  {
   /// TODO: ??  GetFrameBuffer
   size = NULL;
-	return NULL;
+  GstAppSink* psink;
+  GstSample* sample;
+  psink = (GstAppSink*) m_pFakeSink;
+  if (psink && !this->m_VideoFormat.m_WaitForFormat) {
+      //GstSample* sample = gst_app_sink_try_pull_sample ( psink, 1000000000  );
+      //GstSample* sample = gst_app_sink_pull_sample ( psink);
+      sample = gst_app_sink_pull_sample ( psink);
+      GstMapInfo mapinfo;
+      int w = m_VideoFormat.m_Width;
+      int h = m_VideoFormat.m_Height;
+      moBucket *pbucket=NULL;
+      GstCaps* bcaps = gst_sample_get_caps( sample );
+      if (!bcaps) return NULL;
+
+      GstBuffer* Gbuffer = gst_sample_get_buffer (sample);
+      int bsize = gst_buffer_get_size( Gbuffer );
+      if (!( bsize>0 && (int)bsize<=(h*w*4) )) return NULL;
+
+      if (!m_pBucketsPool) return NULL;
+      if(m_pBucketsPool->IsFull()) {
+          gst_sample_unref(sample);
+          return NULL;
+      }
+
+      pbucket = new moBucket();
+      if (pbucket==NULL) return NULL;
+
+      if (Gbuffer) {
+        gst_buffer_map ( Gbuffer, &mapinfo, GST_MAP_READ);
+          if (bsize) {
+            //pGsGraph->MODebug2->Message(moText("copying: ") + IntToStr(bsize) );
+            //pGsGraph->m_Buckets[0].Copy( bsize, (MOubyte*)mapinfo.data );
+            pbucket->SetBuffer( bsize,(MOubyte*)mapinfo.data );
+            //pbucket->BuildBucket(bsize,128);
+          } else {
+            //MODebug2->Error(moText("m_Buckets  size: ") + IntToStr(pGsGraph->m_Buckets[0].GetSize()) + moText(" do not match with buffer size: ") + IntToStr(bsize) );
+          }
+        gst_buffer_unmap ( Gbuffer, &mapinfo );
+
+          bool added_bucket = m_pBucketsPool->AddBucket( pbucket );
+          if(!added_bucket)
+            MODebug2->Error(moText("appsink_new_sample > Bucket error"));
+          gst_sample_unref(sample);
+
+      }
+    }
+
+    return NULL;
 }
 
 

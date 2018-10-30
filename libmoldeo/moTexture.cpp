@@ -2271,7 +2271,10 @@ void moMovie::GetFrame( MOuint p_i )
         //m_pGraph->Pause();
         //MODebug2->Message( "moMovie::GetFrame > Going to p_i:"+IntToStr(p_i)+" Actual real timebase position:" + IntToStr(m_pGraph->GetPosition()) );
       } else {
-        //MODebug2->Message( "moMovie::GetFrame MO_PLAYMODE_TIMEBASE > " + m_pGraph->StateToText(state) );
+          if (state==MO_STREAMSTATE_PLAYING) {
+            //MODebug2->Message( "moMovie::GetFrame MO_PLAYMODE_TIMEBASE > " + m_pGraph->StateToText(state) );
+            m_pGraph->GetFrameBuffer(NULL);
+          }
       }
 	} else {
       m_pGraph->Seek( p_i );
@@ -2303,17 +2306,17 @@ void moMovie::GetFrame( MOuint p_i )
 
           pbucket->EmptyBucket();
         } else {
-          MODebug2->Message("Empty bucket");
+          /*MODebug2->Message("Empty bucket");*/
         }
         bool destroy = m_BucketsPool.DestroyRetreivedBucket();
         //if (destroy) MODebug2->Message("Dstroyed bucket!");
       }
 	} else {
 
-      MODebug2->Warning(  moText("moMovie::GetFrame()")
+      /*MODebug2->Warning(  moText("moMovie::GetFrame()")
                       + moText(" m_BucketsPool is EMPTY !!!")
                       + moText(" state:")
-                      + m_pGraph->StateToText(state) );
+                      + m_pGraph->StateToText(state) );*/
 
     }
 
