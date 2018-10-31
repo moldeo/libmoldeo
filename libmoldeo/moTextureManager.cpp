@@ -61,10 +61,10 @@ void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
 //
 //===========================================
 
-moTextureBuffer::moTextureBuffer() {
+moTextureBuffer::moTextureBuffer( int slots  ) {
 
 	//m_type = MO_TYPE_TEXTUREBUFFER;
-	m_ImagesProcessed = 0;
+	m_ImagesProcessed = slots;
 	m_ActualImage = 0;
 	m_pResourceManager = NULL;
 	m_pDirectory = NULL;
@@ -114,6 +114,10 @@ moTextureBuffer::Init( moText p_foldername, moTextureBufferFormat p_bufferformat
     } else if (p_bufferformat==MO_TEXTURE_BUFFER_FORMAT_PATTERNS) {
 
         str_format = "PATTERNS";
+
+    } else if (p_bufferformat==MO_TEXTURE_BUFFER_FORMAT_LAYERS) {
+
+        str_format = "LAYERS";
 
     }
 
@@ -485,37 +489,61 @@ MOuint moTextureBuffer::GetTextureArray( int width, int height, int levels, bool
   MODebug2->Message("Creating Texture Array, levels: "+IntToStr(levels));
   glTexStorage3D(GL_TEXTURE_2D_ARRAY, levels, GL_RGBA8, width, height, m_ImagesProcessed);
   //int i = 0;
-  for(int i=0; i<m_ImagesProcessed; i++) {
-    //
-    moTextureMemory* pTextureMemory = m_Frames[i];
-    if (pTextureMemory) {
-      FIBITMAP *pImage = (FIBITMAP*) pTextureMemory->LoadFromMemory();
-      if (pImage) {
-        FIBITMAP *pImageS;
-        pImageS = FreeImage_Rescale(pImage, width, height, FILTER_BICUBIC );
-        MOubyte* bits = FreeImage_GetBits(pImageS);
-        /*MOubyte bits[width*height*4];
-        for(int h=0; h<height;h++) {
-          for(int w=0; w<width;w++) {
-            bits[w*4 + h*width*4] = w/2;
-            bits[w*4+1+h*width*4] = h/2;
-            bits[w*4+2+h*width*4] = (w+h)/4;
-            bits[w*4+3+h*width*4] = 55+(i+1)*20;
+  if (m_ImagesProcessed && m_Frames.Count()) {
+    for(int i=0; i<m_ImagesProcessed; i++) {
+      //
+      moTextureMemory* pTextureMemory = m_Frames[i];
+      if (pTextureMemory) {
+        FIBITMAP *pImage = (FIBITMAP*) pTextureMemory->LoadFromMemory();
+        if (pImage) {
+          FIBITMAP *pImageS;
+          pImageS = FreeImage_Rescale(pImage, width, height, FILTER_BICUBIC );
+          MOubyte* bits = FreeImage_GetBits(pImageS);
+          /*MOubyte bits[width*height*4];
+          for(int h=0; h<height;h++) {
+            for(int w=0; w<width;w++) {
+              bits[w*4 + h*width*4] = w/2;
+              bits[w*4+1+h*width*4] = h/2;
+              bits[w*4+2+h*width*4] = (w+h)/4;
+              bits[w*4+3+h*width*4] = 55+(i+1)*20;
+            }
+          }*/
+          if (bits) {
+              glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
+                  0,                      //Mipmap number
+                  0, 0, i, //xoffset, yoffset, zoffset
+                  width, height, 1,          //width, height, depth
+                  GL_RGBA,                 //format
+                  GL_UNSIGNED_BYTE,       //type
+                  bits );
+              MODebug2->Message("Adding texture 2d array image:" + IntToStr(i) );
           }
-        }*/
-        if (bits) {
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
-                0,                      //Mipmap number
-                0, 0, i, //xoffset, yoffset, zoffset
-                width, height, 1,          //width, height, depth
-                GL_RGBA,                 //format
-                GL_UNSIGNED_BYTE,       //type
-                bits );
-            MODebug2->Message("Adding texture 2d array image:" + IntToStr(i) );
+        } else {
+          MODebug2->Error("Error adding texture 2d array image (loadfrommemory failed):" + IntToStr(i) );
         }
-      } else {
-        MODebug2->Error("Error adding texture 2d array image (loadfrommemory failed):" + IntToStr(i) );
       }
+    }
+  } else if (m_ImagesProcessed) {
+
+    MOubyte* bits = new MOubyte[width*height*4];
+    for(int h=0;h<height;h++) {
+      for(int w=0;w<width;w++) {
+        bits[w*4+h*width*4] = 255;
+        bits[w*4+h*width*4+1] = 0;
+        bits[w*4+h*width*4+2] = 0;
+        bits[w*4+h*width*4+3] = 255;
+      }
+    }
+    for(int i=0; i<m_ImagesProcessed; i++) {
+
+      glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
+                  0,                      //Mipmap number
+                  0, 0, i, //xoffset, yoffset, zoffset
+                  width, height, 1,          //width, height, depth
+                  GL_RGBA,                 //format
+                  GL_UNSIGNED_BYTE,       //type
+                  bits );
+              MODebug2->Message("Adding texture 2d array image:" + IntToStr(i) );
     }
   }
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER,  GL_LINEAR_MIPMAP_LINEAR );

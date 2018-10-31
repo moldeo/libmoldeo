@@ -1187,7 +1187,7 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 				pinlet->Update();///notifica al inlet que ya esta actualizado...
 
         //MODebug2->Message("Updating inlet: object: " + GetLabelName() + " inlet: " + pinlet->GetConnectorLabelName()
-        //                  + " outlet_data: " + pinlet->GetData()->ToText() );
+        //                  + " inlet_data_copied: " + pinlet->GetData()->ToText() );
 
 			}
 
@@ -1231,23 +1231,26 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
         ///parámetros, por ejemplo el alpha.. o el translatex
 
         //MODebug2->Message( poutlet->GetConnectorLabelName() + moText(" outlet updated. MOB : ") + this->GetLabelName() );
-
-        moData pdata = (*(poutlet->GetData()));
-        moConnections* pconnections = poutlet->GetConnections();
-        for(MOuint j=0; j<pconnections->Count(); j++) {
-          moConnection* pconnection = pconnections->Get(j);
-          pmessage = new moMessage( pconnection->GetDestinationMoldeoId(),
-                                    pconnection->GetDestinationConnectorId(),
-                                    GetId(),
-                                    pdata );
-          p_EventList->Add( (moEvent*) pmessage );
-          //if (pmessage) delete pmessage;
-          //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())
-          //+" label:" + pconnection->GetDestinationMoldeoLabelName()
-          //+" connector:" + pconnection->GetDestinationConnectorLabelName()  );
+        if (poutlet->GetData()) {
+          moData pdata = (*(poutlet->GetData()));
+          //MODebug2->Message("copying pdata for sending message! :" + poutlet->GetData()->ToText());
+          //MODebug2->Message("copying pdata for sending message! :" + pdata.ToText());
+          moConnections* pconnections = poutlet->GetConnections();
+          for(MOuint j=0; j<pconnections->Count(); j++) {
+            moConnection* pconnection = pconnections->Get(j);
+            pmessage = new moMessage( pconnection->GetDestinationMoldeoId(),
+                                      pconnection->GetDestinationConnectorId(),
+                                      GetId(),
+                                      pdata );
+            p_EventList->Add( (moEvent*) pmessage );
+            //if (pmessage) delete pmessage;
+            //MODebug2->Message(moText("added outlet message for:") + IntToStr(pconnection->GetDestinationMoldeoId())
+            //+" label:" + pconnection->GetDestinationMoldeoLabelName()
+            //+" connector:" + pconnection->GetDestinationConnectorLabelName()  );
+          }
+          ///reset to update false, so it doesnt continue sending!
+          poutlet->Update(false);
         }
-        ///reset to update false, so it doesnt continue sending!
-        poutlet->Update(false);
       }
     }
 	}
@@ -1695,16 +1698,17 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
                             return 1;
                     case    MO_DATA_MESSAGE:
                             pDataMessage = (moDataMessage*)pData->Pointer();
-                            //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE");
-                            if (pDataMessage) {
+                            MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE");
+                            /*if (pDataMessage) {
                                 //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > count: " + IntToStr(pDataMessage->Count()) );
                                 for(i=0;i<pDataMessage->Count();i++) {
                                   MData = pDataMessage->Get(i);
-                                  //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > data: " + MData.ToText() );
+                                  MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > data: " + MData.ToText() );
                                   lua_pushstring( state, (char*) MData.ToText() );
                                 }
                                 return i;
-                            }
+                            }*/
+                            lua_pushstring( state, (char*) "NO MESSAGE" );
                             return 1;
                     case    MO_DATA_MESSAGES:
                             pDataMessages = (moDataMessages*)pData->Pointer();
@@ -1719,19 +1723,29 @@ int moMoldeoObject::luaGetInletData(moLuaVirtualMachine& vm) {
 
                                 int m = 0;
                                 int mi = 0;
+                                lua_createtable(state, pDataMessages->Count(), 0);
                                 for(i=0;i<pDataMessages->Count();i++) {
-                                  MDataMessage = pDataMessages->Get(i);
-                                  for(m=0;m<MDataMessage.Count();m++) {
-                                    MData = MDataMessage.Get(m);
+                                  //MDataMessage = pDataMessages->Get(i);
+                                  lua_pushnumber( state, (lua_Number)(i+1));
+                                  //lua_pushstring( state,(char*) pDataMessages->Get(i).Get(i).ToText() );
+                                  lua_createtable(state, pDataMessages->Get(i).Count(), 0);
+                                  for( m=0; m<pDataMessages->Get(i).Count(); m++ ) {
+                                    lua_pushnumber( state, (lua_Number) (m+1) );
                                     //MODebug2->Message("moMoldeoObject::luaGetInletData() > MO_DATA_MESSAGE > data: " + MData.ToText() );
-                                    lua_pushstring( state, (char*) MData.ToText() );
-                                    //if (MDataMessage.Count()==(m-1)) {
-                                    //    lua_pushstring( state, (char*) "X" );
-                                    //}
-                                    mi++;
+                                    switch(pDataMessages->Get(i).Get(m).Type()) {
+                                      case MO_DATA_NUMBER_FLOAT:
+                                        lua_pushnumber( state,(lua_Number) pDataMessages->Get(i).Get(m).Float());
+                                        break;
+                                      default:
+                                        lua_pushstring( state,(char*) pDataMessages->Get(i).Get(m).ToText() );
+                                        break;
+                                    }
+                                    lua_settable(state,-3);
                                   }
+                                  lua_settable(state, -3);
                                 }
-                                return mi;
+                                //lua_pushstring( state, (char*) pData->ToText() );
+                                return 1;
                             } else {
                                 lua_pushstring( state, (char*) "NO MESSAGES" );
                                 return 1;

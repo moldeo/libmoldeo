@@ -750,9 +750,9 @@ moData::ToText() const {
           dMs = (moDataMessages*)m_Number.m_Pointer;
           if (dMs) {
             for(int c=0;c<(int)dMs->Count();c++) {
-              moDataMessage Mes =  dMs->Get(c);
-              for(int cc=0;cc<(int)Mes.Count();cc++) {
-                finalMsg+= ";" + Mes.Get(c).ToText();
+              //moDataMessage Mes = dMs->Get(c);
+              for(int cc=0;cc<(int)dMs->Get(c).Count();cc++) {
+                finalMsg+= ";" + dMs->Get(c).Get(cc).ToText();
               }
               finalMsg+= "\n";
 
@@ -1136,7 +1136,7 @@ moData::GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo ) {
 
 GLint
 moData::GetGLId( moMoldeoObject* p_mob, MOfloat p_fade, const moTextFilterParam &p_filterparam ) {
- 
+
     GetGLId( p_mob, NULL, p_fade, p_filterparam );
 }
 

@@ -221,8 +221,8 @@ moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
 //pGsGraph->MODebug2->Message(moText("new-sample") );
 
   if (1==1) {
-      GstSample* sample = gst_app_sink_try_pull_sample ( psink, 1000000  );
-      //GstSample* sample = gst_app_sink_pull_sample ( psink  );
+      //GstSample* sample = gst_app_sink_try_pull_sample ( psink, 1000000  );
+      GstSample* sample = gst_app_sink_pull_sample ( psink  );
       //g_signal_emit_by_name (psink, "pull-sample", &sample);
       //GstSample* sample = gst_base_sink_get_last_sample(GST_BASE_SINK(psink));
       if (!sample) {
@@ -3178,7 +3178,9 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                     gst_app_sink_set_wait_on_eos ((GstAppSink*)m_pFakeSink, false);
                                     //g_object_set (G_OBJECT (m_pFakeSink), "sync", false, NULL);
                                     gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 100 );
-                                    //g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
+                                  #ifndef MO_WIN32
+                                    g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
+                                  #endif
                                     //g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
                                     //gst_app_sink_set_callbacks( (GstAppSink*)m_pFakeSink,  )
                                     //g_signal_connect (G_OBJECT (bus), "message::error", (GCallback)error_cb, &data);
@@ -4011,6 +4013,7 @@ void  moGsGraph::SetSaturation( float saturation ) {
 MObyte *
 moGsGraph::GetFrameBuffer( MOlong *size )  {
   /// TODO: ??  GetFrameBuffer
+  #ifdef MO_WIN32
   size = NULL;
   GstAppSink* psink;
   GstSample* sample;
@@ -4058,7 +4061,7 @@ moGsGraph::GetFrameBuffer( MOlong *size )  {
 
       }
     }
-
+#endif
     return NULL;
 }
 
@@ -4180,4 +4183,3 @@ main (gint   argc,
 
 */
 #endif
-

@@ -43,6 +43,7 @@
 			<Add option="`pkg-config muparser --cflags`" />
 			<Add option="`pkg-config lua5.1 --cflags`" />
 			<Add option="`pkg-config tinyxml --cflags`" />
+			<Add option="`pkg-config glew --cflags`" />
 			<Add option="-fPIC" />
 			<Add option="-DMO_GSTREAMER" />
 			<Add option="-DMO_VDPAU_NO" />
@@ -50,9 +51,10 @@
 			<Add option="-DGST_DISABLE_REGISTRY" />
 			<Add option='-DDATADIR=\\&quot;/usr/share/moldeo\\&quot;' />
 			<Add option='-DMODULESDIR=\\&quot;/usr/lib/moldeo\\&quot;' />
-			<Add directory="../../" />
-			<Add directory="../../libmoldeo" />
+			<Add directory="./" />
+			<Add directory="../libmoldeo" />
 			<Add directory="/usr/include" />
+			<Add directory="../../libmoldeo" />
 		</Compiler>
 		<Linker>
 			<Add option="`freetype-config --libs`" />

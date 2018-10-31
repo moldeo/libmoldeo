@@ -47,14 +47,15 @@ moDeclareExportedDynamicArray(moTextureFramePtr,moTextureFrames);
     y asignando una textura
 */
 enum moTextureBufferFormat {
-    MO_TEXTURE_BUFFER_FORMAT_LEVELS = 0,
-    MO_TEXTURE_BUFFER_FORMAT_PATTERNS = 1
+    MO_TEXTURE_BUFFER_FORMAT_LEVELS = 0,/// EACH IMAGE OF THE BUFFER IS ANALIZED (HISTOGRAM LEVELS)
+    MO_TEXTURE_BUFFER_FORMAT_PATTERNS = 1,/// EACH IMAGE OF THE BUFFER IS ANALIZED IN A REDUCED PATTERN
+    MO_TEXTURE_BUFFER_FORMAT_LAYERS = 2 /// EACH IMAGE OF THE BUFFER IS A RENDER LAYER
 };
 
 class LIBMOLDEO_API moTextureBuffer : public moAbstract {
 
 	public:
-		moTextureBuffer();
+		moTextureBuffer( int slots=0  );
 		virtual ~moTextureBuffer();
 
 		virtual MOboolean  Init();

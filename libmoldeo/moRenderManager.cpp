@@ -215,6 +215,7 @@ MOboolean moRenderManager::Init( moRenderManagerMode p_render_to_texture_mode,
   MODebug2->Message( moText("moRenderManager::Init >       GLEW_EXT_framebuffer_object: ") + IntToStr(GLEW_EXT_framebuffer_object) );
   MODebug2->Message( moText("moRenderManager::Init >       GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB: ") + IntToStr(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB) );
   MODebug2->Message( moText("moRenderManager::Init >       GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB: ") + IntToStr(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB) );
+  MODebug2->Message( moText("moRenderManager::Init >       GL_MAX_COLOR_ATTACHMENTS: ") + IntToStr(GL_MAX_COLOR_ATTACHMENTS) );
 
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex_size);
   MODebug2->Message( moText("moRenderManager::Init >       Max Texture Size: ") + IntToStr(max_tex_size) );
