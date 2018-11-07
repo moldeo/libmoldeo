@@ -61,6 +61,8 @@ moLock BuildLock;
   #endif
 #endif
 
+#define USING_SYNC_FRAMEBUFFER
+
 static gboolean bus_call ( GstBus *bus, GstMessage *msg, void* user_data)
 {
     //cout << "bus_call: new message" << endl;
@@ -3178,7 +3180,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                     gst_app_sink_set_wait_on_eos ((GstAppSink*)m_pFakeSink, false);
                                     //g_object_set (G_OBJECT (m_pFakeSink), "sync", false, NULL);
                                     gst_app_sink_set_max_buffers((GstAppSink*)m_pFakeSink, 100 );
-                                  #ifndef MO_WIN32
+                                  #ifndef USING_SYNC_FRAMEBUFFER
                                     g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
                                   #endif
                                     //g_signal_connect( (GstElement*)m_pFakeSink, "new-sample", G_CALLBACK (appsink_new_sample), (gpointer)this );
@@ -4013,7 +4015,7 @@ void  moGsGraph::SetSaturation( float saturation ) {
 MObyte *
 moGsGraph::GetFrameBuffer( MOlong *size )  {
   /// TODO: ??  GetFrameBuffer
-  #ifdef MO_WIN32
+  #ifdef USING_SYNC_FRAMEBUFFER
   size = NULL;
   GstAppSink* psink;
   GstSample* sample;
