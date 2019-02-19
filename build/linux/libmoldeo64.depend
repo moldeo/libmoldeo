@@ -15,7 +15,7 @@
 	"moMathVector3.h"
 	"moMathMatrix.h"
 
-1496657358 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTypes.h
+1541558144 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTypes.h
 	<math.h>
 	<limits.h>
 	<iostream>
@@ -304,7 +304,7 @@
 1480445091 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTimer.h
 	"moTypes.h"
 
-1507399949 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMoldeoObject.h
+1525122010 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moMoldeoObject.h
 	"moTypes.h"
 	"moText.h"
 	"moAbstract.h"
@@ -407,7 +407,7 @@
 	"moValue.h"
 	"moLock.h"
 
-1495056707 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moValue.h
+1525191415 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moValue.h
 	"moTypes.h"
 	"moTempo.h"
 	"moText.h"
@@ -417,6 +417,7 @@
 	"moMathVector.h"
 	"moMathVector3.h"
 	"moMathVector4.h"
+	"moTextFilterParam.h"
 	<iostream>
 	<map>
 	<string>
@@ -445,7 +446,7 @@
 	"moAbstract.h"
 	"moMath.h"
 
-1495056707 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConfig.h
+1525191415 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConfig.h
 	"moTypes.h"
 	"moText.h"
 	"moParam.h"
@@ -497,10 +498,10 @@
 	"moFBO.h"
 	"moResourceManager.h"
 
-1505938911 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moShaderGLSL.h
+1525122010 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moShaderGLSL.h
 	"moShader.h"
 
-1505938248 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moShader.h
+1525122010 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moShader.h
 	"moTypes.h"
 	"moAbstract.h"
 	"moConfig.h"
@@ -537,12 +538,12 @@
 	<map>
 	<string>
 
-1506035685 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureManager.h
+1538190621 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureManager.h
 	"moTexture.h"
 	"moResourceManager.h"
 	<moFileManager.h>
 
-1506035711 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTexture.h
+1525122010 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTexture.h
 	"moTypes.h"
 	"moText.h"
 	"moParam.h"
@@ -567,7 +568,7 @@
 	"moArray.h"
 	"moAbstract.h"
 
-1480445091 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGsGraph.h
+1540946401 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGsGraph.h
 	"moConfig.h"
 	"moTypes.h"
 	"moThread.h"
@@ -585,14 +586,14 @@
 	"dvdmedia.h"
 	"moVideoGraph.h"
 
-1510724429 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureIndex.h
+1525122010 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureIndex.h
 	"moTypes.h"
 	"moAbstract.h"
 	"moConfig.h"
 	"moParam.h"
 	"moMoldeoObject.h"
 
-1495056707 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureFilter.h
+1525191415 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextureFilter.h
 	"moTypes.h"
 	"moAbstract.h"
 	"moConfig.h"
@@ -608,10 +609,8 @@
 	"moGLManager.h"
 	"moRenderManager.h"
 
-1495056707 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextFilterParam.h
-	"moShader.h"
-	"moShaderCG.h"
-	"moShaderGLSL.h"
+1525191415 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moTextFilterParam.h
+	"moTypes.h"
 
 1480445091 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moShaderCG.h
 	"moShader.h"
@@ -701,7 +700,7 @@
 	"moParam.h"
 	"io.h"
 
-1480445319 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moAbstract.cpp
+1525191415 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moAbstract.cpp
 	"moAbstract.h"
 
 1480445319 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moActions.cpp
@@ -720,10 +719,10 @@
 1480445091 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/mo3ds.cpp
 	"mo3ds.h"
 
-1480445091 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moBuckets.cpp
+1525122010 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moBuckets.cpp
 	"moBuckets.h"
 
-1497361596 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConfig.cpp
+1525191415 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConfig.cpp
 	"moTypes.h"
 	<tinyxml.h>
 	"moConfig.h"
@@ -769,7 +768,7 @@
 1480445091 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConsoleState.cpp
 	"moConsoleState.h"
 
-1505593881 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGUIManager.h
+1525122010 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moGUIManager.h
 	<moMathVector.h>
 	<moMathVector3.h>
 	<moMathVector4.h>
@@ -810,7 +809,7 @@
 	"glx_mangle.h"
 	<GL/glxext.h>
 
-1442577391 /usr/include/X11/Xlib.h
+1535637358 /usr/include/X11/Xlib.h
 	<sys/types.h>
 	<stdint.h>
 	<X11/X.h>
@@ -823,7 +822,7 @@
 
 1507748003 /usr/include/X11/Xosdefs.h
 
-1442577391 /usr/include/X11/Xutil.h
+1535637358 /usr/include/X11/Xutil.h
 	<X11/Xlib.h>
 	<X11/keysym.h>
 
@@ -848,7 +847,7 @@
 1480445091 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moDsGraph.cpp
 	"moDsGraph.h"
 
-1496657358 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEffect.cpp
+1525122010 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEffect.cpp
 	"moEffect.h"
 	<moArray.h>
 	<moDataManager.h>
@@ -987,7 +986,7 @@
 	"moPlugin.h"
 	"moMasterEffect.h"
 
-1502833428 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConsole.h
+1525122010 /home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConsole.h
 	<moTypes.h>
 	<moText.h>
 	<moResourceManager.h>
@@ -1004,7 +1003,7 @@
 	<tinyxml.h>
 	"moDebugManager.h"
 
-1480445091 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEventList.cpp
+1540667733 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moEventList.cpp
 	"moActions.h"
 	"moMoldeoObject.h"
 	"moEventList.h"
@@ -1017,7 +1016,7 @@
 	"moFBO.h"
 	"moArray.h"
 
-1480445091 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moFileManager.cpp
+1525191415 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moFileManager.cpp
 	"moTypes.h"
 	"moDebugManager.h"
 	<boost/version.hpp>
@@ -10182,7 +10181,7 @@
 	"FreeImage.h"
 	<gst/gst.h>
 
-1497315977 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moDataManager.cpp
+1525122010 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moDataManager.cpp
 	"moDataManager.h"
 	<moArray.h>
 	<moVideoGraph.h>
@@ -10398,7 +10397,7 @@
 	<tinyxml.h>
 	"moDebugManager.h"
 
-1509299943 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConsole.cpp
+1525122010 source:/home/fabricio/moldeo/moldeoinstaller/libmoldeo/libmoldeo/moConsole.cpp
 	<moConsole.h>
 	"moSceneEffect.h"
 	<SDL.h>

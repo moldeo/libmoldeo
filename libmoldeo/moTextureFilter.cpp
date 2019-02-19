@@ -608,7 +608,7 @@ MOboolean moTextureFilter::Init(moGLManager* p_glman, moRenderManager* p_renderm
           uname = uniform_var_name;
           if (m_uniform_variables_idx[u]==-1 && pglsl) {
             m_uniform_variables_idx[u] = pglsl->GetUniformID(uname);
-            //MODebug2->Message("moTextureFilter::Init > setting uniform id for ("+uname+","+uniform_var_type+") in:"+IntToStr(m_uniform_variables_idx[u]));
+            MODebug2->Message("moTextureFilter::Init > setting uniform id for ("+uname+","+uniform_var_type+") in:"+IntToStr(m_uniform_variables_idx[u]));
           }
         }
     }

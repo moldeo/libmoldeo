@@ -1175,8 +1175,9 @@ moCamera* moVideoManager::GetCamera( int cam_idx ) {
 moCamera*
 moVideoManager::CreateCamera( const moCaptureDevice& p_CapDev ) {
 
-  MODebug2->Message("moVideoManager::CreateCamera > " + p_CapDev.GetLabelName()+" for device:"+p_CapDev.GetName()+
-			" (Width)x(Height):" + IntToStr(p_CapDev.GetSourceWidth())+"x" + IntToStr(p_CapDev.GetSourceHeight()) );
+  MODebug2->Message("moVideoManager::CreateCamera > " + p_CapDev.GetLabelName()+" for device:"+p_CapDev.GetName()
+  +" path:"+p_CapDev.GetPath()+
+  +" (Width)x(Height):" + IntToStr(p_CapDev.GetSourceWidth())+"x" + IntToStr(p_CapDev.GetSourceHeight()) );
 
  moCaptureDevice cap=p_CapDev;
  //cap.m_SourceWidth = 640;
@@ -1190,6 +1191,7 @@ moVideoManager::CreateCamera( const moCaptureDevice& p_CapDev ) {
 
   if (!pLS->Init()) return NULL;
 
+  MODebug2->Message( moText("moVideoManager::CreateCamera > Capture Device "));
   MODebug2->Message( moText("moVideoManager::CreateCamera > Capture Device ")
                     + pLS->GetCaptureDevice().GetName()
                     + " initialized");
@@ -1274,6 +1276,8 @@ moVideoManager::GetCameraByName( const moText& camera, bool load, moCaptureDevic
             ||
             Cam->GetCaptureDevice().GetName()==camera
             ||
+            Cam->GetCaptureDevice().GetPath()==camera
+            ||
             ( camera=="default" && c>=0 && Cam->GetVideoGraph() )
            ) {
 MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, returnin:"+camera);
@@ -1289,9 +1293,12 @@ MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, retu
         ||
         m_CapDev.GetLabelName()==camera
         ||
+        m_CapDev.GetPath()==camera
+        ||
         (  camera=="default" && d>=0 && m_CapDev.IsPresent() )
          ) {
         ///Try to create it!!!
+        MODebug2->Message("moVideoManager::GetCameraByName founded: camera: " + camera );
         if (load) {
           moCaptureDevice newCD = m_CapDev;
 
@@ -1329,11 +1336,35 @@ MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, retu
               }
             }
           }
-
+          if ( newCD.GetName()=="default" && camera!="default") {
+            newCD.SetName(camera);
+          }
           Cam = CreateCamera( newCD );
           return Cam;
         }
       }
+  }
+  std::string rtsp = (char*)camera;
+
+  if (rtsp.find("rtsp")==0 || rtsp.find("RTSP")==0
+  || rtsp.find("http")==0 || rtsp.find("HTTP")==0
+  || rtsp.find("https")==0 || rtsp.find("HTTPS")==0) {
+
+    moCaptureDevice m_StreamDev;
+    m_StreamDev.SetName(camera);
+    m_StreamDev.SetLabelName( moText("LIVEIN")+IntToStr(m_CaptureDevices.Count()) );
+    m_StreamDev.m_Path = camera;
+
+    m_StreamDev.GetVideoFormat() = customCD.GetVideoFormat();
+    //m_StreamDev.GetVideoFormat().m_Height = 256;
+    //newCD.GetVideoFormat().m_ColorMode = (moColorMode) ;
+    //newCD.GetVideoFormat().m_BitCount = 24;
+    //newCD.GetVideoFormat().m_ColorMode = (moColorMode) 0;
+
+
+    m_CaptureDevices.Add(m_StreamDev);
+    Cam = CreateCamera( m_StreamDev );
+    return Cam;
   }
 
   return NULL;
