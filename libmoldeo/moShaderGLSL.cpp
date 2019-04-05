@@ -255,24 +255,29 @@ void moShaderGLSL::compileVertShader(const moText& vert_source)
     m_VertexShader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
 	const char *source = (const char *)vert_source;
 	const char **psource = &source;
+	cout << "Source:" << source << endl;
     glShaderSourceARB(m_VertexShader, 1, psource, NULL);
     glCompileShaderARB(m_VertexShader);
-
+		cout << "m_VertexShader:" << m_VertexShader << endl;
     int IsCompiled_FS;
     int maxLength;
-    char *vertexInfoLog;
+    GLchar *vertexInfoLog;
 
     glGetShaderiv(m_VertexShader, GL_COMPILE_STATUS, &IsCompiled_FS);
-
+	cout << "Compiled VS:" << IsCompiled_FS << endl;
 	glGetShaderiv(m_VertexShader, GL_INFO_LOG_LENGTH, &maxLength);
+	cout << " maxLength: " << maxLength << endl;
 
 	/* The maxLength includes the NULL character */
-	vertexInfoLog = new char[maxLength];
+	vertexInfoLog = new GLchar[maxLength];
+	//vertexInfoLog = {'\0'};
+	//GLchar infoLog[512] = {'\0'};
 
-	glGetShaderInfoLog(m_VertexShader, maxLength, &maxLength, vertexInfoLog);
-
-	if(IsCompiled_FS == MO_FALSE)
+	//glGetShaderInfoLog(m_VertexShader, maxLength, &maxLength, vertexInfoLog);
+	if(IsCompiled_FS == MO_FALSE && maxLength)
 	{
+		glGetShaderInfoLog(m_VertexShader, 512, &maxLength, vertexInfoLog);
+		cout << " maxLength: " << maxLength << " infoLog: " << vertexInfoLog << endl;
     if (MODebug2 != NULL)
         MODebug2->Error(moText("Vertex Shader compile error:")
                       + "("+GetName()+")"
@@ -442,4 +447,3 @@ void moShaderGLSL::printInfoLog(GLhandleARB obj)
         free(infoLog);
     }
 }
-
