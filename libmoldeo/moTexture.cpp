@@ -231,7 +231,7 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 		MOuint blue_mask = FreeImage_GetBlueMask(m_pImage);
 		MOuint green_mask = FreeImage_GetGreenMask(m_pImage);
         MOuint pitch = FreeImage_GetPitch(m_pImage);
-        MODebug2->Message( GetName()+ " bpp: "+IntToStr(bpp)
+        MODebug2->Log( GetName()+ " bpp: "+IntToStr(bpp)
                             +" colortype:"+IntToStr(colortype)
                             +" image_type:"+IntToStr(image_type)
                             +" pitch:"+IntToStr(pitch)
@@ -322,6 +322,12 @@ MOboolean moTexture::BuildFromFile(moText p_filename)
 #endif
                 }
 				break;
+      case 64:
+        m_param.internal_format = GL_RGBA16F;
+        break;
+			case 128:
+        m_param.internal_format = GL_RGBA32F;
+        break;
 			default:
 				break;
 		}
@@ -352,7 +358,18 @@ MOboolean moTexture::SupportedFile(moText p_filename)
 		!stricmp(extension,"gif") ||
 		!stricmp(extension,"bmp") ||
 		!stricmp(extension,"xpm") ||
-		!stricmp(extension,"ppm"));
+		!stricmp(extension,"ppm") ||
+		!stricmp(extension,"exr") ||
+		!stricmp(extension,"web") ||
+		!stricmp(extension,"hdr") ||
+		!stricmp(extension,"mng") ||
+		!stricmp(extension,"jp2") ||
+		!stricmp(extension,"tif") ||
+		!stricmp(extension,"j2k") ||
+		!stricmp(extension,"j2c") ||
+		!stricmp(extension,"ico") ||
+		!stricmp(extension,"pcx") ||
+		!stricmp(extension,"psd"));
 }
 
 MOboolean moTexture::Load( moParam* p_param )
@@ -826,9 +843,21 @@ MOboolean moTexture::Refresh() {
   return BuildFromFile( namefull );
 }
 
+
+static void FreeImageErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) {
+  moText error_message = message;
+  if(fif != FIF_UNKNOWN) {
+   //FreeImage_GetFormatFromFIF(fif));
+  }
+  //moDebugManager::Error(error_message);
+  cout << message << endl;
+}
+
 moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText newfilename ) {
 
     moText thumbnailfilename;
+
+    FreeImage_SetOutputMessage(FreeImageErrorHandler);
 
     if ( newfilename==moText("") ) {
 
@@ -853,7 +882,8 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
         thumbnailfilename = newfilename;
     }
 
-    FREE_IMAGE_FORMAT fif;
+    FREE_IMAGE_FORMAT fif = FIF_PNG;
+    FREE_IMAGE_TYPE fit = FIT_BITMAP;
     FIBITMAP* fbitmap = NULL;
     int options = 0;
 
@@ -938,6 +968,76 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
         fif = FIF_TARGA;
         options = 0;
         thumbnailfilename+= moText(".tga");
+
+    } else if ( p_bufferformat == moText("EXR") ) {
+
+        fif = FIF_EXR;
+        options = EXR_NONE | EXR_FLOAT;
+        thumbnailfilename+= moText(".exr");
+        fit = FIT_RGBAF;
+        gcomponenttype = GL_FLOAT;
+        bpp = 128;//32*4
+        bytesperpixel = 128/8;//32/4 bits/bytes por componente (4 bytes por float, 16 bytes  por pixel)
+        pitch = bytesperpixel*GetWidth();
+
+    } else if ( p_bufferformat == moText("HDR") ) {
+
+        fif = FIF_HDR;
+        options = 0;
+        thumbnailfilename+= moText(".hdr");
+    } else if ( p_bufferformat == moText("WEBP") ) {
+
+        fif = FIF_WEBP;
+        options = 0;
+        thumbnailfilename+= moText(".webp");
+
+    } else if ( p_bufferformat == moText("GIF") ) {
+
+        fif = FIF_GIF;
+        options = 0;
+        thumbnailfilename+= moText(".gif");
+
+    } else if ( p_bufferformat == moText("TIFF") ) {
+
+        fif = FIF_TIFF;
+        options = 0;
+        thumbnailfilename+= moText(".tif");
+
+    } else if ( p_bufferformat == moText("XPM") ) {
+
+        fif = FIF_XPM;
+        options = 0;
+        thumbnailfilename+= moText(".xpm");
+
+    } else if ( p_bufferformat == moText("PFM") ) {
+
+        fif = FIF_PFM;
+        options = 0;
+        thumbnailfilename+= moText(".pfm");
+
+    } else if ( p_bufferformat == moText("PBM") ) {
+
+        fif = FIF_PBM;
+        options = 0;
+        thumbnailfilename+= moText(".pbm");
+
+    } else if ( p_bufferformat == moText("JXR") ) {
+
+        fif = FIF_JXR;
+        options = 0;
+        thumbnailfilename+= moText(".jxr");
+
+    } else if ( p_bufferformat == moText("J2K") ) {
+
+        fif = FIF_J2K;
+        options = 0;
+        thumbnailfilename+= moText(".j2k");
+
+    } else if ( p_bufferformat == moText("BMP") ) {
+
+        fif = FIF_BMP;
+        options = 0;
+        thumbnailfilename+= moText(".bmp");
     }
 
     pitch = bytesperpixel * GetWidth();
@@ -945,23 +1045,31 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
 
     if (gcomponenttype==GL_UNSIGNED_BYTE)
       ResetBufferData( true, bytesperpixel );
-/*
-    if (m_pBufferData==NULL) {
-      if (gcomponenttype==GL_UNSIGNED_BYTE) {
-        m_pBufferData = new BYTE [ pitch * GetHeight() ];
-      } else {
-        //CONVERT
-      }
-    }
-*/
-    if (m_pBufferData==NULL) {
-        MODebug2->Error("moTexture::CreateThumbnail > no memory for buffer data allocation or invalid component type.");
-        return moText("");
-    }
 
-    if (!GetBuffer( m_pBufferData, gbufferformat, gcomponenttype ) ) {
-        MODebug2->Error("moTexture::CreateThumbnail > GetBuffer from texture " + GetName()+" failed.");
-        return moText("");
+    if (gcomponenttype==GL_FLOAT) {
+      //CONVERT
+      void* float_buffer;
+      //if (m_pBufferData==NULL) {
+        m_pBufferData = new BYTE[ 4*4*GetWidth()*GetHeight()  ];
+        //m_pBufferData = (BYTE*) float_buffer;
+      //}
+      //if (m_pBufferData) {
+        //float_buffer = (GLfloat*) m_pBufferData;
+        glBindTexture(m_param.target, this->m_glid);
+        //FIRGBAF
+        glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, (void *) m_pBufferData );
+      //}
+    } else {
+
+      if (m_pBufferData==NULL) {
+          MODebug2->Error("moTexture::CreateThumbnail > no memory for buffer data allocation or invalid component type.");
+          return moText("");
+      }
+
+      if (!GetBuffer( m_pBufferData, gbufferformat, gcomponenttype ) ) {
+          MODebug2->Error("moTexture::CreateThumbnail > GetBuffer from texture " + GetName()+" failed.");
+          return moText("");
+      }
     }
 /**
     //return moText();
@@ -977,14 +1085,19 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
       }
     }
 */
-    fbitmap = FreeImage_ConvertFromRawBits( (BYTE*)m_pBufferData,
+    //fbitmap = FreeImage_ConvertFromRawBits( (BYTE*)m_pBufferData,
+    fbitmap = FreeImage_ConvertFromRawBitsEx( TRUE, (BYTE*)m_pBufferData,
+                                           fit,
                                            GetWidth(),
                                            GetHeight(),
                                            pitch,
                                            bpp,
-                                           0xFF0000,
-                                           0x00FF00,
-                                           0x0000FF
+                                           //0xFF0000,
+                                           FI_RGBA_RED_MASK,
+                                           //0x00FF00,
+                                           FI_RGBA_GREEN_MASK,
+                                           //0x0000FF,
+                                           FI_RGBA_BLUE_MASK
 #ifdef MO_WIN32
     , MO_TRUE
 #endif // MO_WIN
@@ -1127,41 +1240,77 @@ MOboolean moTextureMemory::LoadFromBitmap( moBitmap* p_bitmap ) {
     }
 
     if (!hmem) {
-		hmem = FreeImage_OpenMemory();
-	}
-	if (hmem) {
+      hmem = FreeImage_OpenMemory();
+    }
+    if (hmem) {
 
-		if ( m_BufferFormat == moText("JPG")) {
-			fif = FIF_JPEG;
-			options = JPEG_QUALITYNORMAL;
-		} else if ( m_BufferFormat == moText("JPGSUPERB") ) {
-			fif = FIF_JPEG;
-			options = JPEG_QUALITYSUPERB;
-		} else if ( m_BufferFormat == moText("JPGBAD") ) {
-			fif = FIF_JPEG;
-			options = JPEG_QUALITYBAD;
-		} else if ( m_BufferFormat == moText("JPGAVERAGE") ) {
-			fif = FIF_JPEG;
-			options = JPEG_QUALITYAVERAGE;
-		} else if ( m_BufferFormat == moText("JPGGOOD") ) {
-			fif = FIF_JPEG;
-			options = JPEG_QUALITYGOOD;
-		} else if ( m_BufferFormat == moText("TGA") ) {
-			fif = FIF_TARGA;
-			options = 0;
-		} else if ( m_BufferFormat == moText("PNG") ) {
-			fif = FIF_PNG;
-			options = 0;
-		} else if ( m_BufferFormat == moText("XPM") ) {
-			fif = FIF_XPM;
-			options = 0;
-		} else if ( m_BufferFormat == moText("RAW") ) {
-		    fif = FIF_PPMRAW;
-		    options = 0;
-        }
-		//syntax: FreeImage_SaveToMemory(FREE_IMAGE_FORMAT fif, FIBITMAP *dib, FIMEMORY *stream, int flags FI_DEFAULT(0));
-		if ( FreeImage_SaveToMemory( (FREE_IMAGE_FORMAT)fif, (FIBITMAP *)p_bitmap, (FIMEMORY*)hmem, options ) ) {
-		    m_SizeInMemory = FreeImage_TellMemory((FIMEMORY*)hmem);
+      if ( m_BufferFormat == moText("JPG")) {
+        fif = FIF_JPEG;
+        options = JPEG_QUALITYNORMAL;
+      } else if ( m_BufferFormat == moText("JPGSUPERB") ) {
+        fif = FIF_JPEG;
+        options = JPEG_QUALITYSUPERB;
+      } else if ( m_BufferFormat == moText("JPGBAD") ) {
+        fif = FIF_JPEG;
+        options = JPEG_QUALITYBAD;
+      } else if ( m_BufferFormat == moText("JPGAVERAGE") ) {
+        fif = FIF_JPEG;
+        options = JPEG_QUALITYAVERAGE;
+      } else if ( m_BufferFormat == moText("JPGGOOD") ) {
+        fif = FIF_JPEG;
+        options = JPEG_QUALITYGOOD;
+      } else if ( m_BufferFormat == moText("TGA") ) {
+        fif = FIF_TARGA;
+        options = 0;
+      } else if ( m_BufferFormat == moText("PNG") ) {
+        fif = FIF_PNG;
+        options = 0;
+      } else if ( m_BufferFormat == moText("XPM") ) {
+        fif = FIF_XPM;
+        options = 0;
+      } else if ( m_BufferFormat == moText("RAW") ) {
+          fif = FIF_PPMRAW;
+          options = 0;
+      } else if ( m_BufferFormat == moText("EXR") ) {
+          fif = FIF_EXR;
+          options = 0;
+      } else if ( m_BufferFormat == moText("HDR") ) {
+          fif = FIF_HDR;
+          options = 0;
+      } else if ( m_BufferFormat == moText("JXR") ) {
+          fif = FIF_JXR;
+          options = 0;
+      } else if ( m_BufferFormat == moText("GIF") ) {
+          fif = FIF_GIF;
+          options = 0;
+      } else if ( m_BufferFormat == moText("PSD") ) {
+          fif = FIF_PSD;
+          options = 0;
+      } else if ( m_BufferFormat == moText("PPM") ) {
+          fif = FIF_PPM;
+          options = 0;
+      } else if ( m_BufferFormat == moText("TIFF") ) {
+          fif = FIF_TIFF;
+          options = 0;
+      } else if ( m_BufferFormat == moText("JP2") ) {
+          fif = FIF_JP2;
+          options = 0;
+      } else if ( m_BufferFormat == moText("BMP") ) {
+          fif = FIF_BMP;
+          options = 0;
+      } else if ( m_BufferFormat == moText("WEBP") ) {
+          fif = FIF_WEBP;
+          options = 0;
+      } else if ( m_BufferFormat == moText("XPM") ) {
+          fif = FIF_XPM;
+          options = 0;
+      } else if ( m_BufferFormat == moText("XBM") ) {
+          fif = FIF_XBM;
+          options = 0;
+      }
+      //syntax: FreeImage_SaveToMemory(FREE_IMAGE_FORMAT fif, FIBITMAP *dib, FIMEMORY *stream, int flags FI_DEFAULT(0));
+      if ( FreeImage_SaveToMemory( (FREE_IMAGE_FORMAT)fif, (FIBITMAP *)p_bitmap, (FIMEMORY*)hmem, options ) ) {
+        m_SizeInMemory = FreeImage_TellMemory((FIMEMORY*)hmem);
             m_bBitmapInMemory = true;
 
             m_width = FreeImage_GetWidth((FIBITMAP *)p_bitmap);

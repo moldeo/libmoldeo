@@ -1298,12 +1298,18 @@ SCRIPT_FUNCTION_IMPLEMENTATION(moLuaP5, point)
 {
     int n = lua_pindexes(L);
 
-  MOfloat x1,y1;
+  MOfloat x1,y1,z1;
 
   if (n==2) {
     x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
     y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
     moP5::point(x1, y1);
+  } else if (n==3) {
+    x1 = (MOfloat) lua_tonumber (L, lua_pindex(1));
+    y1 = (MOfloat) lua_tonumber (L, lua_pindex(2));
+    z1 = (MOfloat) lua_tonumber (L, lua_pindex(3));
+
+    moP5::point(x1, y1, z1);
   }
 
     return 0;
