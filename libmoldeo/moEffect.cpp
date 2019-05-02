@@ -35,19 +35,48 @@
 #include <moDataManager.h>
 #include <moFileManager.h>
 
+#ifdef MO_WIN32
+  #include "SDL.h"
+#else
+  #include "SDL.h"
+  //#include "/usr/include/SDL2/SDL_syswm.h"
+#endif
 
 moDefineDynamicArray(moEffectsArray)
 
+typedef enum {
+
+  MO_SDL_MOUSEMOTION = SDL_MOUSEMOTION,
+  MO_SDL2_MOUSEMOTION = 1024,
+  MO_SDL_MOUSEBUTTONDOWN = SDL_MOUSEBUTTONDOWN,
+  MO_SDL2_MOUSEBUTTONDOWN = 1025,
+  MO_SDL_MOUSEBUTTONUP = SDL_MOUSEBUTTONUP,
+  MO_SDL2_MOUSEBUTTONUP = 1026
+} moEventCode;
 
 
 moEffect::moEffect() {
-	SetType( MO_OBJECT_EFFECT );
-	devicecode = NULL;
-	ncodes = 0;
+  SetType( MO_OBJECT_EFFECT );
+  devicecode = NULL;
+  ncodes = 0;
 
-	InletTime = InletT = InletTimems = NULL;
-	InletTimes = InletMilliseconds = NULL;
-	InletSeconds = InletMilliseconds = NULL;
+  InletTime = InletT = InletTimems = NULL;
+  InletTimes = InletMilliseconds = NULL;
+  InletSeconds = InletMilliseconds = NULL;
+  InletMouseX = NULL;
+  InletMouseY = NULL;
+  InletMouseFactor = NULL;
+  InletMouseButtonLeft = NULL;
+  InletMouseButtonRight = NULL;
+  InletMouseButtonMiddle = NULL;
+
+  InletMouseXButtonLeft = NULL;
+  InletMouseXButtonRight = NULL;
+  InletMouseXButtonMiddle = NULL;
+
+  InletMouseYButtonLeft = NULL;
+  InletMouseYButtonRight = NULL;
+  InletMouseYButtonMiddle = NULL;
 }
 
 moEffect::~moEffect() {
@@ -154,6 +183,102 @@ moEffect::PreInit() {
       //param.SetExternData( Inlet->GetData() );
       ((moConnector*)InletSeconds)->Init( moText("seconds"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
       m_Inlets.Add(InletSeconds);
+    }
+
+    InletMouseX = new moInlet();
+    if (InletMouseX) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseX)->Init( moText("mousex"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseX);
+    }
+
+    InletMouseY = new moInlet();
+    if (InletMouseY) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseY)->Init( moText("mousey"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseY);
+    }
+
+    InletMouseFactor = new moInlet();
+    if (InletMouseFactor) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseFactor)->Init( moText("mousefactor"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseFactor);
+    }
+
+    InletMouseButtonLeft = new moInlet();
+    if (InletMouseButtonLeft) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseButtonLeft)->Init( moText("mousebuttonleft"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseButtonLeft);
+    }
+
+    InletMouseButtonRight = new moInlet();
+    if (InletMouseButtonRight) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseButtonRight)->Init( moText("mousebuttonright"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseButtonRight);
+    }
+
+    InletMouseButtonMiddle = new moInlet();
+    if (InletMouseButtonMiddle) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseButtonMiddle)->Init( moText("mousebuttonmiddle"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseButtonMiddle);
+    }
+
+    InletMouseXButtonLeft = new moInlet();
+    if (InletMouseXButtonLeft) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseXButtonLeft)->Init( moText("mousexbuttonleft"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseXButtonLeft);
+    }
+
+    InletMouseXButtonRight = new moInlet();
+    if (InletMouseXButtonRight) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseXButtonRight)->Init( moText("mousexbuttonright"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseXButtonRight);
+    }
+
+    InletMouseXButtonMiddle = new moInlet();
+    if (InletMouseXButtonMiddle) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseXButtonMiddle)->Init( moText("mousexbuttonmiddle"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseXButtonMiddle);
+    }
+
+    InletMouseYButtonLeft = new moInlet();
+    if (InletMouseYButtonLeft) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseYButtonLeft)->Init( moText("mouseybuttonleft"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseYButtonLeft);
+    }
+
+    InletMouseYButtonRight = new moInlet();
+    if (InletMouseYButtonRight) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseYButtonRight)->Init( moText("mouseybuttonright"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseYButtonRight);
+    }
+
+    InletMouseYButtonMiddle = new moInlet();
+    if (InletMouseYButtonMiddle) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseYButtonMiddle)->Init( moText("mouseybuttonmiddle"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseYButtonMiddle);
     }
 
 
@@ -289,6 +414,18 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
       if (InletTempo->GetData()) InletTempo->GetData()->SetDouble( moMathd::FMod( m_EffectState.tempo.ang , moMathd::TWO_PI ) );
   }
 
+  if (InletMouseX) {
+     //if (InletMouseX->GetData()) MODebug2->Message("pre_mx:"+FloatToStr(InletMouseX->GetData()->Double()));
+     //if (InletMouseX->GetData()) InletMouseX->GetData()->SetDouble( mousex );
+     //if (InletMouseX->GetData()) MODebug2->Message("post_mx:"+FloatToStr(InletMouseX->GetData()->Double()));
+  }
+  /**
+  if (InletMouseY) {
+      if (InletMouseY->GetData()) InletMouseY->GetData()->SetDouble( (double)m_EffectState.mousey );
+  }
+  if (InletMouseFactor) {
+      if (InletMouseY->GetData()) InletMouseFactor->GetData()->SetDouble( (double)m_EffectState.mousefactor );
+  }*/
   ScriptExeRun();
 
 }
@@ -403,6 +540,95 @@ moEffect::LoadCodes(moIODeviceManager *consolaesarray) {
 
 
 void moEffect::Interaction(moIODeviceManager *consolaes) {
+
+  moEvent* event = consolaes->GetEvents()->First;
+  float w = m_pResourceManager->GetRenderMan()->ScreenWidth();
+  float h = m_pResourceManager->GetRenderMan()->ScreenHeight();
+
+  while(event!=NULL) {
+    if ( event->deviceid == MO_IODEVICE_MOUSE ) {
+      MODebug2->Message("devicecode :"+IntToStr(event->devicecode));
+      MODebug2->Message("SDL_MOUSEMOTION :"+IntToStr(SDL_MOUSEMOTION));
+      MODebug2->Message("SDL_MOUSEBUTTONDOWN :"+IntToStr(SDL_MOUSEBUTTONDOWN));
+      MODebug2->Message("SDL_MOUSEBUTTONUP :"+IntToStr(SDL_MOUSEBUTTONUP));
+
+      switch(event->devicecode) {
+          case MO_SDL2_MOUSEBUTTONDOWN:
+          case MO_SDL_MOUSEBUTTONDOWN:
+            switch(event->reservedvalue0) {
+              case SDL_BUTTON_LEFT:
+                mousebuttonleft = 1.0;
+                if (InletMouseButtonLeft) InletMouseButtonLeft->GetData()->SetDouble( (double)mousebuttonleft );
+                break;
+              case SDL_BUTTON_MIDDLE:
+                mousebuttonmiddle = 1.0;
+                if (InletMouseButtonMiddle) InletMouseButtonMiddle->GetData()->SetDouble( (double)mousebuttonmiddle );
+                break;
+              case SDL_BUTTON_RIGHT:
+                mousebuttonright = 1.0;
+                if (InletMouseButtonRight) InletMouseButtonRight->GetData()->SetDouble( (double)mousebuttonright );
+                break;
+            }
+            break;
+
+          case MO_SDL2_MOUSEBUTTONUP:
+          case MO_SDL_MOUSEBUTTONUP:
+            switch(event->reservedvalue0) {
+              case SDL_BUTTON_LEFT:
+                mousebuttonleft = 0.0;
+                if (InletMouseButtonLeft) InletMouseButtonLeft->GetData()->SetDouble( (double)mousebuttonleft );
+                break;
+              case SDL_BUTTON_MIDDLE:
+                mousebuttonmiddle = 0.0;
+                if (InletMouseButtonMiddle) InletMouseButtonMiddle->GetData()->SetDouble( (double)mousebuttonmiddle );
+                break;
+              case SDL_BUTTON_RIGHT:
+                mousebuttonright = 0.0;
+                if (InletMouseButtonMiddle) InletMouseButtonRight->GetData()->SetDouble( (double)mousebuttonright );
+                break;
+            }
+            break;
+          case MO_SDL2_MOUSEMOTION:
+          case MO_SDL_MOUSEMOTION:
+            //m_EffectState.mousexrel = float(event->reservedvalue0) / float(w);
+            //m_EffectState.mouseyrel = float(event->reservedvalue1) / float(h);
+            mousex = float(event->reservedvalue2) / float(w);
+            mousey = float(event->reservedvalue3) / float(h);
+            double mousexrel = float(event->reservedvalue0) / float(w);
+            double mouseyrel = float(event->reservedvalue1) / float(h);
+            mousefactor = float(event->reservedvalue2);
+
+            MODebug2->Message("mouse event r0 :"+IntToStr(event->reservedvalue2));
+            MODebug2->Message("mousex :"+FloatToStr(mousex));
+
+            if (InletMouseX)  { if (InletMouseX->GetData()) InletMouseX->GetData()->SetDouble( (double)mousex );}
+            if (InletMouseY)  { if (InletMouseY->GetData()) InletMouseY->GetData()->SetDouble( (double)mousey );}
+            if (mousebuttonleft==1.0) {
+              mousexbuttonleft+= mousexrel;
+              mouseybuttonleft+= mouseyrel;
+            }
+            if (InletMouseXButtonLeft) { if (InletMouseXButtonLeft->GetData()) InletMouseXButtonLeft->GetData()->SetDouble( (double)mousexbuttonleft );}
+            if (InletMouseYButtonLeft) { if (InletMouseYButtonLeft->GetData()) InletMouseYButtonLeft->GetData()->SetDouble( (double)mouseybuttonleft );}
+
+            if (mousebuttonright==1.0) {
+              mousexbuttonright+= mousexrel;
+              mouseybuttonright+= mouseyrel;
+            }
+            if (InletMouseXButtonRight) { if (InletMouseXButtonRight->GetData()) InletMouseXButtonRight->GetData()->SetDouble( (double)mousexbuttonright );}
+            if (InletMouseYButtonRight) { if (InletMouseYButtonRight->GetData()) InletMouseYButtonRight->GetData()->SetDouble( (double)mouseybuttonright );}
+
+            if (mousebuttonmiddle==1.0) {
+              mousexbuttonmiddle+= mousexrel;
+              mouseybuttonmiddle+= mouseyrel;
+            }
+            if (InletMouseXButtonMiddle) { if (InletMouseXButtonMiddle->GetData()) InletMouseXButtonMiddle->GetData()->SetDouble( (double)mousexbuttonmiddle );}
+            if (InletMouseYButtonMiddle) { if (InletMouseYButtonMiddle->GetData()) InletMouseYButtonMiddle->GetData()->SetDouble( (double)mouseybuttonmiddle );}
+
+            break;
+      }
+    }
+    event = event->next;
+  }
 
 	Update(consolaes->GetEvents());
 

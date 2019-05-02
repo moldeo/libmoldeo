@@ -233,6 +233,28 @@ public:
         moInlet*        InletSeconds;
         moInlet*        InletT;
         moInlet*        InletTempo;
+        moInlet*        InletMouseX;
+        moInlet*        InletMouseY;
+        moInlet*        InletMouseFactor;
+
+        moInlet*        InletMouseButtonLeft;
+        moInlet*        InletMouseButtonRight;
+        moInlet*        InletMouseButtonMiddle;
+
+        moInlet*        InletMouseXButtonLeft;
+        moInlet*        InletMouseXButtonRight;
+        moInlet*        InletMouseXButtonMiddle;
+
+        moInlet*        InletMouseYButtonLeft;
+        moInlet*        InletMouseYButtonRight;
+        moInlet*        InletMouseYButtonMiddle;
+
+        //moInlet*        InletSpecialShift,InletSpecialAlt,InletSpecialCtrl;
+        MOdouble        mousex,mousey;
+        MOdouble        mousefactor,mousebuttonleft,mousebuttonright,mousebuttonmiddle;
+        MOdouble        mousexbuttonleft,mouseybuttonleft;
+        MOdouble        mousexbuttonright,mouseybuttonright;
+        MOdouble        mousexbuttonmiddle,mouseybuttonmiddle;
 
         virtual void ScriptExeDraw();
         virtual void ScriptExeInteraction();

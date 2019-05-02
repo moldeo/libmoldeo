@@ -71,6 +71,10 @@ moEffectState::operator=(const moEffectState& src) {
 
 		tempo = src.tempo;
 
+		mousex = src.mousex;
+		mousey = src.mousey;
+		mousefactor = src.mousefactor;
+
 		return (*this);
 }
 
@@ -97,6 +101,10 @@ moEffectState::Init() {
 		fulldebug = MO_DEACTIVATED;
 
 		tempo.Init();
+
+		mousex = 0.0;
+		mousey = 0.0;
+		mousefactor = 0.0;
 
 		return true;
 }
@@ -197,6 +205,9 @@ moEffectState::ToJSON() {
   fullJSON+= fieldSeparation + "'stereoside': '"+IntToStr(stereoside)+"'";
 
   fullJSON+= fieldSeparation + "'fulldebug': '"+IntToStr(fulldebug)+"'";
+  fullJSON+= fieldSeparation + "'mousex': '"+FloatToStr(mousex)+"'";
+  fullJSON+= fieldSeparation + "'mousey': '"+FloatToStr(mousey)+"'";
+  fullJSON+= fieldSeparation + "'mousefactor': '"+FloatToStr(mousefactor)+"'";
 
   fullJSON+= "}";
   //cout << fullJSON << endl;

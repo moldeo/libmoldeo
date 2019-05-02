@@ -151,8 +151,13 @@ class LIBMOLDEO_API moEffectState : public moMobState
 		MOswitch stereo;
 		moStereoSides stereoside;
 
+   MOfloat mousex;
+   MOfloat mousey;
+   MOfloat mousefactor;
+
 		moText fullJSON;
 		moText fullXML;
+
     int Set( const moText& p_XmlText );
     void SetColorRGB( MOfloat r, MOfloat g, MOfloat b);
     void SetColorCSV( MOfloat c, MOfloat s, MOfloat t);
