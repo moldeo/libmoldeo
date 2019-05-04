@@ -547,10 +547,10 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
 
   while(event!=NULL) {
     if ( event->deviceid == MO_IODEVICE_MOUSE ) {
-      MODebug2->Message("devicecode :"+IntToStr(event->devicecode));
-      MODebug2->Message("SDL_MOUSEMOTION :"+IntToStr(SDL_MOUSEMOTION));
-      MODebug2->Message("SDL_MOUSEBUTTONDOWN :"+IntToStr(SDL_MOUSEBUTTONDOWN));
-      MODebug2->Message("SDL_MOUSEBUTTONUP :"+IntToStr(SDL_MOUSEBUTTONUP));
+      //MODebug2->Message("devicecode :"+IntToStr(event->devicecode));
+      //MODebug2->Message("SDL_MOUSEMOTION :"+IntToStr(SDL_MOUSEMOTION));
+      //MODebug2->Message("SDL_MOUSEBUTTONDOWN :"+IntToStr(SDL_MOUSEBUTTONDOWN));
+      //MODebug2->Message("SDL_MOUSEBUTTONUP :"+IntToStr(SDL_MOUSEBUTTONUP));
 
       switch(event->devicecode) {
           case MO_SDL2_MOUSEBUTTONDOWN:
@@ -598,8 +598,8 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
             double mouseyrel = float(event->reservedvalue1) / float(h);
             mousefactor = float(event->reservedvalue2);
 
-            MODebug2->Message("mouse event r0 :"+IntToStr(event->reservedvalue2));
-            MODebug2->Message("mousex :"+FloatToStr(mousex));
+            //MODebug2->Message("mouse event r0 :"+IntToStr(event->reservedvalue2));
+            //MODebug2->Message("mousex :"+FloatToStr(mousex));
 
             if (InletMouseX)  { if (InletMouseX->GetData()) InletMouseX->GetData()->SetDouble( (double)mousex );}
             if (InletMouseY)  { if (InletMouseY->GetData()) InletMouseY->GetData()->SetDouble( (double)mousey );}

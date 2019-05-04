@@ -1,4 +1,5 @@
 #!/bin/sh
+distro=$1
 
 DIE=0
 
@@ -80,6 +81,7 @@ sed -i -e 's/<insert up to 60 chars description>/Moldeo Core Library/'  debian/c
 sed -i -e 's/<insert long description, indented with spaces>/Moldeo is a multimedia interactive framework based on C++, OpenGL, Gstreamer, Lua, Freeimage, muparser/g'  debian/control
 
 sed -i -e 's/unstable/experimental/g' debian/changelog
+sed -i -e 's/\-1/\-1'${distro}'/g' debian/changelog
 sed -i -e 's/fabricio/Moldeo Interactive/g' debian/changelog
 sed -i -e 's/Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>/Initial release/g' debian/changelog
 #sed -i -e 's///g'  debian/control

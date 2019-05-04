@@ -59,8 +59,8 @@
 /*STANDARD LIBRARIES: define here or die*/
 #ifdef MO_WIN32
   #ifndef _MSC_VER
-    //atencion, esto se agregï¿½ para evitar el conflicto con freeimage en mingw
-    #define NOGDI //comentar esta lï¿½nea con MinGW64??
+    //atencion, esto se agregó para evitar el conflicto con freeimage en mingw
+    #define NOGDI //comentar esta línea con MinGW64??
     //#undef _WINDOWS_
     #define MO_GSTREAMER
     #define MO_HANDLE HWND
@@ -252,7 +252,7 @@ typedef unsigned int GLhandleARB;
 #endif
 	#endif
 
-
+	
 
 	#define MO_GSTREAMER 1
 
@@ -444,42 +444,42 @@ typedef unsigned int GLhandleARB;
 #define MO_ALPHA    3
 #endif
 
-/// Modos de combinaciï¿½n
+/// Modos de combinación
 /**
-*   Modos de combinaciï¿½n predeterminados
-*   Estos valores son referencias para los modos de combinaciï¿½n de colores que suelen usarse y estï¿½n ya implementados
-*   bajo OpenGL a travï¿½s de la funciï¿½n glBlend()
+*   Modos de combinación predeterminados
+*   Estos valores son referencias para los modos de combinación de colores que suelen usarse y están ya implementados
+*   bajo OpenGL a través de la función glBlend()
 */
 enum moBlendingModes {
    MO_BLENDING_TRANSPARENCY = 0, /// transparencia
-   MO_BLENDING_ADDITIVEALPHA = 1, /// aditivo segï¿½n transparencia
+   MO_BLENDING_ADDITIVEALPHA = 1, /// aditivo según transparencia
    MO_BLENDING_MIXING = 2, /// mezcla
-   MO_BLENDING_MULTIPLY = 3, /// multipliaciï¿½n
-   MO_BLENDING_EXCLUSION = 4, /// exclusiï¿½n
+   MO_BLENDING_MULTIPLY = 3, /// multipliación
+   MO_BLENDING_EXCLUSION = 4, /// exclusión
    MO_BLENDING_ADDITIVE = 5, /// aditivo por color
    MO_BLENDING_OVERLAY = 6, /// sobrecarga
-   MO_BLENDING_SUBSTRACTIVE = 7, /// sustracciï¿½n
-   MO_BLENDING_SATURATE = 8, /// saturaciï¿½n
+   MO_BLENDING_SUBSTRACTIVE = 7, /// sustracción
+   MO_BLENDING_SATURATE = 8, /// saturación
    MO_BLENDINGS = 9 /// cantidad de modos
 };
 
-/// Modos de dibujado de polï¿½gonos
+/// Modos de dibujado de polígonos
 /**
-*   Modos de dibujado de polï¿½gonos
+*   Modos de dibujado de polígonos
 *   Estos modos son aquellos predeterminados bajo OpenGL
 *
 */
 enum moPolygonModes {
    MO_POLYGONMODE_FILL = 0, /// relleno
-   MO_POLYGONMODE_LINE = 1, /// sï¿½lo lï¿½neas
-   MO_POLYGONMODE_POINT = 2, /// sï¿½lo puntos
+   MO_POLYGONMODE_LINE = 1, /// sólo líneas
+   MO_POLYGONMODE_POINT = 2, /// sólo puntos
    MO_POLYGONMODES = 3 /// cantidad de modos
 };
 
-/// Modo estereoscï¿½pico
+/// Modo estereoscópico
 /**
-*   Modo estereoscï¿½pico
-*   Para la estereoscopï¿½a se fijan estos modos
+*   Modo estereoscópico
+*   Para la estereoscopía se fijan estos modos
 */
 enum moStereoSides {
   MO_STEREO_NONE = 0,
@@ -519,25 +519,25 @@ LIBMOLDEO_API void moColor3f(float r, float g, float b);
 
 /// Tipos de objetos en Moldeo
 /**
- * Definiciï¿½n y enumeraciï¿½n de tipos de objetos en Moldeo
+ * Definición y enumeración de tipos de objetos en Moldeo
  *
  */
 enum moMoldeoObjectType {
 	MO_OBJECT_UNDEFINED = -1, /// Objeto indefinido
 	MO_OBJECT_EFFECT = 0, /// Objeto dibujable, efecto ( efectos en el orden de dibujado )
 	MO_OBJECT_PREEFFECT = 1,/// Objeto dibujable, pre-efecto ( primeros efectos en el orden de dibujado )
-	MO_OBJECT_POSTEFFECT = 2,/// Objeto dibujable, post-efecto ( ï¿½ltï¿½mos efectos en el orden de dibujado )
+	MO_OBJECT_POSTEFFECT = 2,/// Objeto dibujable, post-efecto ( últímos efectos en el orden de dibujado )
 	MO_OBJECT_MASTEREFFECT = 3,/// Objeto dibujable, efecto-maestro ( puede controlar otros efectos )
-	MO_OBJECT_IODEVICE = 4,/// Dispositivo de entrada/salida, tï¿½picamente, interfaces humanas de IO y datos ( teclado, mouse, tableta, tcp, udp, serial )
-	MO_OBJECT_RESOURCE = 5,/// Recursos de datos, objetos, imï¿½genes, videos y funcionalidades mï¿½ltiples
-	MO_OBJECT_CONSOLE = 6,/// Objeto principal de administraciï¿½n y dibujado de objetos de Moldeo
+	MO_OBJECT_IODEVICE = 4,/// Dispositivo de entrada/salida, típicamente, interfaces humanas de IO y datos ( teclado, mouse, tableta, tcp, udp, serial )
+	MO_OBJECT_RESOURCE = 5,/// Recursos de datos, objetos, imágenes, videos y funcionalidades múltiples
+	MO_OBJECT_CONSOLE = 6,/// Objeto principal de administración y dibujado de objetos de Moldeo
 	MO_OBJECT_TYPES = 7 /// referencia para la cantidad de tipos de objetos
 };
 
-/// Parï¿½metros internos de una textura
+/// Parámetros internos de una textura
 /**
  * moTexParam
- *  estructura que representa la parametrizaciï¿½n de una textura en OPENGL
+ *  estructura que representa la parametrización de una textura en OPENGL
   */
 
 struct LIBMOLDEO_API moTexParam {
@@ -551,10 +551,10 @@ struct LIBMOLDEO_API moTexParam {
 };
 
 
-/// Parï¿½metros internos predeterminados de una textura
+/// Parámetros internos predeterminados de una textura
 /**
 * MODefTex2DParams
-*  Parï¿½metros internos predeterminados de una textura
+*  Parámetros internos predeterminados de una textura
 *
 *
 */
@@ -563,17 +563,17 @@ const moTexParam MODefTex2DParams =
 {
     GL_TEXTURE_2D, /// textura 2d
     GL_RGBA, /// 32 bits, rojo, verde, azul, opacidad
-    GL_LINEAR, /// (GL_NEAREST_MIPMAP_LINEAR) interpolaciï¿½n de filtro lineal para el achicamiento
-    GL_LINEAR, /// (GL_NEAREST_MIPMAP_LINEAR) interpolaciï¿½n de filtro lineal para el agrandamiento
-    GL_REPEAT, /// modo de repeticiï¿½n en el orden horizontal
-    GL_REPEAT /// modo de repeticiï¿½n en el orden vertical
+    GL_LINEAR, /// (GL_NEAREST_MIPMAP_LINEAR) interpolación de filtro lineal para el achicamiento
+    GL_LINEAR, /// (GL_NEAREST_MIPMAP_LINEAR) interpolación de filtro lineal para el agrandamiento
+    GL_REPEAT, /// modo de repetición en el orden horizontal
+    GL_REPEAT /// modo de repetición en el orden vertical
 };
 
 
-/// Parï¿½metros internos predeterminados de una textura no identificados
+/// Parámetros internos predeterminados de una textura no identificados
 /**
 * MOUndefinedTex
-*  Parï¿½metros internos predeterminados de una textura no identificados
+*  Parámetros internos predeterminados de una textura no identificados
 *
 *
 */
@@ -588,16 +588,16 @@ const moTexParam MOUndefinedTex =
 };
 
 
-///Devuelve la versiï¿½n de libmoldeo
+///Devuelve la versión de libmoldeo
 /**
-*   Funciï¿½n global que devuelve en formato texto la versiï¿½n utilizada de libmoldeo, el ï¿½nï¿½cleo de Moldeo.
+*   Función global que devuelve en formato texto la versión utilizada de libmoldeo, el ´núcleo de Moldeo.
 */
 #include "moText.h"
 LIBMOLDEO_API moText moGetVersionStr();
 
-///macros para mï¿½ximos y mï¿½nimos
+///macros para máximos y mínimos
 /**
-*   macros para mï¿½ximos y mï¿½nimos
+*   macros para máximos y mínimos
 */
 #ifndef momax
 #define momax(a,b) (((a) > (b)) ? (a) : (b))
@@ -605,3 +605,4 @@ LIBMOLDEO_API moText moGetVersionStr();
 #endif
 
 #endif
+
