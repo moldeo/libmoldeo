@@ -2173,6 +2173,9 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
     devinfo = moText("Label/Texture ") + labelname;
     devinfo+= moText("; DeviceName ") + devicename;
     devinfo+= moText("; DevicePath ") + devicepath;
+    devinfo+= moText("; colormode ") + colormode;
+    devinfo+= moText("; width ") + IntToStr(p_sourcewidth);
+    devinfo+= moText("; height ") + IntToStr(p_sourceheight);
     if (devicename.Length()>0)
     {
 
@@ -2452,8 +2455,8 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
            }
 
            if (b_sourceselect) {
-               MODebug2->Message(moText("moGsGraph:: sourceselect:") + (moText)colormode
-                                 + moText(" ") + IntToStr(p_sourcewidth)
+               MODebug2->Message(moText("moGsGraph:: sourceselect: colormode: ") + (moText)colormode
+                                 + moText(" wXh: ") + IntToStr(p_sourcewidth)
                                  + moText("X") + IntToStr(p_sourceheight)
                                  + moText(" bpp:") + IntToStr(p_sourcebpp));
                m_pCapsFilterSource = gst_element_factory_make ("capsfilter", "filtsource");
@@ -2500,12 +2503,19 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                       moText fullf = colormode+ ","+ colormodef;
                       MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > (colormode, format): (") + fullf + moText(")") );
                       //opt_framerate = 30;
-                      g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
+                      /*g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
                                                                                                  "format", G_TYPE_STRING, (char*)colormodef,
                                                                                                  "width", G_TYPE_INT, p_sourcewidth,
                                                                                                  "height", G_TYPE_INT, p_sourceheight,
 												 "framerate", GST_TYPE_FRACTION, opt_framerate, 1,
                                                                                                  NULL), NULL);
+                                                                                                 */
+                      g_object_set (G_OBJECT (m_pCapsFilterSource), "caps", gst_caps_new_simple ( colormode,
+                                                                                                 //"format", G_TYPE_STRING, (char*)colormodef,
+                                                                                                 "width", G_TYPE_INT, p_sourcewidth,
+                                                                                                 "height", G_TYPE_INT, p_sourceheight,
+                                                                                                 NULL), NULL);
+
                   } else {
 
                     colormode="video/x-raw-yuv";
@@ -2669,7 +2679,7 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 
 
                     MODebug2->Message(moText("moGsGraph:: Try linkage!! sourceselect?: ") + IntToStr(b_sourceselect) ) ;
-                    b_sourceselect = false;
+                    b_sourceselect = true;
                     if (b_sourceselect) {
                         cout << "linking m_pFinalSource, m_pCapsFilterSource, m_pDecoderBin" << endl;
                         link_result = gst_element_link_many(    (GstElement*) m_pFinalSource,
@@ -2721,17 +2731,26 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 
                         if (link_result) {
                             MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > play pipeline")+devinfo);
-                            CheckState( gst_element_set_state ((GstElement*) m_pGstPipeline, GST_STATE_PLAYING), true /*SYNCRUNASLI*/ );
-                            MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > GST_STATE_PLAYING > OK.")+devinfo);
+                            bool ret = CheckState( gst_element_set_state ((GstElement*) m_pGstPipeline, GST_STATE_PLAYING), true /*SYNCRUNASLI*/ );
+                            if (ret==false) ret = CheckState( gst_element_set_state ((GstElement*) m_pGstPipeline, GST_STATE_PLAYING), true /*SYNCRUNASLI*/ );
+                            if (ret==false) {
+                              MODebug2->Error( moText("moGsGraph::BuildLiveWebcamGraph > No playing. ")+devinfo);
+                            } else {
+                              MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > GST_STATE_PLAYING > OK.")+devinfo);
+                            }
+
                             //GetState();
 
 #ifdef GSTVERSION
 
-                            GstSample *sample;
-                            MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > gst_app_sink_pull_preroll for appsink.")+devinfo);
+                            GstSample *sample=NULL;
                             //g_signal_emit_by_name ( m_pFakeSink, "pull-sample", &sample, NULL);
 
-                            sample = gst_app_sink_pull_preroll( (GstAppSink*) m_pFakeSink );
+                            if (ret) {
+                              MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > gst_app_sink_pull_preroll for appsink. ")+devinfo);
+                              sample = gst_app_sink_pull_preroll( (GstAppSink*) m_pFakeSink );
+                            }
+
                             if (sample) {
                                 MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > RECEIVED sample from gst_app_sink_pull_preroll!")+devinfo);
                                 GstBuffer *Gbuffer;
@@ -3713,7 +3732,7 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
   while(waitforsync) {
       MODebug2->Message("while wait for sync");
       state_wait = gst_element_get_state(GST_ELEMENT (m_pGstPipeline),&current_state, &pending_state, time_out);
-      MODebug2->Message("state_wait result:");
+      MODebug2->Message("state_wait result: " + IntToStr( state_wait  ) );
       switch(state_wait) {
           case GST_STATE_CHANGE_SUCCESS:
             waitforsync = false;
@@ -3726,8 +3745,8 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
             return false;
             break;
           default:
-            waitforsync = false;
-            MODebug2->Message("default");
+            waitforsync = true;
+            MODebug2->Message("waitforsync");
             break;
             /*
           case GST_STATE_CHANGE_ASYNC:
