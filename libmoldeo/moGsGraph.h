@@ -321,6 +321,7 @@ private:
     moGstElement          *m_pIdentity; /** "identity" */
 
     moGstElement          *m_pVideoScale;
+    moGstElement          *m_pVideoFlip;
     moGstElement          *m_pVideoDeinterlace;
     moGstElement          *m_pVideoBalance;
     moGstElement          *m_pColorSpaceInterlace;/** "ffmpegcolorspace for deinterlace" */

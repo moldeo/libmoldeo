@@ -1268,6 +1268,7 @@ moVideoManager::GetCameraByName( const moText& camera, bool load, moCaptureDevic
 
   moCamera* Cam = NULL;
 
+  ///Check if we have the camera loaded
   if (m_pLiveSystems) {
     for( int c=0; c<(int)m_pLiveSystems->Count(); c++ ) {
       Cam = m_pLiveSystems->Get(c);
@@ -1287,8 +1288,11 @@ MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, retu
     }
   }
 
+  ///No camera loaded, check capture devices
   for(int d=0;d<(int)m_CaptureDevices.Count();d++) {
+
     moCaptureDevice m_CapDev = m_CaptureDevices[d];
+
     if (m_CapDev.GetName()==camera
         ||
         m_CapDev.GetLabelName()==camera
