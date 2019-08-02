@@ -2796,7 +2796,7 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                         }
 
                         if (link_result) {
-                            MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > play pipeline")+devinfo);
+                            MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > play pipeline > ")+devinfo);
                             bool ret = CheckState( gst_element_set_state ((GstElement*) m_pGstPipeline, GST_STATE_PLAYING), true /*SYNCRUNASLI*/ );
                             if (ret==false) ret = CheckState( gst_element_set_state ((GstElement*) m_pGstPipeline, GST_STATE_PLAYING), true /*SYNCRUNASLI*/ );
                             if (ret==false) {
@@ -3810,14 +3810,15 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
             MODebug2->Message("change failure!");
             return false;
             break;
+          case GST_STATE_CHANGE_ASYNC:
+            waitforsync = true;
+            MODebug2->Message("change async!");
+            break;
           default:
             waitforsync = true;
             MODebug2->Message("waitforsync");
             break;
             /*
-          case GST_STATE_CHANGE_ASYNC:
-            waitforsync = true;
-            break;
           case GST_STATE_CHANGE_NO_PREROLL:
             waitforsync = true;
             break;
