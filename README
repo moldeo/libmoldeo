@@ -45,14 +45,18 @@ Moldeo Module | Description | Language | Dependencies
 [moldeoplayer](http://github.com/moldeo/moldeoplayer) | Player (command line project player) | C/C++ | SDL2, SDL1, GLUT
 [moldeonet](http://github.com/moldeo/moldeonet) | Graphical User Interfaces (GUIs) | Javascript, HTML5 | libmoldeo, [nw.js](https://github.com/nwjs/nw.js/), d3.js, jQuery, bootstrap
 [moldeoplugins](http://github.com/moldeo/moldeoplugins) | Plugins | C/C++ | libmoldeo...
-[moldeodirector](http://github.com/moldeo/moldeodirector) | Interface Development Environment (IDE) | C/C++ | libmoldeo, wxWidgets
 [moldeosamples](http://github.com/moldeo/moldeosamples) | Full examples | XML/Lua | libmoldeo, moldeoplayer
 [moldeoinstaller](http://github.com/moldeo/moldeoinstaller) | Platform Installer for Linux, OSX | XML/Lua | All
+[moldeodirector](http://github.com/moldeo/moldeodirector) | Interface Development Environment (IDE) | C/C++ | libmoldeo, wxWidgets
+[libwxmoldeocontrols](http://github.com/moldeo/libwxmoldeocontrols) | WxWidgets Moldeo Controls (IDE Widgets Controls) | C/C++ | libmoldeo, wxWidgets
 
 ### Community
 
-* [Moldeo's Community](http://www.moldeo.org/community)
+* [Moldeo's Official Site](http://www.moldeo.org)
+* [Moldeo's Blog](http://www.moldeo.org/blog)
+* [Moldeo's Forum](http://www.moldeo.org/forum)
 * [Moldeo's Facebook Community](http://www.facebook.com/comunidadmoldeo)
+* [Moldeo's Documentation](http://www.moldeo.org/)
 
 
 

@@ -281,6 +281,7 @@ class LIBMOLDEO_API moConfig
         /**  @param p_filename   nombre completo del archivo incluyendo el camino
         * @return 0 si fue exitoso, otro valor en otro caso*/
         int						SaveConfig( moText p_filename = moText(""));
+        int						Save( moText p_filename = moText("")) { return SaveConfig(p_filename); }
 
 
         /// Borra la configuracion de par�metros con sus respectivos valores
@@ -577,7 +578,7 @@ class LIBMOLDEO_API moConfig
 		static moSound*                m_pSound;
 		static moTexture*              m_pTexture;
 
-
+public:
     void CreateParam( moParamDefinition& p_ParamDef );
 
     moText        m_FullJSON;
