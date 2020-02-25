@@ -479,10 +479,10 @@ moGsGraph::on_rtsppadd_added( moGstElement *rtspsrc, moGstPad *pad, moGPointer u
         str = gst_caps_get_structure (caps, 0);
 
         const gchar *sstr;
-
+          gchar *field = ¨media¨;
         sstr = gst_structure_to_string (str);
         strname = gst_structure_get_name (str);
-        medianame = gst_structure_get_string (str, "media");
+        medianame = gst_structure_get_string (str, field);
         //strname = GST_STRUCTURE(str)->has_field("media");
 
         moText dbgstr = medianame;
@@ -1460,7 +1460,8 @@ if (m_PreferredDevices.Count()==0) {
         properties = gst_device_get_properties(device);
         if (properties) {
 //          gchar *propstr = gst_structure_to_string(properties);
-          device_path = gst_structure_get_string(properties,"device.path");
+            gchar dpath[] = "device.path";
+          device_path = (char*)gst_structure_get_string(properties,dpath);
 //          if (propstr) {
 //            MODebug2->Message( moText("moGsFramework::LoadCaptureDevice > properties: ") + moText(propstr));
 //          }
@@ -2285,7 +2286,7 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 
                         }
                      }*/
-                     link_result = gst_element_link_many( m_pRTSPDepay, m_pMultipartDemux, NULL );
+                     link_result = gst_element_link_many( (GstElement*)m_pRTSPDepay, (GstElement*)m_pMultipartDemux, NULL );
                     //(GstElement*) m_pRTSPSource,
                     //                                      (GstElement*) m_pCapsFilterSource,
                      //                                     (GstElement*) m_pRTSPDepay,
