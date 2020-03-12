@@ -192,3 +192,28 @@ MOuint moTextureIndex::LoadTextures(moConfig* p_cfg, MOuint p_param_idx, moTextu
 	return m_textures_array.Count();
 }
 
+
+MOint moTextureIndex::GetTextureIdByName( const moText& p_name ) {
+
+    MOint r_idx = -1;
+    moTexture *r_texture;
+
+    for( r_idx= 0; r_idx < (MOint) m_textures_array.Count(); r_idx++) {
+        r_texture = m_textures_array[r_idx];
+        if (r_texture) {
+            if (r_texture->GetName() == p_name ) {
+                return r_idx;
+            }
+        }
+    }
+    return -1;
+}
+
+moTexture* moTextureIndex::GetTextureByName( const moText& p_name ) {
+    MOint r_idx = GetTextureIdByName(p_name);
+    if (r_idx>-1 && ValidIndex((MOuint)r_idx)) {
+        return m_textures_array[r_idx];
+    }
+    return NULL;
+}
+
