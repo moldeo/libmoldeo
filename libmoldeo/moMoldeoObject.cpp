@@ -1173,6 +1173,7 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 			///process message:
 			MOint inletid = pmessage->m_InletIdDest;
 			moData pdata = pmessage->m_Data;
+
       //MODebug2->Message("Receiving outlet message to inlet: ");
 			///buscar el inlet...
 			if (inletid>=0 && inletid<(int)m_Inlets.Count() ) {
