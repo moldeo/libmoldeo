@@ -1816,7 +1816,7 @@ moConsole::Interaction() {
               }
           }
        if ( event->deviceid == MO_IODEVICE_MOUSE ) {
-        MODebug2->Message("moConsole::Interaction > Mouse device working");
+        //MODebug2->Message("moConsole::Interaction > Mouse device working");
        }
       event = event->next;
     }

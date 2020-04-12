@@ -1099,7 +1099,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
                                            //0x0000FF,
                                            FI_RGBA_BLUE_MASK
 #ifdef MO_WIN32
-    , MO_TRUE
+    , MO_FALSE
 #endif // MO_WIN
                                              );
 

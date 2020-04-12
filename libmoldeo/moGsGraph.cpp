@@ -1446,29 +1446,30 @@ if (m_PreferredDevices.Count()==0) {
     int idev = 0;
     if (devices != NULL) {
       while (devices != NULL) {
-        GstDevice *device = (GstDevice*)devices->data;
+        GstDevice *deviced = (GstDevice*)devices->data;
 
-        gchar *device_class, *caps_str, *name,*device_path;
+        gchar *device_class, *caps_str, *name;
+        moText t_device_path;
         GstCaps *caps;
         guint i, size = 0;
 
-        caps = gst_device_get_caps (device);
+        caps = gst_device_get_caps (deviced);
         if (caps != NULL)
           size = gst_caps_get_size (caps);
 
-        name = gst_device_get_display_name (device);
-        properties = gst_device_get_properties(device);
+        name = gst_device_get_display_name (deviced);
+        properties = gst_device_get_properties(deviced);
         if (properties) {
 //          gchar *propstr = gst_structure_to_string(properties);
-          device_path = gst_structure_get_string(properties,"device.path");
+          t_device_path = gst_structure_get_string( properties, "device.path" );
 //          if (propstr) {
 //            MODebug2->Message( moText("moGsFramework::LoadCaptureDevice > properties: ") + moText(propstr));
 //          }
         }
 
-        MODebug2->Message( moText("moGsFramework::LoadCaptureDevice > name: ") + moText(name)+ " path:"+moText(device_path));
+        MODebug2->Message( moText("moGsFramework::LoadCaptureDevice > name: ") + moText(name)+ " path:"+moText(t_device_path));
 
-        device_class = gst_device_get_device_class (device);
+        device_class = gst_device_get_device_class (deviced);
 
         for (i = 0; i < size; ++i) {
             GstStructure *s = gst_caps_get_structure (caps, i);
@@ -1485,7 +1486,7 @@ if (m_PreferredDevices.Count()==0) {
           moCaptureDevice upddev = m_CaptureDevices.Get(idev);
 
           if (idev>0) upddev.SetName(cap_dev_name);
-          upddev.m_Path = device_path;
+          upddev.m_Path = t_device_path;
           upddev.Present(true);
           upddev.SetLabelName( "LIVEIN" + IntToStr(idev) );
           m_CaptureDevices.Set(idev,upddev);
@@ -1496,7 +1497,7 @@ if (m_PreferredDevices.Count()==0) {
 
           newdev.Present(true);
           newdev.SetName(cap_dev_name);
-          newdev.m_Path = device_path;
+          newdev.m_Path = t_device_path;
           newdev.SetLabelName( "LIVEIN" + IntToStr(idev) );
 
           m_CaptureDevices.Add( newdev );
@@ -1505,7 +1506,7 @@ if (m_PreferredDevices.Count()==0) {
 
 
         //device_added (device);
-        gst_object_unref (device);
+        gst_object_unref (deviced);
         devices = g_list_remove_link (devices, devices);
         idev++;
       }
@@ -2277,7 +2278,7 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 
                         }
                      }*/
-                     link_result = gst_element_link_many( m_pRTSPDepay, m_pMultipartDemux, NULL );
+                     link_result = gst_element_link_many( (GstElement*)m_pRTSPDepay, (GstElement*)m_pMultipartDemux, NULL );
                     //(GstElement*) m_pRTSPSource,
                     //                                      (GstElement*) m_pCapsFilterSource,
                      //                                     (GstElement*) m_pRTSPDepay,
@@ -2447,11 +2448,11 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 //colormode = "";
 
            if (b_sourceselect) {
-              //#ifdef MO_WIN32
+              #ifdef MO_WIN32
               #ifdef GSTVERSION
-              //b_sourceselect = false;
+              b_sourceselect = false;
               #endif // GSTVERSION
-              //#endif // WIN32
+              #endif // WIN32
            }
 
            if (b_sourceselect) {
@@ -2679,7 +2680,7 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 
 
                     MODebug2->Message(moText("moGsGraph:: Try linkage!! sourceselect?: ") + IntToStr(b_sourceselect) ) ;
-                    b_sourceselect = true;
+                    //b_sourceselect = true;
                     if (b_sourceselect) {
                         cout << "linking m_pFinalSource, m_pCapsFilterSource, m_pDecoderBin" << endl;
                         link_result = gst_element_link_many(    (GstElement*) m_pFinalSource,
