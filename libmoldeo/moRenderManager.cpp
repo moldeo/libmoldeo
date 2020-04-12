@@ -395,6 +395,14 @@ moRenderManager::Render( moObject3D* p_pObj, moCamera3D* p_pCamera ) {
     if (!m_pGLManager) return 0;
     if (!m_pSHManager) return 0;
     if ( !m_pSHManager->GetRenderShader().Initialized() ) return 0;
+
+    if (p_pObj->GetChilds().Count()) {
+      for(int child=0; child<p_pObj->GetChilds().Count(); child++) {
+        moObject3D* p_child_obj = (moObject3D*)p_pObj->GetChilds().Get(child);
+        Render( p_child_obj, p_pCamera );
+      }
+    }
+
 /*
     const float vx[] = {
         -0.5f, -0.5f, 0.0f,

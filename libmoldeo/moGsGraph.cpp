@@ -479,10 +479,10 @@ moGsGraph::on_rtsppadd_added( moGstElement *rtspsrc, moGstPad *pad, moGPointer u
         str = gst_caps_get_structure (caps, 0);
 
         const gchar *sstr;
-
+          gchar *field = ¨media¨;
         sstr = gst_structure_to_string (str);
         strname = gst_structure_get_name (str);
-        medianame = gst_structure_get_string (str, "media");
+        medianame = gst_structure_get_string (str, field);
         //strname = GST_STRUCTURE(str)->has_field("media");
 
         moText dbgstr = medianame;
@@ -1461,7 +1461,8 @@ if (m_PreferredDevices.Count()==0) {
         properties = gst_device_get_properties(deviced);
         if (properties) {
 //          gchar *propstr = gst_structure_to_string(properties);
-          t_device_path = gst_structure_get_string( properties, "device.path" );
+            gchar dpath[] = "device.path";
+          device_path = (char*)gst_structure_get_string(properties,dpath);
 //          if (propstr) {
 //            MODebug2->Message( moText("moGsFramework::LoadCaptureDevice > properties: ") + moText(propstr));
 //          }
@@ -1591,6 +1592,7 @@ moGsGraph::moGsGraph() {
 
     m_pBucketsPool = NULL;
     m_pVideoScale = NULL;
+    m_pVideoFlip = NULL;
     m_pVideoBalance = NULL;
 
     m_pVideoDeinterlace = NULL;
@@ -1873,6 +1875,11 @@ moGsGraph::FinishGraph() {
     if (m_pVideoScale) {
         //gst_object_unref( (GstElement*) m_pVideoScale);
         m_pVideoScale = NULL;
+    }
+
+    if (m_pVideoFlip) {
+        //gst_object_unref( (GstElement*) m_pVideoScale);
+        m_pVideoFlip = NULL;
     }
 
     ///FINALLY UNREFERENCE PIPELINE, DESTROY ALL
@@ -2177,6 +2184,8 @@ moGsGraph::BuildLiveWebcamGraph( moBucketsPool *pBucketsPool, moCaptureDevice &p
     devinfo+= moText("; colormode ") + colormode;
     devinfo+= moText("; width ") + IntToStr(p_sourcewidth);
     devinfo+= moText("; height ") + IntToStr(p_sourceheight);
+    devinfo+= moText("; flipH ") + IntToStr(p_forceflipH);
+    devinfo+= moText("; flipV ") + IntToStr(p_forceflipV);
     if (devicename.Length()>0)
     {
 
@@ -2556,6 +2565,51 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
            }
 
 
+          if (b_forcevideoflip) {
+          /**
+          https://gstreamer.freedesktop.org/documentation/videofilter/videoflip.html?gi-language=c
+          Members
+          none (0) – Identity (no rotation)
+          clockwise (1) – Rotate clockwise 90 degrees
+          rotate-180 (2) – Rotate 180 degrees
+          counterclockwise (3) – Rotate counter-clockwise 90 degrees
+          horizontal-flip (4) – Flip horizontally
+          vertical-flip (5) – Flip vertically
+          upper-left-diagonal (6) – Flip across upper left/lower right diagonal
+          upper-right-diagonal (7) – Flip across upper right/lower left diagonal
+          automatic (8) – Select flip method based on image-orientation tag
+          Video-orientation-method
+          Members
+          identity (0) – GST_VIDEO_ORIENTATION_IDENTITY
+          90r (1) – GST_VIDEO_ORIENTATION_90R
+          180 (2) – GST_VIDEO_ORIENTATION_180
+          90l (3) – GST_VIDEO_ORIENTATION_90L
+          horiz (4) – GST_VIDEO_ORIENTATION_HORIZ
+          vert (5) – GST_VIDEO_ORIENTATION_VERT
+          ul-lr (6) – GST_VIDEO_ORIENTATION_UL_LR
+          ur-ll (7) – GST_VIDEO_ORIENTATION_UR_LL
+          auto (8) – GST_VIDEO_ORIENTATION_AUTO
+          custom (9) – GST_VIDEO_ORIENTATION_CUSTOM
+          */
+            m_pVideoFlip = gst_element_factory_make ("videoflip", "flip");
+            if (m_pVideoFlip) {
+               int  method = 0;//identity
+               if (p_forceflipH==1 && p_forceflipV==1) {
+                method = 2;
+               } else if (p_forceflipH==1) {
+                method = 4;
+               } else if (p_forceflipV==1) {
+                method = 5;
+               }
+#ifndef GSTVERSION
+               g_object_set (G_OBJECT (m_pVideoScale), "method", &method, NULL);
+#endif
+               res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pVideoFlip );
+               g_object_set (G_OBJECT (m_pVideoFlip), "method", (int)method, NULL);
+
+
+           }
+          }
 
 
             b_forcevideoscale = false;
@@ -2683,13 +2737,26 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                     //b_sourceselect = true;
                     if (b_sourceselect) {
                         cout << "linking m_pFinalSource, m_pCapsFilterSource, m_pDecoderBin" << endl;
-                        link_result = gst_element_link_many(    (GstElement*) m_pFinalSource,
+                        if (b_forcevideoflip) {
+                          link_result = gst_element_link_many(    (GstElement*) m_pFinalSource,
+                        /**(GstElement*) m_pColorSpaceSource,*/ (GstElement*) m_pCapsFilterSource,
+                                                                (GstElement*) m_pVideoFlip,
+                                                                (GstElement*) m_pDecoderBin, NULL );
+                        } else {
+                          link_result = gst_element_link_many(    (GstElement*) m_pFinalSource,
                         /**(GstElement*) m_pColorSpaceSource,*/ (GstElement*) m_pCapsFilterSource,
                                                                 (GstElement*) m_pDecoderBin, NULL );
-
+                        }
                      } else {
-                         cout << "linking m_pFinalSource, m_pDecoderBin" << endl;
-                         link_result = gst_element_link_many( (GstElement*) m_pFinalSource, (GstElement*) m_pDecoderBin, NULL );
+                         if (b_forcevideoflip) {
+                          link_result = gst_element_link_many( (GstElement*) m_pFinalSource,
+                                                              (GstElement*)m_pVideoFlip,
+                                                              (GstElement*) m_pDecoderBin, NULL );
+                         } else {
+                          cout << "linking m_pFinalSource, m_pDecoderBin" << endl;
+                          link_result = gst_element_link_many( (GstElement*) m_pFinalSource,
+                                                               (GstElement*) m_pDecoderBin, NULL );
+                         }
                     }
 
 
@@ -2731,7 +2798,7 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                         }
 
                         if (link_result) {
-                            MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > play pipeline")+devinfo);
+                            MODebug2->Message( moText("moGsGraph::BuildLiveWebcamGraph > play pipeline > ")+devinfo);
                             bool ret = CheckState( gst_element_set_state ((GstElement*) m_pGstPipeline, GST_STATE_PLAYING), true /*SYNCRUNASLI*/ );
                             if (ret==false) ret = CheckState( gst_element_set_state ((GstElement*) m_pGstPipeline, GST_STATE_PLAYING), true /*SYNCRUNASLI*/ );
                             if (ret==false) {
@@ -3745,14 +3812,15 @@ moGsGraph::CheckState( moGstStateChangeReturn state_change_result, bool waitfors
             MODebug2->Message("change failure!");
             return false;
             break;
+          case GST_STATE_CHANGE_ASYNC:
+            waitforsync = true;
+            MODebug2->Message("change async!");
+            break;
           default:
             waitforsync = true;
             MODebug2->Message("waitforsync");
             break;
             /*
-          case GST_STATE_CHANGE_ASYNC:
-            waitforsync = true;
-            break;
           case GST_STATE_CHANGE_NO_PREROLL:
             waitforsync = true;
             break;

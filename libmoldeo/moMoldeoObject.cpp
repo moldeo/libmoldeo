@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrï¿½s Colubri
 
 *******************************************************************************/
 
@@ -130,7 +130,7 @@ moMobDefinition::~moMobDefinition() {
 
 }
 
-/// Operador de asignación
+/// Operador de asignaciï¿½n
 moMobDefinition&
 moMobDefinition::operator = ( const moMobDefinition& mb) {
   m_Name = mb.m_Name;
@@ -160,19 +160,19 @@ moMobDefinition::SetName( const moText& p_name ) {
     m_Name = p_name;
 }
 
-/// Nombre del archivo de configuración
+/// Nombre del archivo de configuraciï¿½n
 const moText&
 moMobDefinition::GetConfigName() const {
     return m_ConfigName;
 }
 
-/// Fijar el nombre del archivo de configuración
+/// Fijar el nombre del archivo de configuraciï¿½n
 void
 moMobDefinition::SetConfigName( const moText& p_configname ) {
     m_ConfigName = p_configname;
 }
 
-/// Nombre del archivo de configuración
+/// Nombre del archivo de configuraciï¿½n
 moMoldeoObjectType
 moMobDefinition::GetType() const {
     return m_Type;
@@ -285,7 +285,7 @@ moMobDefinition::SetType( moMoldeoObjectType p_type ) {
     m_Type = p_type;
 }
 
-/// Devuelve la dupla de índices para el archivo de configuración
+/// Devuelve la dupla de ï¿½ndices para el archivo de configuraciï¿½n
 const moMobIndex&
 moMobDefinition::GetMobIndex() const {
     return m_MobIndex;
@@ -307,7 +307,7 @@ moMobDefinition::GetLabelName() const {
 
 /// Fija el identificador de este objeto
 /**
-*   Este identificador debe ser único
+*   Este identificador debe ser ï¿½nico
 */
 void
 moMobDefinition::SetMoldeoId( MOint p_moldeoid ) {
@@ -316,7 +316,7 @@ moMobDefinition::SetMoldeoId( MOint p_moldeoid ) {
 
 /// Devuelve el identificador de este objeto
 /**
-*   Este identificador debe ser único
+*   Este identificador debe ser ï¿½nico
 */
 MOint
 moMobDefinition::GetMoldeoId() const {
@@ -332,7 +332,7 @@ moMobDefinition::SetFatherLabelName( const moText& p_labelname ) {
 }
 
 
-/// Fija la descripción de este objeto
+/// Fija la descripciï¿½n de este objeto
 void
 moMobDefinition::SetDescription( const moText& p_Description ) {
     m_Description  = p_Description;
@@ -698,7 +698,7 @@ moMoldeoObject::ResolveValue( moParam& param, int value_index, bool p_refresh ) 
           break;
 
       case MO_PARAM_VIDEO:
-          ///ojo aquí el video es tratado por el VideoManager si quiere ser tratado realamente
+          ///ojo aquï¿½ el video es tratado por el VideoManager si quiere ser tratado realamente
           /// como video y no como texturaanimada....
 
           break;
@@ -830,7 +830,7 @@ moMoldeoObject::CreateConnectors() {
   MODebug2->Message("moMoldeoObject::CreateConnectors > Calling once. object: "+GetName()+ " config: " + GetConfigName() + " label:" + GetLabelName() );
 
 
-	///crea los Inlets adicionales a los parámetros: definidos en el parámetro "inlet"
+	///crea los Inlets adicionales a los parï¿½metros: definidos en el parï¿½metro "inlet"
 
 	moParam& pinlets = m_Config[moText("inlet")];
 
@@ -840,7 +840,7 @@ moMoldeoObject::CreateConnectors() {
       if (Inlet) {
         Inlet->SetMoldeoLabelName( GetLabelName() );
         moText InletName = pinlets[i][MO_INLET_NAME].Text();
-        ///lo creamos si y solo si no existe como parámetro....
+        ///lo creamos si y solo si no existe como parï¿½metro....
         if ( m_Config.GetParamIndex(InletName)==-1 ) {
           ((moConnector*)Inlet)->Init( InletName, m_Inlets.Count(), pinlets[i][MO_INLET_TYPE].Text() );
           m_Inlets.Add( Inlet );
@@ -849,9 +849,9 @@ moMoldeoObject::CreateConnectors() {
     }
 	}
 
-	///Inicializa las funciones matemáticas del config
-	///así como los inlets y outlets por cada parámetro
-	///así como las texturas
+	///Inicializa las funciones matemï¿½ticas del config
+	///asï¿½ como los inlets y outlets por cada parï¿½metro
+	///asï¿½ como las texturas
 	for( MOint p=0;p<m_Config.GetParamsCount();p++) {
 
 		moParam	&param( m_Config[p] );
@@ -882,8 +882,8 @@ moMoldeoObject::CreateConnectors() {
     Solo se crean los outlets declarados en el xml.
     */
 
-    /// Crea aquellos Outlets definidos dentro del parámetro "outlet"
-    /// y conecta aquellos nombrados que ya existen como parámetros de este config
+    /// Crea aquellos Outlets definidos dentro del parï¿½metro "outlet"
+    /// y conecta aquellos nombrados que ya existen como parï¿½metros de este config
 	moParam& poutlets = m_Config[moText("outlet")];
 
 	for( MOuint i=0; i<poutlets.GetValuesCount(); i++ ) {
@@ -1090,6 +1090,14 @@ moMoldeoObject::GetInlets() {
 	return &m_Inlets;
 }
 
+moInlet*
+moMoldeoObject::AddInlet( moText p_name, moText p_type ) {
+    moInlet* newInlet = new moInlet();
+    ((moConnector*)newInlet)->Init( p_name, m_Inlets.Count(), p_type );
+    m_Inlets.Add(newInlet);
+    return NULL;
+}
+
 MOint
 moMoldeoObject::GetInletIndex( moText p_connector_name ) const {
 
@@ -1165,6 +1173,7 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
 			///process message:
 			MOint inletid = pmessage->m_InletIdDest;
 			moData pdata = pmessage->m_Data;
+
       //MODebug2->Message("Receiving outlet message to inlet: ");
 			///buscar el inlet...
 			if (inletid>=0 && inletid<(int)m_Inlets.Count() ) {
@@ -1228,7 +1237,7 @@ moMoldeoObject::Update( moEventList* p_EventList ) {
       if ( poutlet->Updated() || forcingParameterEmition ) {
         ///solo notificamos a los inlets si los outlets estan Updated() importante revisar esto...
         ///puede  deba ser algo condicional: claramente lo es, sobre todo para los Outlets que asociados a
-        ///parámetros, por ejemplo el alpha.. o el translatex
+        ///parï¿½metros, por ejemplo el alpha.. o el translatex
 
         //MODebug2->Message( poutlet->GetConnectorLabelName() + moText(" outlet updated. MOB : ") + this->GetLabelName() );
         if (poutlet->GetData()) {
@@ -2160,7 +2169,7 @@ int moMoldeoObject::luaGetTrackerSystemData(moLuaVirtualMachine& vm) {
 
 int moMoldeoObject::luaGetTrackerFeaturesCount(moLuaVirtualMachine& vm) {
 
-    ///este debería devolver -1 si no existe un dato de trackeo disponible...
+    ///este deberï¿½a devolver -1 si no existe un dato de trackeo disponible...
     lua_State *state = (lua_State *) vm;
     int ft_count = -1;
 
@@ -2186,7 +2195,7 @@ int moMoldeoObject::luaGetTrackerFeaturesCount(moLuaVirtualMachine& vm) {
 
 int moMoldeoObject::luaGetTrackerValidFeatures(moLuaVirtualMachine& vm) {
 
-    ///este debería devolver -1 si no existe un dato de trackeo disponible...
+    ///este deberï¿½a devolver -1 si no existe un dato de trackeo disponible...
     lua_State *state = (lua_State *) vm;
     int ft_validcount = 0;
 

@@ -1268,6 +1268,11 @@ moVideoManager::GetCameraByName( const moText& camera, bool load, moCaptureDevic
 
   moCamera* Cam = NULL;
 
+  ///Check if we have the camera loaded
+  MODebug2->Message("*******************************************");
+  MODebug2->Message("Searching camera");
+  MODebug2->Message("*******************************************");
+  MODebug2->Message("moVideoManager::GetCameraByName > Check if we have the camera loaded");
   if (m_pLiveSystems) {
     for( int c=0; c<(int)m_pLiveSystems->Count(); c++ ) {
       Cam = m_pLiveSystems->Get(c);
@@ -1280,15 +1285,25 @@ moVideoManager::GetCameraByName( const moText& camera, bool load, moCaptureDevic
             ||
             ( camera=="default" && c>=0 && Cam->GetVideoGraph() )
            ) {
-MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, returnin:"+camera);
+          MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, returning: "+camera);
           return Cam;
         }
       }
     }
   }
 
+
+  std::string rtsp = (char*)camera;
+  MODebug2->Message("*******************************************");
+  MODebug2->Message("Searching capture devices");
+  MODebug2->Message("Capture devices#: "+IntToStr(m_CaptureDevices.Count()) );
+  MODebug2->Message("*******************************************");
+  MODebug2->Message("moVideoManager::GetCameraByName > founded: camera: " + camera );
+  ///No camera loaded, check capture devices
   for(int d=0;d<(int)m_CaptureDevices.Count();d++) {
+
     moCaptureDevice m_CapDev = m_CaptureDevices[d];
+
     if (m_CapDev.GetName()==camera
         ||
         m_CapDev.GetLabelName()==camera
@@ -1298,7 +1313,7 @@ MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, retu
         (  camera=="default" && d>=0 && m_CapDev.IsPresent() )
          ) {
         ///Try to create it!!!
-        MODebug2->Message("moVideoManager::GetCameraByName founded: camera: " + camera );
+        MODebug2->Message("moVideoManager::GetCameraByName > founded: camera: " + camera );
         if (load) {
           moCaptureDevice newCD = m_CapDev;
 
@@ -1344,12 +1359,13 @@ MODebug2->Message("moVideoManager::GetCameraByName > camera already loaded, retu
         }
       }
   }
-  std::string rtsp = (char*)camera;
 
-  if (rtsp.find("rtsp")==0 || rtsp.find("RTSP")==0
+  if ( rtsp.find("rtsp")==0 || rtsp.find("RTSP")==0
   || rtsp.find("http")==0 || rtsp.find("HTTP")==0
-  || rtsp.find("https")==0 || rtsp.find("HTTPS")==0) {
-
+  || rtsp.find("https")==0 || rtsp.find("HTTPS")==0 ) {
+    MODebug2->Message("###########################################");
+    MODebug2->Message("Adding rtsp/http stream as CaptureDevice...");
+    MODebug2->Message("###########################################");
     moCaptureDevice m_StreamDev;
     m_StreamDev.SetName(camera);
     m_StreamDev.SetLabelName( moText("LIVEIN")+IntToStr(m_CaptureDevices.Count()) );

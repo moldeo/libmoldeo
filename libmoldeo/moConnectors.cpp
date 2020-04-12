@@ -163,6 +163,18 @@ moConnector::Init( moText p_ConnectorLabelName, MOint ConnectorId, moText t_data
 
 	if (t_datatype==moText("NUMBER")) {
 		m_pData = new moData( MO_DATA_NUMBER );
+    } else if (t_datatype==moText("DOUBLE")) {
+		m_pData = new moData( MO_DATA_NUMBER_DOUBLE );
+    } else if (t_datatype==moText("CHAR")) {
+		m_pData = new moData( MO_DATA_NUMBER_CHAR );
+    } else if (t_datatype==moText("FLOAT")) {
+		m_pData = new moData( MO_DATA_NUMBER_FLOAT );
+    } else if (t_datatype==moText("INT")) {
+		m_pData = new moData( MO_DATA_NUMBER_INT );
+    } else if (t_datatype==moText("LONG")) {
+		m_pData = new moData( MO_DATA_NUMBER_LONG );
+    } else if (t_datatype==moText("MIDI")) {
+		m_pData = new moData( MO_DATA_NUMBER_MIDI );
 	} else if(t_datatype==moText("POINTER")) {
 		m_pData = new moData( MO_DATA_POINTER );
 	} else if(t_datatype==moText("DATA")) {

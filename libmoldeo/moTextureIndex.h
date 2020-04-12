@@ -176,6 +176,10 @@ public:
      * @return puntero a la textura requerida.
      */
 	moTexture* operator [](MOuint p_idx) { return GetTexture(p_idx); }
+
+	MOint GetTextureIdByName( const moText& p_name );
+
+	moTexture* GetTextureByName( const moText& p_name );
 private:
 	moTextureArray m_textures_array;
 

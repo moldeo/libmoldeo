@@ -116,11 +116,11 @@ class LIBMOLDEO_API moAttribute : public moResourceElement {
 
 moDeclareExportedDynamicArray( moAttribute, moAttributeArray);
 
-/// Base abstracta de base para las geometrías.
+/// Base abstracta de base para las geometrï¿½as.
 /**
-*	Todas las geometrías como Cubo, Esfera, Triangulo, .. derivan de esta clase
+*	Todas las geometrï¿½as como Cubo, Esfera, Triangulo, .. derivan de esta clase
 * que contiene un vector de vertices y otro de indices que referencian a esos vertices.
-* El modo directo que consiste en simplemente usar el vector de vertices para dibujar la geometría, puede
+* El modo directo que consiste en simplemente usar el vector de vertices para dibujar la geometrï¿½a, puede
 * forzarse al llamar al constructor moGeometry( p_direct_mode = false|true  )
 *
 */
@@ -313,6 +313,10 @@ class LIBMOLDEO_API moObject3D : public moSceneNode {
       m_Scale = p_scale;
     }
 
+    void Add( moObject3D* p_child ) {
+          AddChild( p_child );
+    }
+
     moGeometry  m_Geometry;
     moMaterial  m_Material;
     moPosition  m_Position;
@@ -396,6 +400,9 @@ class LIBMOLDEO_API moSkeleton : public moObject3D {
 
 class LIBMOLDEO_API moMesh : public moObject3D {
   public:
+    moMesh() : moObject3D() {
+    }
+    
     moMesh( const moGeometry& p_geometry, const moMaterial& p_material ) :  moObject3D(p_geometry, p_material) {
 
         m_Geometry = p_geometry;
@@ -510,15 +517,15 @@ class LIBMOLDEO_API moSphereGeometry : public moGeometry {
 /**
 *
 * parameters:
-    size — Float. Size of the text.
-    height — Float. Thickness to extrude text. Default is 50.
-    curveSegments — Integer. Number of points on the curves. Default is 12.
-    font — String. Font name.
-    weight — String. Font weight (normal, bold).
-    style — String. Font style (normal, italics).
-    bevelEnabled — Boolean. Turn on bevel. Default is False.
-    bevelThickness — Float. How deep into text bevel goes. Default is 10.
-    bevelSize — Float. How far from text outline is bevel. Default is 8.
+    size ï¿½ Float. Size of the text.
+    height ï¿½ Float. Thickness to extrude text. Default is 50.
+    curveSegments ï¿½ Integer. Number of points on the curves. Default is 12.
+    font ï¿½ String. Font name.
+    weight ï¿½ String. Font weight (normal, bold).
+    style ï¿½ String. Font style (normal, italics).
+    bevelEnabled ï¿½ Boolean. Turn on bevel. Default is False.
+    bevelThickness ï¿½ Float. How deep into text bevel goes. Default is 10.
+    bevelSize ï¿½ Float. How far from text outline is bevel. Default is 8.
 
 *
 */
@@ -540,11 +547,11 @@ class LIBMOLDEO_API moTextGeometry : public moGeometry {
 };
 
 /**
-path — Curve - A path that inherits from the Curve base class
-segments — Integer - The number of segments that make up the tube, default is 64
-radius — Float - The radius of the tube, default is 1
-radiusSegments — Integer - The number of segments that make up the cross-section, default is 8
-closed — Float Is the tube open or closed, default is false
+path ï¿½ Curve - A path that inherits from the Curve base class
+segments ï¿½ Integer - The number of segments that make up the tube, default is 64
+radius ï¿½ Float - The radius of the tube, default is 1
+radiusSegments ï¿½ Integer - The number of segments that make up the cross-section, default is 8
+closed ï¿½ Float Is the tube open or closed, default is false
 */
 class LIBMOLDEO_API moTubeGeometry : public moGeometry {
   public:
@@ -587,7 +594,7 @@ moDeclareExportedDynamicArray( moGuiObject*, moGuiObjectArray);
 
 /// Objeto de interface de usuario tipo ventana.
 /**
-*	Los moWidget 's  son los elementos básicos del GUI ( Graphical User Interface ) de Moldeo.
+*	Los moWidget 's  son los elementos bï¿½sicos del GUI ( Graphical User Interface ) de Moldeo.
 */
 class LIBMOLDEO_API moWidget : public moGuiObject {
 
@@ -603,7 +610,7 @@ class LIBMOLDEO_API moWidget : public moGuiObject {
 
 /// Ventana simple
 /**
-*	Dibuja una ventana especificando posición y tamaño
+*	Dibuja una ventana especificando posiciï¿½n y tamaï¿½o
 *
 *	@see moWidget
 *	@see moGUIObject
@@ -654,7 +661,7 @@ class LIBMOLDEO_API mo3dWidget : public moWidget, public moSceneNode {
 
 /// Administrador de recursos GUI
 /**
-*	Aquí se guardan los moWidgets generados y mostrados para el usuario.
+*	Aquï¿½ se guardan los moWidgets generados y mostrados para el usuario.
 *
 *	@see moWidget
 *	@see moGUIObject
