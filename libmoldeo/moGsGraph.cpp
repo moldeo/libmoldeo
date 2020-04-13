@@ -1462,7 +1462,7 @@ if (m_PreferredDevices.Count()==0) {
         if (properties) {
 //          gchar *propstr = gst_structure_to_string(properties);
             gchar dpath[] = "device.path";
-          device_path = (char*)gst_structure_get_string(properties,dpath);
+          t_device_path = (char*)gst_structure_get_string(properties,dpath);
 //          if (propstr) {
 //            MODebug2->Message( moText("moGsFramework::LoadCaptureDevice > properties: ") + moText(propstr));
 //          }
