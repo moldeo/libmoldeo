@@ -555,8 +555,34 @@ moConsole::UpdateMoldeoIds() {
 
 	///SET Moldeo Objects Unique Id's
 	for( MOuint i=0; i<m_MoldeoObjects.Count(); i++) {
-		moMoldeoObject* mobject = m_MoldeoObjects.GetRef(i);
-		if (mobject) mobject->SetId(MO_MOLDEOOBJECTS_OFFSET_ID + i);
+
+    moMoldeoObject* mobject = m_MoldeoObjects.GetRef(i);
+    if (mobject==NULL) continue;
+    int old_MoldeoId = mobject->GetId();
+    int new_Moldeoid = MO_MOLDEOOBJECTS_OFFSET_ID + i;
+
+    moEventList* pEvents = m_pIODeviceManager->GetEvents();
+    if (pEvents) {
+      	moEvent *actual=NULL,*tmp;
+        moMessage *pmessage;
+
+        if (pEvents) actual = pEvents->First;
+
+        ///Eventos MO_ACTION_MOLDEOAPI_EVENT_RECEIVE a retraducir
+        while(actual!=NULL) {
+          tmp = actual->next;
+          ///procesamos aquellos Outlet q estan dirigidos a este objeto
+          if (actual->deviceid==MO_IODEVICE_CONSOLE
+              && actual->devicecode == MO_ACTION_MOLDEOAPI_EVENT_RECEIVE
+              && actual->reservedvalue0 == old_MoldeoId
+              && actual->reservedvalue3 == MO_DATAMESSAGE) {
+                actual->reservedvalue0 = new_Moldeoid;
+          }
+          actual = tmp;
+        }
+
+    }
+		if (mobject) mobject->SetId( new_Moldeoid );
 	}
 
   ///PROCESSING SCENE OBJECTS (recursive)
@@ -1355,7 +1381,7 @@ moConsole::InitializeAllEffects() {
                 p_effect->keyidx = idx;
                 */
 			}
-			//carga códigos...
+			//carga cï¿½digos...
 			p_effect->LoadCodes( m_pIODeviceManager );
 		}
 	}
@@ -2047,7 +2073,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
         * FULL PSEUDO CODE
         *
 
-        si ya existe una preconfiguración (arg2Int) .
+        si ya existe una preconfiguraciï¿½n (arg2Int) .
             si no existe el parametro en esa preconfiguracion (apuntando al arg2Int)
                 lo agrega a esa preconfiguracion
             en cambio si ya existe lo apunta a este nuevo indice arg2Int
@@ -2067,7 +2093,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
         ///Adding to preconfig (available)
         if (  arg2Int < pConfig->GetPreConfCount() ) {
-          /// si ya existe una preconfiguración correlativa a ese indice (arg2Int) .
+          /// si ya existe una preconfiguraciï¿½n correlativa a ese indice (arg2Int) .
 
           for(int k=0; k < pConfig->GetPreConfCount(); k++ ) {
             preCfg = pConfig->GetPreconfig( k );
@@ -2504,9 +2530,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       }
       break;
 
-    /**
+    /** VALUE SET
 
-    VALUE SET
 
     */
 
@@ -2586,9 +2611,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       break;
 
 
-    /**
-
-    PRECONFIGS
+    /** PRECONFIGS
 
     */
 
@@ -2658,8 +2681,52 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_OBJECT_MOVE:
       {
-///
+        arg0  = p_pDataMessage->Get(1).ToText();//mob label
+        arg1Int  = p_pDataMessage->Get(2).Int();//position (-1),(+1), 0..Count (in the type of array)
+        arg2Int  = p_pDataMessage->Get(3).Int();//is_relative 0, 1
+        MODebug2->Message( moText(" MO_ACTION_OBJECT_MOVE: ")+arg0+moText(",")+IntToStr(arg1Int)+moText(",")+IntToStr(arg2Int) );
+        MObject = NULL;
+        fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+        if (fxObject) {
+            //FullObjectJSON = fxObject->ToJSON();
+            //MODebug2->Message(FullObjectJSON);
+            this->MoveMob( fxObject->GetMobDefinition(), arg1Int, (arg2Int==1) );
 
+        } else {
+          int idobj = GetObjectId( arg0 );
+          MObject = GetObjectByIdx( idobj );
+          //TODO: sometimes for iodevices it's necessary to move the objects
+          if (MObject && MObject->GetMobDefinition().GetType()!=MO_OBJECT_IODEVICE
+                        && MObject->GetMobDefinition().GetType()!=MO_OBJECT_RESOURCE) {
+            //FullObjectJSON = "{ 'object': " + MObject->ToJSON();
+            //FullObjectJSON+= "}";
+            //MODebug2->Message( FullObjectJSON );
+            this->MoveMob( MObject->GetMobDefinition(), arg1Int, (arg2Int==1) );
+          }
+        }
+
+        if (fxObject || MObject) {
+/*
+            pMessageToSend = new moDataMessage();
+            if (pMessageToSend) {
+                pMessageToSend->Add( moData("objectget") );
+                //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+                pMessageToSend->Add( moData( arg0 ) );
+                pMessageToSend->Add( moData( FullObjectJSON ) );
+                //pMessageToSend->Add( moData( "{'testing': 0}" ) );
+                //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+                // send it: but we need an id
+                SendMoldeoAPIMessage( pMessageToSend );
+            }
+*/
+            pMessageToSend = new moDataMessage();
+            if (pMessageToSend) {
+              pMessageToSend->Add( moData( "consoleget" ) );
+              ProcessMoldeoAPIMessage(pMessageToSend);
+            }
+            return 0;
+        }
+        MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GET > [" + arg0+"] not found!" );
       }
       break;
 
@@ -2801,6 +2868,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_OBJECT_GETPRECONFIGS > [" + arg0+"] not found!" );
       }
       break;
+
 
   /** CONSOLE
 
@@ -3051,10 +3119,16 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       for(int i=0;i<(int)this->m_MoldeoObjects.Count(); i++ ) {
         moMoldeoObject* Mobj = m_MoldeoObjects.Get(i);
         FullObjectJSON+= fieldSeparation+"'"+Mobj->GetLabelName()+"': {";
+        FullObjectJSON+= "'lbl': '" + Mobj->GetLabelName() +"',";
         FullObjectJSON+= "'name': '" + Mobj->GetName() +"',";
         FullObjectJSON+= "'cfg': '" + Mobj->GetConfigName() +"',";
         FullObjectJSON+= "'key': '" + Mobj->GetKeyName() +"',";
-        FullObjectJSON+= "'cla': '" + Mobj->GetMobDefinition().GetTypeToClass( Mobj->GetMobDefinition().GetType() ) +"'";
+        FullObjectJSON+= "'cla': '" + Mobj->GetMobDefinition().GetTypeToClass( Mobj->GetMobDefinition().GetType() ) +"',";
+        FullObjectJSON+= "'pari': '" + IntToStr(Mobj->GetMobDefinition().GetMobIndex().GetParamIndex()) +"',";
+        FullObjectJSON+= "'vali': '" + IntToStr(Mobj->GetMobDefinition().GetMobIndex().GetValueIndex()) +"',";
+        FullObjectJSON+= "'acti': '" + IntToStr((int)Mobj->GetMobDefinition().GetActivate()==1) +"',";
+        FullObjectJSON+= "'ix': '" + IntToStr(i) +"',";
+        FullObjectJSON+= "'id': '" + IntToStr(Mobj->GetId()) +"'";
         FullObjectJSON+= "}";
         fieldSeparation = ",";
       }
@@ -3312,7 +3386,7 @@ int moConsole::AddChildMob( const moMobDefinition &p_MobDef, const moMobDefiniti
 }
 
 
-int moConsole::MoveMob( const moMobDefinition& p_MobDef, int position ) {
+int moConsole::MoveMob( const moMobDefinition& p_MobDef, int position, MOboolean is_relative ) {
 
   ///chequea el objeto a mover
 
@@ -3358,6 +3432,18 @@ int moConsole::MoveMob( const moMobDefinition& p_MobDef, int position ) {
 
   }
 
+  if (is_relative) {
+    position = index_object + position;
+    if (position<0) {
+      position = 0;
+    }
+    if (position>=array_count) {
+      position = array_count - 1;
+    }
+  }
+  MODebug2->Message( moText("Moving from ")+IntToStr(index_object)
+                    +moText(" to ")+IntToStr(position)
+                    +moText("/")+IntToStr(array_count));
 
       if ( position >= 0 && position < array_count ) {
 
@@ -3503,7 +3589,7 @@ int moConsole::DuplicateMob( const moMobDefinition& p_MobDef ) {
 
     labelnameduplicate = labelname;
 
-    ///modificar el labelname agregándole un número al final
+    ///modificar el labelname agregï¿½ndole un nï¿½mero al final
     count = 1;
     while(LabelNameExists(labelnameduplicate)) {
       labelnameduplicate = labelname + IntToStr( count );

@@ -1968,11 +1968,11 @@ int moMoldeoObject::luaSetInletData(moLuaVirtualMachine& vm) {
 
 
 
-/**
+/** TRACKERS LUA CALLING METHODS
 *
 *
 *
-*           TRACKERS LUA CALLING METHODS
+*
 *
 *               TUIO Methods
 *
@@ -2143,10 +2143,10 @@ int moMoldeoObject::luaGetTuioObject(moLuaVirtualMachine& vm) {
 }
 #endif
 
-/**
+/** FEATURE TRACKING METHODS
 *
 *
-*           FEATURE TRACKING METHODS
+*
 *
 *
 */

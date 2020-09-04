@@ -3280,7 +3280,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
            //RetreivePads( m_pFileSource );
 
           ///SOUND...
-            //BuildAudioFilters();
+            BuildAudioFilters();
 
            ///FIN SOUND
 
