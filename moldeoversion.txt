@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <moldeo api="1.0">
-	<version major="1" minor="1" release="release" build="1101">1.0 release (build 1.1.0.1)</version>
+	<version major="1" minor="2" release="release" build="1207">1.0 release (build 1.2.0.7)</version>
 	<comments></comments>
 </moldeo>
