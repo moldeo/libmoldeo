@@ -461,7 +461,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         int NewMob( const moMobDefinition &p_MobDef );
         int AddChildMob( const moMobDefinition &p_MobDef, const moMobDefinition &p_MobDefFather );
-        int MoveMob( const moMobDefinition& p_MobDef, int position, MOboolean is_relative = FALSE  );
+        int MoveMob( const moMobDefinition& p_MobDef, int position, MOboolean is_relative = MO_FALSE  );
         int DuplicateMob( const moMobDefinition& p_MobDef );
         int DeleteMob( const moMobDefinition& p_MobDef );
 
