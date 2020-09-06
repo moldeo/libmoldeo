@@ -108,6 +108,7 @@ moReactionListenerManager::moReactionListenerManager() {
   m_MapStrToActionType["preconfigset"] = MO_ACTION_PRECONFIG_SET;
 
   /** parameters map actions*/
+  m_MapStrToActionType["paramadd"] = MO_ACTION_PARAM_ADD;
   m_MapStrToActionType["paramget"] = MO_ACTION_PARAM_GET;
   m_MapStrToActionType["paramset"] = MO_ACTION_PARAM_SET;
   m_MapStrToActionType["paramsave"] = MO_ACTION_PARAM_SAVE;
@@ -157,6 +158,8 @@ moReactionListenerManager::moReactionListenerManager() {
   m_MapStrToActionType["consoleget"] = MO_ACTION_CONSOLE_GET;
   m_MapStrToActionType["consolegetstate"] = MO_ACTION_CONSOLE_GETSTATE;
   m_MapStrToActionType["consolesetstate"] = MO_ACTION_CONSOLE_SETSTATE;
+  m_MapStrToActionType["consolegetplugins"] = MO_ACTION_CONSOLE_GET_PLUGINS;
+
   /** console presets map actions*/
   m_MapStrToActionType["consolepresetadd"] = MO_ACTION_CONSOLE_PRESET_ADD;
   m_MapStrToActionType["consolepresetdelete"] = MO_ACTION_CONSOLE_PRESET_DELETE;

@@ -133,7 +133,7 @@ enum moConsoleParamIndex {
 /// Objeto Consola
 /**
  * <b>Consola Moldeo</b><br>
- * Este objeto implementa las funciones de inicialización necesarias para la comunicación
+ * Este objeto implementa las funciones de inicializaciï¿½n necesarias para la comunicaciï¿½n
  * entre objetos de moldeo, dispositivos de entrada/salida, y recursos<br>
  * al ser a su vez un objeto moldeo, puede ser instanciada como tal<br>
  * @see moMoldeoObject
@@ -149,29 +149,29 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
     public:
 
         /**
-         * constructor genérico de la clase.
+         * constructor genï¿½rico de la clase.
          */
         moConsole();
 
 
         /**
-         * constructor genérico de la clase.
+         * constructor genï¿½rico de la clase.
          */
         virtual ~moConsole();
 
 
         /// Inicializador predeterminado
         /**
-         * Derivado de moAbstract, inicializa con parámetros predeterminados.
+         * Derivado de moAbstract, inicializa con parï¿½metros predeterminados.
          */
         virtual MOboolean Init();
 
 
-        /// Inicializador paramétrico.
+        /// Inicializador paramï¿½trico.
         /**
-         * Estos parámetros son especificados por la aplicación de línea de comando.
+         * Estos parï¿½metros son especificados por la aplicaciï¿½n de lï¿½nea de comando.
          * @param p_datapath directorio de acceso a los datos
-         * @param p_consoleconfig nombre completo incluyendo directorio del archivo de configuración .mol
+         * @param p_consoleconfig nombre completo incluyendo directorio del archivo de configuraciï¿½n .mol
          * @param p_pIODeviceManager (opcional) puntero al administrador de dispositivos de entrada/salida
          * @param p_pResourceManager (opcional) puntero al administrador de recursos
          * @param p_render_to_texture_mode (opcional MO_RENDER_TO_TEXTURE_FBSCREEN ) modo de render a textura
@@ -196,7 +196,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         /// Procesa los eventos de los dispositivos de entrada/salida
         /**
-         * Este función procesa los eventos regidos por el administrador de dispositivos
+         * Este funciï¿½n procesa los eventos regidos por el administrador de dispositivos
          * @see moIODeviceManager
          * @see moIODevice
          */
@@ -205,14 +205,14 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         /// Actualiza el estado de los recursos
         /**
-         * Cada objeto moResource implementa su propia función de actualización de recursos.
+         * Cada objeto moResource implementa su propia funciï¿½n de actualizaciï¿½n de recursos.
          */
          virtual void Update();
 
 
         /// Dibuja
         /**
-         * Cada objeto derivado de moEffect es dibujado según la jerarquía que los define.
+         * Cada objeto derivado de moEffect es dibujado segï¿½n la jerarquï¿½a que los define.
          */
         virtual void Draw();
         virtual void DrawMasterEffects( int interface_width=0, int interface_height=0 );
@@ -253,7 +253,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         virtual int Save( const moText& p_save_filename = moText("") );
 
-        /// asignación del administrador de dispositivos
+        /// asignaciï¿½n del administrador de dispositivos
         /**
          * Crea el administrador de dispositivos o asigna el predeterminado.
          * @param p_IODeviceManager
@@ -262,11 +262,11 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         void SetIODeviceManager( moIODeviceManager*	p_IODeviceManager );
 
-        /// asignación de la definición del archivo de configuración de la consola
+        /// asignaciï¿½n de la definiciï¿½n del archivo de configuraciï¿½n de la consola
         /**
-         * Fija las definiciones de los parámetros de este MOB. Si no se especifica parámetro
-         * lo hará dentro del archivo de configuración propio.
-         * @param p_configdefinition (opcional) puntero al objeto que será poblado con las definiciones de los parámetros de este MOB
+         * Fija las definiciones de los parï¿½metros de este MOB. Si no se especifica parï¿½metro
+         * lo harï¿½ dentro del archivo de configuraciï¿½n propio.
+         * @param p_configdefinition (opcional) puntero al objeto que serï¿½ poblado con las definiciones de los parï¿½metros de este MOB
          * @see moConfigDefinition
          * @see moMoldeoObject
          * @see moConfig
@@ -277,8 +277,8 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         /// existe ya esta etiqueta dentro de los MOBs de esta consola
         /**
         *
-        * Esta función devuelve verdadero o falso si existe o no la etiqueta en el
-        * arreglo dinámico de m_MoldeoObjects
+        * Esta funciï¿½n devuelve verdadero o falso si existe o no la etiqueta en el
+        * arreglo dinï¿½mico de m_MoldeoObjects
         *
         * @param labelname la etiqueta del objeto
         * @return verdadero si existe, falso si no
@@ -301,27 +301,27 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         */
         void ConsolePlay();
 
-        /// inicia la reproducción de una sesión pregrabada
+        /// inicia la reproducciï¿½n de una sesiï¿½n pregrabada
         /**
-        * Reproduce la última sesión grabada
+        * Reproduce la ï¿½ltima sesiï¿½n grabada
         */
         void ConsolePlaySession();
 
-        /// inicia la grabación de la sesión actual
+        /// inicia la grabaciï¿½n de la sesiï¿½n actual
         /**
-        * Registra la sesión actual en memoria luego al disco (a definir)
+        * Registra la sesiï¿½n actual en memoria luego al disco (a definir)
         */
         void ConsoleRecordSession();
 
-        /// inicia el renderizado de una sesión pregrabada
+        /// inicia el renderizado de una sesiï¿½n pregrabada
         /**
-        * Renderiza una sesión
+        * Renderiza una sesiï¿½n
         */
         void ConsoleRenderSession( const moText& p_frame_quality=moText("JPGGOOD") );
 
-        /// salva la sesión a un archivo
+        /// salva la sesiï¿½n a un archivo
         /**
-        * Permite salvar la sesión actual grabada en un archivo XML
+        * Permite salvar la sesiï¿½n actual grabada en un archivo XML
         */
         void ConsoleSaveSessionAs();
 
@@ -351,11 +351,11 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
         /// devuelve el modo de la consola
         /**
-        * El modo de la consola define si se trata de una sesión en vivo, grabada, de playback o en proceso de renderización.
+        * El modo de la consola define si se trata de una sesiï¿½n en vivo, grabada, de playback o en proceso de renderizaciï¿½n.
         * MO_CONSOLE_MODE_LIVE : predeterminado
-        * MO_CONSOLE_MODE_RECORD_SESSION: graba la sesión actual
-        * MO_CONSOLE_MODE_PLAY_SESSION: reproduce una sesión pregrabada
-        * MO_CONSOLE_MODE_RENDER_SESSION: renderiza la sesión pregrabada
+        * MO_CONSOLE_MODE_RECORD_SESSION: graba la sesiï¿½n actual
+        * MO_CONSOLE_MODE_PLAY_SESSION: reproduce una sesiï¿½n pregrabada
+        * MO_CONSOLE_MODE_RENDER_SESSION: renderiza la sesiï¿½n pregrabada
         *
         * @return moConsoleMode
         */
@@ -379,8 +379,8 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         * Los presets son aquellas configuraciones del estado completo de los efectos de una consola.
         * Los presets se guardan en objetos independientes y cada uno contiene un estado completo, de efectos
         * activados, apagados, con sus respectivas configuraciones seleccionadas.
-        * Estos presets pueden crearse en tiempo de ejecución, funcionando como memoria de un estado general
-        * correspondiente a la composición actual.
+        * Estos presets pueden crearse en tiempo de ejecuciï¿½n, funcionando como memoria de un estado general
+        * correspondiente a la composiciï¿½n actual.
         *
         * @return int el indice del preset seleccionado
         */
@@ -392,32 +392,32 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         * Los presets son aquellas configuraciones del estado completo de los efectos de una consola.
         * Los presets se guardan en objetos independientes y cada uno contiene un estado completo, de efectos
         * activados, apagados, con sus respectivas configuraciones seleccionadas.
-        * Estos presets pueden crearse en tiempo de ejecución, funcionando como memoria de un estado general
-        * correspondiente a la composición actual.
+        * Estos presets pueden crearse en tiempo de ejecuciï¿½n, funcionando como memoria de un estado general
+        * correspondiente a la composiciï¿½n actual.
         *
         * @param presetid el indice del preset seleccionado
         */
         void SetPreset( int presetid );
 
-        /// devuelve la configuración actualmente seleccionada de un objeto de la consola
+        /// devuelve la configuraciï¿½n actualmente seleccionada de un objeto de la consola
         /**
         *
-        * Cada moMoldeoObject tiene su espacio de configuraciones pre-fijadas. Estas están definidas al final
+        * Cada moMoldeoObject tiene su espacio de configuraciones pre-fijadas. Estas estï¿½n definidas al final
         * del config de cada objeto, ver moConfig, moPreConfig.
         *
-        * @param objectid el id único del objeto
+        * @param objectid el id ï¿½nico del objeto
         * @return int el indice del preconf seleccionado del objeto
         */
         int GetPreconf( int objectid );
 
-        /// fija la configuración actualmente seleccionada de un objeto de la consola
+        /// fija la configuraciï¿½n actualmente seleccionada de un objeto de la consola
         /**
         *
-        * Cada moMoldeoObject tiene su espacio de configuraciones pre-fijadas. Estas están definidas al final
+        * Cada moMoldeoObject tiene su espacio de configuraciones pre-fijadas. Estas estï¿½n definidas al final
         * del config de cada objeto, ver moConfig, moPreConfig.
         *
-        * @param objectid el id único del objeto
-        * @param preconfid el indice único del preconf a seleccionar
+        * @param objectid el id ï¿½nico del objeto
+        * @param preconfid el indice ï¿½nico del preconf a seleccionar
         */
         void SetPreconf( int objectid, int preconfid );
 
@@ -469,7 +469,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
 
     protected:
 
-        /** \defgroup luascript_console Funciones específicas de scripting de moConsole
+        /** \defgroup luascript_console Funciones especï¿½ficas de scripting de moConsole
         \ingroup luascript
         */
         /** @{ */
@@ -488,7 +488,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int luaSetTicks(moLuaVirtualMachine& vm);
 
         /**
-        * Obtener y fijar parámetros de un cierto moMoldeoObject
+        * Obtener y fijar parï¿½metros de un cierto moMoldeoObject
         * Todos necesitan un parametro, id o texto para devolver un valor
         */
         int luaGetObjectId( moLuaVirtualMachine& vm );
@@ -511,7 +511,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int luaGetEffectState(moLuaVirtualMachine& vm);
 
         /**
-        *  Funciones específicas del moIODeviceManager
+        *  Funciones especï¿½ficas del moIODeviceManager
         *  y la lista de eventos.
         */
         int luaGetDeviceCode(moLuaVirtualMachine& vm);
@@ -519,12 +519,12 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int luaAddEvent(moLuaVirtualMachine& vm);
 
         /**
-        *   Funciones específicas de acceso a los recursos:
+        *   Funciones especï¿½ficas de acceso a los recursos:
         *   moTextureManager: ABM de texturas
         *   moTexture -> moTextureAnimated  -> moMovie
         *                                   -> moTextureMultiple
         *
-        *   moVideoManager: ABM de recursos de cámara
+        *   moVideoManager: ABM de recursos de cï¿½mara
         *   moVideoBuffer
         *
         */

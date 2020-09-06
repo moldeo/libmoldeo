@@ -3178,6 +3178,27 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       }
       break;
 
+    case MO_ACTION_CONSOLE_GET_PLUGINS:
+      {
+        FullObjectJSON = "[";
+        moPluginDefinitions Plugins = m_pResourceManager->GetDataMan()->GetPluginDefinitions();
+        for( int i=0; i< (int) Plugins.Count(); i++ ) {
+          moPluginDefinition PluginDef = Plugins[i];
+          FullObjectJSON+= PluginDef.ToJSON()+moText(",");
+        }
+        FullObjectJSON+= "]";
+        pMessageToSend = new moDataMessage();
+        if (pMessageToSend) {
+            pMessageToSend->Add( moData("consolegetplugins") );
+            pMessageToSend->Add( moData("__console__") ); /// identifier for last message
+            pMessageToSend->Add( moData( FullObjectJSON ) );
+            SendMoldeoAPIMessage( pMessageToSend );
+        }
+
+        return 0;
+      }
+      break;
+
     default:
 
       break;

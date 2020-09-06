@@ -50,36 +50,36 @@ class moVideoGraph;
 
 */
 enum moDataSessionMode {
-        MO_DATASESSION_INACTIVE = 0, ///grabación y reproducción inactivos, modo predeterminado...
-        MO_DATASESSION_PLAYBACK_ACTIVE = 1, ///reproducción activa
-        MO_DATASESSION_RECORD_ACTIVE = 2,///grabación activa
-        MO_DATASESSION_PLAYANDRECORD_ACTIVE = 3 ///reproducción y grabación simultánea
+        MO_DATASESSION_INACTIVE = 0, ///grabaciï¿½n y reproducciï¿½n inactivos, modo predeterminado...
+        MO_DATASESSION_PLAYBACK_ACTIVE = 1, ///reproducciï¿½n activa
+        MO_DATASESSION_RECORD_ACTIVE = 2,///grabaciï¿½n activa
+        MO_DATASESSION_PLAYANDRECORD_ACTIVE = 3 ///reproducciï¿½n y grabaciï¿½n simultï¿½nea
 };
 
 /***
 
-    Modos de grabación de sesión
+    Modos de grabaciï¿½n de sesiï¿½n
 
 
 */
 enum moDataSessionRecordMode {
-    MO_DATASESSION_RECORD_TOMEMORY = 0, ///Grabación a memoria de las claves (al finalizar se puede elegir grabar o no a disco... modo predeterminado)
-    MO_DATASESSION_RECORD_BUFFERINGTOFILE = 1, ///grabación con memoria intermedia a disco
-    MO_DATASESSION_RECORD_DIRECTTOFILE = 2, ///grabación directa de claves a archivo
+    MO_DATASESSION_RECORD_TOMEMORY = 0, ///Grabaciï¿½n a memoria de las claves (al finalizar se puede elegir grabar o no a disco... modo predeterminado)
+    MO_DATASESSION_RECORD_BUFFERINGTOFILE = 1, ///grabaciï¿½n con memoria intermedia a disco
+    MO_DATASESSION_RECORD_DIRECTTOFILE = 2, ///grabaciï¿½n directa de claves a archivo
     MO_DATASESSION_RECORD_STREAMING = 4
 };
 
 /***
 
-    Modos de reproducción de sesión
+    Modos de reproducciï¿½n de sesiï¿½n
 
 
 */
 enum moDataSessionPlaybackMode {
-    MO_DATASESSION_PLAY_LIVETOCONSOLE = 0, ///Reproducción en tiempo real a consola
-    MO_DATASESSION_PLAY_LIVETOVIDEO = 1, ///Reproducción en vivo a video
-    MO_DATASESSION_PLAY_LIVETOSTREAM = 2, ///Reproducción en vivo por streaming
-    MO_DATASESSION_PLAY_RENDERTOVIDEO = 4 ///Reproducción renderizada a video por cuadros
+    MO_DATASESSION_PLAY_LIVETOCONSOLE = 0, ///Reproducciï¿½n en tiempo real a consola
+    MO_DATASESSION_PLAY_LIVETOVIDEO = 1, ///Reproducciï¿½n en vivo a video
+    MO_DATASESSION_PLAY_LIVETOSTREAM = 2, ///Reproducciï¿½n en vivo por streaming
+    MO_DATASESSION_PLAY_RENDERTOVIDEO = 4 ///Reproducciï¿½n renderizada a video por cuadros
 };
 
 
@@ -102,12 +102,12 @@ enum moDataSessionConfigParameters {
 
 /**
 
-Configuración de sesión. Se crea antes de empezar una sesión con los datos específicos como son:
+Configuraciï¿½n de sesiï¿½n. Se crea antes de empezar una sesiï¿½n con los datos especï¿½ficos como son:
     el directorio de datos
     el nombre del archivo de consola
-    el nombre del archivo para grabar la sesión
-    la cantidad máxima de claves
-    la cantidad máxima de tiempo a grabar en milisegundos
+    el nombre del archivo para grabar la sesiï¿½n
+    la cantidad mï¿½xima de claves
+    la cantidad mï¿½xima de tiempo a grabar en milisegundos
 
 */
 class LIBMOLDEO_API moDataSessionConfig : public moConfig {
@@ -155,9 +155,9 @@ class LIBMOLDEO_API moDataSessionConfig : public moConfig {
 
 	private:
 
-    moText m_AppPath;/// Directorio de ejecución de la aplicación
-		moText m_DataPath;/// Directorio de datos de la sesión
-		moText m_ConsoleConfigName;///archivo de definición de la consola (*.mol)
+    moText m_AppPath;/// Directorio de ejecuciï¿½n de la aplicaciï¿½n
+		moText m_DataPath;/// Directorio de datos de la sesiï¿½n
+		moText m_ConsoleConfigName;///archivo de definiciï¿½n de la consola (*.mol)
     moText m_AppDataPath;
     moText m_PluginsPath;
         /*
@@ -165,8 +165,8 @@ class LIBMOLDEO_API moDataSessionConfig : public moConfig {
         */
 		moText  m_SessionFileName; ///nombre del archivo a grabar
 		moText  m_VideoFileName; ///nombre del arcivo de video a grabar
-		long    m_MaxKeys; ///número de eventos clave a grabar en memoria
-		long    m_MaxTimecode;///tiempo máximo de grabación de claves
+		long    m_MaxKeys; ///nï¿½mero de eventos clave a grabar en memoria
+		long    m_MaxTimecode;///tiempo mï¿½ximo de grabaciï¿½n de claves
 
 		bool    m_Port;///para streaming
 		bool    m_Address;///para streaming
@@ -229,9 +229,9 @@ class LIBMOLDEO_API moDataSessionKey {
         long                  m_TimeCode; /// Valor del tick
         moMoldeoActionType    m_ActionType; /// accion
 
-        long                  m_ObjectId; ///Opcional para identificación del índice único de objeto
-        long                  m_ParamId; ///Opcional para identificación del índice único de parámetro
-        long                  m_ValueId; ///Opcional para identificación del índice único de valor
+        long                  m_ObjectId; ///Opcional para identificaciï¿½n del ï¿½ndice ï¿½nico de objeto
+        long                  m_ParamId; ///Opcional para identificaciï¿½n del ï¿½ndice ï¿½nico de parï¿½metro
+        long                  m_ValueId; ///Opcional para identificaciï¿½n del ï¿½ndice ï¿½nico de valor
         long                  m_PreconfId;
         moValue               m_Value; /// Valor del dato agregado o modificado
         moParamDefinition     m_ParamDefinition; /// Valor del dato agregado o modificado
@@ -422,4 +422,3 @@ class LIBMOLDEO_API moDataManager : public moResource
 };
 
 #endif
-

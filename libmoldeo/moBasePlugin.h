@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrï¿½s Colubri
 
 *******************************************************************************/
 
@@ -72,9 +72,9 @@ inline void moUnloadPlugin(MOpluginHandle &handle)
     #endif
 }
 
-/// Definición de un plugin
+/// Definiciï¿½n de un plugin
 /**
-*   Se necesitan tres parámetros para reconocer un plugin. Su nombre para ser invocado, su tipo, y la posición del archivo.
+*   Se necesitan tres parï¿½metros para reconocer un plugin. Su nombre para ser invocado, su tipo, y la posiciï¿½n del archivo.
 */
 class LIBMOLDEO_API moPluginDefinition {
 
@@ -92,7 +92,7 @@ class LIBMOLDEO_API moPluginDefinition {
 
     ///constructor
     /**
-    * @param p_name el nombre del plugin tal cual se invocará luego
+    * @param p_name el nombre del plugin tal cual se invocarï¿½ luego
     * @param p_fullpath el nombre del archivo completo incluyendo la ruta
     * @param p_type el tipo de objeto que este plugin implementa
     */
@@ -126,12 +126,27 @@ class LIBMOLDEO_API moPluginDefinition {
         return m_MoldeoObjectType;
     }
 
+    const moText& ToJSON() {
+      m_FullJSON = "{";
+      m_FullJSON+= moText("'name': '") +m_Name+"',";
+      m_FullJSON+= moText("'path': '") +m_FullPath+"',";
+      m_FullJSON+= moText("'type': '") +IntToStr(m_MoldeoObjectType)+"'";
+      m_FullJSON+= "}";
+      return m_FullJSON;
+    }
+    const moText& ToXML() {
+      m_FullXML = "";
+      return m_FullXML;
+    }
+
   protected:
 
     moText              m_Name;
     moText              m_FullPath;
     moMoldeoObjectType  m_MoldeoObjectType;
 
+    moText                m_FullJSON;
+    moText                m_FullXML;
 
 };
 
