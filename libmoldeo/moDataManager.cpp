@@ -843,6 +843,8 @@ moDataManager::moDataManager() {
 
 	m_pDataSession = NULL;
     m_pDataSessionConfig = NULL;
+  moPluginDefinition plugdef_default;
+  m_PluginDefinitions.Init( 0, plugdef_default );
 
 
 }

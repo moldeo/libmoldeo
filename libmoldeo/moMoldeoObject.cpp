@@ -374,6 +374,8 @@ moMobDefinition::ToJSON() {
   m_FullJSON+= fieldSeparation + "'description': '" + GetDescription() + "'";
   m_FullJSON+= fieldSeparation + "'moldeofatherid': '" + IntToStr( GetMoldeoFatherId() ) +"'";
   m_FullJSON+= fieldSeparation + "'fatherlabelname': '" + GetFatherLabelName() + "'";
+  m_FullJSON+= fieldSeparation + "'activate': '" + IntToStr(this->GetActivate()) + "'";
+  m_FullJSON+= fieldSeparation + "'key': '" + this->GetKeyName() + "'";
   m_FullJSON+= "}";
   return m_FullJSON;
 }

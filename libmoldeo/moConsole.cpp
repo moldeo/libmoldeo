@@ -2673,8 +2673,49 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
   */
 
     case MO_ACTION_OBJECT_ADD:
+    case MO_ACTION_OBJECT_SET:
       {
-/// adding an object
+          /// adding an object
+          moMobDefinition dfNewMob;
+          dfNewMob.SetName( p_pDataMessage->Get(1).ToText() );
+          dfNewMob.SetLabelName( p_pDataMessage->Get(2).ToText() );
+          dfNewMob.SetConfigName( p_pDataMessage->Get(3).ToText() );
+          dfNewMob.SetType( (moMoldeoObjectType) p_pDataMessage->Get(4).Int() );
+          dfNewMob.SetKeyName( p_pDataMessage->Get(5).ToText() );
+          dfNewMob.SetActivate( p_pDataMessage->Get(6).Int() );
+          dfNewMob.SetFatherLabelName( p_pDataMessage->Get(7).ToText() );
+
+          if (MappedType==MO_ACTION_OBJECT_ADD) MODebug2->Message("objectadd");
+          MODebug2->Message("from:");
+          for( int k=0; k<p_pDataMessage->Count(); k++) {
+            MODebug2->Message( p_pDataMessage->Get(k).ToText() );
+          }
+          MODebug2->Message("to:");
+          MODebug2->Message(dfNewMob.ToJSON());
+          int status = -1;
+          try {
+            if (MappedType==MO_ACTION_OBJECT_ADD) status = this->NewMob( dfNewMob );
+            if (MappedType==MO_ACTION_OBJECT_SET) status = this->SetMob( dfNewMob );
+          } catch(...) {
+            Error("MO_ACTION_OBJECT_ADD or MO_ACTION_OBJECT_SET error");
+          }
+          if (status!=-1) {
+            pMessageToSend = new moDataMessage();
+            if (pMessageToSend) {
+              pMessageToSend->Add( moData( "consoleget" ) );
+              ProcessMoldeoAPIMessage(pMessageToSend);
+            }
+            return 0;
+          } else {
+            pMessageToSend = new moDataMessage();
+            if (pMessageToSend) {
+              pMessageToSend->Add( moData( "consoleerror" ) );
+              pMessageToSend->Add( moData( "Error adding or saving new mob." ) );
+              pMessageToSend->Add( moData( IntToStr(status) ) );
+              ProcessMoldeoAPIMessage(pMessageToSend);
+            }
+            return 0;
+          }
 
       }
       break;
@@ -2732,7 +2773,31 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
     case MO_ACTION_OBJECT_DELETE:
       {
-///
+        /// DELETE
+        arg0  = p_pDataMessage->Get(1).ToText();//mob label
+        fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+        if (fxObject) {
+            //FullObjectJSON = fxObject->ToJSON();
+            //MODebug2->Message(FullObjectJSON);
+            this->DeleteMob( fxObject->GetMobDefinition() );
+
+        } else {
+          int idobj = GetObjectId( arg0 );
+          MObject = GetObjectByIdx( idobj );
+          //TODO: sometimes for iodevices it's necessary to move the objects
+          if (MObject && MObject->GetMobDefinition().GetType()!=MO_OBJECT_IODEVICE
+                        && MObject->GetMobDefinition().GetType()!=MO_OBJECT_RESOURCE) {
+            this->DeleteMob( MObject->GetMobDefinition() );
+          }
+        }
+        if (fxObject || MObject) {
+            pMessageToSend = new moDataMessage();
+            if (pMessageToSend) {
+              pMessageToSend->Add( moData( "consoleget" ) );
+              ProcessMoldeoAPIMessage(pMessageToSend);
+            }
+            return 0;
+        }
       }
       break;
 
@@ -3181,10 +3246,14 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
     case MO_ACTION_CONSOLE_GET_PLUGINS:
       {
         FullObjectJSON = "[";
-        moPluginDefinitions Plugins = m_pResourceManager->GetDataMan()->GetPluginDefinitions();
+        moText fieldSeparation = "";
+        MODebug2->Message( "MO_ACTION_CONSOLE_GET_PLUGINS" );
+        MODebug2->Message( m_pResourceManager->GetDataMan()->GetPluginDefinitions().Count() );
+        moPluginDefinitions &Plugins( m_pResourceManager->GetDataMan()->GetPluginDefinitions() );
         for( int i=0; i< (int) Plugins.Count(); i++ ) {
-          moPluginDefinition PluginDef = Plugins[i];
-          FullObjectJSON+= PluginDef.ToJSON()+moText(",");
+          moPluginDefinition& PluginDef( Plugins[i] );
+          FullObjectJSON+= fieldSeparation + PluginDef.ToJSON();
+          fieldSeparation = moText(",");
         }
         FullObjectJSON+= "]";
         pMessageToSend = new moDataMessage();
@@ -3346,7 +3415,7 @@ int moConsole::NewMob( const moMobDefinition &p_MobDef ) {
                   if (res) {
                       if (pEffect) {
                           pEffect->LoadCodes( m_pIODeviceManager );
-                          pEffect->Activate();
+                          if (pMOB->GetMobDefinition().GetActivate()) { pEffect->Activate(); }
                       }
                   } else {
                       Error( moText("moConsole::NewMob Couldn't initialized effect" ) );
@@ -3377,6 +3446,7 @@ int moConsole::NewMob( const moMobDefinition &p_MobDef ) {
                     Error( moText("moConsole::NewMob:: Source > MobDefinition Invalid") );
                   } else {
                     //ProjectUpdated( m_ProjectDescriptor );
+                    MODebug2->Message( "NewMob OK:" + MDef.ToJSON());
                     return 1;
                   }
 
@@ -3393,6 +3463,20 @@ int moConsole::NewMob( const moMobDefinition &p_MobDef ) {
 
       return -1;
 
+}
+
+int moConsole::SetMob( const moMobDefinition &p_MobDef ) {
+  moMoldeoObject* MObject = NULL;
+  MObject = GetObjectByIdx( GetObjectId( p_MobDef.GetLabelName() ) );
+  if (MObject) {
+    MObject->GetMobDefinition().SetLabelName( p_MobDef.GetLabelName() );
+    MObject->GetMobDefinition().SetConfigName( p_MobDef.GetConfigName() );
+    MObject->GetMobDefinition().SetKeyName( p_MobDef.GetKeyName() );
+    MObject->GetMobDefinition().SetActivate( p_MobDef.GetActivate() );
+    MODebug2->Message( "Set Mob ok" );
+    return 1;
+  }
+  return -1;
 }
 
 int moConsole::AddChildMob( const moMobDefinition &p_MobDef, const moMobDefinition &p_MobDefFather ) {

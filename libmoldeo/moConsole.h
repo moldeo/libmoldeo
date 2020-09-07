@@ -460,6 +460,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int TestScreen( const moDisplay& p_display_info );
 
         int NewMob( const moMobDefinition &p_MobDef );
+        int SetMob( const moMobDefinition &p_MobDef );
         int AddChildMob( const moMobDefinition &p_MobDef, const moMobDefinition &p_MobDefFather );
         int MoveMob( const moMobDefinition& p_MobDef, int position, MOboolean is_relative = MO_FALSE  );
         int DuplicateMob( const moMobDefinition& p_MobDef );

@@ -119,6 +119,44 @@ moDebug::Message( moText p_text ) {
   Unlock();
 }
 
+/*
+void
+moDebug::Message( moData p_data ) {
+  Lock();
+  moText p_text = p_data.ToText();
+  cout << p_text << endl;
+  moLog << p_text << endl;
+  m_Debug.Push( p_text );
+  Unlock();
+}
+
+void
+moDebug::Message( moDatas p_message ) {
+  Lock();
+  for(int i=0; i<p_message.Count(); i++) {
+    moData& p_data(p_message[i]);
+    Message(p_data);
+  }
+  Unlock();
+}
+
+void
+moDebug::Message( moDataMessage p_message ) {
+  Lock();
+  Message( (moDatas) p_data );
+  Unlock();
+}
+
+void
+moDebug::Message( moDataMessages p_messages ) {
+  Lock();
+  for(int i=0; i<p_messages.Count(); i++) {
+    moDataMessage& p_datas(p_messages[i]);
+    Message(p_datas);
+  }
+  Unlock();
+}
+*/
 void
 moDebug::Log( moText p_text ) {
   Lock();
@@ -153,4 +191,3 @@ MOboolean
 moAbstract::Initialized() {
 	return m_bInitialized;
 }
-

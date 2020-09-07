@@ -36,8 +36,8 @@
 #include "moText.h"
 #include "moLock.h"
 
-/// Lista de mensajes para la depuración de errores y anuncio de errores y mensajes
-/** Clase que implementa una lista de mensajes de texto para poder visualizar y depurar más sencillamente errores
+/// Lista de mensajes para la depuraciï¿½n de errores y anuncio de errores y mensajes
+/** Clase que implementa una lista de mensajes de texto para poder visualizar y depurar mï¿½s sencillamente errores
 *
 *	A este objeto pueden acceder todas las funciones desde cualquier objeto que haya sido derivado de moAbstract.
 *   Esta lista es de tipo FIFO, First In, First Out, Primero que entra, primero que sale.
@@ -56,7 +56,7 @@ public:
     /// Fija el archivo de salida del flujo estandar de c y c++ (stdout y cout)
     /**
     *   Permite especificar el archivo donde se escribe la salida estandar de la consola.
-    *   Si se quiere volver al sistema estandar se llama a esta función con el parámetro vacío.
+    *   Si se quiere volver al sistema estandar se llama a esta funciï¿½n con el parï¿½metro vacï¿½o.
     *   @param filename nombre del archivo para la salida
     */
     void SetStdout( const moText& filename = moText("") );
@@ -64,7 +64,7 @@ public:
 
     /// Paraliza el acceso a las funciones de escritura
     /**
-    *   Utiliza un moLock para proteger los datos para el acceso asincrónico
+    *   Utiliza un moLock para proteger los datos para el acceso asincrï¿½nico
     *   @see moLock
     *   @return verdadero si fue exitoso o falso si no
     */
@@ -72,7 +72,7 @@ public:
 
     /// Libera el acceso a las funciones de escritura
     /**
-    *   Utiliza un moLock para proteger los datos para el acceso asincrónico.
+    *   Utiliza un moLock para proteger los datos para el acceso asincrï¿½nico.
     *   @see moLock
     *   @return verdadero si fue exitoso o falso si no
     */
@@ -80,11 +80,11 @@ public:
 
     /// Anuncia y registra un error
     /**
-    *   Anuncia un error apilándolo en la lista de mensajes y escribiéndolo
+    *   Anuncia un error apilï¿½ndolo en la lista de mensajes y escribiï¿½ndolo
     *   al archivo de mensajes de errores y al de mensajes registrados...
     */
     void Error( moText p_text );
-    
+
     /// Anuncia y registra un llamado de atencion
     /**
      *   Anuncia un llamado de atencion apilandolo en la lista de mensajes y escribiendolo
@@ -92,16 +92,21 @@ public:
      */
     void Warning( moText p_text );
 
-    /// Anuncia un mensaje al usuario además de guardarlo en el log de texto
+    /// Anuncia un mensaje al usuario ademï¿½s de guardarlo en el log de texto
     /**
     * Pone el mensaje en la pila de mensajes, y escribe este al log de texto
     *
     */
     void Message( moText p_text );
+    /*
+    void Message( moData p_data );
+    void Message( moDatas p_datas );
+    void Message( moDataMessage p_message );
+    void Message( moDataMessages p_messages );*/
 
     /// Escribe un mensaje en el archivo de registro (log)
     /**
-    *   El archivo log se llama comunmente moldeolog.txt y se encuentra en el raíz del archivo ejecutable
+    *   El archivo log se llama comunmente moldeolog.txt y se encuentra en el raï¿½z del archivo ejecutable
     *   de Moldeo
     *
     */
@@ -140,7 +145,7 @@ public:
     /// Devuelve una referencia a la pila de mensajes
     /**
     * El uso correcto para evitar errores en caso de acceso asyncronico
-    * es hacer una llamada primero a la función de Lock() y luego al terminar de operar
+    * es hacer una llamada primero a la funciï¿½n de Lock() y luego al terminar de operar
     * con la referencia de la pila llamar a Unlock() para liberarla.
     * @return moTextHeap referencia a la pila de mensajes
     * @see moTextHeap
@@ -158,12 +163,12 @@ private:
     moTextHeap m_Debug;///< Pila de mensajes
 
     /**
-    * la función Error dirige sus mensajes a esta salida
+    * la funciï¿½n Error dirige sus mensajes a esta salida
     */
     ofstream moErr;///< Cadena de salida de los mensajes de error
 
     /**
-    * la función Message y Log dirigen sus mensajes a esta salida
+    * la funciï¿½n Message y Log dirigen sus mensajes a esta salida
     */
     ofstream moLog;///< Cadena de salida de los mensajes registrados
 
@@ -175,16 +180,16 @@ private:
     streambuf *psbuf, *backup; ///< Cadena de backup
 
 
-    moLock	m_Lock;///< semáforo para el acceso asincrónico
+    moLock	m_Lock;///< semï¿½foro para el acceso asincrï¿½nico
 
 };
 
 /// Clase base abstracta de donde deben derivar los objetos [virtual pura]
-/** Clase base abstracta, inicialización y finalización de recursos internos y debug.
-*   Todos los objetos al ser derivados de esta clase deberán implementar las siguientes funciones.
+/** Clase base abstracta, inicializaciï¿½n y finalizaciï¿½n de recursos internos y debug.
+*   Todos los objetos al ser derivados de esta clase deberï¿½n implementar las siguientes funciones.
 *
-*   MOboolean Init() : <b>Inicialización:</b> crear recursos internos de la clase
-*   MOboolean Finish() : <b>Finalización:</b> liberar los recursos creados en Init()
+*   MOboolean Init() : <b>Inicializaciï¿½n:</b> crear recursos internos de la clase
+*   MOboolean Finish() : <b>Finalizaciï¿½n:</b> liberar los recursos creados en Init()
 *
 *   @see moDebug
 */
@@ -193,40 +198,39 @@ class LIBMOLDEO_API moAbstract
 public:
 
     /**
-    *   constructor genérico
+    *   constructor genï¿½rico
     */
 	moAbstract();
 	virtual ~moAbstract();
 
     /**
-    *   Función de Inicialización.
-    *   Todos los recursos manejados exclusivamente por este objeto son generados aquí.
+    *   Funciï¿½n de Inicializaciï¿½n.
+    *   Todos los recursos manejados exclusivamente por este objeto son generados aquï¿½.
     *   @return verdadero si fue exitosa o falso en otro caso
     */
 	virtual MOboolean Init();///< Inicializa el objeto
 
     /**
-    *  Función de finalización.
-    *  Libera los recursos generados en la función de inicialización.
+    *  Funciï¿½n de finalizaciï¿½n.
+    *  Libera los recursos generados en la funciï¿½n de inicializaciï¿½n.
     *   @return verdadero si fue exitosa o falso en otro caso
     */
 	virtual MOboolean Finish();///< Finaliza el objeto, libera recursos
 
     /**
     *  Ccomprueba si el objeto ha sido inicializado
-    *  Devuelve true si está inicializado el objeto o false en caso contrario.
+    *  Devuelve true si estï¿½ inicializado el objeto o false en caso contrario.
     *   @return verdadero si fue exitosa o falso en otro caso
     */
-	MOboolean		Initialized();///< Pregunta si está inicializado
+	MOboolean		Initialized();///< Pregunta si estï¿½ inicializado
 
 
-	MOboolean		m_bInitialized;///< Valor de inicialización
+	MOboolean		m_bInitialized;///< Valor de inicializaciï¿½n
 
-    static moDebug *MODebug2;///< Clase de impresión de errores para depuración
+    static moDebug *MODebug2;///< Clase de impresiï¿½n de errores para depuraciï¿½n
 	static moTextHeap *MODebug;///< Lista de textos
 };
 
 
 
 #endif
-

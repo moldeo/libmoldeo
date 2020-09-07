@@ -112,6 +112,7 @@ MOboolean name::Finish() {\
 void name::Empty() {\
 \
 	n = 0;\
+\
 	if (array!=NULL) {\
 		delete[] array;\
 		array = NULL;\
@@ -252,4 +253,3 @@ void name::Copy( const name &A, int x0, int x1) {\
 
 
 #endif /* __MO_ARRAY_H__ */
-

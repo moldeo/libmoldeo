@@ -389,7 +389,7 @@ class LIBMOLDEO_API moDataManager : public moResource
     */
 		moDirectory GetAppDataDir( const moText& p_dir_name );
 
-		const moPluginDefinitions& GetPluginDefinitions() {
+		moPluginDefinitions& GetPluginDefinitions() {
       return m_PluginDefinitions;
 		}
 
