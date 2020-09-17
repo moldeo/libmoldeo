@@ -2138,8 +2138,11 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
           ///se incluye todos los parametros que tiene al menos un valor en esta preconfiguracion... (en ese indice)
           MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > Adding Value > a new value");
-
-          pConfig->AddPreconfig( arg2Int );
+          if (arg2Int<64) {
+            pConfig->AddPreconfig( arg2Int );
+          } else {
+            MODebug2->Error("Too many preconfigs! Warning or Error: " + IntToStr(arg2Int) );
+          }
 
         }
         /**
@@ -2684,6 +2687,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           dfNewMob.SetKeyName( p_pDataMessage->Get(5).ToText() );
           dfNewMob.SetActivate( p_pDataMessage->Get(6).Int() );
           dfNewMob.SetFatherLabelName( p_pDataMessage->Get(7).ToText() );
+          dfNewMob.SetMoldeoId( p_pDataMessage->Get(8).Int() );
 
           if (MappedType==MO_ACTION_OBJECT_ADD) MODebug2->Message("objectadd");
           MODebug2->Message("from:");
@@ -3339,6 +3343,8 @@ int moConsole::NewMob( const moMobDefinition &p_MobDef ) {
               pMobDef.SetConsoleValueIndex( pFxManager->MasterEffects().Count() );
               pMOB = (moMoldeoObject*) pFxManager->New( pMobDef );
               pEffect = (moEffect*) pMOB;
+              moMasterEffect* pMaster = (moMasterEffect*) pMOB;
+              if (pMaster) pMaster->Set( &m_EffectManager, &m_ConsoleState );
               if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "mastereffect" );
               break;
           case MO_OBJECT_IODEVICE:
@@ -3467,14 +3473,76 @@ int moConsole::NewMob( const moMobDefinition &p_MobDef ) {
 
 int moConsole::SetMob( const moMobDefinition &p_MobDef ) {
   moMoldeoObject* MObject = NULL;
+  moMoldeoObject* pFatherMOB = NULL;
+  moEffectManager* pFxManager = NULL;
+  moConfig* pConfig = NULL;
+
+  MODebug2->Message("SetMob");
+
   MObject = GetObjectByIdx( GetObjectId( p_MobDef.GetLabelName() ) );
+  if (!MObject) MObject = GetObjectByIdx( p_MobDef.GetMoldeoId() );
+
+  if (p_MobDef.GetMoldeoFatherId()==-1) {
+      pConfig = &m_Config;
+      pFxManager = &m_EffectManager;
+  }
+  else if (p_MobDef.GetMoldeoFatherId()>=0) {
+      pFatherMOB = GetObjectByIdx( p_MobDef.GetMoldeoFatherId() );
+      if (pFatherMOB && pFatherMOB->GetName()=="scene") {
+        moSceneEffect* pScene = (moSceneEffect*) pFatherMOB;
+        pConfig = pScene->GetConfig();
+        pFxManager = &pScene->GetEffectManager();
+      }
+  }
+
   if (MObject) {
+    //SAVE IN OBJECT
     MObject->GetMobDefinition().SetLabelName( p_MobDef.GetLabelName() );
     MObject->GetMobDefinition().SetConfigName( p_MobDef.GetConfigName() );
     MObject->GetMobDefinition().SetKeyName( p_MobDef.GetKeyName() );
     MObject->GetMobDefinition().SetActivate( p_MobDef.GetActivate() );
+
+    //SAVE IN PARAMETERS CONFIG
+    moMoldeoObject* pMOB = MObject;
+    moValue effectvalue( pMOB->GetName(), "TXT" );
+    effectvalue.AddSubValue( pMOB->GetConfigName() , "TXT" );
+    effectvalue.AddSubValue( pMOB->GetLabelName() , "TXT" );
+    effectvalue.AddSubValue( "0" , "NUM" );
+    if (pMOB->GetMobDefinition().GetActivate())
+      effectvalue.AddSubValue( "1" , "NUM" );
+    else
+      effectvalue.AddSubValue( "0" , "NUM" );
+
+    if (pMOB->GetMobDefinition().GetKeyName()!="")
+      effectvalue.AddSubValue( pMOB->GetMobDefinition().GetKeyName() , "TXT" );
+    else
+      effectvalue.AddSubValue( "" , "TXT" );
+
+    if (pConfig) pConfig->GetParam( pMOB->GetMobDefinition().GetMobIndex().GetParamIndex() ).GetValue( pMOB->GetMobDefinition().GetMobIndex().GetValueIndex() ) = effectvalue;
+
+    if (pMOB->GetConfigName().Length()>0) {
+
+        moText confignamecomplete = m_pResourceManager->GetDataMan()->GetDataPath();
+        confignamecomplete +=  moSlash + moText(pMOB->GetConfigName());
+        confignamecomplete +=  moText(".cfg");
+
+        ///Creates the config file based on definition plugin
+        moFile pFile(confignamecomplete);
+
+        ///veamos si existe antes...
+        if (!pFile.Exists()) {
+            ///si no existe lo creamos...
+            pMOB->GetConfig()->SaveConfig(confignamecomplete);
+        } else {
+            ///si existe preguntamos si sobreescribimos o no?
+            //pMOB->GetConfig()->SaveConfig(confignamecomplete);
+            MODebug2->Message( "Config exists, overwriting? No is default. Yes not implemented" );
+        }
+    }
     MODebug2->Message( "Set Mob ok" );
     return 1;
+  } else {
+    MODebug2->Error( "Set Mob, Mob not found, check label name and moldeo id." );
   }
   return -1;
 }

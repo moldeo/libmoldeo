@@ -347,8 +347,8 @@ moTextureBuffer::LoadImage( moText p_ImageName, moBitmap* pImage, int indeximage
 
 
 	//RESCALE: NOTE NECESARRY HERE
-	//quizas podamos definir un máximo para el tamaño tanto ancho como alto
-	//o como proporción
+	//quizas podamos definir un mï¿½ximo para el tamaï¿½o tanto ancho como alto
+	//o como proporciï¿½n
 	//forzar proporcion y esas cosas....
 	/*
 	if ( m_width != m_SourceWidth || m_height != m_SourceHeight ) {
@@ -613,7 +613,7 @@ moTextureManager::moTextureManager()
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_TEXTURE );
 
-	SetName("texturemanager");
+	SetName("Texture Manager");
   SetLabelName("texturemanager");
 
     // In your main program ...
@@ -1106,4 +1106,3 @@ void moTextureManager::Update(moEventList *Events)
 	}
 
 }
-

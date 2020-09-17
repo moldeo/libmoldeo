@@ -49,6 +49,7 @@ moTimeManager::moTimeManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_TIME );
 	SetName("Time Manager");
+	SetLabelName("timemanager");
 }
 
 moTimeManager::~moTimeManager() {
@@ -156,4 +157,3 @@ void moTimeManager::FixByObjectId( long p_objectid ) {
     }
 
 }
-

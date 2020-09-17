@@ -36,8 +36,8 @@ moScriptManager::moScriptManager()
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_SCRIPT );
 
-	SetName("Script Manager");
-	SetLabelName("Script Manager");
+	SetName("scriptmanager");
+	SetLabelName("scriptmanager");
 }
 
 moScriptManager::~moScriptManager()
@@ -117,4 +117,3 @@ moLuaResourceManager* moScriptManager::PushLuaResourceManager( moResourceManager
   }
   return m_pLuaResourceManager;
 }
-

@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  Andrï¿½s Colubri
 
 *******************************************************************************/
 
@@ -41,8 +41,8 @@ moMathManager::moMathManager()
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_MATH );
 
-	SetName("Math Manager");
-	SetLabelName("Math Manager");
+	SetName("mathmanager");
+	SetLabelName("mathmanager");
 }
 
 moMathManager::~moMathManager()
@@ -100,11 +100,11 @@ MOint moMathManager::AddFunction(const moText& p_expr, MOboolean p_force_new, mo
 	if (!p_force_new)
 	{
         idx = GetFunctionIdx(p_expr);
-		if (-1 < idx) return idx; // La función ya existe.
+		if (-1 < idx) return idx; // La funciï¿½n ya existe.
 	}
 
 	moMathFunction* p_math_fun;
-	moParserFunction* p_parser_fun; // Función de parseado.
+	moParserFunction* p_parser_fun; // Funciï¿½n de parseado.
 
     p_math_fun = BuiltInMathFunctionFactory(p_expr);
 	if (p_math_fun == NULL)
@@ -166,4 +166,3 @@ void moMathManager::SetFunctionParam(MOuint p_idx, double s0, double s1, double 
 {
     if (ValidFunction(p_idx)) m_functions[p_idx]->SetParameters(s0, s1, s2);
 }
-

@@ -345,7 +345,7 @@ mo3dModelManager::mo3dModelManager() {
 	SetType( MO_OBJECT_RESOURCE );
 	SetResourceType( MO_RESOURCETYPE_MODEL );
 	SetName("3dmodelmanager");
-	SetLabelName("3d Model Manager");
+	SetLabelName("3dmodelmanager");
 	mTM = NULL;
 	m_pMoldeoLogo = NULL;
 /*

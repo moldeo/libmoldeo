@@ -593,8 +593,9 @@ int moConfig::LoadConfig( moText p_filename ) {
 				if (PRECONFIGNODE) {
 					PRECONFIG = PRECONFIGNODE->ToElement();
 				}
-				while(PRECONFIG) {
-
+        int pre_count = 0;
+				while(PRECONFIG && pre_count<64 ) {
+          pre_count+=1;
 					TiXmlElement*  PREVALUE = NULL;
 					TiXmlNode* NODE = PRECONFIG->FirstChild("P");
 					//PreConfig.m_ValueIndexes.Empty();

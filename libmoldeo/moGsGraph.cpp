@@ -1965,6 +1965,51 @@ gst-launch -m filesrc location=test.wav ! wavparse ! audioconvert ! audioresampl
 RECEIVE:
 gst-launch -m udpsrc port=19790 !  rtppcmadepay ! alawdec ! queue ! amrnbenc ! rtpamrpay pt=98 ! udpsink  host=127.0.0.1 port=2006
 
+
+BRIEF demo of a SKYPE "like"  video::audio  Gstreamer Desktop APP setup between 2 operators...one using a WINDOWS 10 laptop, and the other using a  LINUX LUBUNTU 18.04 laptop
+
+all video and audio streams created with Gstreamer scripts
+https://gstreamer.freedesktop.org/
+
+WINDOWS 10 GSTREAMER SCRIPTS:
+*********************************************************************
+AUDIO TRANSMIT from MICROPHONE
+gst-launch-1.0 -v directsoundsrc !  audiorate ! audioconvert ! audioresample !  opusenc frame-size=5  bitrate-type=1 ! rtpopuspay  ! queue ! udpsink host=192.168.1.101 port=4001
+
+AUDIO RECEIVE from other Gstreamer OP:
+gst-launch-1.0 -v udpsrc port=4002 caps="application/x-rtp,channels=2" !  rtpjitterbuffer   ! rtpopusdepay ! opusdec plc=true  ! audioconvert ! directsoundsink  buffer-time=100000
+
+SEND VIDEO to yourself and the other Gstreamer OP
+gst-launch-1.0 -v ksvideosrc ! "image/jpeg,width=1280, height=720,framerate=30/1" ! rtpjpegpay ! multiudpsink clients=192.168.1.101:5006,192.168.1.142:5007
+
+RECEIVE your own video stream
+gst-launch-1.0  -v udpsrc port=5007 ! application/x-rtp, encoding-name=JPEG,payload=26 ! rtpjpegdepay ! jpegparse ! jpegdec ! autovideosink
+
+RECEIVE video from other Gstreamer OP
+gst-launch-1.0  -v udpsrc port=5003 ! application/x-rtp, encoding-name=JPEG,payload=26 ! rtpjpegdepay ! jpegparse ! jpegdec ! autovideosink
+
+
+
+LINUX GSTREAMER SCRIPTS:
+******************************************************************
+AUDIO RECEIVE from other Gstreamer OP
+gst-launch-1.0 -v udpsrc port=4001 caps="application/x-rtp,channels=2" !  rtpjitterbuffer   ! rtpopusdepay ! opusdec plc=true  ! audioconvert ! jackaudiosink  buffer-time=100000
+
+AUDIO TRANSMIT from MICROPHONE
+gst-launch-1.0 -v jackaudiosrc !  audiorate ! audioconvert ! audioresample !  opusenc frame-size=5 bitrate-type=1 ! rtpopuspay  !  queue ! udpsink host=192.168.1.142 port=4002
+
+SEND VIDEO to yourself and the other Gstreamer OP
+gst-launch-1.0 -v v4l2src device=/dev/video0 ! "image/jpeg,width=640, height=480,framerate=30/1" ! rtpjpegpay ! multiudpsink clients=192.168.1.142:5003,192.168.1.101:5004
+
+receive your own video stream
+gst-launch-1.0 -e -v udpsrc port=5004 ! application/x-rtp, encoding-name=JPEG,payload=26 ! rtpjpegdepay ! jpegparse ! jpegdec ! autovideosink
+
+receive the other Gstreamer OP's video stream
+gst-launch-1.0 -e -v udpsrc port=5006 ! application/x-rtp, encoding-name=JPEG,payload=26 ! rtpjpegdepay ! jpegparse ! jpegdec ! autovideosink
+
+NOTE: on the video transmit scripts...MULTIUDP sink is used, so that when only using 1 webcam...you can send your own video stream from the webcam to yourself to monitor your cam and position it  etc... and to the other Gstreamer OP
+
+
 */
 bool
 moGsGraph::BuildLiveStreamingGraph( moBucketsPool *pBucketsPool, moText p_location ) {
