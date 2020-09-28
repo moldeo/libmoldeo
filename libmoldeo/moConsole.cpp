@@ -3339,13 +3339,15 @@ int moConsole::NewMob( const moMobDefinition &p_MobDef ) {
               if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "posteffect" );
               break;
           case MO_OBJECT_MASTEREFFECT:
-              pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("mastereffect") );
-              pMobDef.SetConsoleValueIndex( pFxManager->MasterEffects().Count() );
-              pMOB = (moMoldeoObject*) pFxManager->New( pMobDef );
-              pEffect = (moEffect*) pMOB;
-              moMasterEffect* pMaster = (moMasterEffect*) pMOB;
-              if (pMaster) pMaster->Set( &m_EffectManager, &m_ConsoleState );
-              if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "mastereffect" );
+              {
+                  pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("mastereffect") );
+                  pMobDef.SetConsoleValueIndex( pFxManager->MasterEffects().Count() );
+                  pMOB = (moMoldeoObject*) pFxManager->New( pMobDef );
+                  pEffect = (moEffect*) pMOB;
+                  moMasterEffect* pMaster = (moMasterEffect*) pMOB;
+                  if (pMaster) pMaster->Set( &m_EffectManager, &m_ConsoleState );
+                  if (pMOB) pMOB->GetConfig()->Set( pMOB->GetName(), "mastereffect" );
+              }
               break;
           case MO_OBJECT_IODEVICE:
               pMobDef.SetConsoleParamIndex( pConfig->GetParamIndex("devices") );
@@ -3497,10 +3499,12 @@ int moConsole::SetMob( const moMobDefinition &p_MobDef ) {
 
   if (MObject) {
     //SAVE IN OBJECT
-    MObject->GetMobDefinition().SetLabelName( p_MobDef.GetLabelName() );
-    MObject->GetMobDefinition().SetConfigName( p_MobDef.GetConfigName() );
-    MObject->GetMobDefinition().SetKeyName( p_MobDef.GetKeyName() );
-    MObject->GetMobDefinition().SetActivate( p_MobDef.GetActivate() );
+    moMobDefinition MobDef = MObject->GetMobDefinition();
+    MobDef.SetLabelName( p_MobDef.GetLabelName() );
+    MobDef.SetConfigName( p_MobDef.GetConfigName() );
+    MobDef.SetKeyName( p_MobDef.GetKeyName() );
+    MobDef.SetActivate( p_MobDef.GetActivate() );
+    MObject->SetMobDefinition( MobDef );
 
     //SAVE IN PARAMETERS CONFIG
     moMoldeoObject* pMOB = MObject;
