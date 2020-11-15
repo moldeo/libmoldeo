@@ -3187,19 +3187,21 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
 
       for(int i=0;i<(int)this->m_MoldeoObjects.Count(); i++ ) {
         moMoldeoObject* Mobj = m_MoldeoObjects.Get(i);
-        FullObjectJSON+= fieldSeparation+"'"+Mobj->GetLabelName()+"': {";
-        FullObjectJSON+= "'lbl': '" + Mobj->GetLabelName() +"',";
-        FullObjectJSON+= "'name': '" + Mobj->GetName() +"',";
-        FullObjectJSON+= "'cfg': '" + Mobj->GetConfigName() +"',";
-        FullObjectJSON+= "'key': '" + Mobj->GetKeyName() +"',";
-        FullObjectJSON+= "'cla': '" + Mobj->GetMobDefinition().GetTypeToClass( Mobj->GetMobDefinition().GetType() ) +"',";
-        FullObjectJSON+= "'pari': '" + IntToStr(Mobj->GetMobDefinition().GetMobIndex().GetParamIndex()) +"',";
-        FullObjectJSON+= "'vali': '" + IntToStr(Mobj->GetMobDefinition().GetMobIndex().GetValueIndex()) +"',";
-        FullObjectJSON+= "'acti': '" + IntToStr((int)Mobj->GetMobDefinition().GetActivate()==1) +"',";
-        FullObjectJSON+= "'ix': '" + IntToStr(i) +"',";
-        FullObjectJSON+= "'id': '" + IntToStr(Mobj->GetId()) +"'";
-        FullObjectJSON+= "}";
-        fieldSeparation = ",";
+        if (Mobj) {
+            FullObjectJSON+= fieldSeparation+"'"+Mobj->GetLabelName()+"': {";
+            FullObjectJSON+= "'lbl': '" + Mobj->GetLabelName() +"',";
+            FullObjectJSON+= "'name': '" + Mobj->GetName() +"',";
+            FullObjectJSON+= "'cfg': '" + Mobj->GetConfigName() +"',";
+            FullObjectJSON+= "'key': '" + Mobj->GetKeyName() +"',";
+            FullObjectJSON+= "'cla': '" + Mobj->GetMobDefinition().GetTypeToClass( Mobj->GetMobDefinition().GetType() ) +"',";
+            FullObjectJSON+= "'pari': '" + IntToStr(Mobj->GetMobDefinition().GetMobIndex().GetParamIndex()) +"',";
+            FullObjectJSON+= "'vali': '" + IntToStr(Mobj->GetMobDefinition().GetMobIndex().GetValueIndex()) +"',";
+            FullObjectJSON+= "'acti': '" + IntToStr((int)Mobj->GetMobDefinition().GetActivate()==1) +"',";
+            FullObjectJSON+= "'ix': '" + IntToStr(i) +"',";
+            FullObjectJSON+= "'id': '" + IntToStr(Mobj->GetId()) +"'";
+            FullObjectJSON+= "}";
+            fieldSeparation = ",";
+        }
       }
 
       FullObjectJSON+= "}";
