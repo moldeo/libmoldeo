@@ -2039,9 +2039,36 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       if (arg1Text=="particlecolor_1") { arg1Text = "particlecolor"; subvalue=1;issubvalue=true; }
       if (arg1Text=="particlecolor_2") { arg1Text = "particlecolor"; subvalue=2;issubvalue=true; }
       if (arg1Text=="particlecolor_3") { arg1Text = "particlecolor"; subvalue=3;issubvalue=true; }
+      MODebug2->Message(moText("Search Param:")+pConfig->GetParam(arg1Text).GetParamDefinition().GetName());
+      if (pConfig->GetParam(arg1Text).GetParamDefinition().GetName()==arg1Text) {
+        MODebug2->Message(moText("Search Param not found"));
+      } else {
+        //check if last char is a Number
+        MODebug2->Message(arg1Text+" L:"+IntToStr(arg1Text.Length()));
+        if (arg1Text.Length()>3) {
+          moText colorparam = arg1Text;
+          colorparam.Left(arg1Text.Length()-3);// [paramcolorname][_0]
+          MODebug2->Message(colorparam);
+          MODebug2->Message(pConfig->GetParam(colorparam).GetParamDefinition().GetName());
+          if ( pConfig->GetParam(colorparam).GetParamDefinition().GetName() == colorparam ) {
+            moText tsubv = arg1Text;
+            MODebug2->Message(tsubv);
+            tsubv.Right(1);//only last char
+            MODebug2->Message(tsubv);
+            arg1Text = colorparam;
+            MODebug2->Message(arg1Text);
+            if (isdigit(tsubv[0])) {
+              subvalue = StrToInt(tsubv);
+              issubvalue=true;
+              MODebug2->Message(IntToStr(subvalue));
+            }
+          }
+        }
 
+      }
 
       moParam& rParam( pConfig->GetParam(arg1Text));
+
 
       arg2Int = atoi( arg2Text );
 

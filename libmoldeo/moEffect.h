@@ -61,9 +61,9 @@ class moEffect;
 /** \if spanish
  * clase base para definir Efectos.
  * un efecto es el objeto dibujable en la consola (simil de una capa)
- * en función del orden en el que ha sido cargado en la consola de efectos
+ * en funciï¿½n del orden en el que ha sido cargado en la consola de efectos
  * Es importante implementar las funciones de Init, Draw, Update e Interaction que son
- * necesarias para las operaciones de Inicialización, Dibujado, Actualización e Interacción.
+ * necesarias para las operaciones de Inicializaciï¿½n, Dibujado, Actualizaciï¿½n e Interacciï¿½n.
  * \endif
  * \if english
  * Base class to derive an effect object
@@ -84,42 +84,42 @@ class LIBMOLDEO_API moEffect : public moMoldeoObject
 public:
 
         /**
-         * constructor genérico de la clase.
+         * constructor genï¿½rico de la clase.
          */
         moEffect();
 
         /**
-         * destructor genérico de la clase.
+         * destructor genï¿½rico de la clase.
          */
         virtual ~moEffect();
 
 		/**
-		* Inicializador genérico derivado de moAbstract.
+		* Inicializador genï¿½rico derivado de moAbstract.
 		* @see moAbstract
 		*/
         virtual MOboolean Init() = 0;
 
 		/**
-		* Función de dibujado del efecto
+		* Funciï¿½n de dibujado del efecto
 		*/
 		virtual void Draw( moTempo*,moEffectState* parentstate=NULL) = 0;
 
 		/**
-		* Finalizador genérico derivado de moAbstract. Es importante que esta función libere los recursos que han sido creados en la función Init().
+		* Finalizador genï¿½rico derivado de moAbstract. Es importante que esta funciï¿½n libere los recursos que han sido creados en la funciï¿½n Init().
 		* @see moAbstract
 		*/
         virtual MOboolean Finish() = 0;
 
 		/**
-		* Este inicializador se ejecuta en primer lugar dentro de la función Init, y efectua las inicializaciones espécíficas de cualquier derivado de moEffect´.
-		* a) carga del archivo de configuración
-		* b) verifica que existan parámetros necesarios específicos de los efectos como ser SYNCRO y PHASE
-		* c) llamar a MoldeoObject::Init() para la inclusión y parseo de todos los parámetros...
+		* Este inicializador se ejecuta en primer lugar dentro de la funciï¿½n Init, y efectua las inicializaciones espï¿½cï¿½ficas de cualquier derivado de moEffectï¿½.
+		* a) carga del archivo de configuraciï¿½n
+		* b) verifica que existan parï¿½metros necesarios especï¿½ficos de los efectos como ser SYNCRO y PHASE
+		* c) llamar a MoldeoObject::Init() para la inclusiï¿½n y parseo de todos los parï¿½metros...
 		*/
         virtual MOboolean PreInit();
 
 		/**
-		* PreDraw debe ejecutarse en la función Draw, antes de cualquier operación de dibujo.
+		* PreDraw debe ejecutarse en la funciï¿½n Draw, antes de cualquier operaciï¿½n de dibujo.
 		* a) toma el nuevo Syncro establecido del config o
 		* b) Sincroniza el beat
 		*/
@@ -249,12 +249,16 @@ public:
         moInlet*        InletMouseYButtonRight;
         moInlet*        InletMouseYButtonMiddle;
 
+        moInlet*        InletMouseXWheel;
+        moInlet*        InletMouseYWheel;
+
         //moInlet*        InletSpecialShift,InletSpecialAlt,InletSpecialCtrl;
         MOdouble        mousex,mousey;
         MOdouble        mousefactor,mousebuttonleft,mousebuttonright,mousebuttonmiddle;
         MOdouble        mousexbuttonleft,mouseybuttonleft;
         MOdouble        mousexbuttonright,mouseybuttonright;
         MOdouble        mousexbuttonmiddle,mouseybuttonmiddle;
+        MOdouble        mousexwheel,mouseywheel;
 
         virtual void ScriptExeDraw();
         virtual void ScriptExeInteraction();

@@ -45,13 +45,13 @@
 moDefineDynamicArray(moEffectsArray)
 
 typedef enum {
-
   MO_SDL_MOUSEMOTION = SDL_MOUSEMOTION,
-  MO_SDL2_MOUSEMOTION = 1024,
+  MO_SDL2_MOUSEMOTION = 1024, //0x400
   MO_SDL_MOUSEBUTTONDOWN = SDL_MOUSEBUTTONDOWN,
-  MO_SDL2_MOUSEBUTTONDOWN = 1025,
+  MO_SDL2_MOUSEBUTTONDOWN = 1025, //0x401
   MO_SDL_MOUSEBUTTONUP = SDL_MOUSEBUTTONUP,
-  MO_SDL2_MOUSEBUTTONUP = 1026
+  MO_SDL2_MOUSEBUTTONUP = 1026, //0x402
+  MO_SDL2_MOUSEWHEEL = 1027  //0x403
 } moEventCode;
 
 
@@ -77,6 +77,12 @@ moEffect::moEffect() {
   InletMouseYButtonLeft = NULL;
   InletMouseYButtonRight = NULL;
   InletMouseYButtonMiddle = NULL;
+
+  InletMouseXWheel = NULL;
+  InletMouseYWheel = NULL;
+
+  mousexwheel = 0.0;
+  mouseywheel = 0.0;
 }
 
 moEffect::~moEffect() {
@@ -117,7 +123,7 @@ moEffect::SetState( const moMobState& p_MobState ) {
 // de la funcion virtual Init().  Contiene el codigo obligatorio.
 // 1) Levanta el config de disco
 // 2) el parametro del Syncro
-// 3) Inicializa el efecto en la primera preconfiguración.
+// 3) Inicializa el efecto en la primera preconfiguraciï¿½n.
 MOboolean
 moEffect::PreInit() {
 
@@ -281,6 +287,22 @@ moEffect::PreInit() {
       m_Inlets.Add(InletMouseYButtonMiddle);
     }
 
+    InletMouseXWheel = new moInlet();
+    if (InletMouseXWheel) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseXWheel)->Init( moText("mousexwheel"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseXWheel);
+    }
+
+    InletMouseYWheel = new moInlet();
+    if (InletMouseYWheel) {
+      //Inlet->Init( "tempo", m_Inlets.Count(), param.GetPtr() );
+      //param.SetExternData( Inlet->GetData() );
+      ((moConnector*)InletMouseYWheel)->Init( moText("mouseywheel"), m_Inlets.Count(), MO_DATA_NUMBER_DOUBLE );
+      m_Inlets.Add(InletMouseYWheel);
+    }
+
 
 	if (!m_pResourceManager) return false;
 
@@ -302,8 +324,8 @@ moEffect::PreInit() {
 
 	//devicecode es llenado por la moConsole(por defecto)
 	//si en el nombrefecto.cfg encontramos el parametro ":acciones" entonces tomamos las acciones
-	//definidas arbitrariamente allí....
-	//se tratará de mantener valuees como: MOACCIONES_ALPHA... para poder hacer un FADE
+	//definidas arbitrariamente allï¿½....
+	//se tratarï¿½ de mantener valuees como: MOACCIONES_ALPHA... para poder hacer un FADE
 	//la idea es que sea completamente reconfigurable la interfaz del teclado
 
   MODebug2->Message("moEffect::PreInit > OK! for object: " + GetName()+ " config: " + GetConfigName() + " label: " + GetLabelName() );
@@ -355,7 +377,7 @@ void moEffect::BeginDraw( moTempo *tempogral,moEffectState* parentstate) {
             else m_EffectState.tempo.syncro = sync->Double();
 		}
 
-		/**código alternativo*/
+		/**cï¿½digo alternativo*/
 		//m_EffectState.tempo.syncro = m_Config.Fun(isyncro).Eval( m_EffectState.tempo.ang );
 	}
 
@@ -511,7 +533,7 @@ moEffect::LoadCodes(moIODeviceManager *consolaesarray) {
 				if(coddisp==-1) {
 				    texto = moText("\n");
             texto += GetConfigName();
-            texto += moText(".cfg: no se encontró en ningun dispositivo el codigo de dispositivo correspondiente a: ");
+            texto += moText(".cfg: no se encontrï¿½ en ningun dispositivo el codigo de dispositivo correspondiente a: ");
             texto += strcod;
 					MODebug2->Error(texto);
 				} else {
@@ -588,8 +610,10 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
                 break;
             }
             break;
+
           case MO_SDL2_MOUSEMOTION:
           case MO_SDL_MOUSEMOTION:
+            {
             //m_EffectState.mousexrel = float(event->reservedvalue0) / float(w);
             //m_EffectState.mouseyrel = float(event->reservedvalue1) / float(h);
             mousex = float(event->reservedvalue2) / float(w);
@@ -623,7 +647,20 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
             }
             if (InletMouseXButtonMiddle) { if (InletMouseXButtonMiddle->GetData()) InletMouseXButtonMiddle->GetData()->SetDouble( (double)mousexbuttonmiddle );}
             if (InletMouseYButtonMiddle) { if (InletMouseYButtonMiddle->GetData()) InletMouseYButtonMiddle->GetData()->SetDouble( (double)mouseybuttonmiddle );}
+            }
+            break;
 
+          case MO_SDL2_MOUSEWHEEL:
+            {
+            //mousex = float(event->reservedvalue2) / float(w);
+            //mousey = float(event->reservedvalue3) / float(h);
+            double mousexrelw = float(event->reservedvalue0);
+            double mouseyrelw = float(event->reservedvalue1);
+            mousexwheel+= mousexrelw;
+            mouseywheel+= mouseyrelw;
+            if (InletMouseXWheel) { if (InletMouseXWheel->GetData()) InletMouseXWheel->GetData()->SetDouble( (double)mousexwheel );}
+            if (InletMouseYWheel) { if (InletMouseYWheel->GetData()) InletMouseYWheel->GetData()->SetDouble( (double)mouseywheel );}
+            }
             break;
       }
     }
@@ -1208,5 +1245,3 @@ moEffect::ToJSON() {
   return m_FullJSON;
 
 }
-
-

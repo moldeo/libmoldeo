@@ -1176,7 +1176,7 @@ moData::GetGLId( moMoldeoObject* p_mob, moTempo *p_tempo, MOfloat p_fade, const 
             )
         {
           moTextureAnimated* ptex_anim = (moTextureAnimated*)pTexture;
-          return ptex_anim ->GetGLId((moTempo *) p_tempo);
+          return ptex_anim->GetGLId((moTempo *) p_tempo);
         }
         else return pTexture->GetGLId();
 

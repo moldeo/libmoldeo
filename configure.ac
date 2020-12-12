@@ -1,4 +1,4 @@
-AC_INIT([libmoldeo], [1.4.0.1], [info@moldeointeractive.com.ar], [libmoldeo])
+AC_INIT([libmoldeo], [1.4.0.2], [info@moldeointeractive.com.ar], [libmoldeo])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
