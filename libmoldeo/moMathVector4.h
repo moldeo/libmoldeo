@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  AndrÃ©s Colubri
 
   Portions taken from
   Wild Magic Source Code
@@ -264,6 +264,17 @@ public:
       return moMath<Real>::ACos(Cosine(rkV));
     }
 
+    moText ToJSON() const {
+      moText JSON = "[";
+      moText comma="";
+      for(int i=0;i<4; i++) {
+        JSON+= comma + FloatToStr( (*this)[i] );
+        comma=",";
+      }
+      JSON+= "]";
+      return JSON;
+    }
+
     // special vectors
     static const moVector4 ZERO;
     static const moVector4 UNIT_X;  // (1,0,0,0)
@@ -310,4 +321,3 @@ moDeclareExportedDynamicArray( moVector4d, moVector4dArray );
 
 
 #endif
-

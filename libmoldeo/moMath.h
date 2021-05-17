@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  AndrÃ©s Colubri
 
   Portions taken from
   Wild Magic Source Code
@@ -51,11 +51,11 @@
 #endif
 
 /**
- * Clase template que implementa funciones matemáticas básicas. Si bien muchas de ellas
- * ya están disponibles en las librerías estándard de C, las provistas aquí ofrecen
- * algoritmos aproximados más rápidos, control de bordes, etc.
- * Las funciones aceleradas (Fast*) implementan evaluaciones rápidas de funciones
- * trigonométricas y sus inversas, utilizando aproximaciones polinomiales.
+ * Clase template que implementa funciones matemÃ¡ticas bÃ¡sicas. Si bien muchas de ellas
+ * ya estÃ¡n disponibles en las librerÃ­as estÃ¡ndard de C, las provistas aquÃ­ ofrecen
+ * algoritmos aproximados mÃ¡s rÃ¡pidos, control de bordes, etc.
+ * Las funciones aceleradas (Fast*) implementan evaluaciones rÃ¡pidas de funciones
+ * trigonomÃ©tricas y sus inversas, utilizando aproximaciones polinomiales.
  * Las mejoras en velocidad fueron medidas con un CPU AMD 2800 (2.08 GHz) utilizando
  * Visual Studio .NET 2003 con un release build.
  */
@@ -74,7 +74,7 @@ public:
     ~moMath() {}
 
 	/**
-     * Función arco coseno, el argumento es restringido al intervalo [-1,1].
+     * FunciÃ³n arco coseno, el argumento es restringido al intervalo [-1,1].
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -98,7 +98,7 @@ public:
     }
 
 	/**
-     * Función arco seno, el argumento es restringido al intervalo [-1,1].
+     * FunciÃ³n arco seno, el argumento es restringido al intervalo [-1,1].
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -122,7 +122,7 @@ public:
     }
 
 	/**
-     * Función arco tangente.
+     * FunciÃ³n arco tangente.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -132,7 +132,7 @@ public:
     }
 
 	/**
-     * Función arco tangente 2. Calcula el arco tangente de fY/fY, pero devolviendo un resultado
+     * FunciÃ³n arco tangente 2. Calcula el arco tangente de fY/fY, pero devolviendo un resultado
      * en el rango (-PI, PI].
 	 * @param fValue argumento.
 	 * @return resultado.
@@ -143,7 +143,7 @@ public:
     }
 
 	/**
-     * Función techo.
+     * FunciÃ³n techo.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -153,7 +153,7 @@ public:
     }
 
 	/**
-     * Función coseno.
+     * FunciÃ³n coseno.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -163,7 +163,7 @@ public:
     }
 
 	/**
-     * Función exponencial.
+     * FunciÃ³n exponencial.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -173,7 +173,7 @@ public:
     }
 
 	/**
-     * Función valor absoluto.
+     * FunciÃ³n valor absoluto.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -183,7 +183,7 @@ public:
     }
 
 	/**
-     * Función piso.
+     * FunciÃ³n piso.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -193,7 +193,7 @@ public:
     }
 
 	/**
-     * Función módulo.
+     * FunciÃ³n mÃ³dulo.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -203,7 +203,7 @@ public:
     }
 
 	/**
-     * Función 1 / raiz cuadrada.
+     * FunciÃ³n 1 / raiz cuadrada.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -213,7 +213,7 @@ public:
     }
 
 	/**
-     * Función logaritmo natural.
+     * FunciÃ³n logaritmo natural.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -223,7 +223,7 @@ public:
     }
 
 	/**
-     * Función logaritmo (en base 2).
+     * FunciÃ³n logaritmo (en base 2).
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -233,7 +233,7 @@ public:
     }
 
 	/**
-     * Función logaritmo (en base 10).
+     * FunciÃ³n logaritmo (en base 10).
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -243,7 +243,7 @@ public:
     }
 
 	/**
-     * Función potencia.
+     * FunciÃ³n potencia.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -253,7 +253,7 @@ public:
     }
 
 	/**
-     * Función seno.
+     * FunciÃ³n seno.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -263,7 +263,7 @@ public:
     }
 
 	/**
-     * Función potencia de dos.
+     * FunciÃ³n potencia de dos.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -272,7 +272,7 @@ public:
     }
 
 	/**
-     * Función raiz cuadrada.
+     * FunciÃ³n raiz cuadrada.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -281,7 +281,7 @@ public:
     }
 
 	/**
-     * Función tangente.
+     * FunciÃ³n tangente.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -299,7 +299,7 @@ public:
     }
 
 	/**
-     * Calcula el logaritmo en base 2 de un número que es una potencia de 2.
+     * Calcula el logaritmo en base 2 de un nÃºmero que es una potencia de 2.
 	 * @param uiPowerOfTwo argumento.
 	 * @return resultado.
 	 */
@@ -313,11 +313,11 @@ public:
     }
 
 	/**
-     * Conversión rápida de un número fFloat de punto flotante de 32 bits en el intervalo [0,1]
+     * ConversiÃ³n rÃ¡pida de un nÃºmero fFloat de punto flotante de 32 bits en el intervalo [0,1]
      *a un entero de 32 bits en [0,2^iLog-1].
-	 * @param fFloat número a convertir.
-	 * @param iLog exponende del límite derecho del intervalo.
-	 * @return resultado de la conversión.
+	 * @param fFloat nÃºmero a convertir.
+	 * @param iLog exponende del lÃ­mite derecho del intervalo.
+	 * @return resultado de la conversiÃ³n.
 	 */
     inline static int ScaledFloatToInt(float fFloat, int iLog)
     {
@@ -334,7 +334,7 @@ public:
     }
 
 	/**
-     * Función signo (devuelve -1 si el argumento es negtivo, 0 si es cero, y +1 si es positivo).
+     * FunciÃ³n signo (devuelve -1 si el argumento es negtivo, 0 si es cero, y +1 si es positivo).
 	 * @param iValue argumento.
 	 * @return resultado.
 	 */
@@ -353,7 +353,7 @@ public:
     }
 
 	/**
-     * Función signo (devuelve -1 si el argumento es negtivo, 0 si es cero, y +1 si es positivo).
+     * FunciÃ³n signo (devuelve -1 si el argumento es negtivo, 0 si es cero, y +1 si es positivo).
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
@@ -372,10 +372,10 @@ public:
     }
 
 	/**
-     * Genera un número aleatorio en [0,1). El generador puede ser inicializado con una primera llamada
-     * pasando como parámetro una semilla positiva.
+     * Genera un nÃºmero aleatorio en [0,1). El generador puede ser inicializado con una primera llamada
+     * pasando como parÃ¡metro una semilla positiva.
 	 * @param uiSeed semilla para el generador aleatorio.
-	 * @return número aleatorio en en [0,1).
+	 * @return nÃºmero aleatorio en en [0,1).
 	 */
     inline static Real UnitRandom (unsigned int uiSeed = 0) {
       if (uiSeed > 0)
@@ -388,10 +388,10 @@ public:
     }
 
 	/**
-     * Genera un número aleatorio en [-1,1). El generador puede ser inicializado con una primera llamada
-     * pasando como parámetro una semilla positiva.
+     * Genera un nÃºmero aleatorio en [-1,1). El generador puede ser inicializado con una primera llamada
+     * pasando como parÃ¡metro una semilla positiva.
 	 * @param uiSeed semilla para el generador aleatorio.
-	 * @return número aleatorio en [-1,1).
+	 * @return nÃºmero aleatorio en [-1,1).
 	 */
     inline static Real SymmetricRandom (unsigned int uiSeed = 0) {
       if (uiSeed > 0.0)
@@ -404,8 +404,8 @@ public:
     }
 
 	/**
-     * Genera un número aleatorio en [fMin,fMax). El generador puede ser inicializado con una primera llamada
-     * pasando como parámetro uiSeed una semilla positiva.
+     * Genera un nÃºmero aleatorio en [fMin,fMax). El generador puede ser inicializado con una primera llamada
+     * pasando como parÃ¡metro uiSeed una semilla positiva.
 	 * @param fMin extremo izquierdo del intervalo.
 	 * @param fMax extremo derecho del intervalo.
 	 * @param uiSeed semilla para el generador aleatorio.
@@ -423,26 +423,26 @@ public:
     }
 
 	/**
-     * Genera un número aleatorio en [0,1). El generador puede ser inicializado con una primera llamada
-     * pasando como parámetro una semilla positiva.
+     * Genera un nÃºmero aleatorio en [0,1). El generador puede ser inicializado con una primera llamada
+     * pasando como parÃ¡metro una semilla positiva.
 	 * @param rSeed semilla para el generador aleatorio.
-	 * @return número aleatorio en en [0,1).
+	 * @return nÃºmero aleatorio en en [0,1).
 	 */
 	inline static Real UnitRandom (Real rSeed) {
 	  return UnitRandom ((unsigned int)rSeed);
   }
 	/**
-     * Genera un número aleatorio en [-1,1). El generador puede ser inicializado con una primera llamada
-     * pasando como parámetro una semilla positiva.
+     * Genera un nÃºmero aleatorio en [-1,1). El generador puede ser inicializado con una primera llamada
+     * pasando como parÃ¡metro una semilla positiva.
 	 * @param rSeed semilla para el generador aleatorio.
-	 * @return número aleatorio en [-1,1).
+	 * @return nÃºmero aleatorio en [-1,1).
 	 */
 	inline static Real SymmetricRandom (Real rSeed) {
     return SymmetricRandom  ((unsigned int)rSeed);
   }
 	/**
-     * Genera un número aleatorio en [fMin,fMax). El generador puede ser inicializado con una primera llamada
-     * pasando como parámetro rSeed una semilla positiva.
+     * Genera un nÃºmero aleatorio en [fMin,fMax). El generador puede ser inicializado con una primera llamada
+     * pasando como parÃ¡metro rSeed una semilla positiva.
 	 * @param fMin extremo izquierdo del intervalo.
 	 * @param fMax extremo derecho del intervalo.
 	 * @param rSeed semilla para el generador aleatorio.
@@ -453,7 +453,7 @@ public:
 	}
 
 	/**
-     * Función seno acelerada, version 0. Max error sin0 = 1.7e-04, aceleración = 4.0
+     * FunciÃ³n seno acelerada, version 0. Max error sin0 = 1.7e-04, aceleraciÃ³n = 4.0
 	 * @param fValue argumento en [0,pi/2].
 	 * @return resultado.
 	 */
@@ -469,7 +469,7 @@ public:
     }
 
 	/**
-     * Función seno acelerada, version 1. Max error sin0 = 1.9e-08, aceleración = 2.8
+     * FunciÃ³n seno acelerada, version 1. Max error sin0 = 1.9e-08, aceleraciÃ³n = 2.8
 	 * @param fValue argumento en [0,pi/2].
 	 * @return resultado.
 	 */
@@ -491,7 +491,7 @@ public:
     }
 
 	/**
-     * Función coseno acelerada, version 0. Max error sin0 = 1.2e-03, aceleración = 4.5
+     * FunciÃ³n coseno acelerada, version 0. Max error sin0 = 1.2e-03, aceleraciÃ³n = 4.5
 	 * @param fValue argumento en [0,pi/2].
 	 * @return resultado.
 	 */
@@ -506,7 +506,7 @@ public:
     }
 
 	/**
-     * Función coseno acelerada, version 1. Max error sin0 = 6.5e-09, aceleración = 2.8
+     * FunciÃ³n coseno acelerada, version 1. Max error sin0 = 6.5e-09, aceleraciÃ³n = 2.8
 	 * @param fValue argumento en [0,pi/2].
 	 * @return resultado.
 	 */
@@ -527,7 +527,7 @@ public:
     }
 
 	/**
-     * Función tangente acelerada, version 0. Max error sin0 = 8.1e-04, aceleración = 5.6
+     * FunciÃ³n tangente acelerada, version 0. Max error sin0 = 8.1e-04, aceleraciÃ³n = 5.6
 	 * @param fValue argumento en [0,pi/4].
 	 * @return resultado.
 	 */
@@ -543,7 +543,7 @@ public:
     }
 
 	/**
-     * Función tangente acelerada, version 1. Max error sin0 = 1.9e-08, aceleración = 3.4
+     * FunciÃ³n tangente acelerada, version 1. Max error sin0 = 1.9e-08, aceleraciÃ³n = 3.4
 	 * @param fValue argumento en [0,pi/4].
 	 * @return resultado.
 	 */
@@ -567,7 +567,7 @@ public:
     }
 
 	/**
-     * Función arco seno acelerada, version 0. Max error sin0 = 6.8e-05, aceleración = 7.5
+     * FunciÃ³n arco seno acelerada, version 0. Max error sin0 = 6.8e-05, aceleraciÃ³n = 7.5
 	 * @param fValue argumento en [0,1].
 	 * @return resultado.
 	 */
@@ -585,7 +585,7 @@ public:
     }
 
 	/**
-     * Función arco seno acelerada, version 1. Max error sin0 = 1.4e-07, aceleración = 5.5
+     * FunciÃ³n arco seno acelerada, version 1. Max error sin0 = 1.4e-07, aceleraciÃ³n = 5.5
 	 * @param fValue argumento en [0,1].
 	 * @return resultado.
 	 */
@@ -611,7 +611,7 @@ public:
     }
 
 	/**
-     * Función arco coseno acelerada, version 0. Max error sin0 = 6.8e-05, aceleración = 7.5
+     * FunciÃ³n arco coseno acelerada, version 0. Max error sin0 = 6.8e-05, aceleraciÃ³n = 7.5
 	 * @param fValue argumento en [0,1].
 	 * @return resultado.
 	 */
@@ -629,7 +629,7 @@ public:
     }
 
 	/**
-     * Función arco coseno acelerada, version 1. Max error sin0 = 1.4e-07, aceleración = 5.7
+     * FunciÃ³n arco coseno acelerada, version 1. Max error sin0 = 1.4e-07, aceleraciÃ³n = 5.7
 	 * @param fValue argumento en [0,1].
 	 * @return resultado.
 	 */
@@ -655,7 +655,7 @@ public:
     }
 
 	/**
-     * Función arco tangente acelerada, version 0. Max error sin0 = 1.2e-05, aceleración = 2.8
+     * FunciÃ³n arco tangente acelerada, version 0. Max error sin0 = 1.2e-05, aceleraciÃ³n = 2.8
 	 * @param fValue argumento en [-1,1].
 	 * @return resultado.
 	 */
@@ -675,7 +675,7 @@ public:
     }
 
 	/**
-     * Función arco tangente acelerada, version 1. Max error sin0 = 2.3e-08, aceleración = 1.8
+     * FunciÃ³n arco tangente acelerada, version 1. Max error sin0 = 2.3e-08, aceleraciÃ³n = 1.8
 	 * @param fValue argumento en [-1,1].
 	 * @return resultado.
 	 */
@@ -703,14 +703,14 @@ public:
     }
 
 	/**
-     * Aproximación rápida de 1/sqrt.
+     * AproximaciÃ³n rÃ¡pida de 1/sqrt.
 	 * @param fValue argumento.
 	 * @return resultado.
 	 */
     static Real FastInvSqrt (Real fValue);
 
 	/**
-     * Función exponencial negativa (exp(-x)) acelerada, version 0. Max error sin0 = 0.00024, aceleración = 25.4
+     * FunciÃ³n exponencial negativa (exp(-x)) acelerada, version 0. Max error sin0 = 0.00024, aceleraciÃ³n = 25.4
 	 * @param fValue argumento en [0,infinito).
 	 * @return resultado.
 	 */
@@ -729,7 +729,7 @@ public:
     }
 
 	/**
-     * Función exponencial negativa (exp(-x)) acelerada, version 1. Max error sin0 = 0.000024, aceleración = 25.4
+     * FunciÃ³n exponencial negativa (exp(-x)) acelerada, version 1. Max error sin0 = 0.000024, aceleraciÃ³n = 25.4
 	 * @param fValue argumento en [0,infinito).
 	 * @return resultado.
 	 */
@@ -750,7 +750,7 @@ public:
     }
 
 	/**
-     * Función exponencial negativa (exp(-x)) acelerada, version 2. Max error sin0 = 0.0000024, aceleración = 20.5
+     * FunciÃ³n exponencial negativa (exp(-x)) acelerada, version 2. Max error sin0 = 0.0000024, aceleraciÃ³n = 20.5
 	 * @param fValue argumento en [0,infinito).
 	 * @return resultado.
 	 */
@@ -773,7 +773,7 @@ public:
     }
 
 	/**
-     * Función exponencial negativa (exp(-x)) acelerada, version 2. Max error sin0 = 0.00000025, aceleración = 17.3
+     * FunciÃ³n exponencial negativa (exp(-x)) acelerada, version 2. Max error sin0 = 0.00000025, aceleraciÃ³n = 17.3
 	 * @param fValue argumento en [0,infinito).
 	 * @return resultado.
 	 */
@@ -798,7 +798,7 @@ public:
     }
 
 	/**
-     * Conversión de grados a radianes.
+     * ConversiÃ³n de grados a radianes.
 	 * @param iDeg argumento en grados.
 	 * @return resultado en radianes.
 	 */
@@ -808,7 +808,7 @@ public:
     }
 
 	/**
-     * Conversión de radianes a grados.
+     * ConversiÃ³n de radianes a grados.
 	 * @param iDeg argumento en radianes.
 	 * @return resultado en grados.
 	 */
@@ -817,8 +817,48 @@ public:
       return RAD_TO_DEG * iRad;
     }
 
+    /**
+       * Normaliza fX, en el intervalo fMin,fMax, aplicando el factor fRatio en el dividendo
+     * @param fX la variable a interpolar
+     * @param fMin extremo izquierdo del intervalo.
+     * @param fMax extremo derecho del intervalo.
+     * @param fRatio factor del dividendo
+     * @return resultado.
+     */
+    inline static Real INorm (Real fX, Real fMin, Real fMax, Real fRatio) {
+      Real _in = (fMax-fMin)*fRatio;
+      if ( _in == 0 ) { return 0; }
+      bool _inI = (fX>=fMin) && (fX<=fMax);
+      return _inI ? momin( (fX-fMin) / _in, 1.0 ) : 0.0 ;
+    }
+
+    inline static Real IRNorm (Real fX, Real fMin, Real fMax, Real fRatio) {
+      Real _in = (fMax-fMin)*fRatio;
+      if ( _in == 0 ) { return 0; }
+      bool _inI = (fX>=fMin) && (fX<=fMax);
+      return _inI ? 1.0 - momin( (fX-fMin) / _in, 1.0 ) : 0.0 ;
+    }
+
+    /** easeInOutCubic
+    *
+    *  t 0..1 b 0 c 1 d 1
+    function (t, b, c, d) {
+      t /= d/2;
+      if (t < 1) return c/2*t*t*t + b;
+      t -= 2;
+      return c/2*(t*t*t + 2) + b;
+    };
+    *
+    */
+    inline static Real eIOCubic(Real fX) {
+      fX /= 0.5;
+      if (fX < 1) return 0.5*fX*fX*fX;
+      fX -= 2;
+      return 0.5*(fX*fX*fX + 2);
+    }
+
 	/**
-     * Constantes matemáticas útiles.
+     * Constantes matemÃ¡ticas Ãºtiles.
 	 */
     static const Real EPSILON;
     static const Real ZERO_TOLERANCE;

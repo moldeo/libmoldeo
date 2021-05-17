@@ -670,8 +670,22 @@ void moParserFunction::AddMathFunctions()
     mu::Parser* pParser = (mu::Parser*) m_pParser;
     if (pParser) {
         pParser->DefineFun( "UnitRandom", (mu::fun_type1) moMathd::UnitRandom, false);
+				pParser->DefineFun( "URand", (mu::fun_type1) moMathd::UnitRandom, false);
+
         pParser->DefineFun("SymmetricRandom", (mu::fun_type1) moMathd::SymmetricRandom, false);
+				pParser->DefineFun("SRand", (mu::fun_type1) moMathd::SymmetricRandom, false);
+
         pParser->DefineFun("IntervalRandom", (mu::fun_type3) moMathd::IntervalRandom, false);
+				pParser->DefineFun("IRand", (mu::fun_type3) moMathd::IntervalRandom, false);
+
+				pParser->DefineFun("IntervalNormalize", (mu::fun_type4) moMathd::INorm, false);
+				pParser->DefineFun("INorm", (mu::fun_type4) moMathd::INorm, false);
+
+				pParser->DefineFun("IntervalRetroNormalize", (mu::fun_type4) moMathd::IRNorm, false);
+				pParser->DefineFun("IRNorm", (mu::fun_type4) moMathd::IRNorm, false);
+
+				pParser->DefineFun("eIOCubic", (mu::fun_type1) moMathd::eIOCubic, false);
+				pParser->DefineFun("easeInOutCubic", (mu::fun_type1) moMathd::eIOCubic, false);
 
         pParser->DefineFun("FastSin0", moMathd::FastSin0, false);
         pParser->DefineFun("FastSin1", moMathd::FastSin1, false);
@@ -699,7 +713,10 @@ void moParserFunction::AddMathFunctions()
         pParser->DefineFun("FastNegExp3", moMathd::FastNegExp3, false);
 
         pParser->DefineFun("DegToRad", moMathd::DegToRad, false);
+				pParser->DefineFun("D2R", moMathd::DegToRad, false);
+
         pParser->DefineFun("RadToDeg", moMathd::RadToDeg, false);
+				pParser->DefineFun("R2D", moMathd::RadToDeg, false);
     }
 }
 
@@ -791,4 +808,3 @@ double moParserFunction::OnFuncEval() {
     return m_LastEval;
 
 }
-

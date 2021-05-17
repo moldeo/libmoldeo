@@ -368,6 +368,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int SetValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, const moValue &p_value );
         int RefreshValue( int m_MoldeoObjectId, int m_ParamId, int m_ValueId, bool p_Refresh=true );
         int EffectPlay( int m_MoldeoObjectId );
+        int EffectPlayPause( int m_MoldeoObjectId );
         int EffectPause( int m_MoldeoObjectId );
         int EffectStop( int m_MoldeoObjectId );
         int ObjectEnable( int m_MoldeoObjectId );
@@ -542,6 +543,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int luaGet(moLuaVirtualMachine& vm);
 
         int luaEffectPlay(moLuaVirtualMachine& vm);
+        int luaEffectPlayPause(moLuaVirtualMachine& vm);
         int luaEffectStop(moLuaVirtualMachine& vm);
         int luaEffectPause(moLuaVirtualMachine& vm);
         int luaEffectTimerState(moLuaVirtualMachine& vm);

@@ -51,7 +51,8 @@ moLock BuildLock;
 #ifdef GSTVERSION
   #include <gst/app/gstappsink.h>
   #define DECODEBIN "decodebin"
-  #define VIDEOCONVERT "videoconvert"
+  //#define VIDEOCONVERT "videoconvert"
+  #define VIDEOCONVERT "glcolorconvert"
 #else
   #define VIDEOCONVERT "ffmpegcolorspace"
   #ifdef MO_MACOSX
@@ -3264,6 +3265,42 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
 //    gchar* checkval;
     bool res = false;
 
+    /**
+    * FULL nvidia gpu hardware acceleration for h264/h265/avc/vp8
+    * based on vaapi (untested)
+    * based on nvdec (tested on GTX 1660 Ti Mobile)
+    *
+    * https://developer.ridgerun.com/wiki/index.php?title=GStreamer_modify_the_elements_rank
+    * GST_RANK_NONE (0) – will be chosen last or not at all
+    * GST_RANK_MARGINAL (64) – unlikely to be chosen
+    * GST_RANK_SECONDARY (128) – likely to be chosen
+    * GST_RANK_PRIMARY (256) – will be chosen first
+    *
+    *
+    */
+    GstRegistry* plugins_register = gst_registry_get();
+    GstPluginFeature* vaapi_decode = gst_registry_lookup_feature(plugins_register, "vaapidecode");
+    GstPluginFeature* nvdec_decode = gst_registry_lookup_feature(plugins_register, "nvdec");
+    GstPluginFeature* nvdec_gldownload = gst_registry_lookup_feature(plugins_register, "gldownload");
+    if(vaapi_decode != NULL) {
+      MODebug2->Message("VAAPI (vaapidecode) founded, setting plugin rank to GST_RANK_PRIMARY");
+      gst_plugin_feature_set_rank(vaapi_decode, GST_RANK_PRIMARY - 1);
+      gst_object_unref(vaapi_decode);
+    }
+    if(nvdec_decode != NULL) {
+      MODebug2->Message("NVDEC (nvdec) founded, setting plugin rank to GST_RANK_PRIMARY");
+      gst_plugin_feature_set_rank(nvdec_decode, GST_RANK_PRIMARY - 1);
+      gst_object_unref(nvdec_decode);
+    }
+    if (nvdec_decode || vaapi_decode) {
+      GstPluginFeature* avdec_h264 = gst_registry_lookup_feature(plugins_register, "avdec_h264");
+      if (avdec_h264) {
+        MODebug2->Message("Switch to NVIDIA DECODING, downranking LIBAV (avdec_h264) founded, setting plugin rank to GST_RANK_NONE");
+        gst_plugin_feature_set_rank(avdec_h264, GST_RANK_NONE);
+        gst_object_unref(avdec_h264);
+      }
+    }
+
     moFile VideoFile( filename );
 
     if ( !VideoFile.Exists() ) return false;
@@ -3352,9 +3389,24 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                 if (m_pFakeSink) {
                     MODebug2->Message(moText("moGsGraph:: created FakeSink! ") ) ;
 #ifdef GSTVERSION
-                    g_object_set (G_OBJECT (m_pFakeSink), "caps", gst_caps_new_simple ( "video/x-raw",
-                                                                                       "format", G_TYPE_STRING, "RGB",
-                                                                                       NULL), NULL);
+                    GstCaps *caps = NULL;
+                    moGstElement* m_pGlDownload = NULL;
+                    if (nvdec_decode) {
+                      //video/x-raw(memory:GLMemory),format=(string)RGBA"
+                      caps = gst_caps_new_simple ( "video/x-raw", "format", G_TYPE_STRING, "RGB", NULL);
+                      /*caps = gst_caps_new_simple ( "video/x-raw(memory:GLMemory)",
+                           "format", G_TYPE_STRING, "RGBA",
+                           NULL);*/
+                      /*caps = gst_caps_new_simple ( "video/x-raw(memory:GLMemory)",
+                                "format", G_TYPE_STRING, "RGB",
+                                NULL);*/
+                      m_pGlDownload = gst_element_factory_make ("gldownload", "gldownload");
+                      if (m_pGlDownload)
+                        res = gst_bin_add (GST_BIN ((GstElement*)m_pGstPipeline), (GstElement*)m_pGlDownload );
+                    } else {
+                      caps = gst_caps_new_simple ( "video/x-raw", "format", G_TYPE_STRING, "RGB", NULL);
+                    }
+                    g_object_set (G_OBJECT (m_pFakeSink), "caps", caps, NULL);
                     g_object_set (G_OBJECT (m_pFakeSink), "sync", (bool)true, NULL);
                     g_object_set (G_OBJECT (m_pFakeSink), "drop", true, NULL);
                     //gst_app_sink_set_emit_signals( (GstAppSink*)m_pFakeSink, true);
@@ -3374,10 +3426,14 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                         else
                             link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pColorSpace, (GstElement*)m_pCapsFilter, (GstElement*)m_pFakeSink, NULL );
 #else
-                        if (m_pVideoBalance)
-                            link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pVideoBalance, (GstElement*)m_pColorSpace, (GstElement*)m_pFakeSink, NULL );
-                        else
-                            link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pColorSpace, (GstElement*)m_pFakeSink, NULL );
+                        if (m_pGlDownload) {
+                          link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pColorSpace,(GstElement*)m_pGlDownload, (GstElement*)m_pFakeSink, NULL );
+                        } else {
+                          if (m_pVideoBalance)
+                              link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pVideoBalance, (GstElement*)m_pColorSpace, (GstElement*)m_pFakeSink, NULL );
+                          else
+                              link_result = gst_element_link_many( (GstElement*)m_pColorSpaceInterlace, (GstElement*)m_pColorSpace, (GstElement*)m_pFakeSink, NULL );
+                        }
 #endif
                         ///agrega sonido en sincro
 
@@ -3385,7 +3441,10 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                         //  bool link_audio_result = gst_element_link_many( (GstElement*)m_pAudioConverter, (GstElement*)m_pAudioVolume, (GstElement*)m_pAudioPanorama, (GstElement*)m_pAudioSink, NULL );
 
                         if (link_result) {
-
+                          /*GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS (GST_BIN (pipeline),
+                              GST_DEBUG_GRAPH_SHOW_ALL, "gst-launch.warning");*/
+                            MODebug2->Message("graph to dot");
+                            gst_debug_bin_to_dot_file( GST_BIN(m_pGstPipeline), GST_DEBUG_GRAPH_SHOW_ALL, "moldeo_gsgraph" );
                             CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_PAUSED), true /*SYNCRUNASLI*/ );
                             MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > GST_STATE_PAUSED > OK"));
                             //CheckState( gst_element_set_state ((GstElement*)m_pGstPipeline, GST_STATE_NULL), true /*SYNCRUNASLI*/ );
@@ -3425,6 +3484,8 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                                     //g_signal_connect (G_OBJECT (bus), "message::error", (GCallback)error_cb, &data);
 
                                 }
+                                MODebug2->Message("graph to dot");
+                                gst_debug_bin_to_dot_file( GST_BIN(m_pGstPipeline), GST_DEBUG_GRAPH_SHOW_ALL, "moldeo_gsgraph_builded" );
                             } else {
                                 MODebug2->Error( moText("moGsGraph::BuildLiveVideoGraph > no sample!"));
                                 cout << "gst_app_sink_is_eos: " << gst_app_sink_is_eos((GstAppSink*)m_pFakeSink) << endl;

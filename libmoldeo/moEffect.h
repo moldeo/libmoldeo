@@ -57,6 +57,9 @@ class moEffect;
 #include "moRenderManager.h"
 #include "moGUIManager.h"
 
+#include "moArcBall.h"
+
+
 /// clase base para objetos dibujables
 /** \if spanish
  * clase base para definir Efectos.
@@ -179,6 +182,7 @@ public:
 
 
     virtual void Play();
+    virtual void PlayPause();
     virtual void Stop();
     virtual void Pause();
     virtual void Continue();
@@ -260,8 +264,30 @@ public:
         MOdouble        mousexbuttonmiddle,mouseybuttonmiddle;
         MOdouble        mousexwheel,mouseywheel;
 
+        ArcBall_t       ArcBall;
+        Point2fT        NewPt,LastPt;
+        Quat4fT         NewQuat,LastQuat;
+        MOdouble        arcballx,arcbally,arcballz, arcball_angle;
+        moVector3f      axis_in_camera_coord,va,vb;
+        moVector4f      axis_in_object_coord;
+        moGLMatrixf      ArcBallMatrix;
+
         virtual void ScriptExeDraw();
         virtual void ScriptExeInteraction();
+
+        // Final Transform
+        Matrix4fT   Transform = {  1.0f,  0.0f,  0.0f,  0.0f,
+                       0.0f,  1.0f,  0.0f,  0.0f,
+                       0.0f,  0.0f,  1.0f,  0.0f,
+                       0.0f,  0.0f,  0.0f,  1.0f };
+
+        Matrix3fT   LastRot   = {  1.0f,  0.0f,  0.0f,                  // Last Rotation
+                       0.0f,  1.0f,  0.0f,
+                       0.0f,  0.0f,  1.0f };
+
+        Matrix3fT   NewRot   = {  1.0f,  0.0f,  0.0f,                  // This Rotation
+                       0.0f,  1.0f,  0.0f,
+                       0.0f,  0.0f,  1.0f };
 
 };
 

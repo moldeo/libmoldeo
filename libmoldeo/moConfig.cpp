@@ -1088,6 +1088,12 @@ moConfig::Text( int p_param_index ) {
     return param.GetValue().GetSubValue().Text();
 }
 
+void
+moConfig::SetText( moParamReference p_paramreference, moText p_text ) {
+    moParam& param( GetParam( m_ConfigDefinition.ParamIndexes().GetRef(p_paramreference.reference) ));
+    if (param.GetData()) param.GetData()->SetText( p_text );
+}
+
 moVector4d
 moConfig::EvalColor( moParamReference p_paramreference ) {
 

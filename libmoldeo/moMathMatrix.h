@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  AndrÃ©s Colubri
 
   Portions taken from
   Wild Magic Source Code
@@ -2316,7 +2316,20 @@ class LIBMOLDEO_API moMatrix3 : public moAbstract
                 m_afEntry[6]*rkV[0] + m_afEntry[7]*rkV[1] + m_afEntry[8]*rkV[2]);
         }
 
-
+        moText ToJSON() const {
+          moText JSON = "[";
+          moText comma="",nline="";
+          for(int j=0;j<3; j++) {
+            JSON+= nline;
+            for(int i=0;i<3; i++) {
+              JSON+= comma + FloatToStr( (*this)[j][i] );
+              comma=",";
+            }
+            nline="\n";
+          }
+          JSON+= "]";
+          return JSON;
+        }
 
         // special matrices
         static const moMatrix3 ZERO;
@@ -3923,6 +3936,21 @@ class LIBMOLDEO_API moMatrix4 : public moAbstract
 			m_afEntry[15]*rkV[3]);
 	}
 
+    moText ToJSON() const {
+      moText JSON = "[";
+      moText comma="",nline="";
+      for(int j=0;j<4; j++) {
+        JSON+= nline;
+        for(int i=0;i<4; i++) {
+          JSON+= comma + FloatToStr( (*this)[j][i] );
+          comma=",";
+        }
+        nline="\n";
+      }
+      JSON+= "]";
+      return JSON;
+    }
+
     // special matrices
     static const moMatrix4 ZERO;
     static const moMatrix4 IDENTITY;
@@ -3980,4 +4008,3 @@ moDeclareExportedDynamicArray( moMatrix4d, moMatrix4dArray );
 
 
 #endif
-

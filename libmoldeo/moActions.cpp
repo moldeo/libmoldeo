@@ -138,6 +138,7 @@ moReactionListenerManager::moReactionListenerManager() {
   m_MapStrToActionType["effectplay"] = MO_ACTION_EFFECT_PLAY;
   m_MapStrToActionType["effectpause"] = MO_ACTION_EFFECT_PAUSE;
   m_MapStrToActionType["effectstop"] = MO_ACTION_EFFECT_STOP;
+  m_MapStrToActionType["effectplaypause"] = MO_ACTION_EFFECT_PLAY_PAUSE;
 
   /** console map actions  */
   m_MapStrToActionType["consoleplay"] = MO_ACTION_CONSOLE_PLAY;

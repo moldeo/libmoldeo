@@ -469,6 +469,14 @@ enum moMoldeoActionType {
   */
   MO_ACTION_EFFECT_PAUSE, ///
 
+  /// "effectplaypause" : MO_ACTION_EFFECT_PLAY_PAUSE
+  /**
+  * Activa/Pausa el reloj del efecto
+  *
+  * param 1: effect name | object id
+  *
+  */
+  MO_ACTION_EFFECT_PLAY_PAUSE, ///
 
 
 

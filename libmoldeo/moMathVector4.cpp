@@ -25,7 +25,7 @@
 
   Authors:
   Fabricio Costa
-  Andrés Colubri
+  AndrÃ©s Colubri
 
   Portions taken from
   Wild Magic Source Code
@@ -139,4 +139,3 @@ template<> const moVector4<MOdouble> moVector4<MOdouble>::UNIT_Y(0.0,1.0,0.0,0.0
 template<> const moVector4<MOdouble> moVector4<MOdouble>::UNIT_Z(0.0,0.0,1.0,0.0);
 template<> const moVector4<MOdouble> moVector4<MOdouble>::UNIT_W(0.0,0.0,0.0,1.0);
 template<> const moVector4<MOdouble> moVector4<MOdouble>::ONE(1.0,1.0,1.0,1.0);
-

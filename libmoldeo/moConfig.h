@@ -327,6 +327,7 @@ class LIBMOLDEO_API moConfig
         moText                   Text( moParamReference p_paramreference );
         moText                   Text( moText p_param_name );
         moText                   Text( int p_param_index );
+        void                   SetText( moParamReference p_paramreference, moText p_text );
 
         /// Acceso r�pido a evaluar la funci�n
         /**  @param indexparam �ndice del par�metro
