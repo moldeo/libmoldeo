@@ -420,6 +420,8 @@ Real moVector2<Real>::Angle (const moVector2<Real>& rkV) {
   return moMath<Real>::ACos(Cosine(rkV));
 }
 */
+
+
 template<> const moVector2<MOlong> moVector2<MOlong>::ZERO(0,0);
 template<> const moVector2<MOlong> moVector2<MOlong>::UNIT_X(1,0);
 template<> const moVector2<MOlong> moVector2<MOlong>::UNIT_Y(0,1);
@@ -434,5 +436,3 @@ template<> const moVector2<MOdouble> moVector2<MOdouble>::ZERO(0.0,0.0);
 template<> const moVector2<MOdouble> moVector2<MOdouble>::UNIT_X(1.0,0.0);
 template<> const moVector2<MOdouble> moVector2<MOdouble>::UNIT_Y(0.0,1.0);
 template<> const moVector2<MOdouble> moVector2<MOdouble>::ONE(1.0,1.0);
-
-

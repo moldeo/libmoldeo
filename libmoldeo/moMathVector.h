@@ -387,6 +387,17 @@ public:
 	      return moMath<Real>::ACos(Cosine(rkV));
 	  }
 
+    moText ToJSON() const {
+      moText JSON = "[";
+      moText comma="";
+      for(int i=0;i<2; i++) {
+        JSON+= comma + FloatToStr( (*this)[i] );
+        comma=",";
+      }
+      JSON+= "]";
+      return JSON;
+    }
+
     // special vectors
     static const moVector2 ZERO;    // (0,0)
     static const moVector2 UNIT_X;  // (1,0)
@@ -431,4 +442,3 @@ moDeclareExportedDynamicArray( moVector2d, moVector2dArray );
 
 
 #endif
-

@@ -118,4 +118,3 @@ MOdouble moMath<MOdouble>::FastInvSqrt (MOdouble dValue)
 }
 
 #endif
-

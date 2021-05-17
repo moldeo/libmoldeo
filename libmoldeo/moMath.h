@@ -817,6 +817,46 @@ public:
       return RAD_TO_DEG * iRad;
     }
 
+    /**
+       * Normaliza fX, en el intervalo fMin,fMax, aplicando el factor fRatio en el dividendo
+     * @param fX la variable a interpolar
+     * @param fMin extremo izquierdo del intervalo.
+     * @param fMax extremo derecho del intervalo.
+     * @param fRatio factor del dividendo
+     * @return resultado.
+     */
+    inline static Real INorm (Real fX, Real fMin, Real fMax, Real fRatio) {
+      Real _in = (fMax-fMin)*fRatio;
+      if ( _in == 0 ) { return 0; }
+      bool _inI = (fX>=fMin) && (fX<=fMax);
+      return _inI ? momin( (fX-fMin) / _in, 1.0 ) : 0.0 ;
+    }
+
+    inline static Real IRNorm (Real fX, Real fMin, Real fMax, Real fRatio) {
+      Real _in = (fMax-fMin)*fRatio;
+      if ( _in == 0 ) { return 0; }
+      bool _inI = (fX>=fMin) && (fX<=fMax);
+      return _inI ? 1.0 - momin( (fX-fMin) / _in, 1.0 ) : 0.0 ;
+    }
+
+    /** easeInOutCubic
+    *
+    *  t 0..1 b 0 c 1 d 1
+    function (t, b, c, d) {
+      t /= d/2;
+      if (t < 1) return c/2*t*t*t + b;
+      t -= 2;
+      return c/2*(t*t*t + 2) + b;
+    };
+    *
+    */
+    inline static Real eIOCubic(Real fX) {
+      fX /= 0.5;
+      if (fX < 1) return 0.5*fX*fX*fX;
+      fX -= 2;
+      return 0.5*(fX*fX*fX + 2);
+    }
+
 	/**
      * Constantes matemáticas útiles.
 	 */

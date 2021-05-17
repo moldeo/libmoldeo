@@ -17,6 +17,8 @@
 /**                                                         **/
 /*************************************************************/
 
+/**TODO: redo https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball*/
+
 #include "moTypes.h"
 #include <stdio.h>
 

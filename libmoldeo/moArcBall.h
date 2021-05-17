@@ -432,7 +432,7 @@
 
 // 8<--Snip here if you have your own math types/funcs-->8
 
-/// Objeto para la rotación esférica de la vista 3d
+/// Objeto para la rotaciÃ³n esfÃ©rica de la vista 3d
 /**
 * Al arrastrar el mouse alrededor del objeto, simula una esfera que es rotada con el objeto dentro.
 */
