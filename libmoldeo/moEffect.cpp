@@ -998,6 +998,17 @@ void moEffect::Play() {
     return this->m_EffectState.tempo.Start();
 }
 
+void moEffect::PlayPause() {
+    Unsynchronize();
+    if (this->m_EffectState.tempo.State()==MO_TIMERSTATE_PLAYING) {
+      this->Pause();
+    } else if (this->m_EffectState.tempo.State()==MO_TIMERSTATE_PAUSED) {
+      this->Continue();
+    } else {
+      this->Play();
+    }
+}
+
 void moEffect::Stop(){
     Unsynchronize();
     return this->m_EffectState.tempo.Stop();

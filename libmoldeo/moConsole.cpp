@@ -2530,6 +2530,19 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
           EffectPlay(fxObject->GetId());
+          EffectState = fxObject->GetEffectState();
+          EffectStateJSON = EffectState.ToJSON();
+
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("effectgetstate") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( EffectStateJSON ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              /** send it: but we need an id */
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PLAY > [" + arg0+"] not found!" );
@@ -2542,9 +2555,47 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
           EffectPause(fxObject->GetId());
+          EffectState = fxObject->GetEffectState();
+          EffectStateJSON = EffectState.ToJSON();
+
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("effectgetstate") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( EffectStateJSON ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              /** send it: but we need an id */
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PAUSE > [" + arg0+"] not found!" );
+      }
+      break;
+
+    case MO_ACTION_EFFECT_PLAY_PAUSE:
+      {
+      arg0  = p_pDataMessage->Get(1).ToText();
+      fxObject = m_EffectManager.GetEffectByLabel( arg0 );
+      if (fxObject) {
+          EffectPlayPause(fxObject->GetId());
+          EffectState = fxObject->GetEffectState();
+          EffectStateJSON = EffectState.ToJSON();
+
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("effectgetstate") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( EffectStateJSON ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              /** send it: but we need an id */
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
+          return 0;
+      }
+      MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_PLAY_PAUSE > [" + arg0+"] not found!" );
       }
       break;
 
@@ -2554,6 +2605,19 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       fxObject = m_EffectManager.GetEffectByLabel( arg0 );
       if (fxObject) {
           EffectStop(fxObject->GetId());
+          EffectState = fxObject->GetEffectState();
+          EffectStateJSON = EffectState.ToJSON();
+
+          pMessageToSend = new moDataMessage();
+          if (pMessageToSend) {
+              pMessageToSend->Add( moData("effectgetstate") );
+              //pMessageToSend->Add( moData("ANY_LISTENER_ID") ); /// identifier for last message
+              pMessageToSend->Add( moData( arg0 ) );
+              pMessageToSend->Add( moData( EffectStateJSON ) );
+              //MODebug2->Message( "moConsole::ProcessMoldeoAPIMessage > replying: " + EffectStateJSON );
+              /** send it: but we need an id */
+              SendMoldeoAPIMessage( pMessageToSend );
+          }
           return 0;
       }
       MODebug2->Error("moConsole::ProcessMoldeoAPIMessage > "+MoldeoAPICommand+" > MO_ACTION_EFFECT_STOP > [" + arg0+"] not found!" );
@@ -3026,7 +3090,8 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
       MODebug2->Message("moConsole::Processing > Saving ALL");
       //Save("");
       for( int fx=0; fx<(int)m_MoldeoObjects.Count(); fx++ ) {
-        m_MoldeoObjects[fx]->GetConfig()->SaveConfig();
+        m_MoldeoObjects[fx]->Save();
+        /*m_MoldeoObjects[fx]->GetConfig()->SaveConfig();*/
       }
 
       pMessageToSend = new moDataMessage();
@@ -4244,6 +4309,11 @@ int moConsole::ProcessSessionKey( const moDataSessionKey & p_session_key ) {
       EffectPause( p_session_key.m_ObjectId );
       break;
 
+    case MO_ACTION_EFFECT_PLAY_PAUSE:
+      MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_EFFECT_PLAY_PAUSE" );
+      EffectPlayPause( p_session_key.m_ObjectId );
+      break;
+
     case MO_ACTION_EFFECT_STOP:
       MODebug2->Message( "moConsole::ProcessSessionKey > Action Type processed: MO_ACTION_EFFECT_STOP" );
       EffectStop( p_session_key.m_ObjectId );
@@ -4563,6 +4633,21 @@ moConsole::EffectPlay( int m_MoldeoObjectId ) {
     fxEffect->Play();
     if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
       moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_EFFECT_PLAY, Object->GetId()  );
+      GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
+    }
+    return 1;
+  }
+  return 0;
+}
+
+int
+moConsole::EffectPlayPause( int m_MoldeoObjectId ) {
+  moMoldeoObject* Object = this->GetObjectByIdx( m_MoldeoObjectId );
+  if (Object) {
+    moEffect* fxEffect = (moEffect*)Object;
+    fxEffect->PlayPause();
+    if (m_ConsoleState.m_Mode==MO_CONSOLE_MODE_RECORD_SESSION) {
+      moDataSessionKey key( moGetTicksAbsolute(), MO_ACTION_EFFECT_PLAY_PAUSE, Object->GetId()  );
       GetResourceManager()->GetDataMan()->GetSession()->AddKey( key );
     }
     return 1;
@@ -5144,6 +5229,29 @@ int moConsole::luaEffectPlay(moLuaVirtualMachine& vm)
         EffectPlay(Object->GetId());
     } else {
         MODebug2->Error( moText("in console script: EffectPlay : object not founded : id:")+(moText)IntToStr(objectid));
+    }
+
+    return 0;
+}
+
+int moConsole::luaEffectPlayPause(moLuaVirtualMachine& vm)
+{
+    lua_State *state = (lua_State *) vm;
+
+    MOint objectid = (MOint) lua_tonumber (state, 1);
+
+    moMoldeoObject* Object = NULL;
+
+    Object = GetObjectByIdx(objectid);
+
+    if (Object && Object->GetConfig() && (
+        (Object->GetMobDefinition().GetType()>=MO_OBJECT_EFFECT &&
+        Object->GetMobDefinition().GetType()<=MO_OBJECT_MASTEREFFECT)
+        || Object->GetMobDefinition().GetType()<=MO_OBJECT_CONSOLE
+    )) {
+        EffectPlayPause(Object->GetId());
+    } else {
+        MODebug2->Error( moText("in console script: EffectPlayPause : object not founded : id:")+(moText)IntToStr(objectid));
     }
 
     return 0;

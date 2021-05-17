@@ -179,6 +179,7 @@ public:
 
 
     virtual void Play();
+    virtual void PlayPause();
     virtual void Stop();
     virtual void Pause();
     virtual void Continue();
