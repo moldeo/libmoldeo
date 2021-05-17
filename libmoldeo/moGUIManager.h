@@ -402,7 +402,7 @@ class LIBMOLDEO_API moMesh : public moObject3D {
   public:
     moMesh() : moObject3D() {
     }
-    
+
     moMesh( const moGeometry& p_geometry, const moMaterial& p_material ) :  moObject3D(p_geometry, p_material) {
 
         m_Geometry = p_geometry;
@@ -564,6 +564,9 @@ class LIBMOLDEO_API moAxis3D : public moGeometry {
   public:
     moAxis3D( float p_size=1.0 );
     virtual ~moAxis3D();
+    void Draw();
+    void Interaction();
+    void Update();
 };
 
 class LIBMOLDEO_API moBoundingBox3D : public moGeometry {

@@ -1220,7 +1220,7 @@ moWindow::Draw() {
 
 	if (pFont) {
 		//pFont->SetForegroundColor( 0.0, 1.0, 0.0 );
-		///tamaño en proporcio al alto de la ventana... y la cantidad de lineas...
+		///tamaÃ±o en proporcio al alto de la ventana... y la cantidad de lineas...
 		if (m_Texts.Count()>0 && m_Height>0) {
       float size = (float)m_Height / (float)m_Texts.Count();
       glColor4f( 1.0, 1.0, 1.0, 1.0 );
@@ -1245,6 +1245,36 @@ moWindow::Interaction() {
 
 void
 moWindow::Update() {
+
+
+}
+
+//===========================================
+//
+//				moAxis3D
+//
+//===========================================
+
+moAxis3D::moAxis3D(float p_size) {
+
+}
+
+moAxis3D::~moAxis3D() {
+
+}
+
+void
+moAxis3D::Draw() {
+
+}
+
+void
+moAxis3D::Interaction() {
+
+}
+
+void
+moAxis3D::Update() {
 
 
 }
