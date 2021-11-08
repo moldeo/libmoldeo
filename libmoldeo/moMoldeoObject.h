@@ -83,13 +83,13 @@
 
 class moResourceManager;
 
-/// Indice referente a la descripci�n del objeto en un archivo de configuraci�n
+/// Indice referente a la descripción del objeto en un archivo de configuración
 /**
- * indice de un objeto dentro del archivo de configuraci�n del proyecto .MOL (no confundir con el archivo de configuraci�n de cada efecto)
+ * indice de un objeto dentro del archivo de configuración del proyecto .MOL (no confundir con el archivo de configuración de cada efecto)
  * contiene dos valores:
- * GetParamIndex() el indice del par�metro
+ * GetParamIndex() el indice del parámetro
  * GetValueIndex() el indice del valor correspondiente
- * de esta manera m_Config.GetParam(GetParamIndex()).GetValue(GetValueIndex()) devuelve el moValue correspondiente a la configuraci�n del efecto
+ * de esta manera m_Config.GetParam(GetParamIndex()).GetValue(GetValueIndex()) devuelve el moValue correspondiente a la configuración del efecto
   */
 class LIBMOLDEO_API moMobIndex : public moAbstract {
 
@@ -105,7 +105,7 @@ class LIBMOLDEO_API moMobIndex : public moAbstract {
     }
 
         /**
-         * constructor con los dos par�metros necesarios
+         * constructor con los dos parámetros necesarios
          * @param p_paramindex
          * @param p_valueindex
          */
@@ -126,12 +126,12 @@ class LIBMOLDEO_API moMobIndex : public moAbstract {
 		virtual ~moMobIndex() {}
 
         /**
-         * observador, devuelve el �ndice del par�metro
+         * observador, devuelve el índice del parámetro
          */
 		MOint GetParamIndex() const { return m_paramindex; }
 
         /**
-         * observador, devuelve el �ndice del valor
+         * observador, devuelve el índice del valor
          */
 		MOint GetValueIndex() const { return m_valueindex; }
 
@@ -144,10 +144,10 @@ class LIBMOLDEO_API moMobIndex : public moAbstract {
 /// Clase Base Descriptiva de un Objeto Moldeo
 /**
  * clase que define las caracteristicas basicas de un objeto Moldeo
- * los datos b�sicos dentro de esta definici�n son suficientes para poder crear un objeto moldeo
+ * los datos b�sicos dentro de esta definición son suficientes para poder crear un objeto moldeo
  * como son:
  *  1) m_Name: el nombre del objeto
- *  2) m_ConfigName:  archivo de la configuraci�n del objeto
+ *  2) m_ConfigName:  archivo de la configuración del objeto
  *  3) m_Type: el tipo de objeto
  *  4) m_LabelName: el nombre
  *
@@ -172,11 +172,11 @@ class LIBMOLDEO_API moMobDefinition
     /**
     *   Los datos de base son
     * @param p_name nombre del objeto
-    * @param p_configname nombre del archivo de configuraci�n
+    * @param p_configname nombre del archivo de configuración
     * @param p_type tipo de objeto
     * @param p_labelname etiqueta del objeto
     * @param p_moldeoid identificador �nico para este objeto
-    * @param p_MobIndex �ndice referente a un archivo de configuraci�n
+    * @param p_MobIndex índice referente a un archivo de configuración
     */
 		moMobDefinition( const moText& p_name,
                       const moText& p_configname,
@@ -199,7 +199,7 @@ class LIBMOLDEO_API moMobDefinition
     /// Destructor
     virtual ~moMobDefinition();
 
-    /// Operador de asignaci�n
+    /// Operador de asignación
     moMobDefinition& operator = ( const moMobDefinition& mb);
 
     /// Objeto v�lido
@@ -220,13 +220,13 @@ class LIBMOLDEO_API moMobDefinition
     /// Fijar el nombre del objeto
     void SetName( const moText& p_name );
 
-    /// Nombre del archivo de configuraci�n
+    /// Nombre del archivo de configuración
     const moText& GetConfigName() const;
 
-    /// Fijar el nombre del archivo de configuraci�n
+    /// Fijar el nombre del archivo de configuración
     void SetConfigName( const moText& p_configname );
 
-    /// Nombre del archivo de configuraci�n
+    /// Nombre del archivo de configuración
     moMoldeoObjectType GetType() const;
 
     /// Transforma una cadena de caracteres en su correspondiente moMoldeoObjectType
@@ -244,7 +244,7 @@ class LIBMOLDEO_API moMobDefinition
     /// Fija el tipo de moMoldeoObject o moMoldeoObjectType
     void SetType( moMoldeoObjectType p_type );
 
-    /// Devuelve la dupla de �ndices para el archivo de configuraci�n
+    /// Devuelve la dupla de índices para el archivo de configuración
     const moMobIndex& GetMobIndex() const;
 
     /// Fija la etiqueta de este objeto
@@ -295,17 +295,17 @@ class LIBMOLDEO_API moMobDefinition
     }
 
 
-    /// Devuelve al descripci�n del objeto
+    /// Devuelve al descripción del objeto
     /**
-    *   La descripci�n describe la funcionalidad de este objeto
+    *   La descripción describe la funcionalidad de este objeto
     */
     const moText& GetDescription() const {
       return m_Description;
     }
 
-    /// Fija la descripci�n de este objeto
+    /// Fija la descripción de este objeto
     /**
-    *  La descripci�n describe la funcionalidad de este objeto
+    *  La descripción describe la funcionalidad de este objeto
     */
     void SetDescription( const moText& p_Description );
 
@@ -314,7 +314,7 @@ class LIBMOLDEO_API moMobDefinition
     void SetConsoleValueIndex(MOint p_valueindex);
 
 
-    /// Devuelve el modo de activaci�n al inicio del proyecto
+    /// Devuelve el modo de activación al inicio del proyecto
     /**
     *   Si este valor es verdadero, este objeto se activar� al iniciar el proyecto al que pertenece.
     */
@@ -322,7 +322,7 @@ class LIBMOLDEO_API moMobDefinition
       return m_Activate;
     }
 
-    /// Fija el modo de activaci�n al inicio del proyecto
+    /// Fija el modo de activación al inicio del proyecto
     /**
     *  Fija si el objeto est� activo al iniciar el proyecto.
     */
@@ -341,10 +341,10 @@ class LIBMOLDEO_API moMobDefinition
 
       moMoldeoObjectType		m_Type; /// Tipo de Objeto
       moText					      m_Name; /// Nombre del objeto (relativo a la clase)
-      moText					      m_ConfigName; /// Nombre del archivo de configuraci�n
-      moText                m_Description;/// Descripci�n del objeto
+      moText					      m_ConfigName; /// Nombre del archivo de configuración
+      moText                m_Description;/// Descripción del objeto
 
-      moMobIndex            m_MobIndex; /// �ndice referente al archivo de configuraci�n que describe a este objeto
+      moMobIndex            m_MobIndex; /// índice referente al archivo de configuración que describe a este objeto
 
       moText                m_KeyName;/// nombre de la tecla que activa el objeto
       bool                  m_Activate;/// activo al iniciar el proyecto
@@ -388,8 +388,8 @@ class LIBMOLDEO_API moMobState : public moAbstract {
  * clase base para definir Objetos Moldeo.
  * Esta tiene como miembros principales:
  *
- * una definici�n de objeto moMobDefinition
- * un archivo de configuraci�n moConfig
+ * una definición de objeto moMobDefinition
+ * un archivo de configuración moConfig
  * un conjunto de inlets moInlet's
  * un conjunto de outlets moOutlet's
  * una referencia a los recursos del sistema moResourceManager
@@ -415,7 +415,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		moMoldeoObject();
 
 		/**
-		 * constructor de la clase con especificaci�n de tipo.
+		 * constructor de la clase con especificación de tipo.
 		 * @param p_type tipo de Objeto Moldeo.
 		 * @see moMoldeoObjectType
 		 */
@@ -428,7 +428,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		virtual MOboolean Init();
 
 		/**
-		* Inicializador de la clase con especificaci�n del Administrador de Recursos.
+		* Inicializador de la clase con especificación del Administrador de Recursos.
 		*/
 		virtual MOboolean Init( moResourceManager* p_pResources );
 
@@ -439,134 +439,134 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
 
 		/**
-		* Carga los par�metros con informaci�n del resourcemanager y resuelve la creaci�n de los conectores
+		* Carga los parámetros con información del resourcemanager y resuelve la creación de los conectores
 		* correspondientes.
-		* Atenci�n  :CreateCOnnectors siempre debe llamarse despues del Init() y asegur�ndose de
+		* Atención  :CreateCOnnectors siempre debe llamarse despues del Init() y asegur�ndose de
 		* que el m_pResourceManager no sea nulo y est� inicializado.
 		*/
 		virtual MOboolean CreateConnectors();
 
 		/**
 		* Actualiza todos los conectores
-		* Esta funci�n vuelve a crear los conectores y sus conecciones, y evaluar todos los par�metros.
+		* Esta función vuelve a crear los conectores y sus conecciones, y evaluar todos los parámetros.
 		*/
 		virtual MOboolean UpdateConnectors();
 
 
     /**
-		* Recarga un valor de un par�metro
-		* Esta funci�n reasigna o recarga funciones, filtros, imagenes (se carga de disco nuevamente), sonidos, y todo tipo de recursos asociados a los valores descriptos en los par�metros
+		* Recarga un valor de un parámetro
+		* Esta función reasigna o recarga funciones, filtros, imagenes (se carga de disco nuevamente), sonidos, y todo tipo de recursos asociados a los valores descriptos en los parámetros
 		*/
 		virtual MOboolean RefreshValue( moParam& param, int value_index );
 
 		/**
-		* Resuelve un valor de un par�metro
-		* Esta funci�n asigna funciones, filtros, sonidos, y todo tipo de recursos asociados a los valores descriptos en los par�metros
+		* Resuelve un valor de un parámetro
+		* Esta función asigna funciones, filtros, sonidos, y todo tipo de recursos asociados a los valores descriptos en los parámetros
 		*/
 		virtual MOboolean ResolveValue( moParam& param, int value_index, bool p_refresh=false );
 
 
 		/**
-		 * m�todo de actualizaci�n de datos del objeto.
+		 * m�todo de actualización de datos del objeto.
 		 * @param p_EventList puntero a la lista de eventos.
 		 */
 		virtual void Update( moEventList* p_EventList );//checks p_EventList for events/messages
 
 		/**
-		 * m�todo de especificaci�n del Administrador de Recursos (moResourceManager).
+		 * método de especificación del Administrador de Recursos (moResourceManager).
 		 * @param p_pResourceManager puntero al Administrador de Recursos.
 		 */
 		void	SetResourceManager( moResourceManager* p_pResourceManager );//set the pointer to the resource manager for this object
 
 		/**
-		 * funci�n que devuelve el puntero al Administrador de Recursos del objeto.
+		 * función que devuelve el puntero al Administrador de Recursos del objeto.
 		 */
 		moResourceManager* GetResourceManager();//return pointer to the resource manager of this object
 
 		/**
-		 * funci�n que devuelve el Identificador del objeto.
+		 * función que devuelve el Identificador del objeto.
 		 */
 		MOint	GetId() const;
 
 		/**
-		 * funci�n que especifica el Identificador del objeto.
+		 * función que especifica el Identificador del objeto.
 		 */
 		void	SetId( MOint	p_id );
 
 		/**
-		 * funci�n que devuelve el tipo del objeto.
+		 * función que devuelve el tipo del objeto.
 		 */
 		moMoldeoObjectType	GetType() const;
 
 		/**
-		 * funci�n que especifica el tipo del objeto.
+		 * función que especifica el tipo del objeto.
 		 */
 		void	SetType( moMoldeoObjectType p_type );
 
 		/**
-		 * funci�n que especifica el nombre del objeto.
+		 * función que especifica el nombre del objeto.
 		 */
 		void	SetName( const moText& p_name ) { m_MobDefinition.SetName(p_name); }
 
 		/**
-		 * funci�n que especifica el nombre identificatorio del objeto.
+		 * función que especifica el nombre identificatorio del objeto.
 		 */
 		void	SetLabelName( const moText& p_labelname ) { m_MobDefinition.SetLabelName(p_labelname); }
 
 		/**
-		 * funci�n que especifica la tecla que activa el objeto.
+		 * función que especifica la tecla que activa el objeto.
 		 */
 		void	SetKeyName( const moText& p_keyname ) { m_MobDefinition.SetKeyName(p_keyname); }
 
 		const moText&	GetKeyName() const { return m_MobDefinition.GetKeyName(); }
 
 		/**
-		 * funci�n que especifica el nombre del objeto.
+		 * función que especifica el nombre del objeto.
 		 */
 		const moText&	GetName() const { return m_MobDefinition.GetName(); }
 
 		/**
-		 * funci�n que devuelve el nombre identificatorio del objeto.
+		 * función que devuelve el nombre identificatorio del objeto.
 		 */
 		const moText&	GetLabelName() const { return m_MobDefinition.GetLabelName(); }
 
 		/**
-		 * funci�n que devuelve el puntero a la clase de configuraci�n del objeto.
+		 * función que devuelve el puntero a la clase de configuración del objeto.
 		 */
 		moConfig*	GetConfig() { return &m_Config; }
 
     /**
-		 * funci�n que guarda la informaci�n de conectores y conexiones.
+		 * función que guarda la información de conectores y conexiones.
 		 */
 		void  SyncConnections();
 
     /**
-		 * funci�n que guarda el objeto a disco.
+		 * función que guarda el objeto a disco.
 		 */
 		virtual int Save( const moText& p_save_filename = moText("") );
 
 		/**
-		 * funci�n que especifica el nombre del archivo de configuraci�n del objeto.
+		 * función que especifica el nombre del archivo de configuración del objeto.
 		 */
 		void	SetConfigName( const moText& p_configname );
 
 		/**
-		 * funci�n que devuelve el nombre del archivo de configuraci�n del objeto.
+		 * función que devuelve el nombre del archivo de configuración del objeto.
 		 */
 		const moText&	GetConfigName() const { return m_MobDefinition.GetConfigName(); }
 
-       /// Devuelve al descripci�n del objeto
+       /// Devuelve al descripción del objeto
         /**
-        *   La descripci�n describe la funcionalidad de este objeto
+        *   La descripción describe la funcionalidad de este objeto
         */
         const moText& GetDescription() const {
             return m_MobDefinition.GetDescription();
         }
 
 
-        /// Fija la descripci�n de este objeto
+        /// Fija la descripción de este objeto
         /**
-        *  La descripci�n describe la funcionalidad de este objeto
+        *  La descripción describe la funcionalidad de este objeto
         */
         void SetDescription( const moText& p_Description ) {
             m_MobDefinition.SetDescription(p_Description);
@@ -583,50 +583,50 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
 
 		/**
-		 * funci�n que devuelve la definici�n del archivo de configuraci�n del objeto.
-		 * @param p_configdefinition (opcional) puntero a la clase de definici�n de la configuraci�n d�nde se registran las definiciones. Si este par�metro no est� definido la funci�n toma el puntero a la definici�n dentro del objeto de configuraci�n (moConfig).
+		 * función que devuelve la definición del archivo de configuración del objeto.
+		 * @param p_configdefinition (opcional) puntero a la clase de definición de la configuración d�nde se registran las definiciones. Si este parámetro no est� definido la función toma el puntero a la definición dentro del objeto de configuración (moConfig).
 		 */
 		virtual moConfigDefinition * GetDefinition( moConfigDefinition *p_configdefinition = NULL );//retreive the parameters definition of the Moldeo Object
 
 		/**
-		 * funci�n que devuelve el puntero a los Conectores de Env�o de este objeto.
+		 * función que devuelve el puntero a los Conectores de Env�o de este objeto.
 		 */
 		moOutlets* GetOutlets();
 
 		/**
-		 * funci�n que devuelve el puntero a los Conectores de Recepci�n de este objeto.
+		 * función que devuelve el puntero a los Conectores de Recepción de este objeto.
 		 */
 		moInlets* GetInlets();
 
 		/**
-		 * funci�n que agrega un Inlet
+		 * función que agrega un Inlet
 		 */
 		moInlet* AddInlet( moText p_name, moText p_type );
 
 		/**
-		 * funci�n que devuelve el indice del conector Inlet del correspondiente nombre
+		 * función que devuelve el indice del conector Inlet del correspondiente nombre
 		 * @param p_connector_name nombre del conector (generalmente el mismo del parametro  u otro arbitrario definido por el usuario)
 		 */
 		MOint GetInletIndex( moText p_connector_name ) const;
 
 		/**
-		 * funci�n que devuelve el indice del conector Outlet del correspondiente nombre
+		 * función que devuelve el indice del conector Outlet del correspondiente nombre
 		 * @param p_connector_name nombre del conector (generalmente el mismo del parametro u otro arbitrario definido por el usuario)
 		 */
 		MOint GetOutletIndex( const moText& p_connector_name ) const;
 
 		/**
-		 * funci�n que registra las funciones para lua en particular para esta clase y las derivadas
+		 * función que registra las funciones para lua en particular para esta clase y las derivadas
 		 */
         virtual void RegisterFunctions();
 
 		/**
-		 * funci�n que define las funciones accesibles por scripting de esta clase particular.
+		 * función que define las funciones accesibles por scripting de esta clase particular.
 		 */
 		virtual int ScriptCalling(moLuaVirtualMachine& vm, int iFunctionNumber);
 
 		/**
-		 * funci�n que se encarga de manipular el retorno de las funciones llamadas por el script
+		 * función que se encarga de manipular el retorno de las funciones llamadas por el script
 		 */
 		virtual void HandleReturns(moLuaVirtualMachine& vm, const char *strFunc);
 
@@ -669,7 +669,7 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 
         moText    m_FullJSON;
 
-        /// \if spanish Carga las definiciones de par�metros del archivo de configuraci�n \endif \if english Loads parameter's config definitions \endif
+        /// \if spanish Carga las definiciones de parámetros del archivo de configuración \endif \if english Loads parameter's config definitions \endif
 		virtual void LoadDefinition();
 
     /// Corre la funcion de script Run o Compila el nuevo script
@@ -684,13 +684,13 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
 		moText  m_Script;
 
 
-        /// \if spanish Definici�n del objeto \endif \if english Object definition \endif
+        /// \if spanish definición del objeto \endif \if english Object definition \endif
         moMobDefinition         m_MobDefinition;
 
         /// Moldeo Object State
         moMobState              m_MobState;
 
-        /// Configuraci�n de par�metros del objeto
+        /// configuración de parámetros del objeto
 		moConfig				m_Config;
     friend class moConfig;
 
@@ -721,32 +721,32 @@ class LIBMOLDEO_API moMoldeoObject : public moAbstract, public moScript
         */
         /** @{ */
 
-        /// Funci�n de impresi�n de cadena de car�cteres c�moda para la depuraci�n
+        /// Función de impresi�n de cadena de caracteres cómoda para la depuración
         int luaPushDebugString(moLuaVirtualMachine& vm);
 
         /// Devuelve el objeto de moResourceManager para el manejo de recursos: texturas, videos, archivos, etc..
         int luaGetResourceManager(moLuaVirtualMachine& vm);
 
-        /// \if spanish Fija la preconfiguraci�n de este objeto \endif \if english Set the preconfiguration value of this object \endif
+        /// \if spanish Fija la preconfiguración de este objeto \endif \if english Set the preconfiguration value of this object \endif
         int luaSetPreconf(moLuaVirtualMachine& vm);
-        /// \if spanish Devuelve la preconfiguraci�n de este objeto \endif \if english Get the preconfiguration value of this object \endif
+        /// \if spanish Devuelve la preconfiguración de este objeto \endif \if english Get the preconfiguration value of this object \endif
         int luaGetPreconf(moLuaVirtualMachine& vm);
 
-        /// \if spanish Devuelve el �ndice del par�metro \endif \if english Get the parameter index \endif
+        /// \if spanish Devuelve el índice del parámetro \endif \if english Get the parameter index \endif
         int luaGetParamIndex(moLuaVirtualMachine& vm);
 
-        /// \if spanish Devuelve el �ndice del valor actual de un par�metro.  \endif \if english Get the actual value index of a parameter. \endif
+        /// \if spanish Devuelve el índice del valor actual de un parámetro.  \endif \if english Get the actual value index of a parameter. \endif
         int luaGetCurrentValue(moLuaVirtualMachine& vm);
-        /// \if spanish Fija el �ndice del valor actual de un par�metro. \endif \if english Set the actual value index of a parameter. \endif
+        /// \if spanish Fija el índice del valor actual de un parámetro. \endif \if english Set the actual value index of a parameter. \endif
         int luaSetCurrentValue(moLuaVirtualMachine& vm);
-        /// \if spanish Devuelve la cantidad de valores de un par�metro. \endif \if english Get the number of values of a parameter. \endif
+        /// \if spanish Devuelve la cantidad de valores de un parámetro. \endif \if english Get the number of values of a parameter. \endif
         int luaGetValuesCount(moLuaVirtualMachine& vm);
 
-        /// \if spanish Devuelve el �ndice del inlet (o par�metro). Por ejemplo: this:luaGetInletIndex("alpha").  \endif \if english Get the inlet index. \endif
+        /// \if spanish Devuelve el índice del inlet (o parámetro). Por ejemplo: this:luaGetInletIndex("alpha").  \endif \if english Get the inlet index. \endif
         int luaGetInletIndex(moLuaVirtualMachine& vm);
-        /// \if spanish Devuelve el dato seg�n el �ndice del inlet.  \endif \if english Get the data from an inlet (or parameter). \endif
+        /// \if spanish Devuelve el dato según el índice del inlet.  \endif \if english Get the data from an inlet (or parameter). \endif
         int luaGetInletData(moLuaVirtualMachine& vm);
-        /// \if spanish Fija el dato de un inlet (o parametro) dado el �ndice del inlet.  \endif \if english Set the inlet (or parameter) data. \endif
+        /// \if spanish Fija el dato de un inlet (o parametro) dado el Óndice del inlet.  \endif \if english Set the inlet (or parameter) data. \endif
         int luaSetInletData(moLuaVirtualMachine& vm);
 
 #ifdef USE_TUIO
@@ -797,5 +797,3 @@ moDeclareExportedDynamicArray( moMoldeoObject*, moMoldeoObjects);
 #include "moResourceManager.h"
 
 #endif
-
-

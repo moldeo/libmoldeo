@@ -82,7 +82,7 @@
 #define MO_SCREEN_HEIGHT 600
 #define MO_SCREEN_DEPTH	32
 
-
+#define MO_MOLDEO_RECOMPILE 200
 
 class LIBMOLDEO_API moPresetParamDefinition {
 
@@ -545,6 +545,7 @@ class LIBMOLDEO_API moConsole : public moMoldeoObject {
         int luaEffectPlay(moLuaVirtualMachine& vm);
         int luaEffectStop(moLuaVirtualMachine& vm);
         int luaEffectPause(moLuaVirtualMachine& vm);
+        int luaEffectPlayPause(moLuaVirtualMachine& vm);
         int luaEffectTimerState(moLuaVirtualMachine& vm);
 
 

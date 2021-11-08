@@ -51,8 +51,8 @@ moLock BuildLock;
 #ifdef GSTVERSION
   #include <gst/app/gstappsink.h>
   #define DECODEBIN "decodebin"
-  //#define VIDEOCONVERT "videoconvert"
-  #define VIDEOCONVERT "glcolorconvert"
+  #define VIDEOCONVERT "videoconvert"
+  //#define VIDEOCONVERT "glcolorconvert"
 #else
   #define VIDEOCONVERT "ffmpegcolorspace"
   #ifdef MO_MACOSX
@@ -2698,7 +2698,10 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                if (m_pColorSpaceInterlace) {
                     MODebug2->Message(moText("moGsGraph:: created videoconvert before deinterlace!") ) ;
                     res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pColorSpaceInterlace );
-               }
+                } else {
+                  MODebug2->Error(moText("moGsGraph:: couldn't create m_pColorSpaceInterlace convert! ")+moText(VIDEOCONVERT) );
+                  return false;
+                }
 
 
                m_pVideoDeinterlace = gst_element_factory_make ("ffdeinterlace", "deinterlace");
@@ -2707,13 +2710,19 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
                     //g_object_set (G_OBJECT (m_pVideoDeinterlace), "tff", &tff, NULL);
                     MODebug2->Message(moText("moGsGraph:: created ffdeinterlace!") ) ;
                     res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pVideoDeinterlace );
-               }
+                } else {
+                  MODebug2->Error(moText("moGsGraph:: couldn't create m_pVideoDeinterlace convert! ")+moText("ffdeinterlace") );
+                  return false;
+                }
            }
 
            m_pColorSpace = gst_element_factory_make (VIDEOCONVERT, "color");
            if (m_pColorSpace) {
                 MODebug2->Message(moText("moGsGraph:: created videoconvert for final color!") ) ;
                 res = gst_bin_add (GST_BIN (m_pGstPipeline), (GstElement*) m_pColorSpace );
+           } else {
+             MODebug2->Error(moText("moGsGraph:: couldn't create m_pColorSpace convert! ")+moText(VIDEOCONVERT) );
+             return false;
            }
 
            m_pCapsFilter = gst_element_factory_make ("capsfilter", "filt");
@@ -2739,6 +2748,9 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 #endif
                //depth=(int)24, red_mask=(int)16711680, green_mask=(int)65280, blue_mask=(int)255, endianness=(int)4321
 
+           } else {
+             MODebug2->Error(moText("moGsGraph:: couldn't create m_pCapsFilter! "));
+             return false;
            }
 
            //RetreivePads( m_pFileSource );
@@ -2904,6 +2916,8 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 
                         } else {
                             MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pColorSpace m_pCapsFilter m_pFakeSink linking failed.")+devinfo);
+                            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pColorSpace")+IntToStr((int)m_pColorSpace) );
+                            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pFakeSink")+IntToStr((int)m_pFakeSink) );
                             event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {

@@ -84,7 +84,7 @@ moEffect::moEffect() {
   mousexwheel = 0.0;
   mouseywheel = 0.0;
 
-  ArcBall.setBounds(640.0,480.0);
+  /*ArcBall.setBounds(640.0,480.0);
   ArcBallMatrix.MakeIdentity();
   arcball_angle = 0.0;
 
@@ -94,7 +94,7 @@ moEffect::moEffect() {
 
   va = moVector3f(0,0,0);
   vb = moVector3f(0,0,0);
-  axis_in_camera_coord = moVector3f(0,0,0);
+  axis_in_camera_coord = moVector3f(0,0,0);*/
 }
 
 moEffect::~moEffect() {
@@ -592,12 +592,12 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
   float w = m_pResourceManager->GetRenderMan()->ScreenWidth();
   float h = m_pResourceManager->GetRenderMan()->ScreenHeight();
 
-  ArcBall.setBounds(w,h);
+  /*ArcBall.setBounds(w,h);
   if (arcball_angle!=0.0 && mousebuttonleft==0.0) {
     arcball_angle = arcball_angle * 0.963;
   } else {
     arcball_angle = 0.0;
-  }
+  }*/
 
   while(event!=NULL) {
     if ( event->deviceid == MO_IODEVICE_MOUSE ) {
@@ -619,13 +619,15 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
                 //ARCBALL
                 //NewPt.s.X = -1.0 + 2 * ( mousex );
                 //NewPt.s.Y = 1.0 - 2 * ( mousey );
+                /*
                 NewPt.s.X = mousex;
                 NewPt.s.Y = mousey;
                 LastPt = NewPt;
                 arcball_angle = 0.0;
+                */
 
                 //ArcBall.click( &NewPt );
-                MODebug2->Message(FloatToStr(NewPt.s.X)+moText(",")+FloatToStr(NewPt.s.Y));
+                //MODebug2->Message(FloatToStr(NewPt.s.X)+moText(",")+FloatToStr(NewPt.s.Y));
                 break;
               case SDL_BUTTON_MIDDLE:
                 mousebuttonmiddle = 1.0;
@@ -679,18 +681,20 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
 
               //ARCBALL
               //NewPt.s.X = -1.0 + 2 * ( mousex );
-              NewPt.s.X = mousex;
+              /*NewPt.s.X = mousex;*/
               //NewPt.s.Y = 1.0 - 2 * ( mousey );
-              NewPt.s.Y = mousey;
+              /*NewPt.s.Y = mousey;*/
               //LastPt = NewPt;
+              /*
               LastRot = NewRot;
               MODebug2->Message("LastPt: "+FloatToStr(LastPt.s.X)+moText(",")+FloatToStr(LastPt.s.Y));
               MODebug2->Message("NewPt: "+FloatToStr(NewPt.s.X)+moText(",")+FloatToStr(NewPt.s.Y));
+              */
 
               //ArcBall.drag( &NewPt, &NewQuat );
               /* onIdle() */
 
-              if ( NewPt.s.X != LastPt.s.X || NewPt.s.Y != LastPt.s.Y ) {
+              /*if ( NewPt.s.X != LastPt.s.X || NewPt.s.Y != LastPt.s.Y ) {
 
                 va = get_arcball_vector( LastPt.s.X, LastPt.s.Y);
                 vb = get_arcball_vector( NewPt.s.X,  NewPt.s.Y);
@@ -703,15 +707,16 @@ void moEffect::Interaction(moIODeviceManager *consolaes) {
                 axis_in_camera_coord.Normalize();
 
                 LastPt = NewPt;
-              }
+              }*/
 
               //ArcBallMatrix
-
+              /*
               MODebug2->Message(moText("Drag: ")+FloatToStr(NewPt.s.X)+moText(",")+FloatToStr(NewPt.s.Y));
 
               Matrix3fSetRotationFromQuat4f(&NewRot, &NewQuat);         // Convert Quaternion Into Matrix3fT
               Matrix3fMulMatrix3f(&NewRot, &LastRot);                // Accumulate Last Rotation Into This One
               Matrix4fSetRotationFromMatrix3f(&Transform, &NewRot);          // Set Our Final
+              */
               /*
               glPushMatrix();                                 // Prepare Dynamic Transform
               glMultMatrixf(Transform.M);                         // Apply Dynamic Transform
@@ -1238,6 +1243,15 @@ int moEffect::luaPause( moLuaVirtualMachine& vm ) {
     lua_State *luastate = (lua_State *) vm;
     if (luastate)
       Pause();
+
+    return 0;
+}
+
+int moEffect::luaPlayPause( moLuaVirtualMachine& vm ) {
+
+    lua_State *luastate = (lua_State *) vm;
+    if (luastate)
+      PlayPause();
 
     return 0;
 }

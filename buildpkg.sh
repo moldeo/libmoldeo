@@ -64,6 +64,7 @@ echo "extracting..."
 
 cd deb/libmoldeo-*
 dh_make -l -e info@moldeo.org -p libmoldeo -c gpl3
+mkdir debian
 
 sed -i -e 's/Architecture: any/Architecture: amd64/g' debian/control
 sed -i -e 's/Maintainer: fabricio /Maintainer: Moldeo Interactive /g' debian/control

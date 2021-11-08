@@ -184,6 +184,7 @@ public:
     virtual void Play();
     virtual void Stop();
     virtual void Pause();
+    virtual void PlayPause();
     virtual void Continue();
 
     virtual moTimerState State();
@@ -203,6 +204,9 @@ public:
 		// Agregado para poder asignar efectos a teclas arbitrarias de las 4 filas del teclado.
 		// Luego hay que discutirlo/implementarlo mejor...
 		MOint				keyidx;
+    ArcBallT   ArcBall;
+    //ArcBall_t
+
 
   protected:
 
@@ -217,6 +221,7 @@ public:
         int luaPause( moLuaVirtualMachine& vm );
         int luaStop( moLuaVirtualMachine& vm );
         int luaState( moLuaVirtualMachine& vm );
+        int luaPlayPause( moLuaVirtualMachine& vm );
 
         int luaGetTicks(moLuaVirtualMachine& vm);
         int luaSetTicks(moLuaVirtualMachine& vm);

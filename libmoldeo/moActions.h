@@ -60,6 +60,7 @@ using namespace std;
 * Moldeo OSC API 1.0 , a trav�s de habilitar el plugin (IODevice) "netoscin" :
 *   /moldeo/mensaje/parametro 1/parametro 2/parametro 3/parametro 4...
 *
+* 
 */
 enum moMoldeoActionType {
 
