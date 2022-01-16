@@ -101,6 +101,24 @@ moVideoFormat moVideoGraph::GetVideoFormat() {
 
 }
 
+const moFile& moVideoGraph::GetVideoFile() {
+
+	return m_VideoFile;
+
+}
+
+const moFile& moVideoGraph::GetAudioFile() {
+
+	return m_AudioFile;
+
+}
+
+const moFile& moVideoGraph::GetGraphFile() {
+
+	return m_GraphFile;
+
+}
+
 moStreamState    moVideoGraph::GetState() {
 
    return MO_STREAMSTATE_UNKNOWN;
@@ -208,4 +226,3 @@ moVideoFramework::SetPreferredFormat( const moCaptureDevice &m_CaptureDevice ) {
 	}
 
 }
-

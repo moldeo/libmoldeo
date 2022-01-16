@@ -37,6 +37,7 @@
 #include "moBuckets.h"
 #include "moArray.h"
 #include "moAbstract.h"
+#include "moFileManager.h"
 
 /*
 	RESOLUCIONES
@@ -125,8 +126,12 @@ enum moColorMode {
     YUV = 1,
     RGB = 2,
     I420 = 3,
-    YUY2 = 4
+    YUY2 = 4,
+		RGBA = 5,
+		BGRA = 6
 };
+
+static const char* moColorModeIndex[7] =  { "DEFAULT", "YUV", "RGB", "I420", "YUY2", "RGBA", "BGRA" };
 
 /**
 typedef enum {
@@ -168,6 +173,7 @@ class LIBMOLDEO_API moVideoFormat {
 			m_RedMask = 0;
 			m_GreenMask = 0;
 			m_BlueMask = 0;
+			m_ColorMode = DEFAULT;
 		}
 
 		void SetVideoMode() {
@@ -197,6 +203,7 @@ class LIBMOLDEO_API moVideoFormat {
 
 			}
 		}
+
 
 		moVideoMode	m_VideoMode;/** modo de video, ver: moVideoMode */
 		moColorMode m_ColorMode;
@@ -334,22 +341,22 @@ class LIBMOLDEO_API moVideoSample {
 *   cadena  o código de caracteres que lo representa.
 */
 class LIBMOLDEO_API moCaptureDevice {
-	public:
 
-		/// contructor
+		public:
+
+			/// contructor
 		moCaptureDevice();
 
-    /// contructor
+    	/// contructor
 		moCaptureDevice( const moText &p_name, const moText &p_description, const moText &p_path, MOint p_deviceport = 0, MOint p_sourcewidth = 0, MOint p_sourceheight = 0, MOint p_bpp = 0, MOint p_fliph=0, MOint p_flipv=0 );
 
-		///Copy constructor
+			///Copy constructor
 		moCaptureDevice( const moCaptureDevice &src ) {
 			(*this) = src;
 		}
 
-    /// Operador de copia
-		moCaptureDevice &operator = (const moCaptureDevice &src)
-		{
+			/// Operador de copia
+		moCaptureDevice &operator = (const moCaptureDevice &src) {
 			m_bPresent = src.m_bPresent;
 			m_bPreferred = src.m_bPreferred;
 			m_Name = src.m_Name;
@@ -361,8 +368,8 @@ class LIBMOLDEO_API moCaptureDevice {
 			m_SourceWidth = src.m_SourceWidth;
 			m_SourceHeight = src.m_SourceHeight;
 			m_SourceBpp = src.m_SourceBpp;
-      m_SourceFlipH = src.m_SourceFlipH;
-      m_SourceFlipV = src.m_SourceFlipV;
+		  m_SourceFlipH = src.m_SourceFlipH;
+		  m_SourceFlipV = src.m_SourceFlipV;
 
 			return *this;
 		}
@@ -414,7 +421,7 @@ class LIBMOLDEO_API moCaptureDevice {
 			m_bPresent = p;
 		}
 
-        /// Señala y verifica si está presente el dispositivo
+    /// Señala y verifica si está presente el dispositivo
 		bool IsPresent() const {
 			return m_bPresent;
 		}
@@ -727,6 +734,8 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     *   @return moVideoFormat el formato de video
     */
     moVideoFormat	GetVideoFormat();
+		const moFile&	GetVideoFile();
+
 
     /// Devuelve el formato de audio
     /**
@@ -734,6 +743,7 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     *   @return moAudioFormat el formato de video
     */
     moAudioFormat	GetAudioFormat();
+		const moFile&	GetAudioFile();
 
     /// Estado de la reproducción
     /**
@@ -747,6 +757,7 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
     *   @return moStreamState estado del stream del grafo
     */
     virtual moStreamState    GetState();
+		const moFile&	GetGraphFile();
 
     /// Estado de la reproducción (version texto)
     /**
@@ -760,6 +771,9 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
 
 	moVideoFormat		m_VideoFormat;///Formato de video
   moAudioFormat		m_AudioFormat;
+	moFile					m_VideoFile;
+	moFile					m_AudioFile;
+	moFile					m_GraphFile;
 
 };
 
@@ -772,4 +786,3 @@ class LIBMOLDEO_API moVideoGraph : public moAbstract {
 
 
 #endif
-

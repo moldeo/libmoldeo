@@ -1180,6 +1180,15 @@ LIBMOLDEO_API moText0 FloatToStr(double a, int nzeros, int ndecimals )
     return str;
 }
 
+LIBMOLDEO_API moText0 IntToHex(unsigned int a)
+{
+  std::stringstream sstream;
+  sstream << std::hex << a;
+  std::string result = sstream.str();
+  moText str = result.c_str();
+  return str;
+}
+
 
 int HexToInt( const moText& hex ) {
   int res;
@@ -1214,4 +1223,3 @@ int StrToInt( const moText& str ) {
 }
 
 #endif
-

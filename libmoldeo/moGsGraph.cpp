@@ -38,7 +38,11 @@
 #include <gst/interfaces/propertyprobe.h>
 #else
 #endif // GSTVERSION
+
+#ifndef GSTVERSION
 #define GSTVERSION
+#endif
+
 #include "moFileManager.h"
 
 moLock BuildLock;
@@ -241,7 +245,7 @@ moGsGraph::appsink_new_sample( moGstAppSink* appsink, moGPointer user_data ) {
       GstBuffer* Gbuffer = gst_sample_get_buffer (sample);
       int bsize = gst_buffer_get_size( Gbuffer );
       if (!( bsize>0 && (int)bsize<=(h*w*4) )) return GST_FLOW_ERROR;
-      //pGsGraph->MODebug2->Message(moText("Bucket receiving size: ") + IntToStr(bsize) );
+      pGsGraph->MODebug2->Message(moText("Bucket receiving size: ") + IntToStr(bsize) );
 
     if (1==1) {
 
@@ -353,7 +357,7 @@ moGsGraph::cb_have_data (moGstPad    *pad, moGstPadProbeInfo *info, moGPointer  
     sstr = gst_structure_to_string (str);
 
     //cout << "new data: timestamp: " << buffer->timestamp << " duration:" << buffer->duration << " size:" << buffer->size << " caps:" << sstr << endl;
-    //moAbstract::MODebug2->Message( moText(" moGsGraph:: cb_have_data") );
+    moAbstract::MODebug2->Message( moText(" moGsGraph:: cb_have_data") );
 
     gchar* isaudio =  NULL;
     gchar* isvideo =  NULL;
@@ -572,7 +576,7 @@ moGsGraph::cb_pad_added_new ( moGstElement *decodebin, moGstPad *pad, moGPointer
 	if (sstr==NULL) {
 		MODebug2->Error(moText("moGsGraph::cb_pad_added_new > sstr gst_structure_to_string is empty")  );
 	} else strname = gst_structure_get_name (str);
-	cout << "cb_newpad: new pad: " << padname << "strname:" << strname << endl;
+	cout << "cb_newpad: new pad: " << padname << " strname: " << strname << endl;
 
   bool is_rtsp = false;
 	if (g_strrstr (strname, "application/x-rtp")) {
@@ -589,7 +593,7 @@ moGsGraph::cb_pad_added_new ( moGstElement *decodebin, moGstPad *pad, moGPointer
 		//cout << "cb_newpad: strname==NULL" << endl;
             MODebug2->Error(moText("moGsGraph::cb_pad_added_new > gst_structure_to_string is empty, forcing video!")  );
             //return;
-		forcing_video = true;
+		          forcing_video = true;
         } else {
 		is_video = g_strrstr (strname, "video");
 		is_audio = g_strrstr (strname, "audio");
@@ -611,7 +615,7 @@ moGsGraph::cb_pad_added_new ( moGstElement *decodebin, moGstPad *pad, moGPointer
                 audiopadinconverter = gst_element_get_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
 #else
                 MODebug2->Message(moText("moGsGraph::cb_pad_added_new: get static pad sink audio converter"));
-audiopadinconverter = gst_element_get_static_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
+                audiopadinconverter = gst_element_get_static_pad ( (GstElement*) pGsGraph->m_pAudioConverter, "sink");
 #endif
                 MODebug2->Message(moText("moGsGraph::cb_pad_added_new: audio pad link"));
                 padlink = gst_pad_link (Gpad, audiopadinconverter);
@@ -641,8 +645,9 @@ audiopadinconverter = gst_element_get_static_pad ( (GstElement*) pGsGraph->m_pAu
 
           } else if (is_video || forcing_video ) {
             pGsGraph->m_pVideoPad = Gpad;
-
-            MODebug2->Message(moText("moGsGraph::cb_pad_added_new: video pad created"));
+            const gchar *v_format = "";
+            v_format = gst_structure_get_string(str, "format");
+            MODebug2->Message(moText("moGsGraph::cb_pad_added_new: video pad created, format: ")+moText(v_format));
             if (is_rtsp) {
               videopad = (GstPad*)pGsGraph->m_pRTSPDepaySink;
               if (videopad) {
@@ -667,6 +672,14 @@ audiopadinconverter = gst_element_get_static_pad ( (GstElement*) pGsGraph->m_pAu
                     padlink = gst_pad_link( Gpad, videopad );
                 }
 #else
+
+                if (v_format && (moText(v_format)==moText("BGRA") || moText(v_format)==moText("RGBA")) ) {
+                  MODebug2->Message(moText("moGsGraph::cb_pad_added_new: setting caps for Alpha channel, RGBA"));
+                  GstCaps *capsRGBA = gst_caps_new_simple ( "video/x-raw", "format", G_TYPE_STRING, "RGBA", NULL);
+                  g_object_set (G_OBJECT (pGsGraph->m_pFakeSink), "caps", capsRGBA, NULL);
+                  // TODO: relink appsink to get the format RGBA?
+                }
+
                 videopad = gst_element_get_static_pad( SinkElement, "sink");
                 if (videopad) {
                     padlink = gst_pad_link( Gpad, videopad );
@@ -697,7 +710,26 @@ audiopadinconverter = gst_element_get_static_pad ( (GstElement*) pGsGraph->m_pAu
                                                                               */
 #endif
                     //cout << "cb_newpad: linked pads..." << endl;
-                } else MODebug2->Error(moText("moGsGraph::cb_pad_added_new > padlink BAD!")  );
+                } else {
+                  /**
+                  GST_PAD_LINK_OK	0
+                  GST_PAD_LINK_WRONG_HIERARCHY	-1
+                  GST_PAD_LINK_WAS_LINKED	-2
+                  GST_PAD_LINK_WRONG_DIRECTION	-3
+                  GST_PAD_LINK_NOFORMAT	-4
+                  GST_PAD_LINK_NOSCHED	-5
+                  GST_PAD_LINK_REFUSED	-6
+                  */
+                  moText padlink_returns = "GST_PAD_LINK_OK	0\
+                  GST_PAD_LINK_WRONG_HIERARCHY	-1\
+                  GST_PAD_LINK_WAS_LINKED	-2\
+                  GST_PAD_LINK_WRONG_DIRECTION	-3\
+                  GST_PAD_LINK_NOFORMAT	-4\
+                  GST_PAD_LINK_NOSCHED	-5\
+                  GST_PAD_LINK_REFUSED	-6";
+
+                  MODebug2->Error(moText("moGsGraph::cb_pad_added_new > padlink BAD! padlink return:")+IntToStr((int)padlink) +padlink_returns );
+                }
 
             } else {
                 //version 2 con videoscale
@@ -778,10 +810,10 @@ moGsGraph::cb_pad_added ( moGstElement *decodebin, moGstPad *pad, moGPointer u_d
         const gchar *sstr;
 
         sstr = gst_structure_to_string (str);
-        cout << "cb_newpad: new pad: " << padname << " caps:" << sstr << endl;
+        cout << "moGsGraph::cb_pad_added: new pad: " << padname << " caps:" << sstr << endl;
 
         strname = gst_structure_get_name (str);
-        cout << "cb_newpad: new pad: " << padname << " strname:" << strname << endl;
+        cout << "moGsGraph::cb_pad_added: new pad: " << padname << " strname:" << strname << endl;
 
 
           if (g_strrstr (strname, "audio")) {
@@ -2916,8 +2948,8 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
 
                         } else {
                             MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pColorSpace m_pCapsFilter m_pFakeSink linking failed.")+devinfo);
-                            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pColorSpace")+IntToStr((int)m_pColorSpace) );
-                            MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pFakeSink")+IntToStr((int)m_pFakeSink) );
+                            //MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pColorSpace")+IntToStr((int)m_pColorSpace) );
+                            //MODebug2->Error(moText("moGsGraph::BuildLiveWebcamGraph > m_pFakeSink")+IntToStr((int)m_pFakeSink) );
                             event_loop( (GstElement*) m_pGstPipeline, false, GST_STATE_PAUSED);
                         }
                     } else {
@@ -3293,29 +3325,43 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
     *
     */
     GstRegistry* plugins_register = gst_registry_get();
-    GstPluginFeature* vaapi_decode = gst_registry_lookup_feature(plugins_register, "vaapidecode");
-    GstPluginFeature* nvdec_decode = gst_registry_lookup_feature(plugins_register, "nvdec");
-    GstPluginFeature* nvdec_gldownload = gst_registry_lookup_feature(plugins_register, "gldownload");
-    if(vaapi_decode != NULL) {
-      MODebug2->Message("VAAPI (vaapidecode) founded, setting plugin rank to GST_RANK_PRIMARY");
-      gst_plugin_feature_set_rank(vaapi_decode, GST_RANK_PRIMARY - 1);
-      gst_object_unref(vaapi_decode);
-    }
-    if(nvdec_decode != NULL) {
-      MODebug2->Message("NVDEC (nvdec) founded, setting plugin rank to GST_RANK_PRIMARY");
-      gst_plugin_feature_set_rank(nvdec_decode, GST_RANK_PRIMARY - 1);
-      gst_object_unref(nvdec_decode);
-    }
-    if (nvdec_decode || vaapi_decode) {
-      GstPluginFeature* avdec_h264 = gst_registry_lookup_feature(plugins_register, "avdec_h264");
-      if (avdec_h264) {
-        MODebug2->Message("Switch to NVIDIA DECODING, downranking LIBAV (avdec_h264) founded, setting plugin rank to GST_RANK_NONE");
-        gst_plugin_feature_set_rank(avdec_h264, GST_RANK_NONE);
-        gst_object_unref(avdec_h264);
+
+    GstPluginFeature* vaapi_decode = NULL;
+    GstPluginFeature* nvdec_decode = NULL;
+    GstPluginFeature* nvdec_gldownload = NULL;
+
+    if (1==2) {
+
+      vaapi_decode = gst_registry_lookup_feature(plugins_register, "vaapidecode");
+      nvdec_decode = gst_registry_lookup_feature(plugins_register, "nvdec");
+      nvdec_gldownload = gst_registry_lookup_feature(plugins_register, "gldownload");
+
+      if(vaapi_decode != NULL) {
+        MODebug2->Message("VAAPI (vaapidecode) founded, setting plugin rank to GST_RANK_PRIMARY");
+        gst_plugin_feature_set_rank(vaapi_decode, GST_RANK_PRIMARY - 1);
+        gst_object_unref(vaapi_decode);
+      }
+
+      if(nvdec_decode != NULL) {
+        MODebug2->Message("NVDEC (nvdec) founded, setting plugin rank to GST_RANK_PRIMARY");
+        gst_plugin_feature_set_rank(nvdec_decode, GST_RANK_PRIMARY - 1);
+        gst_object_unref(nvdec_decode);
+      }
+
+      if (nvdec_decode || vaapi_decode) {
+        GstPluginFeature* avdec_h264 = gst_registry_lookup_feature(plugins_register, "avdec_h264");
+        if (avdec_h264) {
+          MODebug2->Message("Switch to NVIDIA DECODING, downranking LIBAV (avdec_h264) founded, setting plugin rank to GST_RANK_NONE");
+          gst_plugin_feature_set_rank(avdec_h264, GST_RANK_NONE);
+          gst_object_unref(avdec_h264);
+        }
       }
     }
 
     moFile VideoFile( filename );
+    m_VideoFile = VideoFile;
+
+    MODebug2->Message( moText("moGsGraph::BuildLiveVideoGraph > loading: ")+filename ) ;
 
     if ( !VideoFile.Exists() ) return false;
 
@@ -3407,7 +3453,7 @@ bool moGsGraph::BuildLiveVideoGraph( moText filename , moBucketsPool *pBucketsPo
                     moGstElement* m_pGlDownload = NULL;
                     if (nvdec_decode) {
                       //video/x-raw(memory:GLMemory),format=(string)RGBA"
-                      caps = gst_caps_new_simple ( "video/x-raw", "format", G_TYPE_STRING, "RGB", NULL);
+                      caps = gst_caps_new_simple ( "video/x-raw", "format", G_TYPE_STRING, "RGBA", NULL);
                       /*caps = gst_caps_new_simple ( "video/x-raw(memory:GLMemory)",
                            "format", G_TYPE_STRING, "RGBA",
                            NULL);*/
@@ -3793,6 +3839,14 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
         m_VideoFormat.m_GreenMask = (MOuint) greenmask;
         m_VideoFormat.m_BlueMask = (MOuint) bluemask;
         m_VideoFormat.m_BitCount = (MOuint) bitcount;
+        m_VideoFormat.m_ColorMode = RGB;
+
+        const gchar* vformat = gst_structure_get_string( str, "format");
+        MODebug2->Message( moText("vformat: [") + moText(vformat) + moText("]") );
+        if (moText(vformat)==moText("RGBA") || moText(vformat)==moText("BGRA")) {
+          m_VideoFormat.m_ColorMode = RGBA;
+        }
+
 
         //cout << "Width:" << m_VideoFormat.m_Width << endl;
         //cout << "Height:" << m_VideoFormat.m_Height << endl;
@@ -3818,7 +3872,9 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
     }
 
     MODebug2->Message(
-                        "SetVideoFormat: we have a format!!"
+                        "SetVideoFormat: we have a format!! For: "
+                      + m_VideoFile.GetFullName()
+                      + " Resolution: "
                       + IntToStr(m_VideoFormat.m_Width)
                       + " X "
                       + IntToStr(m_VideoFormat.m_Height)
@@ -3826,16 +3882,22 @@ moGsGraph::SetVideoFormat( moGstCaps* caps, moGstBuffer* buffer ) {
                       + IntToStr(m_VideoFormat.m_BitCount)
                       + " m_BufferSize: "
                       + IntToStr(m_VideoFormat.m_BufferSize)
+                      + " m_ColorMode: "
+                      + moText(moColorModeIndex[m_VideoFormat.m_ColorMode])
                       + " buffer duration: "
                       + IntToStr(m_VideoFormat.m_TimePerFrame)
                       + " m_FrameRate: "
                       + IntToStr(m_VideoFormat.m_FrameRate)
                       + " m_RedMask: "
                       + IntToStr(m_VideoFormat.m_RedMask)
+                      + " Hex: "
+                      + IntToHex(m_VideoFormat.m_RedMask)
+                      //+ " string: "
+                      //+ moText(gst_structure_get_string( str, "red_mask"))
                       + " m_GreenMask: "
-                      + IntToStr(m_VideoFormat.m_GreenMask)
+                      + IntToHex(m_VideoFormat.m_GreenMask)
                       + " m_BlueMask: "
-                      + IntToStr(m_VideoFormat.m_BlueMask)
+                      + IntToHex(m_VideoFormat.m_BlueMask)
 
                       );
 

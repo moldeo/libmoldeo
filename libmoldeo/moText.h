@@ -65,7 +65,7 @@ class moTextArray;
 
 /// clase de para manejar textos
 /**
- * Operaciones y funciones para la manipulación de cadenas de caracteres.
+ * Operaciones y funciones para la manipulaciï¿½n de cadenas de caracteres.
  */
 #ifndef USE_MOTEXT0
 #define USE_MOTEXT0 1
@@ -347,6 +347,7 @@ LIBMOLDEO_API moText IntToStr(long a);
 LIBMOLDEO_API moText IntToStr(unsigned long a);
 LIBMOLDEO_API moText IntToStr(long long a);
 LIBMOLDEO_API moText IntToStr(unsigned long long a);
+LIBMOLDEO_API moText IntToHex(unsigned int a);
 LIBMOLDEO_API moText FloatToStr(double a);
 LIBMOLDEO_API moText FloatToStr(double a, int n);
 LIBMOLDEO_API moText FloatToStr(double a, int nzeros, int ndecimals );
@@ -358,4 +359,3 @@ LIBMOLDEO_API int StrToInt( const moText& hex );
 LIBMOLDEO_API long StrToLong( const moText& hex );
 
 #endif
-

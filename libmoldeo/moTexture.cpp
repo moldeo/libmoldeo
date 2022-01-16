@@ -884,6 +884,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
 
     FREE_IMAGE_FORMAT fif = FIF_PNG;
     FREE_IMAGE_TYPE fit = FIT_BITMAP;
+		FREE_IMAGE_COLOR_TYPE fic = FIC_RGB;
     FIBITMAP* fbitmap = NULL;
     int options = 0;
 
@@ -902,15 +903,25 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
 #endif
     GLenum gcomponenttype = GL_UNSIGNED_BYTE;
 
-    if ( p_bufferformat == moText("PNGA")) {
+    if ( p_bufferformat == moText("PNGA") || p_bufferformat == moText("PNGALPHA")) {
 
         fif = FIF_PNG;
+				fit = FIT_RGBA16;
+				//gcomponenttype = GL_FLOAT;
         options = PNG_DEFAULT;
         thumbnailfilename+= moText(".png");
+				fic = FIC_RGBALPHA;
+
+				//fif = FIF_BMP;
+        //options = BMP_DEFAULT;
+        //thumbnailfilename+= moText(".bmp");
+
         bpp = 32;
         bytesperpixel = 4;
+				pitch = bytesperpixel * GetWidth();
+
 #ifndef OPENGLESV2
-        gbufferformat = GL_BGRA;
+        gbufferformat = GL_RGBA;
 #else
 	gbufferformat = GL_RGBA;
 #endif
@@ -921,6 +932,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
         thumbnailfilename+= moText(".png");
         bpp = 32;
         bytesperpixel = 4;
+				fic = FIC_RGBALPHA;
 #ifndef OPENGLESV2
         gbufferformat = GL_BGRA;
 #else
@@ -975,6 +987,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
         options = EXR_NONE | EXR_FLOAT;
         thumbnailfilename+= moText(".exr");
         fit = FIT_RGBAF;
+				fic = FIC_RGBALPHA;
         gcomponenttype = GL_FLOAT;
         bpp = 128;//32*4
         bytesperpixel = 128/8;//32/4 bits/bytes por componente (4 bytes por float, 16 bytes  por pixel)
@@ -1070,21 +1083,70 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
           MODebug2->Error("moTexture::CreateThumbnail > GetBuffer from texture " + GetName()+" failed.");
           return moText("");
       }
-    }
-/**
-    //return moText();
-    for(int j=0;j<(int)1;j++) {
 
-      for(int i=0;i<(int)1;i++) {
-          MODebug2->Message( "R:" + IntToStr( (int)m_pBufferData[pitch*j + i*3+2])
-                            + " G:" + IntToStr( (int)m_pBufferData[pitch*j + i*3+1])
-                            + " B:" + IntToStr( (int)m_pBufferData[pitch*j + i*3+0])
-                            + " W:" + IntToStr(GetWidth())
-                            + " H:" + IntToStr(GetHeight())
+			if (fit==FIT_RGBA16) {
+
+				MODebug2->Message("moTexture::CreateThumbnail > FIT_RGBA16 .");
+
+				bytesperpixel = 2*4;//8 bytes
+				bpp = 8*2*4;//64 bits
+				pitch = bytesperpixel * GetWidth();
+
+				MOushort* m_pWBufferData = new MOushort[ 4*GetWidth()*GetHeight()  ];
+
+				for ( int p = 0; p<GetWidth()*GetHeight(); p++ ) {
+					m_pWBufferData[p*4] = (MOushort)m_pBufferData[p*4]*255;
+
+					m_pWBufferData[p*4+1] = (MOushort)m_pBufferData[p*4+1]*255;
+
+					m_pWBufferData[p*4+2] = (MOushort)m_pBufferData[p*4+2]*255;
+
+					m_pWBufferData[p*4+3] = (MOushort)m_pBufferData[p*4+3]*255;
+
+					/*MODebug2->Message( "R:" + IntToStr( (int)m_pBufferData[ p*4+2 ])
+														+ " G:" + IntToStr( (int)m_pBufferData[ p*4+1 ])
+														+ " B:" + IntToStr( (int)m_pBufferData[ p*4+0 ])
+														+ " A:" + IntToStr( (int)m_pBufferData[ p*4+3 ])
+														//+ " Wi:" + IntToStr(i)
+														//+ " Hj:" + IntToStr(j)
+													);*/
+				}
+				delete [] m_pBufferData;
+				m_pBufferData = (BYTE*)m_pWBufferData;
+
+				/*for(int j=0;j<=(int)GetHeight()/2;j++) {
+
+		      for(int i=0;i<=(int)GetWidth()/2;i++) {
+
+							int pindex = pitch*j + i*bytesperpixel;
+
+		          MODebug2->Message( "R:" + IntToStr( (int)m_pWBufferData[ pindex+2 ])
+		                            + " G:" + IntToStr( (int)m_pWBufferData[ pindex+1 ])
+		                            + " B:" + IntToStr( (int)m_pWBufferData[ pindex+0 ])
+																+ " A:" + IntToStr( (int)m_pWBufferData[ pindex+3 ])
+		                            + " Wi:" + IntToStr(i)
+		                            + " Hj:" + IntToStr(j)
+		                            );
+		      }
+		    }*/
+			}
+
+    }
+
+    //return moText();
+    /*for(int j=0;j<=(int)GetHeight()/2;j++) {
+
+      for(int i=0;i<=(int)GetWidth()/2;i++) {
+          MODebug2->Message( "R:" + IntToStr( (int)m_pBufferData[pitch*j + i*bytesperpixel+2])
+                            + " G:" + IntToStr( (int)m_pBufferData[pitch*j + i*bytesperpixel+1])
+                            + " B:" + IntToStr( (int)m_pBufferData[pitch*j + i*bytesperpixel+0])
+														+ " A:" + IntToStr( (int)m_pBufferData[pitch*j + i*bytesperpixel+3])
+                            + " Wi:" + IntToStr(i)
+                            + " Hj:" + IntToStr(j)
                             );
       }
-    }
-*/
+    }*/
+
     //fbitmap = FreeImage_ConvertFromRawBits( (BYTE*)m_pBufferData,
     fbitmap = FreeImage_ConvertFromRawBitsEx( TRUE, (BYTE*)m_pBufferData,
                                            fit,
@@ -1115,8 +1177,30 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
     unsigned int fheight = FreeImage_GetHeight(fbitmap);
     unsigned int fpitch = FreeImage_GetPitch(fbitmap);
     unsigned int fbpp = FreeImage_GetBPP(fbitmap);
+		unsigned int ffic = FreeImage_GetColorType(fbitmap);
     //FREE_IMAGE_TYPE image_type = FreeImage_GetImageType( fbitmap );
+		bool ftransparent = FreeImage_IsTransparent(fbitmap);
+		MODebug2->Message("ftransparent:"+IntToStr((int)ftransparent));
+		if (bytesperpixel >= 4) {
+			FreeImage_SetTransparent(fbitmap, MO_TRUE);
+		}
 
+		ffic = FreeImage_GetColorType(fbitmap);
+		MODebug2->Message("ffic:"+IntToStr(ffic));
+		if (ffic!=fic) {
+			FIBITMAP* alphachannel = FreeImage_GetChannel(fbitmap, FICC_ALPHA);
+			if (alphachannel) {
+					//FreeImage_SetChannel(fbitmap, alphachannel, FICC_ALPHA);
+					//fbitmap = FreeImage_ConvertTo32Bits(fbitmap);
+					//fbitmap = FreeImage_ConvertToRGBAF(fbitmap);
+					//fbitmap = FreeImage_ConvertTo32Bits(fbitmap);
+					ffic = FreeImage_GetColorType(fbitmap);
+					MODebug2->Message("ffic:"+IntToStr(ffic));
+			}
+			//FreeImage_SetColorType(fbitmap, fic);
+			MODebug2->Message("fic:"+IntToStr(fic));
+			MODebug2->Message("alphachannel:"+IntToStr((long)alphachannel));
+		}
 
     if  ((fwidth!=GetWidth() && fheight!=GetHeight()) ) {
 
@@ -1126,7 +1210,7 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
 
     if ( fbpp!=bpp /*||  fpitch!=pitch*/ ) {
       MODebug2->Error("moTexture::CreateThumbnail > freeimage bpp and pitch does not match texture > fpitch:" + IntToStr(fpitch) +" vs pitch:" + IntToStr(pitch) + " fbpp (bits per pixel):" + IntToStr(bpp) +" vs bpp:" + IntToStr(bpp) );
-      return moText("");
+      //return moText("");
 
     }
 
@@ -1152,20 +1236,44 @@ moText  moTexture::CreateThumbnail( moText p_bufferformat, int w, int h, moText 
                 && m_pResourceManager->GetRenderMan()->ScreenHeight() == h && h <= (int)GetHeight()  ) {
                   //MODebug2->Message("FreeImage_Copy");
                   fbitmap2 = FreeImage_Copy( fbitmap, 0, 0, w, h);
-                  if (fbitmap2 && fbitmap) { FreeImage_Unload( fbitmap ); fbitmap=fbitmap2; }
+                  if (fbitmap2 && fbitmap) {
+										FreeImage_Unload( fbitmap ); fbitmap=fbitmap2;
+									}
                 }
     } else {
         //MODebug2->Message("FreeImage_Rescale");
         w = (w / 4 ) * 4;
         h = (h / 4 ) * 4;
-        if (w!=(int)GetWidth() || h!=(int)GetHeight()) fbitmap2 = FreeImage_Rescale( fbitmap, w, h, FILTER_BICUBIC );
-        if (fbitmap2 && fbitmap) { FreeImage_Unload( fbitmap ); fbitmap=fbitmap2; }
+        if (w!=(int)GetWidth() || h!=(int)GetHeight()) {
+					fbitmap2 = FreeImage_Rescale( fbitmap, w, h, FILTER_BICUBIC );
+				}
+        if (fbitmap2 && fbitmap) {
+					FreeImage_Unload( fbitmap );
+					fbitmap=fbitmap2;
+				}
     }
 
     //MODebug2->Message("FreeImage_FlipVertical");
     //MODebug2->Message("FreeImage_GetVersion:" + moText(FreeImage_GetVersion()));
     //FreeImage_FlipVertical( fbitmap );
+		ftransparent = FreeImage_IsTransparent(fbitmap);
+		if (bytesperpixel == 4 ) {
+			FreeImage_SetTransparent(fbitmap, MO_TRUE);
+		}
 
+		/*BYTE *bits = FreeImage_GetBits(fbitmap);
+		for(int j=GetHeight()/2;j<=(int)GetHeight()/2;j++) {
+
+      for(int i=GetWidth()/2;i<=(int)GetWidth()/2;i++) {
+          MODebug2->Message( "fbitmap R:" + IntToStr( (int)bits[pitch*j + i*bytesperpixel+2])
+                            + " G:" + IntToStr( (int)bits[pitch*j + i*bytesperpixel+1])
+                            + " B:" + IntToStr( (int)bits[pitch*j + i*bytesperpixel+0])
+														+ " A:" + IntToStr( (int)bits[pitch*j + i*bytesperpixel+3])
+                            + " W:" + IntToStr(GetWidth())
+                            + " H:" + IntToStr(GetHeight())
+                            );
+      }
+    }*/
 
     if (!FreeImage_Save( fif, fbitmap, thumbnailfilename, options )) {
       MODebug2->Error("moTexture::CreateThumbnail > not saved to disc. thumbnailfilename: " + thumbnailfilename);
@@ -2444,11 +2552,17 @@ void moMovie::GetFrame( MOuint p_i )
 
           ///lock to prevent any data or reference loss...
           pbucket->Lock();
+
+					//MODebug2->Message("m_pGraph->GetVideoFormat().m_ColorMode: "+IntToStr(m_pGraph->GetVideoFormat().m_ColorMode)+" VideoFile: "+m_pGraph->GetVideoFile().GetPath());
 #ifndef OPENGLESV2
           //SetBuffer(pbuffer, GL_BGR_EXT );
-          SetBuffer(pbuffer, GL_RGB );
+					if (m_pGraph->GetVideoFormat().m_ColorMode==BGRA || m_pGraph->GetVideoFormat().m_ColorMode==RGBA) {
+          	SetBuffer(pbuffer, GL_RGBA );
+					} else SetBuffer(pbuffer, GL_RGB );
 #else
-          SetBuffer(pbuffer, GL_RGB );
+					if (m_pGraph->GetVideoFormat().m_ColorMode==BGRA || m_pGraph->GetVideoFormat().m_ColorMode==RGBA) {
+						SetBuffer(pbuffer, GL_RGBA );
+					} else SetBuffer(pbuffer, GL_RGB );
 #endif
 
           pbucket->Unlock();
@@ -2473,4 +2587,3 @@ void moMovie::GetFrame( MOuint p_i )
       MODebug2->Error( moText("moMovie::GetFrame()") + moText(" m_pGraph is NULL !!!") );
   }
 }
-

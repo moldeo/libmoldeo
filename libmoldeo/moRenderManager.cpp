@@ -377,6 +377,8 @@ void moRenderManager::BeginDraw()
 {
 	if (IsRenderToFBOEnabled())
 		if (m_pFBManager) m_pFBManager->BindFBO(m_fbo_idx, m_render_attach_points[0]);
+
+    glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
 }
 
 void moRenderManager::BeginDrawEffect()
@@ -560,6 +562,10 @@ void moRenderManager::EndDrawEffect()
 
 void moRenderManager::EndDraw()
 {
+  uint8_t* ImageBuffer = new uint8_t[ 1 * 1 * 4];
+  glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, ImageBuffer);
+  //MODebug2->Message("RGBA: "+IntToStr(ImageBuffer[0]) +","+ IntToStr(ImageBuffer[1])+","+IntToStr(ImageBuffer[2])+","+IntToStr(ImageBuffer[3]));
+
     ///add last frame to bucket pool
 /*
     moBucket *pbucket=NULL;
@@ -615,6 +621,13 @@ void moRenderManager::DrawTexture( MOint p_width, MOint p_height, MOint p_tex_nu
 		moTexture* ptex = m_pTextureManager->GetTexture( m_render_tex_moid[p_tex_num] );
 
         glBindTexture(GL_TEXTURE_2D, ptex->GetGLId());
+        glEnable(GL_ALPHA);
+        glDisable(GL_DEPTH_TEST);       // Disables Depth Testing
+        glDepthMask(GL_FALSE);
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+
 #ifndef OPENGLESV2
         glBegin(GL_QUADS);
             glTexCoord2f(0, 0.0);
