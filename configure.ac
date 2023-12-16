@@ -65,6 +65,13 @@ case "$host" in
                 ARCH_STRING="X86-64"
                 libdir=$prefix"/lib"
                 ;;
+        aarch64-*-darwin*)
+                AC_DEFINE(OS_DARWIN, 1, [Darwin backend])
+                AC_SUBST(OS_DARWIN)
+                ARCH_SPECIFIC_CFLAGS=""
+                ARCH_STRING="arm64"
+                libdir=$prefix"/lib"
+                ;;
         armv7l-*)
                 AC_DEFINE(ARCH_X86_64, 1, [Architecture is armv7l x86-64])
                 ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
