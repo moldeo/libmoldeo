@@ -64,6 +64,7 @@ case "$host" in
                 ARCH_SPECIFIC_CFLAGS="-DUSE_ADDR64"
                 ARCH_STRING="X86-64"
                 libdir=$prefix"/lib"
+                corefoundation='/System/Library/Frameworks/CoreFoundation.framework/Versions/A/Headers'
                 ;;
         aarch64-*-darwin*)
                 AC_DEFINE(OS_DARWIN, 1, [Darwin backend])
@@ -71,6 +72,7 @@ case "$host" in
                 ARCH_SPECIFIC_CFLAGS=""
                 ARCH_STRING="arm64"
                 libdir=$prefix"/lib"
+                corefoundation='/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/Versions/A/Headers'
                 ;;
         armv7l-*)
                 AC_DEFINE(ARCH_X86_64, 1, [Architecture is armv7l x86-64])
@@ -130,7 +132,7 @@ AC_ARG_ENABLE(host,
 	with_gles=yes
   elif test "x$enableval" = "xosx" ; then
     host_name="osx"
-	host_cflags="-I/opt/local/include -I/System/Library/Frameworks/CoreFoundation.framework/Versions/A/Headers"
+	host_cflags="-I/opt/local/include -I"$corefoundation
 	host_ldflags="-L/opt/local/lib -framework GLUT -framework OpenGL -framework Cocoa -framework CoreFoundation"
     librequires='glew, lua-5.1, tinyxml, muparser, sdl >= 1.2.0, ftgl, freetype2, check'
   else
