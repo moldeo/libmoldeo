@@ -200,7 +200,7 @@ GST_MAJORMINOR=$GST_VERSION_MAJOR.$GST_VERSION_MINOR
 if test "x$host_name" = "xosx" ; then
 
 AC_SUBST(GST_CFLAGS,"-I/Library/Frameworks/GStreamer.framework/Versions/1.0/Headers")
-AC_SUBST(GST_LIBS,"-framework GStreamer")
+AC_SUBST(GST_LIBS,"-L/Library/Frameworks -framework GStreamer")
 
 if test "x$GST_VERSION_MAJOR" = "x1" ; then
 	host_cflags="$host_cflags -DGSTVERSION"
