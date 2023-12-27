@@ -856,7 +856,7 @@ void moEffect::SetBlending( moBlendingModes blending ) {
 			//ADDITIVE WITH TRANSPARENCY: Rs*As + Rd*Ad
 			/** DOESNT WORK NICELY BECAUSE DST_ALPHA DOESNT AFFECT FINAL FRAMEBUFFER */
 			//glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-      glBlendFuncSeparate( GL_SRC_ALPHA, GL_DST_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      glBlendFuncSeparate( GL_SRC_ALPHA, GL_DST_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
             /** THIS WORKS LIKE A CHARM*/
 			//ADDITIVE WITH SRC TRANSPARENCY: Rs*As + Rd
 			//glBlendFunc(GL_SRC_ALPHA,GL_ONE);
@@ -870,7 +870,8 @@ void moEffect::SetBlending( moBlendingModes blending ) {
 			break;
 		case MO_BLENDING_MULTIPLY:
 			//MULTIPLY: [Rs * Rd] + [Rd * 0] = Rs * Rd
-			glBlendFunc( GL_DST_COLOR, GL_ZERO );
+			//glBlendFunc( GL_DST_COLOR, GL_ZERO );
+      glBlendFuncSeparate( GL_DST_COLOR, GL_ZERO, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 			break;
 		case MO_BLENDING_EXCLUSION:
 			//EXCLUSION: [Rs *(1 - Rd)] + [Rd *(1 - Rs)] = Rs + Rd - 2*Rs*Rd

@@ -3327,6 +3327,7 @@ int moConsole::ProcessMoldeoAPIMessage( moDataMessage* p_pDataMessage ) {
           pMessageToSend->Add( moData("__console__" ) );
           pMessageToSend->Add( moData( EffectStateJSON ) );
           /** send it: but we need an id */
+          //MODebug2->Message("moConsole::ProcessMoldeoAPIMessage > DataMessage is MO_ACTION_CONSOLE_GETSTATE > "+EffectStateJSON);
           SendMoldeoAPIMessage( pMessageToSend );
       }
 
@@ -4084,6 +4085,7 @@ moConsole::Update() {
         }
     }
 
+
   ///TODO: each Object see all events and process a few... can and should be optimized
   /// optimization: only send a partial event list to every object, filtered by
   /// moMoldeoObject->GetMobDefinition()->GetMoldeoId()
@@ -4172,6 +4174,14 @@ moConsole::Update() {
 
       tmp = actual;
       actual = tmp->next;
+  }
+
+  ///Use a parameter (live status) to send each frame / or nth frame a status from the console
+  moDataMessage* pMessageToSend = new moDataMessage();
+  if (pMessageToSend) {
+    pMessageToSend->Add( moData( "consolegetstate" ) );
+    ProcessMoldeoAPIMessage(pMessageToSend);
+    delete pMessageToSend;
   }
 
 	moMoldeoObject::Update( m_pIODeviceManager->GetEvents() );
