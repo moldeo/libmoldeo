@@ -189,6 +189,12 @@ dnl check for freeimage
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
 AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfreeimage]), AC_MSG_ERROR([FreeImage not found.]), )
 
+dnl check for freetype2
+PKG_CHECK_MODULES([FREETYPE2], [freetype2], has_freetype2=yes )
+AC_SUBST([FT2_CFLAGS], $FREETYPE2_CFLAGS)
+AC_SUBST([FT2_LIBS], $FREETYPE2_LIBS)
+
+
 dnl check for ftgl
 PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
 
@@ -232,8 +238,8 @@ AC_SUBST([HOSTCFLAGS],$host_cflags)
 AC_SUBST([HOSTLDFLAGS],$host_ldflags)
 
 
-dnl check for truetype
-AC_CHECK_FT2
+#dnl check for truetype
+#AC_CHECK_FT2
 
 dnl check for check test suite
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])

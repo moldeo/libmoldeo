@@ -148,6 +148,11 @@ dnl check for freeimage
 AC_CHECK_HEADER(FreeImage.h, , AC_MSG_ERROR([FreeImage header not found.]))
 AC_CHECK_LIB(freeimage, FreeImage_GetVersion, AC_SUBST([FREEIMAGE_LIBS], [-lfreeimage]), AC_MSG_ERROR([FreeImage not found.]), )
 
+
+dnl check for freetype2
+PKG_CHECK_MODULES([FREETYPE2], [freetype2], has_freetype2=yes )
+
+
 dnl check for ftgl
 PKG_CHECK_MODULES([FTGL], [ftgl], has_ftgl=yes )
 
@@ -266,4 +271,3 @@ libmoldeo.pc
 libmoldeotest.pc
 test-suite/Makefile
 ])
-
