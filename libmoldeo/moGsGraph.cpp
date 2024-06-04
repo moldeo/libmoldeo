@@ -1357,7 +1357,8 @@ if (m_PreferredDevices.Count()==0) {
         */
     #else
         #ifdef MO_MACOSX
-        device_name = "wrappercamerabinsrc";
+        //device_name = "wrappercamerabinsrc";
+        device_name = "avfvideosrc";
         #else
         device_name = moText("v4l2src");
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default"), moText("/dev/video0") ) );
