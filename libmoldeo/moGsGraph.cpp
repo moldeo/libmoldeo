@@ -52,10 +52,17 @@ moLock BuildLock;
 
 #ifdef MO_GSTREAMER
 
+#define CAMERABIN "wrappercamerabinsrc"
+
 #ifdef GSTVERSION
   #include <gst/app/gstappsink.h>
   #define DECODEBIN "decodebin"
   #define VIDEOCONVERT "videoconvert"
+
+  #ifdef MO_MACOSX
+    //for mac osx > 10.4
+    #define CAMERABINOSX "avfvideosrc"
+  #endif
   //#define VIDEOCONVERT "glcolorconvert"
 #else
   #define VIDEOCONVERT "ffmpegcolorspace"
@@ -1357,8 +1364,7 @@ if (m_PreferredDevices.Count()==0) {
         */
     #else
         #ifdef MO_MACOSX
-        //device_name = "wrappercamerabinsrc";
-        device_name = "avfvideosrc";
+        device_name = CAMERABINOSX;
         #else
         device_name = moText("v4l2src");
         //m_CaptureDevices.Add( moCaptureDevice( moText("Default"), moText("default"), moText("/dev/video0") ) );
@@ -2311,8 +2317,8 @@ signal_rtsppad_added_id = g_signal_connect (m_pRTSPSource, "pad-added", G_CALLBA
             #else
 		#ifdef GSTVERSION
 			#ifdef MO_MACOSX
-				m_pFileSource = gst_element_factory_make ("wrappercamerabinsrc", "source");
-            cout << "wrappercamerabinsrc created!" << endl;
+				m_pFileSource = gst_element_factory_make ( CAMERABINOSX, "source");
+            cout << CAMERABINOSX << " created!" << endl;
 			#else
 				if (devicename==moText("DV"))
 					m_pFileSource = gst_element_factory_make ("dv1394src", "source");
