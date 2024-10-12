@@ -51,8 +51,8 @@ typedef void moMemory;
 */
 typedef enum  {
         MO_TYPE_TEXTURE, /// TEXTURA BASE
-        MO_TYPE_TEXTURE_MULTIPLE, /// textura múltiple
-        MO_TYPE_MOVIE,/// película
+        MO_TYPE_TEXTURE_MULTIPLE, /// textura mï¿½ltiple
+        MO_TYPE_MOVIE,/// pelï¿½cula
         MO_TYPE_VIDEOBUFFER,/// buffer de video
         MO_TYPE_TEXTUREMEMORY,/// textura en memoria
         MO_TYPE_TEXTUREBUFFER,/// buffer de texturas
@@ -70,8 +70,8 @@ class moResourceManager;
 
 /// clase base para el manejo de una textura
 /**
- * Clase que encapsula una textura openGL y provee funcionalidades básicas tales como copiar contenidos desde o hacia
- * búfer, leer desde un archivo, manejar el FBO al cual pueda estar asociada la textura, etc.
+ * Clase que encapsula una textura openGL y provee funcionalidades bï¿½sicas tales como copiar contenidos desde o hacia
+ * bï¿½fer, leer desde un archivo, manejar el FBO al cual pueda estar asociada la textura, etc.
  *  @see moTextureManager
  *  @see moVideoManager
  */
@@ -87,25 +87,25 @@ class LIBMOLDEO_API moTexture : public moAbstract {
 		virtual ~moTexture();
 
         /**
-         * Inicializa propiedades básicas de la textura tales como el nombre, id, administradores y parámetros.
+         * Inicializa propiedades bï¿½sicas de la textura tales como el nombre, id, administradores y parï¿½metros.
          * @param p_name nombre de la textura.
          * @param p_moid Moldeo ID de la textura.
          * @param p_res puntero al administrador de recursos, del cual son extraidos todos los administradores que la textura necesita (GL, Data, File, etc).
-         * @param p_param parámetros de textura.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @param p_param parï¿½metros de textura.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		virtual MOboolean Init(moText p_name, MOuint p_moid, moResourceManager* p_res, moTexParam p_param = MODefTex2DParams);
         /**
          * Destruye la textura openGL.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		virtual MOboolean Finish();
 
         /**
-         * Construye una textura vacía con el ancho y alto especificados.
+         * Construye una textura vacï¿½a con el ancho y alto especificados.
          * @param p_width ancho de la textura.
          * @param p_heigh alto de la textura.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean BuildEmpty(MOuint p_width, MOuint p_height);
         /**
@@ -115,56 +115,56 @@ class LIBMOLDEO_API moTexture : public moAbstract {
          * @param p_buffer buffer utilizado para inicializar el contenido de la textura.
          * @param p_format formato de la textura, por ejemplo: GL_RGBA o GL_RGB.
          * @param p_type tipo de la textura, por ejemplo: GL_UNSIGNED_BYTE o GL_FLOAT.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean BuildFromBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
         /**
-         * Construye una textura a partir de la imágen contenida en p_filename.
-         * @param p_filename nombre del archivo que contiene la imágen a cargar en la textura.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Construye una textura a partir de la imï¿½gen contenida en p_filename.
+         * @param p_filename nombre del archivo que contiene la imï¿½gen a cargar en la textura.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean BuildFromFile(moText p_filename);
 
         /**
-         * Revisa que el archivo especificado con p_filename sea un archivo de imágen soportado. En estos momentos, los
+         * Revisa que el archivo especificado con p_filename sea un archivo de imï¿½gen soportado. En estos momentos, los
          * formatos soportados son tga jpg, png, gif, bmp, xpm, y ppm.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean SupportedFile(moText p_filename);
 
         /**
-         * Construye una textura a partir de la imágen especificada en los parámetros p_param.
-         * @param p_param puntero a un objeto de parámetros que contiene el nombre del archivo del cual la textura será leida.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Construye una textura a partir de la imï¿½gen especificada en los parï¿½metros p_param.
+         * @param p_param puntero a un objeto de parï¿½metros que contiene el nombre del archivo del cual la textura serï¿½ leida.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean Load( moParam* p_param );
 		MOboolean Load( moValue* p_value );
 
         /**
-         * Copia a la textura el búfer pasado como parametro, asumiendo que el mismo tiene el alto y ancho correcto.
-         * @param p_buffer puntero al búfer en memoria que será copiado a la textura.
-         * @param p_format formato de los datos contenidos en el búfer (GL_RGBA, GL_RGB, etc.).
-         * @param p_type tipo de los datos contenidos en el búfer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Copia a la textura el bï¿½fer pasado como parametro, asumiendo que el mismo tiene el alto y ancho correcto.
+         * @param p_buffer puntero al bï¿½fer en memoria que serï¿½ copiado a la textura.
+         * @param p_format formato de los datos contenidos en el bï¿½fer (GL_RGBA, GL_RGB, etc.).
+         * @param p_type tipo de los datos contenidos en el bï¿½fer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean SetBuffer( const GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
         /**
-         * Copia a la textura el búfer pasado como parametro, y usando los parametros de alto y ancho como las nuevas dimensiones de la textura.
-         * @param p_width ancho de los datos contenidos en el búfer.
-         * @param p_height alto de los datos contenidos en el búfer.
-         * @param p_buffer puntero al búfer en memoria que será copiado a la textura.
-         * @param p_format formato de los datos contenidos en el búfer (GL_RGBA, GL_RGB, etc.).
-         * @param p_type tipo de los datos contenidos en el búfer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Copia a la textura el bï¿½fer pasado como parametro, y usando los parametros de alto y ancho como las nuevas dimensiones de la textura.
+         * @param p_width ancho de los datos contenidos en el bï¿½fer.
+         * @param p_height alto de los datos contenidos en el bï¿½fer.
+         * @param p_buffer puntero al bï¿½fer en memoria que serï¿½ copiado a la textura.
+         * @param p_format formato de los datos contenidos en el bï¿½fer (GL_RGBA, GL_RGB, etc.).
+         * @param p_type tipo de los datos contenidos en el bï¿½fer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean SetBuffer(MOuint p_width, MOuint p_height, const GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
 
         /**
-         * Copia el contenido actual de la textura al búfer pasado como parametro.
-         * @param p_buffer puntero al búfer en memoria donde será copiada la textura.
-         * @param p_format especifica el formato de píxel de los datos copiados al búfer (GL_RGBA, GL_RGB, etc.).
-         * @param p_type especifica el tipo de píxel de los datos copiados al búfer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Copia el contenido actual de la textura al bï¿½fer pasado como parametro.
+         * @param p_buffer puntero al bï¿½fer en memoria donde serï¿½ copiada la textura.
+         * @param p_format especifica el formato de pï¿½xel de los datos copiados al bï¿½fer (GL_RGBA, GL_RGB, etc.).
+         * @param p_type especifica el tipo de pï¿½xel de los datos copiados al bï¿½fer (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean GetBuffer(GLvoid* p_buffer, GLenum p_format = GL_RGBA, GLenum p_type = GL_UNSIGNED_BYTE);
 
@@ -190,15 +190,15 @@ class LIBMOLDEO_API moTexture : public moAbstract {
          */
 		void SetFBO(moFBO* p_fbo) { m_fbo = p_fbo; }
         /**
-         * Utiliza p_fbo como nuevo objeto de Framebuffer para la textura, además de generar un nuevo
+         * Utiliza p_fbo como nuevo objeto de Framebuffer para la textura, ademï¿½s de generar un nuevo
          * punto de attachement de la textura en el FBO.
          * @param p_fbo puntero al FBO.
-         * @return índice del punto de attachement (0 para GL_COLOR_ATTACHMENT0_EXT, 1 para GL_COLOR_ATTACHMENT1_EXT, etc.).
+         * @return ï¿½ndice del punto de attachement (0 para GL_COLOR_ATTACHMENT0_EXT, 1 para GL_COLOR_ATTACHMENT1_EXT, etc.).
          */
 		MOuint SetFBOandAttachPoint(moFBO* p_fbo);
         /**
          * Utiliza p_fbo_attach_point como nuevo punto de attachement para la textura.
-         * @param p_fbo_attach_point índice del nuevo punto de attachement (0 para GL_COLOR_ATTACHMENT0_EXT, 1 para GL_COLOR_ATTACHMENT1_EXT, etc.).
+         * @param p_fbo_attach_point ï¿½ndice del nuevo punto de attachement (0 para GL_COLOR_ATTACHMENT0_EXT, 1 para GL_COLOR_ATTACHMENT1_EXT, etc.).
          */
 		void SetFBOAttachPoint(MOuint p_fbo_attach_point) { m_fbo_attach_point = p_fbo_attach_point; }
         /**
@@ -208,13 +208,13 @@ class LIBMOLDEO_API moTexture : public moAbstract {
 		moFBO* GetFBO() const { return m_fbo; }
         /**
          * Devuelve el punto de attachement de la textura.
-         * @return índice del punto de attachement (0 para GL_COLOR_ATTACHMENT0_EXT, 1 para GL_COLOR_ATTACHMENT1_EXT, etc.).
+         * @return ï¿½ndice del punto de attachement (0 para GL_COLOR_ATTACHMENT0_EXT, 1 para GL_COLOR_ATTACHMENT1_EXT, etc.).
          */
 		MOuint GetFBOAttachPoint() const { return m_fbo_attach_point; }
 
         /**
-         * Devuelve el tipo de píxel de la textura.
-         * @return tipo de píxel (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
+         * Devuelve el tipo de pï¿½xel de la textura.
+         * @return tipo de pï¿½xel (GL_UNSIGNED_BYTE, GL_FLOAT, etc.).
          */
 		moTextureType GetType() const { return m_type; }
         /**
@@ -224,7 +224,7 @@ class LIBMOLDEO_API moTexture : public moAbstract {
 		MOuint GetGLId() const { return m_glid; }
         /**
          * Devuelve el identificador OpenGL de la textura.
-         * @param p_src_mob puntero a un moMoldeoObject para evaluar sus parámetros
+         * @param p_src_mob puntero a un moMoldeoObject para evaluar sus parï¿½metros
          * @return OpenGL ID de la textura.
          */
 		MOuint GetGLId( moMoldeoObject* p_src_mob );
@@ -261,93 +261,93 @@ class LIBMOLDEO_API moTexture : public moAbstract {
 		MOuint GetHeight() const { return m_height; }
         /**
          * Si la textura es rectangular, devuelve el mismo valor que GetWidth. En caso contrario,
-         * devuelve el ancho origial escalado por el rango máximo de la coordenada S de texturas.
+         * devuelve el ancho origial escalado por el rango mï¿½ximo de la coordenada S de texturas.
          * @return ancho de datos de la textura.
          * @see GetWidth
          */
 		MOuint GetDataWidth() const;
         /**
          * Si la textura es rectangular, devuelve el mismo valor que GetHeight. En caso contrario,
-         * devuelve la altura origial escalada por el rango máximo de la coordenada T de texturas.
+         * devuelve la altura origial escalada por el rango mï¿½ximo de la coordenada T de texturas.
          * @return alto de datos de la textura.
          * @see GetHeight
          */
 		MOuint GetDataHeight() const;
         /**
-         * Devuelve el número de componentes por píxel.
-         * @return número de componentes.
+         * Devuelve el nï¿½mero de componentes por pï¿½xel.
+         * @return nï¿½mero de componentes.
          */
 		MOuint GetComponents() const { return m_components; }
         /**
-         * Devuelve el número total de téxels (alto x ancho x número de componentes).
-         * @return número de téxels.
+         * Devuelve el nï¿½mero total de tï¿½xels (alto x ancho x nï¿½mero de componentes).
+         * @return nï¿½mero de tï¿½xels.
          */
 		MOlong GetTexelCount() const { return m_width * m_height * m_components; }
         /**
-         * Devuelve el número total de téxels de datos (alto de datos x ancho de datos x número de componentes).
-         * @return número de téxels de datos.
+         * Devuelve el nï¿½mero total de tï¿½xels de datos (alto de datos x ancho de datos x nï¿½mero de componentes).
+         * @return nï¿½mero de tï¿½xels de datos.
          */
 		MOlong GetDataTexelCount() const { return GetDataWidth() * GetDataHeight() * m_components; }
 
         /**
-         * Devuelve el valor máximo de la coordenada S de textura.
-         * @return valor máximo de S.
+         * Devuelve el valor mï¿½ximo de la coordenada S de textura.
+         * @return valor mï¿½ximo de S.
          */
 		MOfloat GetMaxCoordS() const { return m_max_coord_s; }
         /**
-         * Devuelve el valor máximo de la coordenada T de textura.
-         * @return valor máximo de T.
+         * Devuelve el valor mï¿½ximo de la coordenada T de textura.
+         * @return valor mï¿½ximo de T.
          */
 		MOfloat GetMaxCoordT() const { return m_max_coord_t; }
 
         /**
-         * Devuelve los parámetros de la textura.
-         * @return parámetros de textura.
+         * Devuelve los parï¿½metros de la textura.
+         * @return parï¿½metros de textura.
          */
 		moTexParam GetTexParam() const { return m_param; }
         /**
-         * Devuelve el tárget OpenGL de la textura (GL_TEXTURE_2D, GL_TEXTURE_RECT, etc.).
+         * Devuelve el tï¿½rget OpenGL de la textura (GL_TEXTURE_2D, GL_TEXTURE_RECT, etc.).
          * @return target de la textura.
          */
 		GLenum GetTexTarget() const { return m_param.target; }
         /**
-         * Devuelve el formato interno de la textura, es decir, el número de componentes de color de la misma
+         * Devuelve el formato interno de la textura, es decir, el nï¿½mero de componentes de color de la misma
          * (GL_RGBA, GL_RGB, etc.).
          * @return formato interno de la textura.
          */
 		GLenum GetTexInternalFormat() const { return m_param.internal_format; }
         /**
-         * Devuelve el método utilizado en el filtro de minificación (GL_NEAREST, GL_LINEAR, GL_NEAREST,
+         * Devuelve el mï¿½todo utilizado en el filtro de minificaciï¿½n (GL_NEAREST, GL_LINEAR, GL_NEAREST,
          * GL_NEAREST_MIPMAP_NEAREST, etc.).
-         * @return método de filtrado de minificación.
+         * @return mï¿½todo de filtrado de minificaciï¿½n.
          */
 		GLint GetMinFilter() const { return m_param.min_filter; }
         /**
-         * Devuelve el método utilizado en el filtro de magnificación (GL_NEAREST o GL_LINEAR).
-         * @return método de filtrado de magnificación.
+         * Devuelve el mï¿½todo utilizado en el filtro de magnificaciï¿½n (GL_NEAREST o GL_LINEAR).
+         * @return mï¿½todo de filtrado de magnificaciï¿½n.
          */
 		GLint GetMagFilter() const { return m_param.mag_filter; }
         /**
-         * Devuelve el método de envolvimiento utilizado en la coordenada S de textura (GL_CLAMP, GL_REPEAT).
-         * @return método de envolvimiento en coordenada S.
+         * Devuelve el mï¿½todo de envolvimiento utilizado en la coordenada S de textura (GL_CLAMP, GL_REPEAT).
+         * @return mï¿½todo de envolvimiento en coordenada S.
          */
 		GLint GetWrapS() const { return m_param.wrap_s; }
         /**
-         * Devuelve el método de envolvimiento utilizado en la coordenada T de textura (GL_CLAMP, GL_REPEAT).
-         * @return método de envolvimiento en coordenada T.
+         * Devuelve el mï¿½todo de envolvimiento utilizado en la coordenada T de textura (GL_CLAMP, GL_REPEAT).
+         * @return mï¿½todo de envolvimiento en coordenada T.
          */
 		GLint GetWrapT() const { return m_param.wrap_t; }
 
         /**
-         * Invierte verticalmente el búfer de imágen apuntado por pBuffer.
-         * @param pBuffer puntero al búffer que contiene la imágen a invertir.
-         * @param p_depth número de componentes de color por píxel.
+         * Invierte verticalmente el bï¿½fer de imï¿½gen apuntado por pBuffer.
+         * @param pBuffer puntero al bï¿½ffer que contiene la imï¿½gen a invertir.
+         * @param p_depth nï¿½mero de componentes de color por pï¿½xel.
          */
 		void FlipBufferVert(MOubyte *pBuffer, MOint p_depth);
 
         /**
          * Copia a esta textura la que esta siendo apuntada por p_src_tex.
-         * @param p_src_tex puntero al objeto de textura desde el cual se está realizando la copia.
+         * @param p_src_tex puntero al objeto de textura desde el cual se estï¿½ realizando la copia.
          * @param p_copy_glid si es true entonces el OpenGL ID es copiado.
          * @param p_copy_moid si es true entonces el Moldeo ID es copiado.
          * @param p_copy_type si es true entonces el tipo de textura es copiado.
@@ -365,14 +365,14 @@ class LIBMOLDEO_API moTexture : public moAbstract {
         }
 
         /**
-        *   Salva al disco la textura especificando el nuevo tamaño y el formato
+        *   Salva al disco la textura especificando el nuevo tamaï¿½o y el formato
         *   El nombre del archivo es opcional, se toma en general el nombre de la textura
         *   y se le agrega: .thm.jpg   o  .thm.tga
         *   @param  p_bufferformat  el formato: "JPG" (75:1), "JPGSUPERB" (100:1), "JPGBAD" (10:1), "JPGNORMAL" (50:1), "JPGAVERAGE" (25:1), "JPGGOOD" (75:1), "TGA"
         *   @param  w   ancho de la nueva imagen
         *   @param  h   alto de la nueva imagen
         *   @param  newfilename el nombre del archivo, si no especifica se usa: GetName()  y se le agrega: .thm.jpg   o  .thm.tga
-        *   @return el nombre del archivo si fue salvado exitosamente, sino una cadena vacía moText("")
+        *   @return el nombre del archivo si fue salvado exitosamente, sino una cadena vacï¿½a moText("")
         */
         moText  CreateThumbnail( moText p_bufferformat, int w, int h, moText newfilename = moText("") );
 
@@ -451,12 +451,12 @@ class LIBMOLDEO_API moTextureMemory : public moTexture {
 		virtual ~moTextureMemory();
 
         /**
-         * Inicializa propiedades básicas de la textura tales como el nombre, id, administradores y parámetros.
+         * Inicializa propiedades bï¿½sicas de la textura tales como el nombre, id, administradores y parï¿½metros.
          * @param p_name nombre de la textura.
          * @param p_moid Moldeo ID de la textura.
          * @param p_res puntero al administrador de recursos, del cual son extraidos todos los administradores que la textura necesita (GL, Data, File, etc).
-         * @param p_param parámetros de textura.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @param p_param parï¿½metros de textura.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		virtual MOboolean Init( moText p_name, MOuint p_moid, moResourceManager* p_res, moTexParam p_param = MODefTex2DParams);
 
@@ -482,7 +482,7 @@ class LIBMOLDEO_API moTextureMemory : public moTexture {
 
         /**
          * Destruye la textura openGL.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		virtual MOboolean Finish();
 
@@ -543,10 +543,10 @@ class LIBMOLDEO_API moTextureMemory : public moTexture {
 class moShader;
 class moTextureFilter;
 
-/// una textura asociada a una animación de cuadros
+/// una textura asociada a una animaciï¿½n de cuadros
 /**
  * Clase de la que derivan las texturas animadas, y todas las que supongan tratar con
- * una sucesión de imágenes.
+ * una sucesiï¿½n de imï¿½genes.
  * @see moMovie
  * @see moTextureMultiple
  */
@@ -563,26 +563,26 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
 		virtual ~moTextureAnimated();
 
         /**
-         * Inicializa propiedades básicas de la textura tales como el nombre, id, administradores y parámetros.
+         * Inicializa propiedades bï¿½sicas de la textura tales como el nombre, id, administradores y parï¿½metros.
          * @param p_name nombre de la textura.
          * @param p_moid Moldeo ID de la textura.
          * @param p_res puntero al administrador de recursos, del cual son extraidos todos los administradores que la textura necesita (GL, Data, File, etc).
-         * @param p_param parámetros de textura.
+         * @param p_param parï¿½metros de textura.
          */
 		virtual MOboolean  Init(moText p_name, MOuint p_moid, moResourceManager* p_res, moTexParam p_param = MODefTex2DParams);
         /**
          * Destruye la textura openGL.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		virtual MOboolean  Finish();
 
         /**
-         * Play de la animación, corre la animación según su velocidad propia
+         * Play de la animaciï¿½n, corre la animaciï¿½n segï¿½n su velocidad propia
          */
     virtual void Play();
 
         /**
-         * Para la animación, mostrando el cuadro del principio
+         * Para la animaciï¿½n, mostrando el cuadro del principio
          */
     virtual void Stop();
 
@@ -594,44 +594,44 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
 
 
         /**
-         * Devuelve el OpenGL ID de textura que corresponde al tempo pasado como parámetro.
+         * Devuelve el OpenGL ID de textura que corresponde al tempo pasado como parï¿½metro.
          * @param tempo puntero al objeto de tempo.
          * @return OpenGL ID.
          */
 		virtual MOint		GetGLId( moTempo *tempo );
         /**
-         * Devuelve el OpenGL ID de la sub-textura i-ésima.
-         * @param p_i índice del cuadro.
+         * Devuelve el OpenGL ID de la sub-textura i-ï¿½sima.
+         * @param p_i ï¿½ndice del cuadro.
          * @return OpenGL ID.
          */
 		virtual MOint		GetGLId( MOuint p_i );
         /**
-         * Devuelve el OpenGL ID de la textura, pasando como parámetro una fracción de ciclo 0 = cuadro 0, 1.0 = último cuadro.
-         * @param p_cycle fracción de ciclo entre 0.0 y 1.0.
+         * Devuelve el OpenGL ID de la textura, pasando como parï¿½metro una fracciï¿½n de ciclo 0 = cuadro 0, 1.0 = ï¿½ltimo cuadro.
+         * @param p_cycle fracciï¿½n de ciclo entre 0.0 y 1.0.
          * @return OpenGL ID.
          */
 		virtual MOint		GetGLId( MOfloat p_cycle );
 
         /**
-         * Devuelve el número de cuadros de la animación.
-         * @return número de cuadros.
+         * Devuelve el nï¿½mero de cuadros de la animaciï¿½n.
+         * @return nï¿½mero de cuadros.
          */
 		virtual MOuint		GetFrameCount() { return m_nFrames; }
         /**
-         * Fija el número de cuadros de la animación
-         * @param p_nframes Nuevo número de cuadros.
+         * Fija el nï¿½mero de cuadros de la animaciï¿½n
+         * @param p_nframes Nuevo nï¿½mero de cuadros.
          */
 		virtual void 		SetFrameCount( MOuint p_nframes ) { m_nFrames = p_nframes; } //
 
         /**
-         * Devuelve los cuadros por segundo de la animación.
+         * Devuelve los cuadros por segundo de la animaciï¿½n.
          * @return cuadros por segundo.
          */
 		virtual MOfloat		GetFramesPerSecond() { return m_fFramesPerSecond; }
 
         /**
-         * Fija el número de cuadros por segundo de la animación.
-         * @param p_fps Nuevo número de cuadros por segundo de la animación.
+         * Fija el nï¿½mero de cuadros por segundo de la animaciï¿½n.
+         * @param p_fps Nuevo nï¿½mero de cuadros por segundo de la animaciï¿½n.
          */
 		virtual void 		SetFramesPerSecond( MOfloat p_fps) { m_fFramesPerSecond = p_fps; }
 
@@ -641,54 +641,54 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
       MO_PLAYMODE_FRAMEBASE ///frame base relative
     };
         /**
-         * Fija el modo de reproducción :
+         * Fija el modo de reproducciï¿½n :
          * @see moPlayMode
-         * MO_PLAYMODE_TIMEBASE : reproducción segun timer interno de GStreamer
-         * MO_PLAYMODE_FRAMEBASE : reproducción arbitraria por manejo de frame
-         * @param p_i índice de textura a validar.
+         * MO_PLAYMODE_TIMEBASE : reproducciï¿½n segun timer interno de GStreamer
+         * MO_PLAYMODE_FRAMEBASE : reproducciï¿½n arbitraria por manejo de frame
+         * @param p_i ï¿½ndice de textura a validar.
          */
     virtual void SetPlayMode( moPlayMode playmode );
 
         /**
-         * Devuelve el modo de reproducción :
+         * Devuelve el modo de reproducciï¿½n :
          * @see moPlayMode
-         * MO_PLAYMODE_TIMEBASE : reproducción segun timer interno de GStreamer
-         * MO_PLAYMODE_FRAMEBASE : reproducción arbitraria por manejo de frame
-         * @return moPlayMode modo de reproducción de este video
+         * MO_PLAYMODE_TIMEBASE : reproducciï¿½n segun timer interno de GStreamer
+         * MO_PLAYMODE_FRAMEBASE : reproducciï¿½n arbitraria por manejo de frame
+         * @return moPlayMode modo de reproducciï¿½n de este video
          */
     virtual moPlayMode GetPlayMode();
 
         /**
-         * Calcula el cuadro i-ésimo de la animación.
-         * @param p_i índice del cuadro a cualcular.
+         * Calcula el cuadro i-ï¿½simo de la animaciï¿½n.
+         * @param p_i ï¿½ndice del cuadro a cualcular.
          */
 		virtual void		GetFrame( MOuint p_i );
 
 		virtual MOuint		GetActualFrame();
 
         /**
-         * Configura el modo de interpolación de la textura. Este modo genera texturas intermedias que
-         * entre dos cuadros de la animación.
-         * @param p_FrameJump cuadro que define el "salto" de la interpolación: las texturas interpoladas son generadas
+         * Configura el modo de interpolaciï¿½n de la textura. Este modo genera texturas intermedias que
+         * entre dos cuadros de la animaciï¿½n.
+         * @param p_FrameJump cuadro que define el "salto" de la interpolaciï¿½n: las texturas interpoladas son generadas
          * entre el cuadro p_FrameJump y p_FrameJump + 1.
-         * @param p_InterpolationTime el tiempo que dura la interpolación.
+         * @param p_InterpolationTime el tiempo que dura la interpolaciï¿½n.
          */
 		virtual void		SetInterpolation( MOuint p_FrameJump, MOuint p_InterpolationTime );
         /**
-         * Devuelve si el cuadro de la animación está en el rango de interpolación.
+         * Devuelve si el cuadro de la animaciï¿½n estï¿½ en el rango de interpolaciï¿½n.
          * @return true o falsed dependiendo del cuadro actual.
          */
 		virtual MOboolean	IsInterpolating();
         /**
-         * Devuelve si el modo de interpolación está activo.
-         * @return true o false dependiendo del estado del modo de interpolación.
+         * Devuelve si el modo de interpolaciï¿½n estï¿½ activo.
+         * @return true o false dependiendo del estado del modo de interpolaciï¿½n.
          */
 		virtual MOboolean	IsInterpolationActive();
         /**
-         * Fija el estado del modo de interpolación.
+         * Fija el estado del modo de interpolaciï¿½n.
          * @param activate el nuevo estado.
-         * @return el estado del modo de interpolación. Aunque se intente activar la interplación, puede ocurrir
-         * que los shaders requeridos para la operación de interpolación no estén disponibles, en cuyo caso se
+         * @return el estado del modo de interpolaciï¿½n. Aunque se intente activar la interplaciï¿½n, puede ocurrirr
+         * que los shaders requeridos para la operaciï¿½n de interpolaciï¿½n no estï¿½n disponibles, en cuyo caso se
          * devuelve false.
          */
 		virtual MOboolean   ActivateInterpolation( MOboolean activate = true );
@@ -729,14 +729,14 @@ class LIBMOLDEO_API moTextureAnimated : public  moTexture
 		moShader*			m_pShaderInterpolate;
 
 		//interpolation parameters
-		MOuint				m_FrameJump;/* salto entre el cuadro inicial y final mínimo, para resolver la interpolación*/
-		MOuint				m_InterpolationTime;/*intervalo de resolución de la interpolación en milisegundos*/
+		MOuint				m_FrameJump;/* salto entre el cuadro inicial y final mï¿½nimo, para resolver la interpolaciï¿½n*/
+		MOuint				m_InterpolationTime;/*intervalo de resoluciï¿½n de la interpolaciï¿½n en milisegundos*/
 
 		//interpolation variables
 		MOuint				m_StartTime;
-		MOuint				m_FrameStart;/*cuadro inicial de la interpolación*/
-		MOuint				m_FrameEnd;/*cuadro final de la interpolación*/
-		MOfloat				m_InterpolationPosition;/*valor entre 0 y 1 indicando el nivel de interpolación, 0 corresponde al cuadro inicial, 1 al cuadro final*/
+		MOuint				m_FrameStart;/*cuadro inicial de la interpolaciï¿½n*/
+		MOuint				m_FrameEnd;/*cuadro final de la interpolaciï¿½n*/
+		MOfloat				m_InterpolationPosition;/*valor entre 0 y 1 indicando el nivel de interpolaciï¿½n, 0 corresponde al cuadro inicial, 1 al cuadro final*/
 
 };
 
@@ -759,87 +759,87 @@ class LIBMOLDEO_API moTextureMultiple : public moTextureAnimated
 		~moTextureMultiple();
 
         /**
-         * Inicializa propiedades básicas de la textura tales como el nombre, id, administradores y parámetros.
+         * Inicializa propiedades bï¿½sicas de la textura tales como el nombre, id, administradores y parï¿½metros.
          * @param p_name nombre de la textura.
          * @param p_moid Moldeo ID de la textura.
          * @param p_res puntero al administrador de recursos, del cual son extraidos todos los administradores que la textura necesita (GL, Data, File, etc).
-         * @param p_param parámetros de textura.
+         * @param p_param parï¿½metros de textura.
          */
 		virtual MOboolean  Init(moText p_name, MOuint p_moid, moResourceManager* p_res, moTexParam p_param = MODefTex2DParams);
         /**
          * Destruye la textura openGL.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		virtual MOboolean  Finish();
 
         /**
-         * Revisa que el archivo especificado con p_filename sea un archivo de textura múltiple soportado.
-         * @return true si el archivo está soportado, false en caso contrario.
+         * Revisa que el archivo especificado con p_filename sea un archivo de textura mï¿½ltiple soportado.
+         * @return true si el archivo estï¿½ soportado, false en caso contrario.
          */
 		MOboolean SupportedFile(moText p_filename);
         /**
-         * Construye una textura múltiple a partir de la imágenes especificadas en los parámetros p_param.
-         * @param p_param puntero a un objeto de parámetros que contiene el nombre del archivo del cual la textura será leida.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Construye una textura mï¿½ltiple a partir de la imï¿½genes especificadas en los parï¿½metros p_param.
+         * @param p_param puntero a un objeto de parï¿½metros que contiene el nombre del archivo del cual la textura serï¿½ leida.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean Load(moParam* p_param);
 
         /**
-         * Construye una textura múltiple a partir de la imágenes especificadas en los subvalores del valor p_value
-         * @param p_value puntero a un objeto de subvalores que contiene el nombre de los archivos de los cuales las texturas serán leidas.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Construye una textura mï¿½ltiple a partir de la imï¿½genes especificadas en los subvalores del valor p_value
+         * @param p_value puntero a un objeto de subvalores que contiene el nombre de los archivos de los cuales las texturas serï¿½n leidas.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean Load(moValue* p_value);
 
         /**
-         * Construye una textura múltiple a partir de las texturas entre los índices p_id0 y p_id1 de la lista
+         * Construye una textura mï¿½ltiple a partir de las texturas entre los ï¿½ndices p_id0 y p_id1 de la lista
          * de texturas p_textures.
          * @param p_name Nombre que es asignado a la textura.
-         * @param p_textures Referencia a la lista de texturas de donde son extraídas las texturas a copiar.
-         * @param p_id0 índice inicial.
-         * @param p_id1 índice final.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @param p_textures Referencia a la lista de texturas de donde son extraï¿½das las texturas a copiar.
+         * @param p_id0 ï¿½ndice inicial.
+         * @param p_id1 ï¿½ndice final.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean Load(moText p_name, moTextureArray &p_textures, MOuint p_id0, MOuint p_id1);
 
         /**
-         * Inicializa la textura múltiple con p_tex_count en blano.
-         * @param p_tex_count número de texturas.
+         * Inicializa la textura mï¿½ltiple con p_tex_count en blano.
+         * @param p_tex_count nï¿½mero de texturas.
          */
 		void SetTextureCount(MOuint p_tex_count);
         /**
-         * Devuelve el número de texturas en la secuencia que define esta textura múltiple.
-         * @return número de texturas.
+         * Devuelve el nï¿½mero de texturas en la secuencia que define esta textura mï¿½ltiple.
+         * @return nï¿½mero de texturas.
          */
 		MOuint GetTextureCount() { return m_textures_array.Count(); }
         /**
-         * Fija como textura actual aquella que tiene la posición i-ésima en la secuencia.
-         * @param p_i índice de la textura a fijar como actual.
+         * Fija como textura actual aquella que tiene la posiciï¿½n i-ï¿½sima en la secuencia.
+         * @param p_i ï¿½ndice de la textura a fijar como actual.
          */
 		void GetFrame(MOuint p_i);
         /**
-         * Copia la textura apuntada por p_texture en la posición i-ésima de la secuencia.
-         * @param p_i índice de la textura donde se copiara la que es pasada como parámetro.
-         * @param p_texture puntero al objeto de textura a copiar en la posición i-ésima.
+         * Copia la textura apuntada por p_texture en la posiciï¿½n i-ï¿½sima de la secuencia.
+         * @param p_i ï¿½ndice de la textura donde se copiara la que es pasada como parï¿½metro.
+         * @param p_texture puntero al objeto de textura a copiar en la posiciï¿½n i-ï¿½sima.
          */
 		void SetFrame(MOuint p_i, moTexture* p_texture);
         /**
          * Agrega una nueva textura en la secuencia.
-         * @param p_texture puntero al objeto de textura que será agregado a la secuencia.
+         * @param p_texture puntero al objeto de textura que serï¿½ agregado a la secuencia.
          */
 		void AddFrame(moTexture* p_texture);
         /**
-         * Devuelve un puntero al objeto de textura en la posición i-ésima en la secuencia.
-         * @param p_i índice de la textura requerida.
+         * Devuelve un puntero al objeto de textura en la posiciï¿½n i-ï¿½sima en la secuencia.
+         * @param p_i ï¿½ndice de la textura requerida.
          * @return puntero a la textura devuelta.
          */
 		moTexture* GetTexture( MOuint p_i ) { return m_textures_array[p_i];	}
 
         /**
-         * Valida el índice de textura pasado como parámetro, es decir, revisa que esté entre los rángos
-         * permitidos (0 y número total de texturas en esta textura múltiple - 1).
-         * @param p_i índice de textura a validar.
-         * @return true si el índice es válido, false en caso contrario.
+         * Valida el ï¿½ndice de textura pasado como parï¿½metro, es decir, revisa que estï¿½ entre los rï¿½ngos
+         * permitidos (0 y nï¿½mero total de texturas en esta textura mï¿½ltiple - 1).
+         * @param p_i ï¿½ndice de textura a validar.
+         * @return true si el ï¿½ndice es vï¿½lido, false en caso contrario.
          */
 		MOboolean ValidTexture(MOuint p_i);
 
@@ -849,9 +849,9 @@ class LIBMOLDEO_API moTextureMultiple : public moTextureAnimated
 
 };
 
-///  una textura animada basada en una película
+///  una textura animada basada en una pelï¿½cula
 /**
- * Clase para manejar una textura animada basada en una película.
+ * Clase para manejar una textura animada basada en una pelï¿½cula.
  *
  */
 class LIBMOLDEO_API moMovie : public moTextureAnimated
@@ -867,16 +867,16 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
 		virtual ~moMovie();
 
         /**
-         * Inicializa propiedades básicas de la textura tales como el nombre, id, administradores y parámetros.
+         * Inicializa propiedades bï¿½sicas de la textura tales como el nombre, id, administradores y parï¿½metros.
          * @param p_name nombre de la textura.
          * @param p_moid Moldeo ID de la textura.
          * @param p_res puntero al administrador de recursos, del cual son extraidos todos los administradores que la textura necesita (GL, Data, File, etc).
-         * @param p_param parámetros de textura.
+         * @param p_param parï¿½metros de textura.
          */
 		virtual MOboolean  Init(moText p_name, MOuint p_moid, moResourceManager* p_res, moTexParam p_param = MODefTex2DParams);
         /**
          * Destruye la textura openGL.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		virtual MOboolean  Finish();
 
@@ -902,20 +902,20 @@ class LIBMOLDEO_API moMovie : public moTextureAnimated
     virtual void SetBalance( float balance );
 
         /**
-         * Revisa que el archivo especificado con p_filename sea un archivo de película soportado.
-         * Tiene que ser de extensión avi, mpg o mov.
-         * @return true si el archivo está soportado, false en caso contrario.
+         * Revisa que el archivo especificado con p_filename sea un archivo de pelï¿½cula soportado.
+         * Tiene que ser de extensiï¿½n avi, mpg o mov.
+         * @return true si el archivo estï¿½ soportado, false en caso contrario.
          */
 		MOboolean SupportedFile(moText p_filename);
         /**
-         * Carga en la textura la película p_filename.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Carga en la textura la pelï¿½cula p_filename.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean LoadMovieFile(moText p_filename);
         /**
-         * Construye una película a partir de los parámetros p_param.
-         * @param p_param puntero a un objeto de parámetros que contiene el nombre del archivo del cual la película será leida.
-         * @return true si la operación fue exitosa, false en caso contrario.
+         * Construye una pelï¿½cula a partir de los parï¿½metros p_param.
+         * @param p_param puntero a un objeto de parï¿½metros que contiene el nombre del archivo del cual la pelï¿½cula serï¿½ leida.
+         * @return true si la operaciï¿½n fue exitosa, false en caso contrario.
          */
 		MOboolean Load( moParam* p_param );
 		MOboolean Load( moValue* p_value );
